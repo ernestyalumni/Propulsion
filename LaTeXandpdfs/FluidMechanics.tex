@@ -905,6 +905,43 @@ Then
 \]
 Define $R:= \frac{ \rho LU }{ \mu }$, the \textbf{Reynolds number}.  $R$ is a dimensionless quantity.  $\frac{(\lambda + \mu )}{ \rho L U}$ is a dimensionless quantity.  
 
+cf. Sec. 19 The law of similarity, Landau and Lifshitz \cite{LLandauELifshitz1987}:
+
+For
+\begin{equation}
+  \text{Re} := \frac{ \rho L U }{ \mu }
+  \end{equation}
+Then the velocity distribution is
+\[
+\mathbf{u} = \mathbf{u}(t,\mathbf{x}) = Uf\left( \frac{ \mathbf{x} }{L}, \text{Re} \right)
+\]
+
+Then pressure distribution is
+\[
+p = \rho U^2 f\left( \frac{\mathbf{x}}{L}, \text{Re} \right)
+\]
+
+For a drag force acting on the body,
+\[
+F_{\text{drag}} = \rho U^2 L^2 f(\text{Re}) \qquad \, \text{ caveat }
+\]
+
+If body force (e.g. gravity), consider the \emph{Froude number} $\text{Fr}$,
+\begin{equation}
+  \text{Fr} = \frac{U^2 }{ L g}
+  \end{equation}
+
+For nonsteady flow, then consider some time interval $T$, characteristic of flow: e.g. oscillations, $T \equiv $ period of oscillation
+\[
+\text{St}  = \frac{ UT}{L} \qquad \, \text{ caveat }
+\]
+If the oscillations occur spontaneously (i.e. not under external exciting force), then the oscillation $\phi$ will be a definite function of $\text{Re}$:
+\[
+\phi = f(\text{Re})
+\]
+
+
+
 Bhatia, Norgard, Pascucci, Bremer have an insightful survey on the so-called Helmholtz-Hodge decomposition and expands upon it and what's out there already in the literature \cite{HBhatiaGNorgardVPascucciPBremer2013}.  
 
 
@@ -1462,6 +1499,17 @@ Thus, we can pull back onto the domain $B(t)$ from later times, say $s+t$, and s
 
 Thus, without having to ``hand wave around'' the problem of dealing with a fixed control volume and then the volume occupied by the fixed mass that's changing with time, as in Section 4.2 General Derivation of the Momentum Theorem of Sabersky, Acosta, Hauptmann, and Gates (1998)\cite{SAHG1998}, we've shown here, with mathematical rigor, how to formally take the time derivative of integrals of differential forms.  
 
+It appears that others have also worked on this mathematical formulation of Navier-Stoke's equations:
+
+\url{https://pdfs.semanticscholar.org/182e/a7017fe4cd8c80bfac45c64cabd8e557903f.pdf}
+A Nonlinear Analysis of the Averaged Euler Equations.  Holm, Kouranbaeva, Marsden, Ratiu, Shkoller.  
+
+\url{https://www.math.ucdavis.edu/~shkoller/jdg.pdf}  Shkoller.  ANALYSIS ON GROUPS OF DIFFEOMORPHISMS
+OF MANIFOLDS WITH BOUNDARY AND THE AVERAGED MOTION OF A FLUID.  
+
+
+
+
 
 \subsection{Angular Momentum}
 
@@ -1777,6 +1825,163 @@ So
 \text{div}j = \frac{1}{r} \frac{ \partial (ru^r\rho ) }{ \partial r } +\frac{1}{r} \frac{ \partial (ru^{\varphi } \rho ) }{ \partial \varphi } + \frac{1}{r} \frac{ \partial (ru^z \rho ) }{ \partial z} = \frac{1}{r} \frac{ (\partial ru^r \rho  )}{ \partial r } + \frac{ \partial (u^{\varphi} \rho ) }{ \partial \varphi } + \frac{ \partial (u^z \rho ) }{ \partial z}
 \]
 
+\part{Lattice Boltzmann methods (LBM)}
+
+\subsection{Affine Space}
+
+From Pr\'{a}staro (1996) \cite{Pras1996},
+
+\subsubsection{Affine Space discretization}
+
+Consider affine space $(M,\mathbf{M},\alpha)$, and affine frame $(O,\lbrace \mathbf{e}_i \rbrace)$.  $\lbrace \mathbf{e}_i\rbrace$ basis of $\mathbf{M} \xrightarrow{\text{discretize}} \lbrace 0 , 1, \dots L_1 -1\rbrace \times \lbrace 0 ,  \dots L_2-1 \rbrace \times \dots \times \lbrace 0 ,  \dots L_d-1 \rbrace$.
+
+But interestingly, $\mathbf{M} = \lbrace a^i \mathbf{e}_i | a^i \in \mathbb{R} \rbrace \xrightarrow{\text{discretize}} \mathbf{M}$, simply either define $\mathbf{u} \in \mathbf{M}$ as an array of structs or struct of arrays.  
+
+
+
+
+\subsection{Lattice Boltzmann equation, Boltzmann Equation}
+
+
+
+\[
+\xrightarrow{\text{discretize}} \frac{F_i(\widehat{x},\widehat{t} + \Delta \widehat{t} )- F_i(\widehat{x},\widehat{t} ) }{ \Delta \widehat{t} } + c_i^j \frac{F_i(\widehat{x} + \Delta x^j, \widehat{t} + \Delta \widehat{t} )- F_i(\widehat{x}, \widehat{t} + \Delta \widehat{t} ) }{ \Delta \widehat{x}^j } = \frac{-1}{ \widehat{\tau} \epsilon } (F_i - F_i^{(eq)} )
+\]
+where $\Delta \widehat{t} = \frac{\Delta t \cdot U}{L}$
+
+Lagrangian behavior obtained by selection of lattice spacing divided by time step to equal lattice velocity:
+\begin{equation}
+  \frac{ \Delta \widehat{ \mathbf{x}} }{ \Delta \widehat{t}} = \mathbf{c}_i 
+\end{equation}
+\begin{equation}
+  \Longrightarrow \frac{ F_i(\widehat{\mathbf{x}} + \mathbf{c}_i \Delta t, t+ \Delta t ) - F_i(\widehat{\mathbf{x}} , t) }{ \Delta \widehat{t}} = \frac{-1}{ \widehat{\tau} \epsilon }( F_i-F_i^{(eq)} ) \qquad \, (5.14)
+\end{equation} (cf. Eq. (5.14) of Wolf-Gladrow \cite{DWol2000})
+
+Choose $\Delta t = t_c$, drop all carats, leads to \emph{(BGK) lattice Boltzmann equation}:
+\begin{equation}
+  F_i(\mathbf{x}+c_i\Delta t, t+\Delta t) - F_i(\mathbf{x},t) = \frac{-1}{\tau} (F_i - F_i^{(eq)} ) \qquad \, (5.1.5)
+  \end{equation}
+
+Pitaevskii, Lifshitz's \textbf{Physical Kinetics} (1981) \cite{PL1981}
+
+
+Consider 1-dim. sets of discrete velocities $V$, $V\subset \mathbb{Z}$, $Q\in \mathbb{Z}^+$, $Q$ is total number of velocities, i.e. $|V|=Q$.  Consider $Q$ odd, i.e. $Q=2q+1$, $q\in \mathbb{Z}^+_0$.
+\[
+v_{(i)}\in V, \, v_{(i)} := i \in \mathbb{Z}
+\]
+By mirror symmetry, $\forall \, v_{(i)} \in V$, $v_{(-i)} \in V$, so $v_{(0)} =0\in V$.  
+
+
+
+
+Succi (2001) \cite{Succ2001}
+
+
+\section{Lattices, that are ``sufficiently'' Galilean invariant, through non-perturbative algebraic theory}
+
+
+
+cf. Appendix A of Karlin and Asinari (2010) \cite{KaAs2010}
+
+From Appendix A of Karlin and Asinari (2010) \cite{KaAs2010}, ``Appendix A: How to Find Closure Relation and Verify Reference Temperature for a given Velocity Set'', as we consider for Maxwell lattices in 1-dim., so that for the underlying affine space $(M,\mathbf{M})$, $M=\mathbb{R}$, $\mathbf{M}=\mathbb{R} \xrightarrow{\text{discretize}} \mathbb{Z}$ in this case.
+
+$Q$ velocities.  Suppose $Q = 2q+1$; $q:= \frac{Q-1}{2}$.
+
+Write
+\[
+v^Q_{(i)} = a_{Q-2}v_{(i)}^{Q-2} + a_{(Q-4)}v_{(i)}^{Q-4} + \dots + a_1 v_{(i)}
+\]
+and so in general,
+\begin{equation}
+  v_{(i)}^Q = \sum_{k=1}^q a_{Q-2k} v_{(i)}^{Q-2k}
+\end{equation}
+with $q = \frac{Q-2}{2}$, different nonzero values for the velocities.
+
+Use $M_{(n)}^M = b_nT_0^{(n-1)/2} u + O(u^3)$, $n$ odd, $b_n=n!! \equiv 1\cdot 3 \cdot 5 \cdot \dots \cdot n$
+
+Matching condition of linear in $u$ terms results in algebraic equation for reference temperature.
+\[
+b_QT_0^{(Q-1)/2} - a_{Q-2}b_{Q-2} T_0^{(Q-3)/2} - a_{(Q-4)} b_{Q-4} T_0^{(Q-5)/2} - \dots - a_1 = 0
+\]
+\begin{equation}
+  b_QT_0^{(Q-1)/2} - \sum_{k=1}^{q-1} a_{Q-2k} b_{Q-2k} T_0^{(Q-2k-1)/2} - a_1 = b_Q T_0^{(Q-1)/2} - \sum_{k=1}^q a_{Q-2k} b_{Q-2k} T_0^{(Q-2k-1)/2} 
+\end{equation}
+since $b_1=1$.
+
+Then determine positive roots for $T_0$.  
+
+
+
+Chikatamarla and Karlin (2009) \cite{ChKa2009}
+
+\subsection{Weights}
+
+Consider $f\in C^{\infty}(\mathbb{R}^d)$, the Maxwell-Boltzmann ``distribution'' (or Maxwell-Boltzmann statistics, or Maxwell distribution; there are many names) $f^{MB}\equiv f$.  Consider when $m=1$:
+\begin{equation}
+\begin{gathered}
+  f(v) = \left( \frac{m}{2\pi T_0} \right)^{d/2} \exp{ \left( \frac{ -m(v-u)^2 }{ 2T_0} \right) } \xrightarrow{ m=1} \left( \frac{1}{ 2\pi T_0} \right)^{d/2} \exp{ \left( \frac{ -(v-u)^2}{ 2T_0 } \right)} 
+  \end{gathered}
+\end{equation}
+with $(v-u)^2 = \sum_{i=1}^d (v^i-u^i)^2$
+
+
+Taking a look at the example of D2Q9 lattice, from pp. 163, Sec. 5.2 BGK lattice Boltzmann model in 2D, Wolf-Gladrow (2000) \cite{DWol2000}, consider the set of discrete velocities $\lbrace c_i \rbrace_{i=0,1,\dots 8}$:
+
+
+
+
+
+Frapolli, Chikatamarla, and Karlin (2016) \cite{FCK2016} references an analytic solution of a quadratic system of equations, in terms of Lagrange multipliers, for minimizing the entropy $H$, while constraining for the convservation laws (mass, momentum, energy) in their 12, here Ansumali, Karlin, and \"{O}ttinger (2003) \cite{AKO2003}.
+
+
+\subsection{Reviewing the Entropic Lattice Boltzmann Model for Compressible Flows, with explicit steps/calculations}
+
+From Section II. ``Entropic Lattice Boltzmann Model for Compressible Flows'' of the groundbreaking paper from Frapolli, Chikatamarla, and Karlin (2016) \cite{FCK2016}, the mass, momentum, and (translational) energy conservation laws (relations), in their discrete form, are given by
+\begin{equation}
+  \lbrace \rho, \rho\mathbf{u}, 2\rho E_{\text{tr}} \rbrace = \sum_{i=1}^Q \lbrace 1, v_i, v_i^2 \rbrace f_i^{\text{eq}}(\rho, \mathbf{u}, T)
+  \end{equation}
+where $Q = $ total number of discrete velocities (in the model you're considering; this is the $Q$ in $DdQq\equiv dDqQ$).  I will number the discrete velocities from $0$ to $1,\dots Q-1$.  
+
+Indeed, this is the discretized version of the usual conservation laws that may be more familiar in its ``continuous'', integral form:
+
+\[
+\begin{aligned}
+  \rho & = \int f_i^{\text{eq}}(\rho,\mathbf{u},T) d\mathbf{v} \\ 
+  \rho \mathbf{u} & = \int \mathbf{v} f_i^{\text{eq}}(\rho,\mathbf{u},T) d\mathbf{v} \\
+  2\rho E_{\text{tr}} = \int v_i^2 f_i^{\text{eq}}(\rho,\mathbf{u},T) d\mathbf{v}
+  \end{aligned} \xrightarrow{\text{discretize}}   \lbrace \rho, \rho\mathbf{u}, 2\rho E_{\text{tr}} \rbrace = \sum_{i=1}^Q \lbrace 1, v_i, v_i^2 \rbrace f_i^{\text{eq}}(\rho, \mathbf{u}, T)
+\]
+keeping in mind that $f_i^{\text{eq}}$ is also a function (dependent upon) $\mathbf{v}$, through a Maxwell-Boltzmann distribution form.  Also, recall the definition of ``translational energy'' for a gas and how it's defined:
+\begin{equation}
+  2\rho E_{\text{tr}} := 2C_V^{\text{tr}} \rho T + \rho u^2 \qquad \, (\text{translational energy})
+\end{equation}
+where
+\begin{equation}
+  C_V^{\text{tr}} = \frac{d}{2} = \text{ specific heat of ideal gas at constant volume }
+\end{equation}
+
+Now the discretized form of $H$ is
+\begin{equation}
+  H=H(f) =\sum_{i=0}^{Q-1} f_i \ln{ \left( \frac{f_i}{W_i} \right)}
+  \end{equation}
+which is clear from its ``continuous'', integral form (of which is its definition, how it's defined, cf. Sec. 1.3. $H$-theorem of Succi (2001) \cite{Succ2001}):
+\begin{equation}
+  H=H(f) = -\int f \ln{ \frac{f}{W} } d\mathbf{v}d\mathbf{x} \xrightarrow{ \text{discretize} } H(f\equiv f_0,f_1\dots f_{Q-1}) =\sum_{i=0}^{Q-1} f_i \ln{ \left( \frac{f_i}{W_i} \right)}
+  \end{equation}
+Considering $f_0,f_1,\dots f_{Q-1}$, the weights $W_i = W_i(T)$, their explicit forms, $\forall \, i = 0,1,\dots Q-1$, are already known, from the algebraic procedure for lattices given above.
+
+So $W_i=W_i(T)$ are calculated explicitly (with numerical values) already at this point.
+
+Now again, recall the conservation laws:
+\begin{equation}
+\begin{aligned}
+  \rho & = \sum_{i=0}^{Q-1} f_i^{\text{eq}}(\rho, \mathbf{u},T) \\ 
+  \rho \mathbf{u} & = \sum_{i=0}^{Q-1} v_if_i^{\text{eq}}(\rho,\mathbf{u},T) \\ 
+  2\rho E_{\text{tr}} = \sum_{i=0}^{Q-1} v_i^2 F_i^{\text{eq}}(\rho, \mathbf{u},T)
+    \end{aligned}
+  \end{equation}
+
+
 
 
 \end{multicols*}
@@ -1836,7 +2041,48 @@ Tsutomu Kambe, \textbf{Geometrical Theory of Dynamical Systems and Fluid Flows},
 \bibitem{AK1999}
 Vladimir I. Arnold, Boris A. Khesin.  \textbf{Topological Methods in Hydrodynamics}. (Applied Mathematical Sciences).  Springer (August 5, 1999).  ISBN-13: 978-0387949475
 
+\bibitem{Pras1996}
+Agostino Pr\'{a}staro.  \textbf{Geometry of PDEs and Mechanics}.  World Scientific Publishing Co.  1996.  QC125.2.P73 1996  530.1'55353--dc20.  
+
+\bibitem{DWol2000}
+Dieter A. Wolf-Gladrow.  \textbf{Lattice-Gas Cellular Automata and Lattice Boltzmann Models: An Introduction} (Lecture Notes in Mathematics) 2000 Edition.  ISBN-13: 978-3540669739
+
+
+\bibitem{PL1981}
+L. P. Pitaevskii, E.M. Lifshitz. \textbf{Physical Kinetics}: Volume 10 (Course of Theoretical Physics S) 1st Edition.  Butterworth-Heinemann; 1 edition (January 15, 1981).  ISBN-13: 978-0750626354
+
+\bibitem{Succ2001}
+ Sauro Succi.  \textbf{The Lattice Boltzmann Equation for Fluid Dynamics and Beyond (Numerical Mathematics and Scientific Computation)} 1st Edition.  Clarendon Press; 1 edition (August 30, 2001).  ISBN-13: 978-0198503989
+
+
+
+\bibitem{KaAs2010}
+I. Karlin and P. Asinari, \emph{Factorization symmetry in the lattice Boltzmann method}.  \textbf{Physica A} 389, 1530 (2010).  \url{http://staff.polito.it/pietro.asinari/publications/preprint_Asinari_PA_2010a.pdf}.  
+
+See also
+
+Ilya Karlin, Shyam Chikatamarla, Pietro Asinari. \emph{Factorization symmetry in lattice Boltzmann simulations}.  2009.  [arXiv:0911.5529v1](https://arxiv.org/abs/0911.5529v1) [cond-mat.stat-mech] 
+
+\bibitem{ChKa2009}
+Shyam S. Chikatamarla and Iliya V. Karlin.  \emph{Lattices for the lattice Boltzmann method}.  \textbf{Physical Review E 79, 046701 (2009)}  
   
+\bibitem{FCK2016}
+  Nicol\`{o} Frapolli, S. S. Chikatamarla, and Iliya V. Karlin.  \emph{Entropic lattice Boltzmann model for gas dynamics: Theory, boundary conditions, and implementation}.  \textbf{Physical Review E 93}, 063302 (2016).
+
+\bibitem{AKO2003}
+Santosh	Ansumali.  Iliya V. Karlin, and H. C. \"{O}ttinger.  \emph{Minimal entropic kinetic models for hydrodynamics}.  \textbf{Europhys. Lett., 63} (6), pp. 798–804 (2003) \\
+\url{https://www.researchgate.net/publication/1835231_Minimal_entropic_kinetic_models_for_hydrodynamics}   \\
+\url{http://iopscience.iop.org/article/10.1209/epl/i2003-00496-6/meta} \\
+\verb|EPL03_1.pdf|
+
+
+
+
+
+
+
+
+
 
 \end{thebibliography}
 

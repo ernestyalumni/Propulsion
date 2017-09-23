@@ -5352,13 +5352,53 @@ with
 \section{Lattice Boltzmann method}
 
 
+
+
+
 Pitaevskii, Lifshitz's \textbf{Physical Kinetics} (1981) \cite{PL1981}
+
+
 
 
 
 
 Bao and Meskas (2011) \cite{BaMe2011}
 
+
+
+T\"{o}lke (2008) \cite{Tolk2008}
+
+A reference for the so-called $d2q9$ model is given by Qian, D'Humi\`{e}res, and Lallemand (1991) \cite{QDL1991}.  
+
+
+In the Lattice Boltzmann method, the velocity space (really a $A^d$ affine space) is discretized into a discrete set of microscopic velocities $\lbrace \mathbf{e}_i \rbrace_{i \in I}$, for the $i$th particle.  
+
+For the model \\
+$D2Q9 \equiv d2q9$ \\
+$D3Q15 \equiv d3q15$ \\
+$D3Q19 \equiv d3q19$ \\
+respectively (wikipedia and Qian's notation vs. T\"{o}lke's notation), the microscopic velocities are (according to wikipedia)
+\begin{equation}
+\begin{aligned}
+&  \mathbf{e}_i = c \times \begin{cases} (0,0) & i = 0 \\
+    (1,0),(0,1),(-1,0),(0,-1) & i = 1,2,3,4 \\
+    (1,1),(-1,1), (-1,-1), (1,-1) & i = 5,6,7,8 \end{cases} \\
+&  \mathbf{e}_i = c \times \begin{cases} (0,0,0) & i = 0 \\
+    (\pm 1,0,0), (0, \pm 1, 0), (0,0,\pm 1) & i = 1,2, \dots, 5,6 \\
+    (\pm 1, \pm 1, \pm ) & i = 7,8, \dots, 13,14 \end{cases} \\
+&  \mathbf{e}_i = c \times \begin{cases} (0,0,0) & i = 0 \\
+    (\pm 1, 0, 0) , (0, \pm 1, 0), (0,0 , \pm 1) & i = 1,2, \dots , 5, 6 \\
+    (\pm 1, \pm 1 ,0), (\pm 1, 0, \pm 1), (0, \pm 1, \pm 1) & i = 7, 8 , \dots, 17, 18 \end{cases}
+  \end{aligned}
+  \end{equation}
+
+
+
+\section{Reactive Flows}
+
+\subsection{Kyle E. Niemeyer - Kyle E. Niemeyer's stuff}
+
+Niemeyer (2013) \cite{NiSu2013}
 
 
 
@@ -6005,6 +6045,17 @@ Pitaevskii and Lifshitz (1981) \cite{PL1981}
 
 
 
+Sonnendr\"{u}cker (2017) \cite{Sonn2017}.  
+
+
+
+
+
+
+
+
+
+
 \end{multicols*}
 
 
@@ -6097,6 +6148,10 @@ S.P. Novikov. ``The Hamiltonian formalism and a many-valued analogue of Morse th
 Yuanxun Bill Bao and Justin Meskas.  ``Lattice Boltzmann Method for Fluid Simulations.''   \url{http://www.cims.nyu.edu/~billbao/report930.pdf}
 
 
+\bibitem{NiSu2013}
+Kyle E. Niemeyer, Chih-Jen Sung.  \emph{Accelerating reactive-flow simulations using graphics processing units}.  \textbf{American Institute of Aeronautics and Astronautics, Inc. (AIAA)}.  \emph{51st AIAA Aerospace Sciences Meeting including the New Horizons Forum and Aerospace Exposition; 07 - 10 January 2013, Grapevine (Dallas/Ft. Worth Region), Texas. }  \verb|Niemeyer-Sung-ASM_2013.pdf|
+  
+
 \bibitem{Jahn2006}
 Robert G. Jahn. \textbf{Physics of Electric Propulsion} (Dover Books on Physics).  Dover Publications (May 26, 2006). 
 
@@ -6110,6 +6165,20 @@ Richard Fitzpatrick. \textbf{Plasma Physics} 2014  \url{https://www.cfa.harvard.
 
 \bibitem{PL1981}
 L. P. Pitaevskii, E.M. Lifshitz. \textbf{Physical Kinetics}: Volume 10 (Course of Theoretical Physics S) 1st Edition.  Butterworth-Heinemann; 1 edition (January 15, 1981).  ISBN-13: 978-0750626354
+
+\bibitem{Tolk2008}
+  Jonas T\"{o}lke.  \emph{Implementation of a Lattice Boltzmann kernel using the Compute Unified Device Architecture developed by nVIDIA}.  Comput Visual Sci.  DOI 10.1007/s00791-008-0120-2  \url{http://moodle.epfl.ch/pluginfile.php/952831/mod_resource/content/0/toelked2q9.pdf}
+
+\bibitem{QDL1991}
+Y.H. Qian, D. D'Humi\`{e}res and P. Lallemand.  Lattice BGK Models for Navier-Stokes Equation.  \textbf{Europhysics Letters}.  \emph{Europhys. Lett.}, \textbf{17} (6), pp. 479-484 (1992).  1 February bis 1992 
+ 
+
+\bibitem{Sonn2017}
+Eric Sonnendr\"{u}cker.  \emph{Advanced Finite Element Methods}.  Lecture notes.  Wintersemester 2016/2017.  January 30, 2017.  Eric Sonnendr\"{u}cker, \emph{Max-Planck-Institut f\"{u}ur Plasmaphysik und Zentrum Mathematik, TU M\"{u}nchen}
+
+\bibitem{Darm2005}
+  David Darmofal. *16.901 Computational Methods in Aerospace Engineering, Spring 2005.* (Massachusetts Institute of Technology: MIT OpenCourseWare), \url{http://ocw.mit.edu} (Accessed 12 Jun, 2016). \href{http://creativecommons.org/licenses/by-nc-sa/4.0/}{License: Creative Commons BY-NC-SA}
+
 
 
 
