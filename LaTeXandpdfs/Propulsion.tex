@@ -10,8 +10,8 @@
 
 \documentclass[10pt]{amsart}
 \pdfoutput=1
-\usepackage{mathtools,amssymb,lipsum,caption}
-
+%\usepackage{mathtools,amssymb,lipsum,caption}
+\usepackage{mathtools,amssymb,caption}
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage[utf8]{inputenc}
@@ -445,8 +445,72 @@ cf. Humble, Henry, and Larson (1995) \cite{HHL1995}
 cf. Humble, Henry, and Larson (1995), Ch. 3. Thermodynamics of Fluid Flow \cite{HHL1995} 
 
 
+Chamber \\
+Chamber conditions 
+\[
+(p_c, T_c, \rho_c) \in \mathbb{R}^2 \times \mathbb{R}_+
+\]
+$p_c = $ chamber pressure \\
+$T_c = $ chamber temperature \\
+$\rho_c = $ chamber density
+
+Chamber characteristics \\
+\begin{itemize} 
+\item Combustion
+\item high pressure $p_c$ 
+\item high temperature $T_c$ 
+\item very low net fluid velocity 
+\end{itemize}
+
+Nozzle. \\
+exit conditions
+$(p_e, T_e, \rho_e) \in \mathbb{R}^2 \times \mathbb{R}_+$ \\
+$p_e = $ exit pressure \\
+$T_e = $ exit temperature \\
+$\rho_e = $ exit density 
+
+Exit characteristics. 
+\begin{itemize}
+	\item flow expands to fill enlarged volume 
+	\item reduced $p_e$ 
+	\item reduced $T_e$
+	\item very high fluid velocity 
+\end{itemize}
+Generalized View of a Rocket Thrust Chamber: \\
+Understanding the thermodynamic conditions is key to understanding its performance
+
 \subsection{3.1 Mass Transfer}
 
+mass flow rate perpendicular to duct of cross-sectional area (A) is 
+\[
+\dot{m} = \rho v A
+\]
+$\dot{m} = $ mass flow rate (kg/s) \\
+$\rho =$ fluid density (kg/$\text{m}^3$) \\
+$v = $ fluid velocity ($m/s$) \\
+$A = $ cross-sectional area of duct ($\text{m}^2$)
+
+Control volume - region with constant shape and size that stays fixed in space \\
+system approach (a.k.a. control mass approach) focus on fixed amount of matter \\
+envelope containing the matter may change its size and shape, location \\
+mass conservation (control-volume approach)
+
+\[
+\frac{d}{dt} (m_{cv}) = \dot{m}_{\text{in}} - \dot{m}_{\text{out}}
+\]
+
+$m_{cv} = $ amount of mass in control volume (kg) \\
+$\dot{m}_{\text{in}} = $ mass flow rate into control volume (kg$/s$) \\
+$\dot{m}_{\text{out}} = $ mass flow rate out of control volume (kg$/s$)
+
+\[
+\dot{m}= \int_{cs} \rho v dA
+\]
+$cs  = $ control surface \\
+$\dot{m} = $ total mass flow through control surface (kg$/s$) \\
+$\rho = $ fluid density in flow (kg$/m^3$) \\
+$v = $ velocity of particles in flow (m$/s$)  \\
+$dA = $ elemental area in control surface ($m^2$)
 
 
 
@@ -6123,7 +6187,8 @@ Ovidiu Calin, Der-Chen Chang. \textbf{Geometric Mechanics on Riemannian Manifold
 
 
 \bibitem{DGoodwin}
-D. G. Goodwin, CANTERA, Division of Engineering and Applied Science, California Institute of Technology,\url{www.cantera.org}.
+D. G. Goodwin, CANTERA, Division of Engineering and Applied Science, California Institute of Technology,
+\url{www.cantera.org}.
 
 \bibitem{PThompson1988}
 Philip A. Thompson.  \textbf{Compressible-Fluid Dynamics}.  1988.
