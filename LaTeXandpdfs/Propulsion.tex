@@ -138,6 +138,52 @@ I also look at (rocket) propulsion for engineers from a (theoretical and mathema
 
 Ch. 2 Definitions and Fundamentals of Biblarz and Sutton (2001) \cite{GSuttonOBiblarz2001} 
 
+Biblarz and Sutton (2001) \cite{GSuttonOBiblarz2001} says that \\
+Propulsion is achieved by applying a force to a vehicle; \\
+This propulsive force is obtained by ejecting propellant at high velocity.
+
+Let surface $S$ of the rocket (with remaining fuel), choosing the normal unit vector of $S$, $\mathbf{n} \equiv \mathbf{n}_S$ to face outward. \\
+Let the force, per unit area, field on a vehicle (also another word for rocket, plus remaining fuel) $\mathbf{f} = \mathbf{f}(t,\mathbf{x}), \, \forall \, \mathbf{x} \in S$. 
+
+From pp. 144 of Frankel (2011) \cite{TFrankel2011}, vector integrals \emph{make no sense} on general manifolds (how could we add 2 vectors located at different points?!). The moral is that we naturally integrate differential forms, not vectors (i.e. vector fields) (cf. pp. xxxviii of Frankel (2011) \cite{TFrankel2011}).
+
+\[
+\begin{tikzpicture}
+\matrix (m) [matrix of math nodes, row sep=2.8em, column sep=3.8em, minimum width=2.2em]
+{
+	\mathfrak{X}(S)         & \Omega^1(S) & \Omega^{d-1}(S)         \\
+	\mathbf{f} = f^i \frac{\partial }{ \partial x^i}   &  g_{ij} f^i dx^j = f_j dx^j & \frac{\sqrt{g}}{ (d-1)!} f_j g^{jk} \epsilon_{k k_2 \dots k_d} dx^{k_2} \wedge \dots \wedge dx^{k_d} = f_j g^{jk} dS_k = f^i dS_i         \\
+};
+\path[->]
+(m-1-1) edge node [auto] {$\flat$} (m-1-2)
+(m-1-2) edge node [auto] {$*$} (m-1-3)
+;
+\path[|->]
+(m-2-1) edge node [auto]  {$\flat$} (m-2-2)
+(m-2-2) edge node [auto]  {$*$} (m-2-3)
+;
+\end{tikzpicture}
+\]
+for $dS_i := \frac{ \sqrt{g} }{ (d-1)! } \epsilon_{i i_2 \dots i_d } dx^{i_2} \wedge \dots \wedge dx^{i_d} \in \Omega^{d-1}(S)$, \\
+and if $g_{ij} g^{jk} = \delta_i^{ \, \, k}$
+
+Note that $f$ and $S$ are time-dependent in a fixed, inertial frame:
+\[
+\begin{aligned}
+& \mathbf{f} = \mathbf{f}(t,\mathbf{x}) , \quad \, \forall \, \mathbf{x} \in S \\ 
+& S = S(t)
+\end{aligned}
+\] 
+
+Interpret 
+\begin{equation}
+\int_S * (\mathbf{f}(t, \mathbf{x}))^{\flat} \equiv F(t) \in \mathbf{R}
+\end{equation}
+as the net amount of force exerted on a rocket (with remaining fuel), by expelled propellants (at that instance, at the surface $S$).
+
+
+
+
 \subsection{Definitions}
 
 Section 2.1. ``Definitions'', Ch. 2 Definitions and Fundamentals of Biblarz and Sutton (2001) \cite{GSuttonOBiblarz2001} 
@@ -153,7 +199,107 @@ I_s = \frac{ \int_0^t F_{\text{thrust}} dt }{ g_0 \int \dot{m} dt } = \frac{I_t}
 \[
 I_s = \frac{ \dot{m} u_e t_p }{ \dot{m} g t_p } = \frac{u_e}{g}
 \]
-If $F_{\text{thrust}} = \dot{m} u_e$, and constant propellant mass flow, 
+If $F_{\text{thrust}} = \dot{m} u_e$, and constant propellant mass flow, $u_e$.
+
+Instead, define 
+\begin{definition}[total impulse]
+\begin{equation}
+I_{\text{tot}} \equiv I_t = \int_0^t dt F_{\text{thrust}}(t)	
+\end{equation}
+\end{definition}
+
+Let $m_{p, \text{exp}} = m_{p, \text{exp}}(t) = $ mass of propellant already expelled by time $t$. $m_{p, \text{exp}}(t) \in C^{\infty}(\mathbb{R})$.
+
+Biblarz and Sutton (2001) \cite{GSuttonOBiblarz2001} defined \emph{specific impulse} to be the total impulse per unit weight of propellant as such:
+\begin{definition}[Specific Impulse]
+\begin{equation}
+I_s = \frac{\int_0^t dt F_{\text{thrust}}(t) }{ g_0 \int dt \dot{m}_{p, \text{exp}}(t)}
+\end{equation}
+\end{definition}
+so it's more honest to say that it's the time-averaged specific impulse.
+
+Note that $\int dt \dot{m}_{p, \text{exp}}(t) = m_{p, \text{exp}} = $ total effective propellant mass expelled through the nozzle.
+
+If we are equipped with the exterior covariant derivative $D: \Omega^{d-1}(N; TN) \to \Omega^d(N; TN)$, then the force on a fluid over any general manifold is 
+\[
+F = \int_B \dot{m} \otimes \mathbf{u} + m \otimes \left( \frac{\partial \mathbf{u}}{ \partial t} + \nabla_{\mathbf{u}} \mathbf{u} \right) 
+\]
+
+If $\frac{\partial \mathbf{u}}{ \partial t} = 0$, $\nabla_{\mathbf{u}} \mathbf{u} = 0$ (no curved space),
+\[
+F = \int_B \dot{m} \otimes \mathbf{u}
+\]
+If $\mathbf{u}$ constant over $B$, call the \emph{effective exhaust velocity} $c \equiv u$ to be
+\[
+\begin{gathered}
+F = \dot{m} u  \\
+u = \frac{F}{\dot{m}} = I_s/g_0
+\end{gathered} 
+\]
+
+\textbf{Mass ratio} $\mathbf{MR}$ of a vehicle or \emph{particular vehicle stage} is defined as 
+\[
+\mathbf{MR} := \frac{m_f}{m_0}
+\]
+where, using Biblarz and Sutton (2001)'s notation, \\
+$m_f \equiv $ final mass (after rocket operation has consumed all usable propellant), and \\
+$m_0$ (before rocket operation).
+
+$\mathbf{MR}$ applies to a single, or multistage vehicle.
+\begin{itemize}
+	\item Overall mass ratio is the product of the individual vehicle stage mass ratios
+	\item Final mass $m_f$ is mass of vehicle after rocket has ceased to operate when all useful propellant mass $m_p$ has been consumed and ejected. 
+	\item $m_f$ includes all components not useful propellant and may include guidance devices, navigation gear, \textbf{payload}
+	\end{itemize} 
+
+\subsubsection{Mass definitions for rockets, vehicles, propellants}
+
+Instead, let the mass of the rocket $+$ remaining propellant be $M = M(t) \in C^{\infty}(\mathbb{R})$, such that $M \geq 0$, $\forall \, t \in \mathbb{R}$, always.
+
+Let $M_f \in \mathbb{R}^+$ be a constant, what Biblarz and Sutton calls the final or inert propulsion mass, and denote as $m_f$.
+
+Let $m_p = m_p(t) = $ propellant remaining on vehicle or stage. Thus,
+\begin{equation}
+\dot{m}_p \leq 0 
+\end{equation}
+which is expected by physical considerations.
+
+Let 
+\begin{equation}
+m_p(t)  = m_p(0) - m_{p,\text{exp}}(t)
+\end{equation}
+where $m_{p,\text{exp}}(t) = $ total propellant that had been expelled. Clearly
+\begin{equation}
+\dot{m}_{p, \text{exp}}(t) > 0, \, m_{p,\text{exp}}(0) = 0
+\end{equation}
+
+Thus
+\begin{equation}
+\begin{aligned} 
+& M(t) = M_f + m_p(t)  \\
+& M(0) = M_f + m_p(0)
+\end{aligned}
+\end{equation}
+and so define
+\begin{definition}[Mass ratio]
+\begin{equation}
+\mathbf{MR} := \frac{M_f}{M(0)}	= \frac{M_f}{ M_f + m_p(0)}
+\end{equation}
+	\end{definition} 
+and 
+\begin{definition}[propellant mass fraction $\zeta$]
+	\begin{equation}
+	\zeta := \frac{m_p(0)}{ M(0)} = \frac{M(0) - M_f}{M(0)} = \frac{m_p(0)}{M_f + m_p(0)}
+	\end{equation}
+	\end{definition}
+Biblarz and Sutton (2001) uses a different notation for the masses.
+
+e.g. $\zeta = \frac{m_p(0)}{ M(0)} = 0.91$ means only 9 percent of mass is inert rocket hardware, and this small fraction contains, feeds, burns a substantially larger mass of propellant: a high value of $\zeta$ is desirable.
+
+
+
+
+
 
 \section{Nozzle Theory and Thermodynamic Relations}
 
@@ -6141,7 +6287,8 @@ George P. Sutton, Oscar Biblarz. \textbf{Rocket Propulsion Elements}, 7th Editio
 \bibitem{HHL1995} 
 Ronald W. Humble, Gary N. Henry, Wiley J. Larson.  \textbf{Space Propulsion Analysis and Design}.  First Edition-Revised.  The McGraw-Hill Companies, Inc.  Primis Custom Publishing.  1995. ISBN 0-07-031320-2   
   
-
+\bibitem{TFrankel2011}
+T. Frankel, \textbf{The Geometry of Physics}. Cambridge University Press, Third Edition, 2011.
 
 \bibitem{RBaierlein1999}
 Ralph Baierlein. \textbf{Thermal Physics} Cambridge University Press (July 28, 1999), ISBN-13: 978-0521658386
