@@ -10,7 +10,7 @@ from .to_panda_DataFrame import (BraeunigAtmosphere_to_pd_DF,
   NIST_fundamental_constants_ascii_to_pd_DF)
 
 from .TemperatureConversion import (FahrenheitCelsiusConversion,
-  KelvinCelsiusConversion
+  KelvinCelsiusConversion,
   T_C,
   T_F,
   T_K)
