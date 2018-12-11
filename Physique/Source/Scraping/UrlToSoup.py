@@ -25,6 +25,7 @@ Peace out, never give up! -EY
 """
 
 import decimal
+import os
 import re
 import requests
 from urllib.request import urlopen
@@ -77,6 +78,11 @@ def retrieve_file(
   filename="allFundamentalPhysicalConstants_ascii.txt"):
   """@fn retrieve_file
   """
+  subdirectory_path = os.path.abspath(subdirectory)
+
+  if not os.path.exists(subdirectory_path):
+    os.makedirs(subdirectory_path)
+
   with open(subdirectory + filename, 'wb') as target_file:
     u = urlopen(url)
     target_file.write(u.read())
