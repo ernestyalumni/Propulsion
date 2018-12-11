@@ -33,7 +33,18 @@ from decimal import Decimal, InvalidOperation
 
 from .Scraping import (MakeBraeunigAtmosphereDict,
   MakeNASAPlanetaryFactsTable,
-  ParseNISTConversionTable)
+  ParseNISTConversionTable,
+  scraping_ascii_text)
+
+
+def NIST_fundamental_constants_ascii_to_pd_DF(fullfilename=
+  '../Data/allFundamentalPhysicalConstants_ascii.txt'):
+  """@fn NISTFundamentalConstants_to_pd_DF
+  @brief Convenient function from ascii text file to pandas DataFrame"""
+
+  lines, title, src, header, rawtbl, tbl = scraping_ascii_text(fullfilename)
+
+  return pd.DataFrame(tbl, columns=header)
 
 
 ################################################################################

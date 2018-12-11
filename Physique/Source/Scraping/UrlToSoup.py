@@ -94,10 +94,20 @@ def retrieve_file(
 
 def line_reading(
   fullfilename='../../Data/rawdata/allFundamentalPhysicalConstants_ascii.txt'):
-    opened_file = open(fullfilename, 'rb')
-    lines = openedfile.read().splitlines()
-    lines = [line for line in lines if line != '']
-    return lines
+    opened_file = open(fullfilename, 'r')
+    lines = opened_file.read().splitlines()
+    #lines = [line for line in lines if line != '']
+
+    no_empty_lines = []
+
+    for line in lines:
+      if not line.strip():
+        continue
+      no_empty_lines.append(line)
+
+    opened_file.close()
+
+    return no_empty_lines
 
 def scraping_ascii_text(fullfilename=
   '../../Data/allFundamentalPhysicalConstants_ascii.txt'):
@@ -143,7 +153,7 @@ def scraping_ascii_text(fullfilename=
       line.append(raw_line[3])
       tbl.append(line)
 
-  return lines, title, src, header, rawtbl, tbl
+  return lines, title, src, header, raw_tbl, tbl
 
 
 ################################################################################
