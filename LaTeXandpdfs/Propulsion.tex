@@ -233,7 +233,7 @@ If $\mathbf{u}$ constant over $B$, call the \emph{effective exhaust velocity} $c
 \[
 \begin{gathered}
 F = \dot{m} u  \\
-u = \frac{F}{\dot{m}} = I_s/g_0
+u = \frac{F}{\dot{m}} = I_s g_0
 \end{gathered} 
 \]
 
@@ -296,7 +296,72 @@ Biblarz and Sutton (2001) uses a different notation for the masses.
 
 e.g. $\zeta = \frac{m_p(0)}{ M(0)} = 0.91$ means only 9 percent of mass is inert rocket hardware, and this small fraction contains, feeds, burns a substantially larger mass of propellant: a high value of $\zeta$ is desirable.
 
+Impulse to weight ratio of a complete propulsion system:
 
+\[
+\frac{I_t}{w_0}
+\]
+$I_t \equiv $ total impulse, \\
+$w_0 \equiv $ initial or propellant-loaded vehicle weight.
+
+It's reasonable to suppose that 
+\[
+\begin{gathered}
+\frac{I_t}{w_0} = \frac{I_t}{ M(0) g} = \frac{I_t}{  (M_f + m_p(0)) g_0} = \frac{I_s m_p(0) g_0}{ (M_f + m_p(0)) g_0} = \frac{ I_s}{ \frac{M_s}{m_p} + 1}
+\end{gathered}
+\]
+
+thrust-to-weight ratio $F/w_0$
+
+
+
+
+
+Example 2-1 of Biblarz and Sutton (2001) \cite{GSuttonOBiblarz2001} has some subtleties about the mass definitions that wasn't covered clearly (at least for me) by the discussion.
+
+Let $M_r$ is the mass of the propulsion system, $r$ standing for "rocket." If there is \emph{no payload}, then 
+\[
+\begin{aligned} 
+& M(0) = M_r + m_p(0) \\
+& M(t) = M_r + m_p(t)
+\end{aligned}
+\]
+
+\emph{But}, if payload is considered, observe that payload can be considered to be part of the whole of the vehicle (imagine an imaginary box surrounding the entire system or "vehicle"), \emph{and also} can be considered to be separate and distinct (no overlap) from the propulsion system plus propellant (imagine an imaginary box surrounding only the rocket (propulsion system) and fuel, and another imaginary box surrounding the payload; the two imaginary boxes do not overlap).
+
+\[
+\begin{aligned}
+& M(0) = M_r + M_{\text{pay}} + m_p(0) \\
+& M(t) = M_r + M_{\text{pay}} + m_p(t) 
+\end{aligned}
+\]
+
+Recall that mass ratio is defined as $\mathbf{MR} := \frac{M_f}{ M(0)}$. But remember that $\mathbf{MR}$ can be considered for different, discrete imaginary boxes (subsystems). So for Example 2-1 of Biblarz and Sutton:
+
+\[
+\begin{aligned}
+&	\mathbf{MR}_{\text{tot}} = \frac{M_{f, \text{tot}}}{M(0)} = \frac{M_r + M_{\text{pay}}}{ M(0) } \\
+	& \mathbf{MR}_r = \frac{ M_r }{ M_r+ m_p(0)} = \frac{M_r }{ M(0) - M_{\text{pay}}}
+\end{aligned}
+\]
+Notice how you can not take the payload mass into account; imagine only dealing with what's in the imaginary box surrounding only the rocket plus propellant.
+
+If $\frac{\partial \mathbf{u}}{ \partial t} = 0$, assuming flat space, $F = \int_S \dot{m}_S \otimes \mathbf{u}$. Notice that for the units to make sense, $\dot{m}_S$ is the mass per unit (surface) area. If $\dot{m}_S , \mathbf{u}$ constant over surface area $S$, $F= \dot{m} \mathbf{u}$.  Then, $u = \frac{F}{\dot{m}} = I_s g_0$.
+
+Then $\overline{u} = I_s g_0$.  
+$I_{\text{tot}} = I_s m_p(0) = I_s(M(0) - (M_r + M_{\text{pay}}))$
+
+Given the burn duration $T$, estimate $\dot{m}_{p, \text{exp}}$ with the simplest (linear) approximation:
+$\dot{m}_{p, \text{exp}} = \frac{m_p(0)}{T}$.
+
+$\overline{F}_{\text{thrust}} = \overline{ \dot{m}}_{p, \text{exp}} g_0 I_s$
+
+Consider $\overline{F}_{\text{thrust}}$ on rocket, only. For a horizontal trajectory, max. acceleration is found at end of the thrusting schedule, just before shutdown (because while thrust is unchanged the mass is now at its minimum value). Think of "Max-Q".
+
+\[
+\Longrightarrow a_f = \frac{ \overline{F}_{\text{thrust}} }{ M_f}
+\]
+ 
 
 
 
