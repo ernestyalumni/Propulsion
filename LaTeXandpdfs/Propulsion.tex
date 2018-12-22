@@ -362,7 +362,87 @@ Consider $\overline{F}_{\text{thrust}}$ on rocket, only. For a horizontal trajec
 \Longrightarrow a_f = \frac{ \overline{F}_{\text{thrust}} }{ M_f}
 \]
  
+\subsection{Definitions with Thrust; effective exhaust velocity revisited}
 
+Thrust is the force produced by a rocket propulsion system acting upon a vehicle.
+
+In a simplified way, it's the reaction experienced by the structure due to ejection of matter at high velocity.
+
+It represents the same phenomenon that pushes garden hose backwards or makes a gun recoil.  
+
+In the latter case, forward momentum of the bullet and powder charge is equal to recoil or rearward momentum of gun barrel.
+
+From pp. 30, Sec. 2.1. "Definitions" of Biblarz and Sutton (2001) \cite{GSuttonOBiblarz2001}, effective exhaust velocity $c$ was defined:
+\begin{definition}[effective exhaust velocity]
+effective exhaust velocity $c :=$ average equivalent velocity at which propellant is ejected from vehicle.
+\end{definition}
+Further, Biblarz and Sutton (2001) makes the assumption of uniform axial velocity $c$. But, in a rocket nozzle, the actual exhaust velocity is not uniform over the entire exit cross section, and doesn't represent the entire thrust magnitude. Nevertheless, Biblarz and Sutton (2001) gives the following formulas:
+\[
+c = I_s g_0 = F/\dot{m} 
+\]
+cf. Eq. 2-6 of Biblarz and Sutton (2001) \cite{GSuttonOBiblarz2001}.
+
+Let's derive the thrust, due to the change in momentum.
+
+\subsubsection{Momentum flux as a differential form}
+
+Consider this object:
+\[
+u_x dx \wedge dy \wedge dz + u_y dy \wedge dz \wedge dx + u_z dz \wedge dx \wedge dy
+\]
+
+It is invariant under transformation $P$ such that $(x,y,z) \xrightarrow{P} (-x, -y, -z)$.
+
+It is also invariant under $x \mapsto -x$ \textbf{and} $\mathbf{u} \mapsto -\mathbf{u}$, where $x$ could be $x, y$ or $z$.
+
+Now
+\[
+\begin{gathered}
+	u_x dx \wedge dy \wedge dz + u_y dy \wedge dz \wedge dx + u_z dz \wedge dx \wedge dy = \sum_{i=1}^3 \left( u_i dx^i \wedge \frac{\epsilon_{ijk}}{ 2!} dx^j \wedge dx^k \right) = \sum_{i=1}^3 \frac{u_i \epsilon_{ijk}}{ 2!} dx^i \wedge dx^j \wedge dx^k
+\end{gathered}
+\]
+
+While the last expression is "manifestly covariant" in the indices $j$ and $k$ (i.e. the pair of "up" and "down" indices "match up"), it doesn't appear the case for the $i$ index. 
+
+
+
+\subsubsection{Mass conservation}
+
+Recall the derivation of mass conservation:
+
+For time $t\in \mathbb{R}$ being a 1-dim. parameter, \\
+given mass density $\rho = \rho(t,x) \in \mathbb{R} \times N$, $x\in N$, \\
+volume form $\text{vol}^n\in \Omega^n(N)$ \\
+on a smooth (spatial) manifold $N$, smooth submanifold with boundary $B(t) \subset N$, representing the control volume, \\
+total mass inside a control volume $B(t)$, $m=m(t)$, is given by 
+\[
+m := \int_{B(t)} \rho \text{vol}^n
+\]
+Then for mass conservation,
+\[
+\begin{gathered}
+\dot{m} \equiv \frac{d}{dt} m = \frac{d}{dt} \int_{B(t)} \rho \text{vol}^n = \int_{B(t)} \mathcal{L}_{\frac{\partial}{\partial t} + \mathbf{u}} (\rho \text{vol}^n) = \int_{B(t)} \left[ \frac{ \partial \rho }{ \partial t} \text{vol}^n + \mathcal{L}_{\mathbf{u}} (\rho \text{vol}^n) \right] = \int_{B(t)} \left[ \frac{ \partial \rho }{ \partial t} \text{vol}^n + \mathbf{d}(i_{\mathbf{u}} \rho \text{vol}^n) \right] = \\ 
+ = \int_{B(t)} \frac{ \partial \rho }{ \partial t} \text{vol}^n + \int_{\partial B} i_{\mathbf{u}} \rho \text{vol}^n = \\
+ = \int_{B(t)} \frac{ \partial \rho }{ \partial t} \text{vol}^n + \int_{\partial B}\rho u^i dS_i 
+\end{gathered}
+\]
+where 
+\[
+\begin{gathered}
+\mathcal{L}_{\mathbf{u}} (\rho \text{vol}^n ) = (\mathbf{d} i_{\mathbf{u}} + i_{\mathbf{u}} \mathbf{d}) (\rho \text{vol}^n) = \mathbf{d}(i_{\mathbf{u}} \rho \text{vol}^n) + 0 = \mathbf{d}i_{\mathbf{u}} \rho \text{vol}^n
+\end{gathered} 
+\]
+is due to Cartan's magic formula, and 
+\[
+\int_{B(t)} \mathbf{d} (i_{\mathbf{u}} \rho \text{vol}^n) = \int_{\partial B(t)} i_{\mathbf{u}} \rho \text{vol}^n
+\]
+is by Stoke's law.
+
+
+If $\frac{ \partial \rho }{ \partial t} = 0$ (steady-state condition), then
+\[
+\dot{m} = \int_{\partial B} \rho u^i dS_i
+\]
 
 
 
