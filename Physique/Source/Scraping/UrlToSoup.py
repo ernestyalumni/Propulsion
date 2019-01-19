@@ -8,9 +8,9 @@ optionally to tables
 @ref
 @details
 @copyright If you find this code useful, feel free to donate directly and easily
-at this direct PayPal link: 
+at this direct PayPal link:
 
-https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ernestsaveschristmas%2bpaypal%40gmail%2ecom&lc=US&item_name=ernestyalumni&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted 
+https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ernestsaveschristmas%2bpaypal%40gmail%2ecom&lc=US&item_name=ernestyalumni&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 
 which won't go through a 3rd. party such as indiegogo, kickstarter, patreon.
 Otherwise, I receive emails and messages on how all my (free) material on
@@ -19,7 +19,7 @@ know what it's like to not have money as a student, but love physics (or math,
 sciences, etc.), so I am committed to keeping all my material open-source and
 free, whether or not sufficiently crowdfunded, under the open-source MIT
 license: feel free to copy, edit, paste, make your own versions, share, use as
-you wish.    
+you wish.
 
 Peace out, never give up! -EY
 """
@@ -146,7 +146,11 @@ def scraping_ascii_text(fullfilename=
           value = raw_line[1].replace(" ","")
           value = ''.join(re.split(r'[.]{2,}',value))
 
-          line.append(Decimal(value))
+          try:
+            line.append(Decimal(value))
+          except decimal.InvalidOperation as e:
+            print(e)
+            print(("value : ", value))
 
       try:
           line.append(Decimal(raw_line[2].replace(" ","")))
@@ -223,7 +227,7 @@ def parse_table_bodies_from_url(url):
       (row[2].text + \
         row[3].text).strip().replace( \
           u'\xa0', ' ').replace(u'\n', ' ').replace(' ', '')
-      
+
     cleaned_row.append(Decimal(value))
 
     cleaned_rows.append(cleaned_row)
@@ -261,7 +265,7 @@ class ParseNISTConversionTable(object):
 ################################################################################
 
 def parse_table_from_url(url):
-  """@fn parse_table_from_url 
+  """@fn parse_table_from_url
   """
   scraped_soup = ScrapedSoup(url)
   table = scraped_soup.soup.find("table")

@@ -204,7 +204,7 @@ If $F_{\text{thrust}} = \dot{m} u_e$, and constant propellant mass flow, $u_e$.
 Instead, define 
 \begin{definition}[total impulse]
 \begin{equation}
-I_{\text{tot}} \equiv I_t = \int_0^t dt F_{\text{thrust}}(t)	
+\boxed{ I_{\text{tot}} \equiv I_t = \int_0^t dt F_{\text{thrust}}(t)	}
 \end{equation}
 \end{definition}
 
@@ -213,7 +213,15 @@ Let $m_{p, \text{exp}} = m_{p, \text{exp}}(t) = $ mass of propellant already exp
 Biblarz and Sutton (2001) \cite{GSuttonOBiblarz2001} defined \emph{specific impulse} to be the total impulse per unit weight of propellant as such:
 \begin{definition}[Specific Impulse]
 \begin{equation}
+\boxed{ I_s := \frac{  \int_0^t dt F_{\text{thrust}}(t) }{ W_{p, \text{total expelled} }} }
+\end{equation}
+and so 
+\begin{equation}
 I_s = \frac{\int_0^t dt F_{\text{thrust}}(t) }{ g_0 \int dt \dot{m}_{p, \text{exp}}(t)}
+\end{equation}
+For practical calculations, 
+\begin{equation}
+I_s \frac{ \overline{F}_{\text{thrust} } }{ g_0 \overline{\dot{m}}_{p, \text{expelled}}  }
 \end{equation}
 \end{definition}
 so it's more honest to say that it's the time-averaged specific impulse.
@@ -962,6 +970,9 @@ Eq. \ref{Eq:thrustidealrocket} is Eq. (3.129) of Humble, Henry, and Larson (1995
 
 \part{1-dim. propulsion (revisited)}
 
+\section{Ideal Rocket Equation}
+
+Sec. 1Humble, Henry, and Larson (1995)
 
 Looking at pp. 40-41 of \cite{GOates1997}, Chapter 2, ``Thermodynamics and Fluid Flows'', 
 \[
@@ -1457,6 +1468,84 @@ One should also consider $\mathbf{e}_z$ to be a vector in the \emph{body-frame} 
 F_{\text{thrust}} \equiv T = (\dot{m}_p u_e + (p_e- p_a) A_e) \mathbf{e}_z
 \]
 
+\section{Mission Design}
+
+\subsection{Motion in a central field}
+
+\subsubsection{Reduced Mass}
+
+cf. Sec. 30, \emph{The reduced mass}, Landau and Lifshitz (1976) \cite{LLandauELifshitz1976})
+
+Lagrangian of system of 2 interacting particles, with potential energy of interaction of 2 particles depending only on distance between them, i.e. magnitude of difference in their radius vectors:
+\begin{equation}
+\mathcal{L} = \frac{1}{2} m_1 \dot{ \mathbf{r}}_1^2 + \frac{1}{2} m_2 \dot{\mathbf{r}}_2^2 - U( | \mathbf{r}_1 - \mathbf{r}_2 |)
+\end{equation}
+Let $\mathbf{r} \equiv \mathbf{r}_1 - \mathbf{r}_2$ be the relative position vector. 
+
+Let origin be at the center of mass $\mathbf{r}_{\text{cm}}$. In general, 
+\begin{equation}
+\mathbf{r}_{\text{cm}} = \frac{m_1 \mathbf{r}_1 + m_2 \mathbf{r}_2 }{ m_1 + m_2 }
+\end{equation}
+
+Then
+\[
+\begin{gathered}
+	\mathbf{r}_{\text{cm}} = \frac{m_1 \mathbf{r}_1 + m_2(\mathbf{r}_2 - \mathbf{r}) }{ m_1 + m_2} \Longrightarrow \begin{aligned} 	
+	& \mathbf{r}_1 = \mathbf{r}_{\text{cm}} + \frac{m_2 \mathbf{r}}{ m_1 + m_2 } \\
+	& \mathbf{r}_2 = \mathbf{r}_{\text{cm}} + \frac{m_1 \mathbf{r}}{ m_1 + m_2 } 
+	\end{aligned} 
+\end{gathered}
+\]
+
+With
+\[
+\begin{gathered} 
+\frac{1}{2} m_1 \dot{\mathbf{r}}_1^2 = \frac{1}{2} m_1 \left( \dot{\mathbf{r}}_{\text{cm}}^2 + \frac{m_2}{M} \dot{\mathbf{r}}_{\text{cm}} \cdot \dot{\mathbf{r}} + \frac{m_2^2}{M^2} \dot{\mathbf{r}}^2 \right) 
+\end{gathered} 
+\]
+Then
+\begin{equation}
+ \mathcal{L} = \frac{1}{2} M \dot{\mathbf{r}}_{\text{cm}}^2 + m \dot{\mathbf{r}}_{\text{cm}} \cdot \dot{ \mathbf{r}} + \frac{1}{2} \frac{m}{M} \dot{\mathbf{r}}^2 - U(r)
+\end{equation}
+where \emph{reduced mass} is given by
+\begin{equation}
+\text{ reduced mass } \mu \equiv m = \frac{ m_1 m_2 }{m_1 + m_2} = \frac{m_1 m_2}{M}
+\end{equation}
+
+Thus the problem of motion of 2 interacting particles is equivalent to that of motion of 1 particle in a given external field $U(r)$.  
+
+Problem: system consists of 1 particle of mass $M$, and $n$ particles with equal masses $m$.  (cf. pp. 30, Landau and Lifshitz (1976) \cite{LLandauELifshitz1976}).  
+
+Let $\mathbf{R} \equiv$ radius vector particle of mass $M$, \\
+$\mathbf{R}_{\alpha}$, $\alpha = 1,2, \dots n$ radius vectors of particles of mass $m$, \\
+$\mathbf{r}_{\alpha} \equiv \mathbf{R}_{\alpha} - \mathbf{R}$ (just define this vector), then
+
+\[
+\begin{gathered}
+\mathbf{r}_{\text{cm}} = \frac{ M \mathbf{R} + \sum_{\alpha = 1}^n m_{\alpha} \mathbf{R}_{\alpha} }{ M + \sum_{\alpha = 1}^n m_{\alpha} } = \frac{M \mathbf{R} + m \sum_{\alpha = 1}^n ( \mathbf{r}_{\alpha} + \mathbf{R}) }{ M_{\text{tot}} } = \mathbf{R} + \frac{m}{ M_{\text{tot}}} \sum_{\alpha = 1}^n \mathbf{r}_{\alpha} \\
+\mathbf{R} = \mathbf{r}_{\text{cm}} - \frac{m}{ M_{\text{tot}}}  \sum_{\alpha = 1}^n \mathbf{r}_{\alpha} \\ 
+	\mathbf{R}_{\alpha} = \mathbf{r}_{\alpha} + \mathbf{R} 
+	\end{gathered}
+	\]
+	
+
+and so for the kinetic energy part of 
+\[
+\mathcal{L} = \frac{1}{2} M \dot{\mathbf{R}}^2 + \frac{1}{2} m \sum \dot{\mathbf{R}}_{\alpha}^2 - U
+\]
+
+consider 
+\[
+\begin{gathered}
+ M V^2 + m \sum ( \mathbf{v}_{\alpha} + \mathbf{V})^2 = M V^2 + m \sum \left( v_{\alpha}^2 + 2 \mathbf{v}_{\alpha} \cdot \mathbf{V} + V^2 \right) = M_{\text{tot} } V^2 + m \sum v^2_{\alpha} + 2m \sum \mathbf{v}_{\alpha} \cdot \mathbf{V} = \\
+ M_{\text{tot}} \left( v^2_{\text{cm}} - 2 \frac{m}{M_{\text{tot}}} \mathbf{v}_{\text{cm}} \cdot \sum_{\alpha = 1}^n \mathbf{v}_{\alpha} + \frac{ m^2}{  M_{\text{tot}}^2 }  \left( \sum_{\alpha = 1}^n v_{\alpha} \right)^2 \right) + m \sum v_{\alpha}^2 + 2m \sum \mathbf{v}_{\alpha} \cdot \left( \mathbf{v}_{\text{cm}} - \frac{m}{M_{\text{tot}} } \sum \mathbf{v}_{ \alpha} \right) = \\
+ M_{\text{tot}} v^2_{\text{cm}}  - \frac{m^2}{ M_{\text{tot}}} \left(\sum_{\alpha =1}^n v_{\alpha} \right)^2 + m \sum v_{\alpha}^2 
+\end{gathered}
+\]	
+Thus
+\[
+\mathcal{L} = \frac{1}{2} \left(  M_{\text{tot}} v^2_{\text{cm}}  - \frac{m^2}{ M_{\text{tot}}} \left(\sum_{\alpha =1}^n v_{\alpha} \right)^2 + m \sum v_{\alpha}^2  \right) - U
+\]	
 \part{AE121}
 
 
@@ -6407,7 +6496,9 @@ Sonnendr\"{u}cker (2017) \cite{Sonn2017}.
 
 
 
+\part{GPS, Geodesy} 
 
+\section{Geodesy}
 
 
 
@@ -6431,6 +6522,10 @@ Gordon C. Oates. \textbf{Aerothermodynamics of Gas Turbine and Rocket Propulsion
 George P. Sutton, Oscar Biblarz. \textbf{Rocket Propulsion Elements}, 7th Edition. Wiley, 2001.  
 \bibitem{HHL1995} 
 Ronald W. Humble, Gary N. Henry, Wiley J. Larson.  \textbf{Space Propulsion Analysis and Design}.  First Edition-Revised.  The McGraw-Hill Companies, Inc.  Primis Custom Publishing.  1995. ISBN 0-07-031320-2   
+
+\bibitem{LLandauELifshitz1976}
+L D Landau, E.M. Lifshitz. \textbf{Mechanics}: Volume 1 (Course of Theoretical Physics S) 3rd Edition. Butterworth-Heinemann; 3 edition (January 15, 1976). ISBN-10: 0750628960
+
   
 \bibitem{TFrankel2011}
 T. Frankel, \textbf{The Geometry of Physics}. Cambridge University Press, Third Edition, 2011.
