@@ -1575,7 +1575,136 @@ Thus from Noether's theorem, total angular momentum conservation law, from $SO(3
 
 \section{Compressible Fluids-One-Dimensional Flow}
 
-\subsection{thermodynamic Preliminaries}
+\subsection{Thermodynamic Preliminaries}
+
+For a \textbf{fixed mass} system undergoing an incremental process:
+
+\begin{equation}
+dQ + dW = dE \qquad \, (\text{Sabersky, et.al., Eqn. 9.1})
+\end{equation}
+or rather
+\begin{equation}
+\begin{gathered} 
+Q - W = dU \text{ while promoting $U$: } \\
+U \mapsto E := U + \text{K.E.} + \text{P.E.} 
+\end{gathered}
+\end{equation}
+where $U \equiv $ internal energy.
+
+When K.E. and P.E. negligible, and for a reversible process, 
+\begin{equation}
+W = pdV
+\end{equation} 	
+with volume $V$.
+
+If $\dot{m} = 0$, given $\rho V = m$ or $V = m / \rho$, 
+\[
+W = pdV = pd(m/\rho ) \text{ or } W / m := w = p d\left( \frac{1}{\rho } \right) 
+\]
+so that 
+\[
+Q -W = dU \text{ or } du = q - p d \left(\frac{1}{\rho} \right) 
+\]
+
+For a \emph{fixed control volume}, Sabersky, et. al. \cite{SAHG1998} mentions that Eqn. 9.2 is derived later (in the Energy Equation section, Sec. 9.4). 
+
+Going back to the \textbf{fixed mass, reversible process} case, now $Q = \tau d\sigma$. 
+
+Let $q := \frac{Q}{m} = \tau d\left( \frac{\sigma}{m} \right) =: \tau ds$ where $s := \frac{\sigma}{m}$
+
+\begin{equation}
+\begin{gathered}
+\tau ds = du + p d\left( \frac{1}{\rho} \right) \\
+H = U + pV \Longrightarrow dH = dU + Vdp + pdV \xrightarrow{\frac{1}{m}} dh = du + \frac{1}{\rho} dh + pd\left( \frac{1}{\rho} \right) \\
+\tau ds = dh - \frac{1}{\rho} dp
+\end{gathered}
+\end{equation}
+
+Experimentally, for many gases, change in internal energy is related to heat capacity:
+\[
+\begin{aligned} 
+& Q - pdV = dU \\ 
+& Q = Q(\tau, V) =  \left( \frac{ \partial Q}{ \partial \tau} \right)_V d\tau + \left( \frac{ \partial Q}{ \partial V} \right)_{\tau} dV 
+\end{aligned} 
+\]
+Curve $c \subset \Sigma$ s.t. $V$ constant over $c \Longrightarrow$ 
+\[
+\begin{gathered}
+Q(\dot{c}) =  \left( \frac{ \partial Q}{ \partial \tau } \right)_V d\tau (\dot{c}) + 0 \Longrightarrow dU(\dot{c}) = C_V d\tau (\dot{c}) \text{ where } C_V := \left( \frac{ \partial Q}{ \partial \tau} \right)_V
+\end{gathered}
+\]
+
+$H = U + pV$ so 
+\[
+dH = dU + Vdp + pdV = \tau d\sigma +Vdp
+\]
+
+For $\sigma = \sigma(\tau, p)$ and curve $\gamma$ where $p$ constant $\Longrightarrow $,
+\[
+\begin{gathered}
+	dH(\dot{\gamma}) = \tau d\sigma(\dot{\gamma}) + 0 = \tau d\sigma(\dot{\gamma}) \Longrightarrow dH(\dot{\gamma}) = \tau \left( \frac{ \partial \sigma}{ \partial \tau} \right)_p d\tau(\dot{\gamma} ) \xrightarrow{\frac{1}{m} } \\ 
+	\xrightarrow{ \frac{1}{m}} dh = \tau \left( \frac{ \partial s }{ \partial \tau} \right)_p d\tau := c_p d\tau, \text{ where } c_p = \tau \left( \frac{ \partial s}{ \partial \tau} \right)_p \qquad \, (\text{fixed mass case}) 
+\end{gathered}
+\]
+
+Assume specific heats are constant, then 
+\[
+\begin{aligned}
+& h = c_p (\tau - \tau_r) + h_r \\ 
+& u = c_V (\tau - \tau_r) + u_r
+\end{aligned}
+\]
+where subscript $r$ denotes some reference state (cf. Sabersky, et. al. \cite{SAHG1998}).
+
+Given $pV = N\tau \xrightarrow{ (m_0 / m_0) } p = \rho \tau / m_0 \xrightarrow{d} dp = \frac{ \tau d\rho + \rho d\tau }{m_0} $.
+
+\[
+\begin{gathered}
+dh = c_p d\tau = du + \frac{dp}{ \rho } + p d\left(\frac{1}{\rho} \right) = c_V d\tau + \frac{dp}{\rho } + \frac{-p}{\rho^2} d\rho = c_V d\tau + \frac{p}{\rho^2 } d\rho + \frac{d\tau }{m_0} - \frac{p}{\rho^2 } d\rho = \\
+c_V d\tau + \frac{ d\tau}{m_0} \\
+\Longrightarrow c_p - c_V = \frac{1}{m_0}
+\end{gathered}
+\]
+or
+\begin{equation}
+\begin{gathered}
+dH = C_p d\tau = dU + Vdp + pdV = C_V d\tau + V (d\left(\frac{N\tau}{V}\right) ) + p dV = \\
+= C_V d\tau + Nd\tau + \frac{N}{-V} \tau dV + pdV = C_V d\tau + Nd\tau \text{ or }  \\ 
+\boxed{ C_p - C_V = N}
+\end{gathered}
+\end{equation}
+Compare this with Eqn. 9.6 in Sabersky, et. al. \cite{SAHG1998}.
+
+Consider (empirically verified) perfect (ideal) gas law $pV = N\tau$. 
+
+For isentropic (adiabatic) process, 
+\[
+Q = \tau d\sigma = 0 = dU + W = C_V d\tau + pdV = C_V d\tau + \frac{N\tau}{V} dV 
+\]
+Consider any path \\
+$\begin{aligned} 
+& \gamma : \mathbb{R} \to \Sigma \\
+& \gamma(t) = (\tau(t), V(t)) \end{aligned}$ \qquad \, in $\Sigma$ so \\
+$\dot{\gamma}(t) = \dot{\tau} \frac{ \partial }{ \partial \tau } + \dot{V} \frac{ \partial }{ \partial V} \in \mathfrak{X}(\Sigma)$.
+
+Thus, $0 = C_V \dot{\tau} + \frac{N\tau}{V} \dot{V}$ or $\frac{ \dot{\tau}}{\tau} + \frac{N}{C_V}\frac{\dot{V}}{V} = 0$.
+\[
+\xrightarrow{\int dt} \ln{ \frac{ \tau_f}{\tau_i} } + \frac{N}{C_V} \ln{ \frac{V_f}{V_i} }=  0 \text{ or } \frac{\tau_f}{\tau_i} = \left( \frac{V_i}{V_f} \right)^{\gamma - 1} = \frac{\tau_f}{\tau_i} = \left( \frac{\rho_f}{\rho_i} \right)^{\gamma - 1}
+\]
+where $\frac{N}{C_V} = \frac{C_p - C_V}{C_V} = \gamma -1$.
+
+Now $pV = N\tau = (C_p - C_V)\tau$ or $V= \frac{ (C_p - C_V) \tau}{p}$
+\[
+\begin{gathered}
+\frac{V_i}{V_f} = \left( \frac{\tau_i}{\tau_f} \right) \left( \frac{p_f}{p_i} \right) \\
+\frac{\tau_f}{\tau_i} = \left( \frac{\tau_i}{\tau_f} \right)^{\gamma -1} \left( \frac{p_f}{p_i} \right)^{\gamma -1}
+\end{gathered} 
+\]
+Doing $1 + (\gamma - 1)$ in the exponent, we get
+\begin{equation}
+\Longrightarrow \boxed{ \frac{\tau_f}{\tau_i} = \left( \frac{p_f}{p_i} \right)^{\frac{\gamma -1 }{\gamma } } }
+\end{equation}
+
 
 \subsection{The Energy Equation}
 
