@@ -1705,6 +1705,67 @@ Doing $1 + (\gamma - 1)$ in the exponent, we get
 \Longrightarrow \boxed{ \frac{\tau_f}{\tau_i} = \left( \frac{p_f}{p_i} \right)^{\frac{\gamma -1 }{\gamma } } }
 \end{equation}
 
+\subsection{Speed of Sound}
+
+cf. Sec. 9.3 "The Speed of Sound", Sabersky, et. al. \cite{SAHG1998}.
+
+The physiological effects of speech and hearing are related to the transmission and detection of tiny pressure disturbances. \\
+Examine how infinitesimal pressure or density distributions propagate through compressible fluid. 
+
+\quad \\ 
+Consider piston-tube arrangement: long, thermally insulated tube, filled with compressible fluid, and moveable, close-fitting, frictionless piston. \\
+Piston moves very slowly (toward right) at $\Delta V \Longrightarrow$ fluid compressed in front of piston $\Longrightarrow p + \delta p , \rho + \delta rho$ \\
+This change will move along tube at steady speed $V_s$. \\
+Behind this advancing front (left of) fluid properties constant as long as piston moves steadily. 
+
+\quad \\ 
+\textbf{Because of continuity}, \emph{fluid behind advancing front moves same speed as piston}, \\
+while fluid in front of advancing pressure pulse (right of) still stationary.
+
+\quad \\
+If small pressure disturbances, frictionless movement, no heat flow $\Longrightarrow $ reversible, isentropic process. \\
+In fixed reference frame, flow unsteady. \\
+Consider boosting to moving reference frame at speed $V_s$.  
+
+\quad \\ 
+Lab frame: $p + \delta p, \rho + \delta \rho, u = \Delta V$ (left of advancing front); $p, \rho, u = 0$ (right of advancing front) \\
+$+V_s$ frame: $p+\delta p, \rho + \delta \rho, u' = \Delta V- V_s$; $p, \rho, u' = -V_s$
+
+\quad \\ 
+Neglect viscous effects. Neglect elevation changes.
+
+Now the key is to, in this case (analysis), use the \emph{surface area} form of the fluid flow equations.
+
+mass conservation:
+\[
+\begin{gathered}
+\frac{d}{dt} m = 0 = \frac{d}{dt} \int_{V_0} \rho \text{vol}^n = \int_{V_0} \frac{ \partial \rho }{ \partial t} \text{vol}^n + \int_{\partial V_0} i_{\mathbf{u}} \rho \text{vol}^n = 0 + \int_{\partial V_0} \rho u \cdot dS \\ 
+\Longrightarrow (\rho + \delta \rho) (\Delta V - V_s) = \rho (-V_s) \text{ or } \rho V_s = (\rho + \delta \rho) (V_s - \Delta V) \text{ or } \rho \Delta V = \delta \rho V_s
+\end{gathered}
+\]
+
+Newton's 2nd. law:
+\[
+\begin{gathered}
+F = \frac{d}{dt} \Pi = \int_B \frac{ \partial ( \rho u)}{ \partial t} \text{vol}^d + \int_{\partial B} \rho u^k dS_k \otimes u = 0 + \int_{\partial B} \rho u^k dS_k \otimes u = \int_{\partial B} T^i_{ \, \, j } dS^j = \int_{\partial B} - p g^i_{\, \, j} dS^j   \\
+\Longrightarrow \begin{gathered}
+\rho V_s^2 - (\rho + \delta \rho) (\Delta V - V_s)^2 = - ( p - (p + \delta p)) = \delta p \\ 
+\rho V_s^2 - \rho V_s (V_s - \Delta V) = \rho V_s \Delta V = \delta p  \\
+\Longrightarrow \frac{ \delta p }{ \delta \rho } = \frac{ \rho V_s \Delta V}{ \frac{ \rho \Delta V}{ V_s} } \text{ or } V_s^2 = \frac{ \delta p}{ \delta \rho} 
+\end{gathered}
+\end{gathered}
+\]
+with $T = -pg$ for a perfect fluid ($T$ is the stress tensor).
+
+Assume compression occur reversibly and adiabatically, so entropy $\sigma$ constant. 
+\[
+p = p(\rho) \Longrightarrow \delta p = \left( \frac{ \partial p}{\partial \rho} \right)_s \delta \rho
+\]
+So $V_s^2 = \left( \frac{ \partial p }{ \partial \rho} \right)_s$
+
+EY : 20190820 Check this: $\left( \frac{\partial p }{\partial \rho} \right)_s = \gamma \left( \frac{ \partial p }{\partial \rho} \right)_{\tau}$ so for perfect gas, $a^2 = \gamma \tau$
+
+
 
 \subsection{The Energy Equation}
 
