@@ -76,13 +76,55 @@ def factorial(n):
 
 print("\n factorial \n")    
     
+# Expected:
+# 1 1
+# 2 2
+# 3 6 
+# 4 24 ...
 for i in range(1, 10):
     print(i , factorial(i))
 
+# Expected: Caught an exception: full error: Argument is not an integer
 try:   
     print(factorial(-1))
 except Exception as e:
     print("Caught an exception: full error: ", e)
+
+## Another example of argument checking with a decorator.
+
+def argument_test_natural_number_2(f):
+    def helper(x):
+
+        if type(x) == int and x > 0:
+            return f(x)
+        else:
+            print(x)
+            try:
+                x = int(x)
+                if x < 0:
+                    return f(-x)
+                else:
+                    return f(x)
+            except ValueError as e:
+                print("Caught a ValueError: ", e)
+    return helper
+
+@argument_test_natural_number_2
+def factorial2(n):
+    if n == 1:
+        return 1
+    elif n == 0:
+        return 0
+    else:
+        return n * factorial2(n - 1)
+
+for i in range(1, 5):
+    print(i, factorial2(i))
+
+print(factorial2(-42))
+print(factorial2("Wrong"))
+print(factorial2("-41"))
+
     
 ## Counting Function Calls with Decorators; an example of adding "state" to a 
 ## function.
