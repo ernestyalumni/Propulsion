@@ -2032,6 +2032,44 @@ So the ratio of inertial to elastic or compressive forces on a fluid cube is
 \]
 Mach number can also be interpreted as the ratio of the time necessary for a pressure signal to travel a fixed distance to the time necessary for a fluid particle to cover the same distance.
 
+\problemhead{9.1 Sabersky, et. al. (1998) \cite{SAHG1998}}
+
+\quad \\ 
+Given $\frac{p}{\rho^{\gamma}} = \text{ const. } = k$, or $p = k\rho^{\gamma}$, \\
+using the definition of density $\rho$: $\rho := \frac{MN}{V}$, \\
+the ideal gas law: $pV = N\tau$, or $p = \frac{N\tau}{V} = \frac{\rho \tau }{M}$, then
+\[
+\begin{gathered} 
+p = \frac{\rho \tau }{M} = k\rho^{\gamma} \text{ or } \tau = Mk \rho^{\gamma -1} \\
+\left(\frac{ \partial p }{ \partial \rho} \right) = \gamma k \rho^{\gamma -1}  = \gamma k \frac{\tau}{ Mk} = \frac{\gamma \tau}{M} 
+\end{gathered}
+\]
+Suppose process is reversible so entropy is held constant:
+\[
+\begin{gathered}
+\left( \frac{\partial p}{ \partial \rho} \right)_{\sigma } = a^2 = \frac{\gamma \tau}{M} \\ 
+\Longrightarrow a = \left( \frac{\gamma \tau}{M} \right)^{1/2} = (\gamma RT)^{1/2}
+\end{gathered}
+\]
+where, because outside of theoretical physics, people use the so-called universal gas constant $R$, which is really just
+\begin{equation}
+\begin{gathered} 
+\boxed{ R := \frac{k_B}{M}  }
+\end{gathered} 
+\end{equation}
+also note that 
+\begin{equation}
+\boxed{ \tau = k_B T } 
+\end{equation}
+
+Now we must calculate for the following cases: in both cases, $\gamma  = 1.4$, and for 1 case,
+\[
+T = 520^{\circ} R, \, R = 53.3 \text{ lbf} \cdot \text{ft} / \text{lbm} .^{\circ} R
+\]
+and another case
+\[
+T = 290 \, K, \, R = 289 \, J/ \text{kg} \cdot K
+\]
 
 \subsection{The Energy Equation}
 
