@@ -36,7 +36,10 @@ def foo(x):
     print("Hi, foo has been called with " + str(x))
     
 foo("Hi")
-
+# Print out:
+# Before calling foo
+# Hi, foo has been called with Hi
+# After calling foo
 
 def our_decorator_explicit(function):
     def function_wrapper(x):
@@ -50,7 +53,35 @@ def our_decorator_explicit(function):
 def succession(n):
     return n + 1
 
-succession(10)
+result_succession = succession(10)
+# Print out:
+# Before calling succession
+# 11
+# After calling succession
+
+print("result_succession : ", result_succession) # None
+
+def our_decorator_explicit2(function):
+    def function_wrapper(x):
+        print("Before calling " + function.__name__)
+        result = function(x)
+        print(result)
+        print("After calling " + function.__name__)
+        return result
+    return function_wrapper
+
+@our_decorator_explicit2
+def succession2(n):
+    return n + 1
+
+result_succession_2 = succession2(10)
+# Print out:
+# Before calling succession
+# 11
+# After calling succession
+
+print("result_succession_2 : ", result_succession_2) # 11
+
 
 # Use Cases for Decorators
 
@@ -212,6 +243,9 @@ def foo42(x):
 print("\n Demonstrate decorators with parameters, i.e. functionals\n")
     
 foo42("Hi")
+# Print out
+# HihiHi, foo42 returns:
+# 42
 
 ## Using wraps from functools
 
@@ -259,6 +293,11 @@ def f4(x):
 print("\n Using wraps from functools \n")
 
 f4(10)
+# Print out:
+# Hi, f4 returns:
+
+result_of_f4_10 = f4(10)
+print(result_of_f4_10)
 
 # Classes instead of Functions for decorators
 
