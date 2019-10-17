@@ -240,12 +240,13 @@ If $\frac{\partial \mathbf{u}}{ \partial t} = 0$, $\nabla_{\mathbf{u}} \mathbf{u
 F = \int_B \dot{m} \otimes \mathbf{u}
 \]
 If $\mathbf{u}$ constant over $B$, call the \emph{effective exhaust velocity} $c \equiv u$ to be
-\[
+\begin{equation}\label{Eq:ConstantEffectiveExhaustVelocity}
 \begin{gathered}
 F = \dot{m} u  \\
 u = \frac{F}{\dot{m}} = I_s g_0
 \end{gathered} 
-\]
+\end{equation}
+cf. Eq. 2-6 of Biblarz and Sutton (2001) \cite{GSuttonOBiblarz2001}
 
 \textbf{Mass ratio} $\mathbf{MR}$ of a vehicle or \emph{particular vehicle stage} is defined as 
 \[
@@ -1300,13 +1301,44 @@ Term $(\text{visc})_{A_e}$ of Eq. \ref{extFrocket} is neglected, which I agree w
 \]
 
 Nevertheless, the thrust, denoted $F_T$, is 
-\[
+\begin{equation}\label{Eq:GeneralizedThrust}
 F_T = M(t) \mathfrak{a} = -\int_{A_e} \rho u^i i_u \text{vol}^n \otimes e_i - \int_{A_e} (p-p_a)g^{ij} dS_j \otimes e_i 
-\]
+\end{equation}
 Assume $u^i = u_{\text{exh}}$ on $A_e$ (constant), and $p$,$p_a$ uniform (constant) on $A_e$, 
-\[
+\begin{equation}
 F_T \equiv T = \dot{m} u_e + (p_{\text{exh}} - p_a) A_e
+\end{equation}
+Compare this to Eq. (2-14) of Biblarz and Sutton (2001) \cite{GSuttonOBiblarz2001}.
+
+Let $T = \dot{m} u_c$, where $u_c$ is the effective velocity (cf. Eq. \ref{Eq:ConstantEffectiveExhaustVelocity}).
+\[
+\begin{gathered}
+T = \dot{m} u_c = \dot{m} u_{\text{exh}} + (p_{\text{exh}} - p_a) A_e
+\end{gathered}
 \]
+so that
+\begin{equation}\label{Eq:EffectiveExhaustVelocity1}
+u_c = u_{\text{exh}} + (p_{\text{exh}} - p_a) A_e/ \dot{m} 
+\end{equation}
+Compare this to Eq. (2-16) of Biblarz and Sutton (2001) \cite{GSuttonOBiblarz2001}.
+
+Biblarz and Sutton (2001) \cite{GSuttonOBiblarz2001} then considers the following special case and approximation: approximate $u_c = u_{\text{exh}}$ (due to the special case that $p_{\text{exh}} = p_a$, approximately), then
+\begin{equation}\label{Eq:ThrustWhenAmbientPressureEqualsExhaustPressure}
+F_T = \dot{m} u_c
+\end{equation}
+Compare this to Eq. (2-17) of Biblarz and Sutton (2001) \cite{GSuttonOBiblarz2001}.
+
+\subsubsection{Effective exhaust velocity, Specific impulse $I_{\text{sp}}$}
+
+From Eq. \ref{Eq:EffectiveExhaustVelocity1}, 
+\begin{equation}
+\begin{gathered}
+u_c = u_{\text{exh}} + (p_{\text{exh}} - p_a) A_e/ \dot{m} = u_{\text{exh}} \left( 1 + \frac{ (p_{\text{exh}} - p_a) A_e }{u_{\text{exh}} \dot{m} } \right)= u_{\text{exh}} \left( 1 + \frac{(p_{\text{exh}} - p_a) }{ u_{\text{exh}} ( \rho_{\text{exh}} u_{\text{exh}}) } \right) = \\
+= u_{\text{exh}} \left( 1 + \frac{p_{\text{exh}}}{ \rho_{\text{exh}} u^2_{\text{exh}} } \left( 1 - \frac{ p_a}{ p_{\text{exh}} } \right) \right) = u_{\text{exh}} \left( 1 + \frac{1}{ \gamma \mathfrak{M}^2_{\text{exh}} } \left( 1 - \frac{p_a}{p_{\text{exh}}} \right) \right) 
+\end{gathered}
+\end{equation}
+
+$\mathfrak{M} := \frac{u}{a}$, speed of sound $a^2 = \frac{\gamma \tau}{M}$, $pV = N\tau$ or $p=\rho \frac{\tau}{M}$; \quad \, $\mathfrak{M}^2_{\text{exh}} = \frac{u^2_{\text{exh}}}{a^2} = \frac{u^2_{\text{exh}} \rho_{\text{exh}} }{ \gamma p_{\text{exh}}}$. 
 
 On Section 3.3 Acceleration of a Rocket, pp. 66, of Oates (1997) \cite{GOates1997}, the acceleration of a rocket, in general, is 
 \[
@@ -3980,7 +4012,7 @@ Compare this to Eq. 3.1, 3.5 of Turns (2011) \cite{STurns2011}:
 
 I am following Chapter 10 Droplet Evaporation and Burning of Turns (2011) \cite{STurns2011}.  
 
-``There are two types of liquid rockets: \textbf{pressure-fed}, in which the fule and oxidizer are pushed into the combustion chamber by a high-pressure gas; and \textbf{pump-fed}, where turbopumps deliver the propellants.''\cite{STurns2011}
+``There are two types of liquid rockets: \textbf{pressure-fed}, in which the fuel and oxidizer are pushed into the combustion chamber by a high-pressure gas; and \textbf{pump-fed}, where turbopumps deliver the propellants.''\cite{STurns2011}
 
 
 
@@ -6256,7 +6288,7 @@ $\rho u$ is at a \emph{maximum} at the throat.
 
 \subsection{Implementation in Cantera of equilibrium flow and frozen flow}
 
-The first thing that happens is \emph{combustion}!  Fule and oxidizer enters through inlets into combustion chamber.  Then combustion occurs in the (combustion) chamber!
+The first thing that happens is \emph{combustion}!  Fuel and oxidizer enters through inlets into combustion chamber.  Then combustion occurs in the (combustion) chamber!
 \[
 \begin{gathered}
  \begin{tikzpicture}
