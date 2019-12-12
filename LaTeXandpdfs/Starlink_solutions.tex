@@ -1,0 +1,134 @@
+% file: Starlink_solutions.tex
+%
+\documentclass[10pt]{amsart}
+\pdfoutput=1
+\usepackage{mathtools,amssymb,caption}
+
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage[table]{xcolor}
+\usepackage{pdfpages}
+\usepackage{tikz}
+\usetikzlibrary{matrix,arrows,backgrounds}
+
+\usepackage{breqn} % for dmath
+
+%\usepackage{cancel} % for Feynman slash notation
+
+\hypersetup{colorlinks=true,citecolor=[rgb]{0,0.4,0}}
+
+%\oddsidemargin=15pt
+%\evensidemargin=5pt
+%\hoffset-45pt
+%\voffset-55pt
+%\topmargin=-4pt
+%\headsep=5pt
+%\textwidth=1120pt
+%\textheight=595pt
+%\paperwidth=1200pt
+%\paperheight=700pt
+%\footskip=40pt
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+%\newtheorem*{main}{Main Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\newenvironment{claim}[1]{\par\noindent\underline{Claim:}\space#1}{}
+\newenvironment{claimproof}[1]{\par\noindent\underline{Proof:}\space#1}{\hfill $\blacksquare$}
+
+%This defines a new command \questionhead which takes one argument and
+%prints out Question #. with some space.
+\newcommand{\questionhead}[1]
+  {\bigskip\bigskip
+   \noindent{\small\bf Question #1.}
+   \bigskip}
+
+\newcommand{\problemhead}[1]
+  {
+   \noindent{\small\bf Problem #1.}
+   }
+
+\newcommand{\exercisehead}[1]
+  { \smallskip
+   \noindent{\small\bf Exercise #1.}
+  }
+
+\newcommand{\solutionhead}[1]
+  {
+   \noindent{\small\bf Solution #1.}
+   }
+
+
+  \title[SpaceX Starlink solutions]{SpaceX Starlink solutions}
+
+\author{Ernest Yeung \href{mailto:ernestyalumni@gmail.com}{ernestyalumni@gmail.com} and Amir Khan \href{mailto:amirhasandex@gmail.com}{amirhasandex@gmail.com}}
+\date{10 Dec 2019}
+\keywords{satellites, satellite networks, network topology, topological graph theory, graph theory, algebraic topology}
+
+\begin{document}
+
+\definecolor{darkgreen}{rgb}{0,0.4,0}
+\lstset{language=Python,
+ frame=bottomline,
+ basicstyle=\scriptsize,
+ identifierstyle=\color{blue},
+ keywordstyle=\bfseries,
+ commentstyle=\color{darkgreen},
+ stringstyle=\color{red},
+ }
+%\lstlistoflistings
+
+\maketitle
+
+\tableofcontents
+
+\begin{abstract}
+This is an outline of possible solutions and novel approaches towards SpaceX's Starlink, a network of satellites.
+\end{abstract}
+
+\section{Introduction}
+
+A casual conversation with Anthony Rose (SpaceX) about the challenges facing SpaceX's Starlink prompted further private discussions amongst the two authors about possible solutions and novel approaches.
+
+\part{Outline of Solutions}
+
+\section{Watchdog Timer} 
+
+Let $i = 0 , 1, \dots N_{\text{WD}} - 1$, where $N_{\text{WD}} = $ total number of Starlink satellites with a Watchdog (WD) timer.
+
+Let $t_{0,i} \equiv t_{0i}$ be the time each Watchdog Timer $i$ gets initialized. This is when the internal watchdog timer begins counting.
+
+Suppose the time duration for a WD timer to "expire" or "timeout" (i.e. once $t_{\text{WD}}$ time elapses, the WD rests to either indicate something went wrong, or on purpose) is chosen to be same $\forall \, i = 0 ,1, \dots N_{\text{WD}} -1$.
+
+either / or 
+
+Because it's not safety critical, but mission assurance.
+
+Let $T_{\text{WD}}$
+
+\section{Network Map}
+
+"Ping loops"
+
+\section{Orbital Parameters}
+
+
+
+
+\begin{thebibliography}{9}
+
+\bibitem{STWD100}
+\textbf{Watchdog timer circuit}. Datasheet - production data. STMicroelectronics
+
+
+
+\end{thebibliography}
+
+\end{document}
