@@ -117,9 +117,27 @@ Let $T_{\text{WD}}$
 
 "Ping loops"
 
+One could begin by thinking of the network of Starlink satellites in terms of \emph{graph theory}: the vertices $V$ would be each of the satellites, possibly including the ground station(s), and edges $E$ are the "connections" or "pipes" between each of the satellites.
+
+However, we would posit that this is not enough; the satellites are in "real", \emph{physical} space. Being that comes all the nuances of physical space, including "pseudo-locality" (some satellites are closer to each other than another group of satellites; this isn't captured in graph theory). 
+
+Thus, we would posit that this is also an \emph{embedding} problem in Euclidean space $\mathbb{R}^3$. The way to tackle this is with \emph{topological graph theory}. 
+
+\section{Predict the next $n_k$ frames and send them}
+
+The goal is to predict the packet that should've been received.
+
+\subsection{Send a Checksum after $N_p$ packets}
+
+To ensure data integrity, we can send a \emph{checksum} after each $N_p$ packets. This checksum can be decoded with \emph{polynomials}. This is also an opportunity to leverage concepts from \emph{algebraic geometry}. In algebraic geometry, in a qualitative sense, the "eigenvectors" of a polynomial can be found, and this "basis" can be used to help decode the checksum with a minimum or small overhead (for machinery).
+
+\section{Open LST}
+
+We would broadcast in UHF.
+
 \section{Orbital Parameters}
 
-
+We would broadcast an \emph{error code}. This error code would include a NIDI and a timestamp.
 
 
 \begin{thebibliography}{9}
