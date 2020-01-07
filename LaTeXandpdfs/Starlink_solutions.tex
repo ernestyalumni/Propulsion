@@ -97,6 +97,46 @@ This is an outline of possible solutions and novel approaches towards SpaceX's S
 
 A casual conversation with Anthony Rose (SpaceX) about the challenges facing SpaceX's Starlink prompted further private discussions amongst the two authors about possible solutions and novel approaches.
 
+\part{Qualitative Summary}
+
+1. Watchdog Timer.
+
+Each satellite will be equipped with a Watchdog Timer. The idea behind the Watchdog Timer is that it is a piece of redundant hardware uncoupled to the rest of the satellite hardware, except with a separate program that will periodically update the Watchdog Timer during nominal operation. The software on each satellite is required to toggle the Watchdog Timer within some constant time period. If this time period elapses, or expires, the Watchdog Timer will toggle its output pin. We can then design the satellite to do a hard reset of the software and hardware system.
+
+Because the satellite is already in its orbital configuration, the purpose of the Watchdog Timer is not for safety assurance but mission assurance. We can also allow for the possibility of ground station or other nearby satellites to send this update toggle, not just the satellite. Any update signal should be allowed to toggle the Watchdog Timer; it's not necessary for multiple sources to toggle the Watchdog Timer; therefore the logic is "either | or." 
+
+There is the problem of defining simultaneity of events for initial conditions. In order for this scheme to work, each Watchdog Timer must be started "at the same time"; afterwards, it's proceeds to "countdown" each constant time period until expiration. However, events that are simultaneous in a lab frame may not be simultaneous in another inertial reference frame (in particular the frame in which a specific satellite is stationary). This must be accounted for.
+
+2. Network Map (i.e. considering the application of Algebraic Topology and Topological Graph Theory)
+
+One could begin by thinking of the network of Starlink satellites in terms of graph theory: the vertices V would be each of the satellites, possibly including the ground station(s), and edges E are the "connections" or "pipes" between each of the satellites.
+
+However, we would posit that this is not enough; the satellites are in "real", physical space. Being that comes all the nuances of physical space, including "pseudo-locality" (some satellites are closer to each other than another group of satellites; this isn't captured in graph theory). 
+
+Thus, we would posit that this is also an embedding problem in Euclidean space R3. The way to tackle this is with topological graph theory (I'm trying to read what I can about it).
+
+We could also do things like calculate the Euler characteristics of specific, local satellite configurations, or calculate the fundamental group (loops) of nearby satellites that "ping" each other. Amir Khan coined the term "ping loops." This information could be useful in determining ways to either make sure a subset of the satellites are nominally operating or passing around network packets redundantly.
+
+3. Predict the next N frames that should've been received and send them.
+
+Suppose there is a lost packet. To keep the end user's video to continue streaming, we could try to send, with each packet, another packet that is a prediction of what the next packet would be. Indeed, this is what's done with some of the netcode of online video games. In competitive fighting games (e.g. the Capcom Street Fighter series), frame data for each of two players is important in reacting to each respective opponent, and so if a frame is dropped for one player, it's an unfair advantage to the other.
+
+This is essentially a probability problem because there is uncertainty of what the contents of the next packet would be. There are a number of techniques to employ: Markov chains, Bayesian statistics (grab your Machine Learning toolbox here).
+
+4. Send checksums to ensure packet data integrity
+
+Amir Khan suggested to send a checksum after N packets. He mentioned that one technique to decode checksums are with polynomials. Indeed, we can leverage ideas from algebraic geometry to optimize this decoding (i.e. make the computation efficient in time and space). In algebraic geometry, in a qualitative sense, the "eigenvectors" of a polynomial can be found, and this "basis" can be used to help decode the checksum.
+
+5. Open LST
+
+Amir Khan suggested to consider Open LST from Planet. He could probably talk more about it.  It looks to be an open radio solution to communicate with remote instruments and stations in UHF. 
+
+6. Leverage Orbital Parameters.
+
+Amir Khan suggested to somehow leverage the orbital parameters of each satellite and to broadcast them. Surely, for each satellite, its orbital inclination, position, velocity (we get this information from onboard GPS and IMU (inertial measurement unit)) can be obtained and can be broadcast out to ground and nearby satellites. We can send an error code if any of these physical parameters are not according to nominal operation. Of course, send the timestamp out as well. 
+
+Any of each of these topics are a research project in its own right. If any topics are worthy of further investigations, it'd be encouraging to know. 
+
 \part{Outline of Solutions}
 
 \section{Watchdog Timer} 
