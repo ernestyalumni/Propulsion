@@ -580,6 +580,7 @@ Given the Cauchy stress tensor $T = T^{ij} e_i \otimes e_j$, which is a $(2,0)$-
 
 We want to do this:
 
+\begin{equation}
 \begin{tikzpicture}
   \matrix (m) [matrix of math nodes, row sep=2.8em, column sep=4.8em, minimum width=4.5em]
   {
@@ -593,6 +594,7 @@ T= T^{ij}e_i \otimes e_j = T^{ij}e_j \otimes e_i & T^i_{ \,\,j} e^j \otimes e_i 
   (m-2-1) edge node [above] {$(\sharp,-)$} (m-2-2)
   (m-2-2) edge node [auto]  {$(*,-)$} (m-2-3);
 \end{tikzpicture}
+\end{equation}
 
 Thus, the force on $V_0$ due to the Cauchy-stress tensor is 
 \[
@@ -1571,6 +1573,66 @@ $\mathbf{N}(S)$ is resultant moment of pressure force $-p\mathbf{n}dS$ acting on
 \]
 Thus from Noether's theorem, total angular momentum conservation law, from $SO(3)$ gauge invariance.  
 
+
+\section{Analysis of Flow in pipes and channels, Ch. 7}
+
+From experiments, it's possible to maintain laminar flow in smooth pipes up to Re $ = 40000$, based on pipe diameter. 
+
+Under normal engineering conditions, transition occurs in pipes at Re of 2000-3000; below 2000, flow completely stable, laminar. 
+
+Assume observe flow sufficiently far downstream pipe or channel entrance, so velocity profile no longer changes with distance. 
+
+entrance length $l_e$ - distance required for flow to become fully developer
+
+for laminar flow in circular pipes, $\frac{l_e}{d} \approx 0.06 \, \text{Re}$
+
+For turbulent flow; \\
+less precise, depends on entrance conditions and wall roughness, but different properties of flow develop at different rates, \\
+wall shear stress, e.g. established relatively quickly, \\
+$v$ profile and properties of turbulence require greater length to become established
+
+approximation for $l_e$ (Ward-Smith Reference 7, Bowlus and Brighton (Ref. 5)) 
+
+\[
+\frac{l_e}{d} = 14.3 \log_{10}{\text{Re}} - 46
+\]
+
+\subsection{Shear distribution in circular pipes}
+
+Consider section of circular pipe of constant cross section, constant $\rho$ fluid. \\
+Assume flow fully developed and $v$ distribution, and gradient doesn't change. \\
+$l, r = $ length, radius of section, $\Delta p = $ pressure drop in length $l$. \\
+$p$ distribution same over each cross section, slice pipe is straight, average flow is therefore along straight parallel lines. 
+\[
+\Delta p \pi r^2 = 2\pi r \tau l
+\]
+
+$\tau$ shear stress along cylindrical shell.
+
+Cauchy stress tensor $T = T^{ij} e_i \otimes e_j$, $(2,0)$ rank tensor, $T \in \Gamma(TM \otimes TM)$
+
+Recall,
+
+\begin{tikzpicture}
+\matrix (m) [matrix of math nodes, row sep=2.8em, column sep=4.8em, minimum width=4.5em]
+{
+	T= T^{ij}e_i \otimes e_j = T^{ij}e_j \otimes e_i & T^i_{ \,\,j} e^j \otimes e_i & T^i_{\,\,j} \frac{\sqrt{g}}{(n-1)!} \epsilon^j_{\,\,j_2\dots j_n}dx^{j_2}\wedge \dots \wedge dx^{j_n} \otimes e_i = T^i_{\,\,j}dS^j \otimes e_i   \\
+};
+\path[|->]
+(m-2-1) edge node [above] {$(\sharp,-)$} (m-2-2)
+(m-2-2) edge node [auto]  {$(*,-)$} (m-2-3);
+\end{tikzpicture}
+
+Force on $V_0$ due to Cauchy-stress tensor:
+\[
+\int_{\partial V_0} T^i_{\,\, j} dS^j \otimes e_i
+\]
+$p=p(x) \in C^{\infty}(M)$ \\
+$dp = \frac{\partial p }{ \partial x^i } dx^i \in \Omega^1(M)$.
+
+\[
+\Delta p A = \tau \int_{\partial V_0} dS^j \mapsto \tau 2\pi r l
+\]
 
 
 \section{Compressible Fluids-One-Dimensional Flow}
