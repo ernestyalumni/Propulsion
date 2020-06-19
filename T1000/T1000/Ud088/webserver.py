@@ -83,6 +83,11 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 output = ""
                 output += "<html><body><h1>Hello! Bonjour!</h1></body></html>"
 
+                output += "<form method='POST' enctype='multipart/form-data' action ='/hello'><h2>What would you like me to say?</h2><input name='message' type='text'><input type='submit' value='Submit'></form>"
+
+                output += "</body></html>"
+
+
                 # Contains output stream for writing response back to client.
                 # Proper adherence to HTTP protocol must be used when writing
                 # to this stream in order to achieve successful interoperation
@@ -107,24 +112,68 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 output = ""
                 output += "<html><body><h1>&#161Hola  <a href = '/hello' >Back to Hello</a></h1></body></html>"
 
+                output += "<form method='POST' enctype='multipart/form-data' action ='/hello'><h2>What would you like me to say?</h2><input name='message' type='text'><input type='submit' value='Submit'></form>"
+
+                output += "</body></html>"
+
                 self.wfile.write(output.encode("utf-8"))
 
                 print(output)
                 return
 
-        def do_POST(self):
-
-            try:
-
-                self.
-
-
-            except:
-
-
         except IOError:
 
             self.send_error(404, "File Not Found %s" % self.path)
+
+
+    def do_POST(self):
+        """
+        @ref https://classroom.udacity.com/courses/ud088/lessons/3593308716/concepts/36082987090923
+
+        @details Overrides do_POST of base class BaseHTTPRequestHandler,
+        just like do_GET
+        """
+
+        try:
+
+            # Send back response of successful POST
+            self.send_response(301)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+
+            # Use CGI to decipher the message
+            ctype, pdict = \
+                cgi.parse_header(self.headers.getheader('content-type'))
+
+            if ctype == 'multipart/form-data':
+                # Collect fields.
+                fields = cgi.parse_multipart(self.rfile, pdict)
+                # Call array "message"
+                messagecontent = fields.get('message')                                
+
+            output = ""
+            output += "<html><body>"
+            output += " <h2> Okay, how about this: </h2>"
+            # Return first value of array
+            output += "<h1> %s </h1>" % messagecontent[0]
+
+            # Actual HTML form.
+
+            # Prompt user for input
+
+            output += "<form method='POST' enctype='multipart/form-data' action ='/hello'><h2>What would you like me to say?</h2><input name='message' type='text'><input type='submit' value='Submit'></form>"
+
+            output += "</body></html>"
+
+            # Send the output to server.
+            self.wfile.write(output.encode("utf-8"))
+
+            # Debug
+            print(output)
+
+        except:
+
+            pass
 
 
 def create_http_server(port, WebServerHandler, server_name=''):
