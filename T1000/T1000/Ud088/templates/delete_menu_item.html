@@ -1,0 +1,19 @@
+<html>
+
+<body>
+<h1> Are you sure you want to delete {{item.name}}? </h1>
+
+<!-- form gets item which is a Python SQLAlchemy object -->
+
+<form action="{{ url_for('delete_menu_item', restaurant_id=item.restaurant_id, menu_id=item.id)}}" method = 'POST'>
+
+<input type='submit', value = 'Delete'>
+
+
+</form>
+
+<a href = "{{ url_for('restaurant_menu', restaurant_id = item.restaurant_id)}}"> Cancel </a>
+
+</body>
+
+</html>

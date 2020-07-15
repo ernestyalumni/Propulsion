@@ -1,3 +1,13 @@
+cf. https://en.wikipedia.org/wiki/Create,_read,_update_and_delete
+CRUD are 4 basic functions of persistent storage.
+
+Operation, SQL, HTTP
+Create - INSERT - POST (PUT is idempotent, meaning multiple identical requests have same effect as single request)
+Read - SELECT - GET
+Update - UPDATE - PUT / POST/ PATCH
+Delete - DELETE - DELETE
+
+
 cf. [Creating a Database - Configuration](https://classroom.udacity.com/courses/ud088/lessons/3621198668/concepts/36123887280923)
 
 Creating a database with SQLAlchemy
@@ -28,7 +38,7 @@ Creating a database with SQLAlchemy
 
 * nested inside will be table and mapper code
 
-Class name follows Camelcase.
+Class name follows **Camelcase**.
 
 #### Table
 
@@ -38,6 +48,7 @@ syntax:
 
 `__tablename__ = 'some_table'`
 
+make table names lowercase with underscore as convention
 
 #### Mapper
 
@@ -127,3 +138,11 @@ Port forwarding allows us to open pages in our browser from web server from our 
 
 More info about port forwarding:
 https://www.vagrantup.com/docs/networking/forwarded_ports.html
+
+# Message Flashing
+
+`import flask import flask`
+
+sessions a way a server can store information across multiple pages to create personal
+
+Use `get_flashed_messages()` in template.

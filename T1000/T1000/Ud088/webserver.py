@@ -55,6 +55,11 @@ class WebServerHandler(BaseHTTPRequestHandler):
         If request mapped to a directory, directory checked for file named
         index.html or index.htm (in that order). If found, file's content are
         returned.
+  
+        Same as in
+        https://github.com/udacity/Full-Stack-Foundations/blob/master/Lesson-2/post-web-server/webserver.py
+        https://github.com/udacity/Full-Stack-Foundations/blob/master/Lesson-2/hola-server/webserver.py
+        https://github.com/udacity/Full-Stack-Foundations/blob/master/Lesson-2/first-web-server/webserver.py
         """
 
         try:
@@ -126,6 +131,9 @@ class WebServerHandler(BaseHTTPRequestHandler):
             self.send_error(404, "File Not Found %s" % self.path)
 
 
+    # Found in
+    # https://github.com/udacity/Full-Stack-Foundations/blob/master/Lesson-2/post-web-server/webserver.py
+
     def do_POST(self):
         """
         @ref https://classroom.udacity.com/courses/ud088/lessons/3593308716/concepts/36082987090923
@@ -181,6 +189,10 @@ def create_http_server(port, WebServerHandler, server_name=''):
 
 # Instantiates server and what port to listen on.
 
+# Found in 
+# https://github.com/udacity/Full-Stack-Foundations/blob/master/Lesson-2/post-web-server/webserver.py
+# https://github.com/udacity/Full-Stack-Foundations/blob/master/Lesson-2/hola-server/webserver.py
+# https://github.com/udacity/Full-Stack-Foundations/blob/master/Lesson-2/first-web-server/webserver.py
 def main():
 
     try:

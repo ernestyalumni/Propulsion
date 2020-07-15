@@ -1,0 +1,33 @@
+<html>
+
+<body>
+
+<h1> New Menu item </h1>
+
+<div class = 'pane'>
+<form action="{{url_for('new_menu_item', restaurant_id=restaurant_id )}}" method = 'POST'>
+
+<p>Name: </p>
+
+<input type='text' size='30' name='name'>
+
+<p>Description: </p>
+
+<input type='text' size='30' name='description'>
+
+<p>Price: </p>
+
+<input type='text' size='30' name='price'>
+
+<p>Course: </p>
+
+<input type='text' size='30' name='course'>
+
+
+<input type='submit' value='Create'>
+
+</form>
+</div> <!-- End of pane -->
+
+</body>
+</html>

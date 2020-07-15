@@ -3,6 +3,9 @@
 
 @details Full-Stack-Foundations Lesson 1
 @ref https://github.com/udacity/Full-Stack-Foundations/blob/master/Lesson_1/lotsofmenus.py
+
+Run this in command prompt to generate database:
+python3 lotsofmenus.py
 """
 
 from sqlalchemy import create_engine
