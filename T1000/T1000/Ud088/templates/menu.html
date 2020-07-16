@@ -1,8 +1,14 @@
 <html>
+<head>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+</head>
 
 <body>
 
-<h1>{{restaurant.name}}</h1>
+<div class = 'pane'>
+    <div class = 'header'>
+    <h1>{{restaurant.name}}</h1>
+    </div>div>
 
 <!-- MESSAGE FLASHING EXAMPLE -->
 <!-- get flashed messages gets an array of messages -->
@@ -21,7 +27,7 @@
     {% endif %}
 {% endwith %}
 
-</div>
+</div> <!-- end of flash -->
 
 {% for i in items %}
 
@@ -40,9 +46,11 @@
     <a href = "{{url_for('delete_menu_item', restaurant_id = restaurant.id, menu_id = i.id) }}">Delete</a>
 
 
-</div>
+    </div> <!-- end of name and price -->
 
 {% endfor %}
+
+</div> <!-- end of pane -->
 
 
 </body>
