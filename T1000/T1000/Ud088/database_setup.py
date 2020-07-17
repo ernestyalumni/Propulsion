@@ -36,6 +36,19 @@ class Restaurant(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
 
+    @property
+    def serialize(self):
+        """Return object data in easily serializable format"""
+        return {
+            'name': self.name,
+            'id': self.id}
+
+
+def query_as_dict(query_object):
+
+    return {c.name: getattr(query_object, c.name)
+        for c in query_object.__table__.columns}
+
 
 # Class, 2 of 4 parts of SQLAlchemy database creation
 # representation of table as a python class
@@ -58,6 +71,19 @@ class MenuItem(Base):
     # up .id member, and set restaurant_id to this .id value.
     restaurant_id = Column(Integer, ForeignKey('restaurant.id'))
     restaurant = relationship(Restaurant)
+
+
+    # https://github.com/udacity/Full-Stack-Foundations/blob/master/Lesson-3/19_Responding-with-JSON/database_setup.py
+    # We added this sealize function to be able to send JSON objects in a
+    # serializable format.
+    @property
+    def serialize(self):
+        return {
+            'name': self.name,
+            'description': self.description,
+            'id': self.id,
+            'price': self.price,
+            'course': self.course}
 
 
 # Configuration - at end of file

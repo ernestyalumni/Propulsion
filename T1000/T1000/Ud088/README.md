@@ -146,3 +146,17 @@ https://www.vagrantup.com/docs/networking/forwarded_ports.html
 sessions a way a server can store information across multiple pages to create personal
 
 Use `get_flashed_messages()` in template.
+
+# RESTful API
+
+cf. https://en.wikipedia.org/wiki/Representational_state_transfer
+cf. https://classroom.udacity.com/courses/ud088/lessons/3593308717/concepts/36245586360923
+
+Representational State Transfer - 
+When HTTP is used, operations avaiable are GET, HEAD, POST, PUT, PATCH, DELETE, ...
+
+When API is communicated over the internet, with rules of HTTP, called RESTful API
+
+API (Application Programming Interfaces) allows external applications to use public info our apps want to share
+
+
