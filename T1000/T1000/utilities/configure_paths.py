@@ -8,6 +8,7 @@ from pathlib import Path
 
 import configparser
 
+
 def __setup_paths():
     """
     @fn _setup_paths
@@ -20,18 +21,22 @@ def __setup_paths():
     number_of_parents_to_project_path = 2
     number_of_parents_to_config_file = 1
 
-    filepath_to_config_ini = \
-        current_filepath.parents[number_of_parents_to_config_file] / \
-            "config.ini"
+    filepath_to_config_ini = (
+        current_filepath.parents[number_of_parents_to_config_file]
+            / "config.ini")
 
-    Setup = namedtuple('Setup', \
-       ['number_of_parents_to_project_path', \
-       'configure_filepath',
-       'config_ini_filepath'])
+    Setup = namedtuple(
+        'Setup',
+        [
+            'number_of_parents_to_project_path',
+            'configure_filepath',
+            'config_ini_filepath'])
 
-    return Setup(number_of_parents_to_project_path, \
+    return Setup(
+        number_of_parents_to_project_path,
         current_filepath,
         filepath_to_config_ini)
+
 
 def _config():
     """
@@ -42,6 +47,7 @@ def _config():
     config = configparser.ConfigParser()
     config.read(str(filepath_to_config_ini))
     return config
+
 
 def _raw_config():
     """
@@ -57,6 +63,7 @@ def _raw_config():
     config.read(str(filepath_to_config_ini))
     return config
 
+
 def _project_path():
     """
     @fn _project_path
@@ -64,6 +71,7 @@ def _project_path():
     """
     number_of_parents_to_project_path, current_file_path, _ = __setup_paths()
     return current_file_path.parents[number_of_parents_to_project_path]
+
 
 class DataPaths:
 
@@ -74,20 +82,21 @@ class DataPaths:
         @fn raw
         """
         raw_subdirectory_name = "raw"
-        return \
-            (_project_path() / \
-                self.data_subdirectory_name / \
-                raw_subdirectory_name).resolve()
+        return (
+            _project_path()
+                / self.data_subdirectory_name 
+                / raw_subdirectory_name).resolve()
 
     def processed(self):
         """
         @fn processed
         """
         processed_subdirectory_name = "processed"
-        return \
-            (_project_path() / \
-                self.data_subdirectory_name / \
-                processed_subdirectory_name).resolve()
+        return (
+            _project_path()
+                / self.data_subdirectory_name
+                / processed_subdirectory_name).resolve()
+
 
 class NISTChemistryWebbookPaths:
     """
@@ -100,4 +109,5 @@ class NISTChemistryWebbookPaths:
         """
         @fn species_list
         """
-        return _raw_config()["Paths.NIST_Chemistry_Webbook.Species_List"]["download_page"]
+        return _raw_config()["Paths.NIST_Chemistry_Webbook.Species_List"][
+            "download_page"]
