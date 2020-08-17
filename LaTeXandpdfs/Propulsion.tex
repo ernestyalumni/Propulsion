@@ -6357,6 +6357,54 @@ You want to calculate the specific impulse (for the rocket).  Use this handy rel
 \]
 and $\dot{m} = \rho^* u^* A^*$.  
 
+\section{Dynamic pressure}
+
+cf. \href{https://www.grc.nasa.gov/WWW/K-12/airplane/dynpress.html}{NASA Glenn Research Center, "Dynamic Pressure"}
+
+From the NASA Glenn Research Center website link, here's how they started their derivation: \\
+By fluid momentum conservation:
+\begin{equation}
+\frac{-dp}{dx} = \rho u \frac{du}{dx}
+\end{equation} 
+where \\
+$p\equiv $ pressure \\
+$\rho \equiv$ density. \\
+
+If $u \in \mathbb{R}$, 
+\[
+\begin{gathered}
+	\frac{dp}{dx} + \rho u \frac{du}{dx} = \frac{d}{dx} (p + \frac{1}{2} \rho u^2 ) = 0 \Longrightarrow p_s + \frac{1}{2} \rho u^2 = \text{ constant } = p_{\text{tot}}
+\end{gathered}
+\]
+where \\
+$p_{\text{tot}} := $ total pressure \\
+$p_s := $ static pressure \\
+$q := $ dynamic pressure $= \frac{1}{2} \rho u^2$. \\
+
+If a gas is static and not flowing the measured pressure is the same in all directions. \\
+If gas is moving, measured pressure depends on direction of motion. 
+
+\begin{equation}
+p_s + \frac{1}{2} \rho u^2 = p_{\text{tot}, 0}
+\end{equation}
+\emph{looks like} incompressible Bernoulli's equation.
+
+$\frac{1}{2} \rho u^2$ is called dynamic pressure because it's a pressure term associated with velocity of the flow. \\
+Dynamic pressure is a defined property of moving flow of gas. \\
+We can use and apply idea of dynamic pressure in much more complex flows, like compressible flows or viscous flows. Particularly, aerodynamic forces acting on object as it moves through air are directly proportional to dynamic pressure. \\
+By measuring dynmaic pressure in flight, pitot-static tube (Prandtl tube) can be used to determine aircraft airspeed.
+
+My question is this: how does this derivation change if we can't assume flow is uniform and we can't assume flow is all in 1-dimension (i.e. it has non-zero velocity components in the "other" direction)?
+
+Recall Navier-Stokes for compressible, viscous fluid flow:
+\[
+\rho \left( \frac{ \partial u^i }{ \partial t} + u^j \frac{\partial u^i }{ \partial x^j} \right) = \frac{- \partial p }{ \partial x^i } + ( \lambda +\mu) \frac{\partial }{ \partial x^i } \text{div}u + \mu \Delta u^i
+\]
+If $\mu =0$, $\text{div}u = 0$ and $\frac{\partial u^i}{\partial t} = 0$ (steady state),
+\[
+\rho_0 u^j \frac{\partial u^i}{\partial x^j} + \frac{ \partial p}{\partial x^i} = 0
+\]
+For $j=i$, $\frac{\partial }{ \partial x^i} (\frac{1}{2} \rho_0 (u^i)^2 + p) + \sum_{j\neq i} \rho_0 u^j \frac{\partial u^i}{\partial x^j } = 0$
 
 
 \part{Electromagnetism}
