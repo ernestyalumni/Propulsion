@@ -52,6 +52,13 @@ SET(COOLPROP_STATIC_LIBRARY true)
 
 ADD_SUBDIRECTORY("${CMAKE_CURRENT_SOURCE_DIR}/../../../CoolProp" CoolProp)
 
+# Add_subdirectory call makes use of libraries.
+# Add_subdirectory adds the source CMakeLists.txt and code files in the
+# directory.
+
+ADD_SUBDIRECTORY(UnitTests)
+
+
 ADD_EXECUTABLE(Main Main.cpp)
 
 ## Manually change this to include CoolProp wherever you've placed it.
