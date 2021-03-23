@@ -1,0 +1,1 @@
+cf. https://exploreflask.com/en/latest/blueprints.html
