@@ -1,0 +1,81 @@
+{# While Flask-Bootstrap ships with its own base, it's good form to create a
+  custom one for our app, as it allows customizing some aspects.
+
+  Deriving from bootstrap/base.html giving a basic page scoffolding.
+
+  cf. https://github.com/mbr/flask-bootstrap/blob/master/sample_app/templates/base.html
+#}
+{%- extends "bootstrap/base.html" %}
+
+<!DOCTYPE html>
+<!-- <html> tag represents root of an HTML document, it's the container for all other HTML elements -->
+<html lang='en'>
+
+<head>
+<meta charset="utf-8">
+<title>{% block title %}Functional Boilerplate Main Title{% endblock %}</title>
+
+<!-- meta -->
+{% block metas %}
+<meta name="description" content="">
+<meta name="author" content="">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+{% endblock %} <!--/meta -->
+<!-- /meta -->
+
+<!-- styles -->
+{% block styles %}
+{# super() allows for amending blocks instead of replacing them.
+  cf. https://pythonhosted.org/Flask-Bootstrap/basic-usage.html
+#}
+{{super()}}
+<link type="text/css" rel="stylesheet" href="/static/css/layout.main.css">
+<link type="text/css" rel="stylesheet" href="/static/css/main.css">
+<link type="text/css" rel="stylesheet" href="/static/css/main.responsive.css">
+{% endblock %} <!--/styles -->
+
+<!-- /styles-->
+
+</head>
+
+{% block body %}
+<body>
+
+  <!-- Wrap all page content here -->
+  <div id="wrap">
+
+    <!-- Fixed navbar -->
+    {% block navbar %}
+    <div class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">Functional Boilerplate Project name</a>
+        </div> <!-- /navbar-header -->
+        <div class="collapse navbar-collapse">
+        </div><!-- /.nav-collapse -->
+      </div><!-- /container -->
+    </div><!--navbar -->
+    {% endblock %}
+
+    <!-- Begin page content -->
+    <main id="content" role="main" class="container">
+
+
+      {% block content %}{% endblock %}
+
+    </main>
+
+  </div><!-- /wrap -->
+
+  <div id ="footer">
+    <div class="container">
+      <!-- &copy is the copyright symbol -->
+      <p>Your Company &copy; All Rights Reversed.</p>
+      {% block footer %}{% endblock %}
+    </div>
+  </div>
+
+</body>
+{% endblock %} <!--/body -->
+
+</html>

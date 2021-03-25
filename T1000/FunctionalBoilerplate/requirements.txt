@@ -1,0 +1,12 @@
+###### Requirements without Version Specifiers ######
+flask
+Flask-Bootstrap
+Flask-WTF
+sqlalchemy
+WTForms
+
+# Requirements for databases
+
+# Postgres
+# Uncomment the line below to install connector for SQLAlchemy for Postgres
+# psycopg2

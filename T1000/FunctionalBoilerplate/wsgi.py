@@ -1,0 +1,29 @@
+# Application entry point.
+from FunctionalBoilerplate.create_application import create_app
+from . import configure_flask_application
+
+import os
+
+
+# cf. pp. 44, Gaspar and Stouffer (2018)
+app = create_app(".configure_flask_application.DevelopmentConfiguration")
+
+if __name__ == "__main__":
+
+    # "0.0.0.0" is for localhost.
+    # App already set debug to be off by default.
+    #app.run(host="0.0.0.0")
+
+    app.run(host="0.0.0.0", debug=True)
+
+
+# Or specify port manually:
+'''
+if __name__ == '__main__':
+
+    # os.environ - mapping object representing the string environment. This
+    # mapping is captured the first time os module is imported, typically
+    # during Python startup.
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
+'''
