@@ -1,7 +1,7 @@
 """Class-based Flask app configuration."""
 from os import environ
 from pathlib import Path
-
+import os
 
 # os.path.abspath(os.path.dirname(__file__))
 base_directory = str(Path(__file__).parent.absolute())
@@ -10,12 +10,20 @@ base_directory = str(Path(__file__).parent.absolute())
 class Configuration:
     """Configuration from environment variables."""
 
+    # cf. https://bootstrap-flask.readthedocs.io/en/stable/basic.html
+    BOOTSTRAP_SERVE_LOCAL=True
+
     # Static Assets
     STATIC_FOLDER = "static"
     TEMPLATES_FOLDER="templates"
 
+    # Secret key for session management.
+    SECRET_KEY = 'my precious'
+
 
 class DevelopmentConfiguration(Configuration):
+
+    BOOTSTRAP_BOOTSWATCH_THEME='superhero'
 
     #FLASK_ENV = environ.get("FLASK_ENV")
     FLASK_ENV="development"
@@ -23,9 +31,6 @@ class DevelopmentConfiguration(Configuration):
 
     # Enable debug mode.
     DEBUG = True
-
-    # Secret key for session management.
-    SECRET_KEY = 'my precious'
 
     # URI, databasetype+driver://user:password@host:port/db_name
     # SQLite connection string/uri is a path to the database file - relative or

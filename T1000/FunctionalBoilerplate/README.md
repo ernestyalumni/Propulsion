@@ -29,7 +29,68 @@ app.template_folder
 
 ```
 
+# On Creating Views with Templates
+
+cf. Ch. 3, Creating Views with Templates, Gaspar and Stouffer (2018)
+
+## Jinja
+
+**Jinja** is a templating language written in Python, 
+**templating language** - it's a simple format designed to help automate creation of documents.
+  - in any templating language, variables passed to the template replace predefined elements in the template
+  - in Jinja, variable substitutions defined by {{ }}
+`{{ }}` syntax is called **variable block**.
+
+**control blocks** - `{% %}` - declare language functions, such as **loops** or `if` statements,
+e.g. when `Post` instance, `post` gets passed to it, we get following Jinja code:
+
+```
+<h1>{{ post.title }}</h1>
+```
+
+producing
+
+```
+<h1>First Post</h1>
+```
+
+variables displayed in Jinja template can be any Python type or object as long as they can be converted into string via Python function `str()`, 
+e.g. dictionary or list passed to template can have attributes displayed:
+
+```
+{{ your_dict['key'] }}
+{{ your_list[0] }}
+```
+
+If you choose to combine Jinja and your JavaScript templates that are defined in your HTML files, then wrap JavaScript templates in the `raw` control block to tell Jinja to ignore them:
+
+```
+{% raw %}
+<script id="template" type="text/x-handlebars-template">
+
+{% endraw %}
+```
+
+### Jinja Filters
+
+in Jinja, variables can be passed to built-in functions that modify the variables for display purposes.
+
+These functions, called filters, are called in variable block with pipe character, `|`, e.g.
+
+```
+{{ variable | filter_name(*args) }}
+```
+or, if no arguments are passed to filter, parentheses can be omitted:
+```
+{{ variable | filter_name }}
+```
+
 
 # References
 
 Daniel Gaspar, Jack Stouffer. **Mastering Flask Web Development: Build enterprise-grade, scalable Python web applications**, 2nd Edition Kindle Edition. 2018.
+
+https://github.com/realpython/flask-boilerplate
+
+https://exploreflask.com/en/latest/blueprints.html
+

@@ -1,5 +1,5 @@
 # Application entry point.
-from FunctionalBoilerplate.create_application import create_app
+from .FunctionalBoilerplate.create_application import create_app
 from . import configure_flask_application
 
 import os
@@ -8,6 +8,7 @@ import os
 # cf. pp. 44, Gaspar and Stouffer (2018)
 app = create_app(".configure_flask_application.DevelopmentConfiguration")
 
+
 if __name__ == "__main__":
 
     # "0.0.0.0" is for localhost.
@@ -15,6 +16,7 @@ if __name__ == "__main__":
     #app.run(host="0.0.0.0")
 
     app.run(host="0.0.0.0", debug=True)
+
 
 
 # Or specify port manually:

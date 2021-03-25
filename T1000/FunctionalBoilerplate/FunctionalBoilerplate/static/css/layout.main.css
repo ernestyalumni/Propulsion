@@ -28,7 +28,6 @@ body {
 /* Not required for template or sticky footer method */
 /* EY - without the below, "main" content wouldn't be "centered." */
 
-
 #wrap > .container {
   padding: 60px 15px 0;
 }

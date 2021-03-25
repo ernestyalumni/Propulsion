@@ -19,6 +19,11 @@ a {
   color: #FFF;
 }
 
+::-webkit-selection {
+  background: #555;
+  color: #FFF;
+}
+
 /* Main elements end*/
 
 
