@@ -10,6 +10,8 @@ base_directory = str(Path(__file__).parent.absolute())
 class Configuration:
     """Configuration from environment variables."""
 
+    POSTS_PER_PAGE = 10
+
     # Static Assets
     #STATIC_FOLDER = "static"
     #TEMPLATES_FOLDER="templates"
