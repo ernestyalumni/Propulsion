@@ -12,11 +12,8 @@
 <!-- /meta -->
 
 <!-- styles -->
-<link type="text/css" rel="stylesheet" href="/static/css/bootstrap.css">
 <link type="text/css" rel="stylesheet" href="/static/css/bootstrap.min.css">
-<link type="text/css" rel="stylesheet" href="/static/css/bootstrap-grid.css">
 <link type="text/css" rel="stylesheet" href="/static/css/bootstrap-grid.min.css">
-<link type="text/css" rel="stylesheet" href="/static/css/bootstrap-reboot.css">
 <link type="text/css" rel="stylesheet" href="/static/css/bootstrap-reboot.min.css">
 
 <link type="text/css" rel="stylesheet" href="/static/css/layout.main.css">
@@ -32,48 +29,46 @@
   <div id="wrap">
 
     <!-- Fixed navbar -->
-    {# <div class="navbar navbar-default navbar-fixed-top"> #}
-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggler" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Divisional Boilerplate Project name</a>
+          <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
           </button><!--/navbar-toggler-->
-          <a class="navbar-brand" href="/">Divisional Boilerplate Project name</a>
-        </div> <!--/navbar-header -->
-        <div class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-            <li {% if request.endpoint =='home_bp.home' %} class="active" {% endif %}><a href="{{ url_for('home_bp.home') }}">Home</a></li>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="{{ url_for('home_bp.home') }}">Home</a>
+            </li>
             {#
             <li {% if request.endpoint =='about_bp.about' %} class="active" {% endif %}><a href="{{ url_for('about_bp.about') }}">About</a></li>
             #}
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" data-toggle="dropdown">Dropdown<b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li><a>Action</a></li>
-                <li><a>Another action</a></li>
-                <li><a>Something else here</a></li>
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown options
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">Nav header</li>
                 <li><a>Separated link</a></li>
                 <li><a>One more separated link</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
               </ul><!--/dropdown-menu-->
             </li><!--/nav-item dropdown-->
-          </ul><!--/nav navbar-nav-->
+          </ul><!--/navbar-nav-->
           <ul class="nav navbar-nav float-right">
             <li><a href="/">Divisional Boilerplate home</a></li>
             {#
             <li><a href="{{ url_for('form_bp.register') }}">Signup</a></li>
             <li><a href="{{ url_for('form_bp.login') }}">Login</a></li>
             #}
-          </ul><!--/nav navbar-nav pull-right-->
-        </div><!-- /.nav-collapse -->
-      </div><!-- /container -->
-    {# </div><!--navbar --> #}
-  </nav><!--/navbar navbar-expand-lg-->
+          </ul><!--/nav navbar-nav float-right-->
+        </div><!--/.nav-collapse -->
+      </div><!--/container-fluid -->
+  </nav><!--/navbar navbar-expand-md-->
 
     <!-- Begin page content -->
     <main id="content" role="main" class="container">

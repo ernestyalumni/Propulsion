@@ -19,7 +19,7 @@ class Comment(Base):
 
     __tablename__ = 'Comments'
 
-    cid = Column(Integer(), primary_key=True)
+    cid = Column(Integer, primary_key=True)
     name = Column(String(255))
     text=Column(Text)
     date = Column(DateTime, default=datetime.datetime.now)
