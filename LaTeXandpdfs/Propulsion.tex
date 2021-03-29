@@ -6584,7 +6584,20 @@ Sonnendr\"{u}cker (2017) \cite{Sonn2017}.
 
 \section{Geodesy}
 
+\part{Real-time systems}
 
+Lamport (1978) \cite{Lamp1978}
+
+\subsection{Ordering Events Totally}
+
+Define relation $\Longrightarrow$. \\
+Use only arbitrary total ordering $<_{(P)}$ of the processes. \\
+If event $a$ in process $P_i$, event $b$ in process $P_j$, then $a \Longleftarrow b$ iff either 
+\begin{enumerate}
+	\item $C_i\langle a \rangle < C_j \langle b \rangle $ or 
+	\item $C_i \langle a \rangle < C_j \langle b \rangle$ and $P_i < P_j$ 
+\end{enumerate}
+ordering $\Longleftarrow$ depends upon system of clocks $C_i$ and is not unique.
 
 \end{multicols*}
 
@@ -6719,8 +6732,11 @@ Eric Sonnendr\"{u}cker.  \emph{Advanced Finite Element Methods}.  Lecture notes.
 Roger R. Bate, Donald D. Mueller, Jerry E. White. \textbf{Fundamentals of Astrodynamics} (Dover Books on Aeronautical Engineering) Revised ed. Edition. Dover Publications; Revised ed. edition (June 1, 1971). ISBN-10: 0486600610
 
 \bibitem{GaSt2018}
-Daniel Gaspar, Jack Stouffer.\textbf{Mastering Flask Web Development: Build enterprise-grade, scalable Python web applications}, 2nd Edition Kindle Edition. 2018.
+Daniel Gaspar, Jack Stouffer.
+\textbf{Mastering Flask Web Development: Build enterprise-grade, scalable Python web applications}, 2nd Edition Kindle Edition. 2018.
 
+\bibitem{Lamp1978}
+Leslie Lamport. \emph{Time, Clocks and the Ordering of Events in a Distributed System}. \textbf{Communications of the ACM 21}, 7   (July 1978), 558-565. \url{https://lamport.azurewebsites.net/pubs/time-clocks.pdf} 
   
 \end{thebibliography}
 There's an 8th edition of Biblarz and Sutton \cite{GSuttonOBiblarz2001} for 2010 that I would like to have.  If you find any of this material useful or if you'd like to help, email me or visit my Open/Tilt page \url{ernestyalumni.tilt.com} and donate to the crowdfunding campaign or click on the PayPal donate button.  
