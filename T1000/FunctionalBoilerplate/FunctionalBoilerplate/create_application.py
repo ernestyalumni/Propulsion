@@ -15,7 +15,7 @@ def create_app(config_object=None):
 
     # Install our Bootstrap extension.
     # After loading, new templates available to derive from in your templates.
-    bootstrap = Bootstrap(app)
+    #bootstrap = Bootstrap(app)
 
     # Import blueprints.
     from .views import (about, home, forms)
