@@ -1,3 +1,4 @@
 ###### Requirements without Version Specifiers ######
 bs4
+pytest
 requests
