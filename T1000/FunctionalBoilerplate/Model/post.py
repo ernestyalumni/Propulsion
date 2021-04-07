@@ -1,4 +1,13 @@
-from ..DatabaseSetup import Base
+try:
+    from ..DatabaseSetup import Base
+except (ImportError, ValueError) as err:
+    try:
+        from DatabaseSetup import Base
+    except ImportError as err:
+        print("Fail to import: %s", err)
+        raise ImportError(err)
+
+from .comment import Comment
 from .tags import posts_tags_table
 
 from sqlalchemy import (
@@ -10,6 +19,7 @@ from sqlalchemy import (
     # A variably sized string type
     Text)
 from sqlalchemy.orm import (backref, relationship)
+
 
 class Post(Base):
     """
@@ -45,6 +55,7 @@ class Post(Base):
 
     # One to many relationship, but bidirectional relationship.
     comments = relationship("Comment", back_populates="post")
+    #comments = relationship("Comment", backref="post")
 
     # Many to many relationship, association table indicated by 
     # relationship.secondary argument to relationship().
@@ -57,7 +68,7 @@ class Post(Base):
         # parent Post object.
         backref=backref("post", lazy="dynamic"))
 
-    def __init__(self, title):
+    def __init__(self, title = None):
         self.title = title
 
     def __repr__(self):

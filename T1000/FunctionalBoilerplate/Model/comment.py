@@ -1,4 +1,11 @@
-from ..DatabaseSetup import Base
+try:
+    from ..DatabaseSetup import Base
+except (ImportError, ValueError) as err:
+    try:
+        from DatabaseSetup import Base
+    except ImportError as err:
+        print("Fail to import: %s", err)
+        raise ImportError(err)
 
 from sqlalchemy import (
     Column,
@@ -22,7 +29,7 @@ class Comment(Base):
 
     cid = Column(Integer(), primary_key=True)
     name = Column(String(255))
-    text=Column(Text)
+    text = Column(Text)
     date = Column(DateTime, default=datetime.datetime.now)
     post_id = Column(Integer, ForeignKey('Posts.pid'))
 

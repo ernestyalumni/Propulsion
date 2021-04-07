@@ -39,8 +39,13 @@ class DevelopmentConfiguration(Configuration):
     # Postgres
     # postgresql+psycopg2://user::password@ip:port/db_name
 
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
+
     SQLALCHEMY_DATABASE_URI = "sqlite:///database.db"
 
 
 class ProductionConfiguration(Configuration):
+
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
     pass

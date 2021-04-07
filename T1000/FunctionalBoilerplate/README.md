@@ -29,6 +29,31 @@ app.template_folder
 
 ```
 
+For more ...
+
+# Using Flask's command-line interface
+
+cf. pp. 22-23, Gaspar and Stouffer (2018), Ch. 1
+
+Enter the shell on application context and see how to get all defined URL routes,
+
+```
+flask shell
+
+app.url_map
+```
+
+Useful information shows where Flask thinks our templates and static folders are:
+```
+>>> app.static_folder
+'/home/topolo/PropD/Propulsion/T1000/FunctionalBoilerplate/FunctionalBoilerplate/static'
+>>> app.template_folder
+'templates'
+>>> app.has_static_folder
+True
+```
+
+
 # On Creating Views with Templates
 
 cf. Ch. 3, Creating Views with Templates, Gaspar and Stouffer (2018)
@@ -84,6 +109,12 @@ or, if no arguments are passed to filter, parentheses can be omitted:
 ```
 {{ variable | filter_name }}
 ```
+
+# Creating Controllers with Blueprints
+
+**read Flasks' documentation carefully**, where variable attack methods are covered: `http:/​/flask.​pocoo.​org/docs/security/​`
+
+
 
 
 # References

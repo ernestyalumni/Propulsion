@@ -23,6 +23,7 @@ cf. pp. 29, Gaspar and Stouffer (2018), "Creating the user table"
 from . import configure_flask_application
 from .DatabaseSetup.base import Base
 from .DatabaseSetup.create_from_metadata import create_all_tables
+from .DatabaseSetup.custom_flask_sqlalchemy import flask_sqlalchemy_db
 from .DatabaseSetup.database_session import db_session
 from .FunctionalBoilerplate.create_application import create_app
 from .Model.comment import Comment
@@ -37,8 +38,20 @@ app = create_app(configure_flask_application.DevelopmentConfiguration())
 
 @app.shell_context_processor
 def make_shell_context():
+
+    """
+    @ref https://flask-sqlalchemy.palletsprojects.com/en/2.x/api/?highlight=sqlalchemy#flask_sqlalchemy.SQLAlchemy
+
+    @details This callback used to initialize an application for use with this
+    database setup. Never use a database in context of application not
+    initialized that way or connections will leak.
+    """
+
+    flask_sqlalchemy_db.init_app(app)
+
     return dict(
         app=app,
+        db=flask_sqlalchemy_db,
         db_session=db_session,
         Base=Base,
         User=User,

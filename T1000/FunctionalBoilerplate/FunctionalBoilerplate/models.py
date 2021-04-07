@@ -1,3 +1,8 @@
+from ..Model.comment import Comment
+from ..Model.post import Post
+from ..Model.tags import (posts_tags_table, Tag)
+from ..Model.user import User
+
 """
 Obsoleted - see Model subdirectory
 

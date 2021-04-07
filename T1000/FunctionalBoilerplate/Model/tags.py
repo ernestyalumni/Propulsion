@@ -1,5 +1,13 @@
-from ..DatabaseSetup import Base
+try:
+    from ..DatabaseSetup import Base
+except (ImportError, ValueError) as err:
+    try:
+        from DatabaseSetup import Base
+    except ImportError as err:
+        print("Fail to import: %s", err)
+        raise ImportError(err)
 
+        
 from sqlalchemy import Table
 from sqlalchemy import (
     Column,
@@ -49,7 +57,7 @@ class Tag(Base):
 
     tid = Column(Integer, primary_key=True)
     title = Column(String(255))
-    def __init__(self, title):
+    def __init__(self, title = None):
         self.title = title
 
     def __repr__(self):

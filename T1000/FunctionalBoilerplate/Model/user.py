@@ -1,5 +1,13 @@
-from ..DatabaseSetup import Base
+try:
+    from ..DatabaseSetup import Base
+except (ImportError, ValueError) as err:
+    try:
+        from DatabaseSetup import Base
+    except ImportError as err:
+        print("Fail to import: %s", err)
+        raise ImportError(err)
 
+        
 from sqlalchemy import (
     Column,
     Integer,
@@ -24,7 +32,7 @@ class User(Base):
     username = Column(String(255), nullable=False, index=True, unique=True)
     password = Column(String(255))
 
-    def __init__(self, username):
+    def __init__(self, username = None):
         self.username = username
 
     def __repr__(self):
