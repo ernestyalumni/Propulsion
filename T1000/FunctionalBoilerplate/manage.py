@@ -47,7 +47,7 @@ def make_shell_context():
     initialized that way or connections will leak.
     """
 
-    flask_sqlalchemy_db.init_app(app)
+    #flask_sqlalchemy_db.init_app(app)
 
     return dict(
         app=app,

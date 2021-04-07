@@ -1,0 +1,18 @@
+###### Requirements without Version Specifiers ######
+
+# Used to geenerate fake data for blog - see test_data.py and pp. 66 of Gaspar and Stouffer (2018)
+Faker
+
+flask
+flask-sqlalchemy
+Flask-WTF
+sqlalchemy
+WTForms
+
+# Requirements for databases
+
+# Postgres
+# Uncomment the line below to install connector for SQLAlchemy for Postgres
+# psycopg2
+
+###### Requirements without Version Specifiers ######

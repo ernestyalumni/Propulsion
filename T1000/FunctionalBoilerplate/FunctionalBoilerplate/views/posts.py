@@ -46,19 +46,23 @@ def home(page=1):
         FSqlTables['Posts'].c.publish_date.desc())
     print(type(query_object))
     print(dir(query_object))
-
+    """
     posts = db.session.query(FSqlTables['Posts']).order_by(
         FSqlTables['Posts'].c.publish_date.desc()).paginate(
             page,
             50,
             False)
-    """
     
+    print("\n\n Start of posts: \n\n")
+    for i in posts.items[:2]:
+        print(i)
+
+
     recent, top_tags = sidebar_data()
 
     return render_template(
         'posts/home.html',
-        #posts=posts#,
+        posts=posts,
         recent=recent,
         top_tags=top_tags
         )

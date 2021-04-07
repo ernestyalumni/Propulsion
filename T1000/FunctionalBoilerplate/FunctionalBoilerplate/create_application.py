@@ -1,3 +1,5 @@
+from ..DatabaseSetup.custom_flask_sqlalchemy import flask_sqlalchemy_db
+
 from flask import Flask
 #from flask_bootstrap import Bootstrap
 import os
@@ -8,10 +10,17 @@ import os
 def create_app(config_object=None):
     app = Flask(__name__)
 
-    if not config_object:
+    if config_object != None:
+        print("\nConfiguring from config_object\n")
         app.config.from_object(config_object)
+        print(app.config['SQLALCHEMY_DATABASE_URI'])
     else:
+        print("\n no configuration object \n")
         app.config['SECRET_KEY'] = os.urandom(32)
+        app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///database.db"
+        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    flask_sqlalchemy_db.init_app(app)
 
     # Install our Bootstrap extension.
     # After loading, new templates available to derive from in your templates.

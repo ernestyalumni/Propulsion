@@ -1,7 +1,16 @@
 {% extends "layouts/main.html" %}
 {% import 'posts/macros.html' as macros %}
 {% block title %}Posts Home {% endblock %}
+
+{% block content %}
+
+
 {% block leftbody %}
 
-{# {{ macros.render_posts(posts) }} #}
-{% endblock %}
+<h2> Posts Home </h2>
+
+{{ macros.render_posts(posts) }}
+
+{% endblock %}<!--/leftbody-->
+
+{% endblock %} <!-- /block content -->

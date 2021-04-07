@@ -1,17 +1,5 @@
-"""Class-based Flask app configuration."""
-from os import environ
-from pathlib import Path
-import os
-
-# os.path.abspath(os.path.dirname(__file__))
-base_directory = str(Path(__file__).parent.absolute())
-
-
 class Configuration:
     """Configuration from environment variables."""
-
-    # cf. https://bootstrap-flask.readthedocs.io/en/stable/basic.html
-    BOOTSTRAP_SERVE_LOCAL=True
 
     # Static Assets
     STATIC_FOLDER = "static"
@@ -23,9 +11,6 @@ class Configuration:
 
 class DevelopmentConfiguration(Configuration):
 
-    BOOTSTRAP_BOOTSWATCH_THEME='superhero'
-
-    #FLASK_ENV = environ.get("FLASK_ENV")
     FLASK_ENV="development"
     FLASK_APP = "wsgi.py"
 
@@ -39,7 +24,7 @@ class DevelopmentConfiguration(Configuration):
     # Postgres
     # postgresql+psycopg2://user::password@ip:port/db_name
 
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
 
     SQLALCHEMY_DATABASE_URI = "sqlite:///database.db"
 
@@ -47,5 +32,3 @@ class DevelopmentConfiguration(Configuration):
 class ProductionConfiguration(Configuration):
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-    pass
