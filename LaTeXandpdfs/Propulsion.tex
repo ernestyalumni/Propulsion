@@ -6586,26 +6586,276 @@ Sonnendr\"{u}cker (2017) \cite{Sonn2017}.
 
 \part{Real-time systems}
 
-Lamport (1978) \cite{Lamp1978}
+\section{Partial Ordering of Events in a Distributed System}
+
+cf. pp. 558, Communications of the ACM, July 1978, Vol. 21, Number 7, Lamport (1978) \cite{Lamp1978}
+
+Assume system composed of a collection of processes. Each process consists of a sequence of events.
+
+A single process is defined to be a set of events with an a priori total ordering.
+
+Recall for set $P$, ordering $\leq$, then $(P, \leq)$ \textbf{partially ordered} if 
+\begin{enumerate}
+	\item reflexivity: $a \leq a$
+	\item anti-symmetry: $(a\leq b \text{ and } b\leq a) \to a = b$
+	\item transitive: $a\leq b$ and $b\leq c$ $\Longrightarrow a \leq c$
+\end{enumerate}
+
+We can extend our definition to allow a process to split into distinct subprocesses (EY: if needed).
+
+Assume sending or receiving a message is an event in a process.
+
+define "happened before" relation:
+
+\begin{definition}["happened before" relation]\label{Def:HappenedBeforePartialOrdering}
+	Given set of events $E$ of a system, with set of event $P\subseteq E$ s.t. $\forall \, $ event $\in P$ is on the same process $P$, \\
+	relation $ <_p$ (Lamport's notation is "$\to$") is the "smallest" relation s.t.
+	
+	\begin{enumerate}
+		\item irreflexivity: $a \not<_p a$ \, $\forall\, a \in E$ (interpret: event cannot happen before itself)
+		\item concurrency: if $a \not<_p b$ and $b\not<_p a$, then $a,b$ \textbf{concurrent}.
+		(contrapositive to concurrency) $a,b$ not concurrent if $a <_p b$ or $b<_p a$ \\
+		
+		EY: compare this with anti-symmetry, if $a \leq_p b$ and $b\leq_p a$, then $a =_p b$; this conclusion requires from concurrency that if $a \not<_p b$, then $b\leq_p a$. Then consider the extra claim that $a\leq_p b$ is equivalent to $a <_p b$ or $a =_p b$ (concurrent).
+		\item transitivity: if $a<_p b$ and $b<_p c$, then $a<_pc$ \\
+		
+		Can be shown that if $a\leq_p b$ and $b\leq_pc$, then $a\leq_p c$ (consider all permutations/cases: if $a=_p b$, $b=_pc$, then $a=_pc$, if $a=_p b$, $b<_p c$, then $a<_p c$, \dots)
+	\end{enumerate}
+Intepret: $\forall a, b \in P$ (interpret $a,b$ are events in the same process), $a<_p b$ means $a$ comes before $b$. 
+
+Interpret, if processes $P, Q \subset E$, and event $a$ is sending of a message by process $P$, and event $b$ is receipt of same message by another process $Q$, then $a <_p b$.
+\end{definition}
+
+EY: if $a \not<_p b$, equivalent to $b \leq_p a$, $\forall \, a, b\in E$, then $a \leq_p a$, \, $\forall \, a \in E$, if $a\leq_p b$ and $b\leq_p a$, then $a=_p b$, and $a\leq_p b$ and $b\leq_p c$, then $a \leq_p c$. \\
+So if $a \not<_p b$ equivalent to $b\leq_p a$, and $a=_p b$ is equivalent to concurrency, $<_p$ \textbf{implies partial ordering} $\leq_p$.
+
+Also consider for $<_p$ in Def. \ref{Def:HappenedBeforePartialOrdering} to be interpreted in terms of causation, and two events are concurrent if neither can causally affect the other.
+
+\section{Logical clocks}
+
+cf. pp. 559, Communications of the ACM, July 1978, Vol. 21, Number 7, Lamport (1978) \cite{Lamp1978}
+
+Introduce clocks in the system.
+
+Begin with abstract point of view such that clock is just a way of assigning number to an event, where number is thought of as time at which event occurred. 
+
+Define $\forall $ process $P_i$, a clock $C_i$, 
+\begin{equation}
+\begin{aligned}
+	& C_i : P_i \to \mathbb{R} \text{ or } \mathbb{Z} \\ 
+	& C_i: P_i \to \mathbb{Z} \text{ for system clock or digital computer clock }
+\end{aligned}
+\end{equation}
+
+For clock $i$ on process $i$, i.e. clock $C_i$ for each process $P_i$, then $\forall \, $ event $a\in P_i$, 
+\begin{equation}
+C_i\langle a \rangle \in \mathbb{Z}
+\end{equation}
+
+Entire system of clocks represented by mapping $C$ s.t. 
+\begin{equation}
+\begin{aligned}
+& C: b \mapsto C \langle b \rangle \\
+& C\langle b \rangle = C_j\langle b \rangle \text{ if $b$ is an event in process $P_j$ }
+\end{aligned}
+\end{equation}
+
+("For now") we make no assumption about the relation of the numbers $C_i\langle a \rangle$ to physical time, so we can think of clocks $C_i$ as logical rather than physical clocks. They maybe implemented by counters with no actual timing mechanism.
+
+Base definition on \textbf{order in which events occur}; we cannot base our definition of correctness on physical time, since that would require introducing clocks which keep physical time.
+
+Lamport makes this strongest reasonable condition: if an event $a$ occurs before another event $b$, then $a$ should happen at an earlier time than $b$:
+
+\begin{proposition}[Clock Condition]\label{Prop:ClockCondition}
+	$\forall \, $ events $a,b \in E$, \\if $a <_p b$, then $C\langle a \rangle < C \langle b \rangle$
+\end{proposition}
+
+Lamport says that we can't expect converse condition, since that'd imply any 2 concurrent events must occur at the same time: \\
+(converse to Prop. \ref{Prop:ClockCondition}) if $a \not<_p b$, then $C\langle a \rangle \geq C\langle b \rangle$ or if $a =_p b$ or $a >_p b$, then $C\langle a \rangle \geq C\langle b\rangle$. Further, if $a \not>_p b$, then this implies $C\langle a \rangle = C\langle b \rangle$ (since it cannot be that $C\langle a \rangle > C\langle b \rangle$, we eliminated this possibility out of the two implied by $a \geq_p b$). But we \emph{don't want} for 2 concurrent events to necessarily have equal times (because  who's to say that they must occur at the same time).
+
+e.g. On process $P$, $p_2 <_p p_3$, and $C_p(p_2) < C_p(p_3)$, because events on the same process are totally ordered.
+
+Given,
+\[
+\begin{aligned}
+& p_1 <_p q_2 \\
+& q_1 <_p p_2 \\
+& q_2 <_p q_3
+\end{aligned}
+\]
+$p_2 \not<_p q_2$ and $q_2 \not<_p p2$, and since $q_2 < q_3$, then \\
+since $p_2 \nrightarrow q_3$ and $q_2 \nrightarrow p_3$, $p_2, q_3$ concurrent. \\
+since $p_3 \nrightarrow q_3$ and $q_3 \nrightarrow p_3$, $p_3, q_3$ concurrent.
+
+Clock condition is satisfied if  
+\begin{proposition}[Clock conditions 1, 2] 
+\begin{enumerate}
+	\item[C1] If $a,b \in $ process $P_i$, and $a<b$; $C_i\langle a \rangle < C_i \langle b \rangle$ 
+	\item[C2] If $a$ is sending a message by process $P_i$ and $b$ is receipt of that message by process $P_j$, then $C_i\langle a \rangle < C_j \langle b \rangle$
+\end{enumerate}
+\end{proposition} 
+cf. pp, 560, Lamport (1978) \cite{Lamp1978}
+
+Let's assume that processes are algorithms, and events represent certain actions during their execution. Process $P_i$'s clock is represented by $C_i$ during event $a$. 
+
+For condition C1, if $a,b \in P_i$, $a<_p b$, then $C_i(a) < C_i(b)$, so then processes need to obey the following
+
+\begin{proposition}[Implementation Rule 1 (IR1)]\label{IR1}
+Each process $P_i$ increments $C_i$ between any 2 successive events.
+
+EY (20210408) i.e. $\forall $ process $P_i$, let sequence of events $a_k \in P_i$ s.t. $\forall \, a_k$ totally ordered on $P_i$, i.e. $a_k <_p a_{k+1}$, \, $\forall \, k$, then
+\begin{equation}
+\boxed{ 
+	C_i(a_k) < C_i(a_{k+1}) = C_i(a_k) + 1 }
+\end{equation}
+\end{proposition} 
+
+To meet condition C2, if $a$ sends message by process $P_ii$, $b$ receives same messsage by process $P_j$, then 
+\[
+C_i(a) < C_j(b)
+\]
+
+We require that each message $m$ contain a timestamp $T_m$ which equals the time at which message was sent.\\
+\emph{Upon receiving a message} timestamped $T_m$, a process must advance its clock to be later than $T_m$, More precisely,
+
+\begin{proposition}[Implementation Rule 2 (IR 2)]
+\begin{enumerate}
+	\item If event $a$ sends message $m$ by process $P_i$, then message $m$ contains timestamp $T_m = C_i\langle a \rangle$
+	\item Upon receiving a message $m$, process $P_j$ sets $C_j$ greater than or equal to its present value and greater than $T_m$
+\end{enumerate}
+
+EY (20210408), i.e. \\
+
+If event $ a\in P_i$ sends message $m_a$ contains timestamp $T_a = C_i(a)$ \\
+Upon receiving message $m_a$, event $r_a$, process $P_j$ sets 
+\begin{equation}
+\boxed{
+	C_j(r_a) = \max{ (C_j(r_a), T_a)} + 1
+}
+\end{equation} 
+The addition, increment, of 1 makes sense since the message can never be received before or at the same time of sending it (cf. \href{https://towardsdatascience.com/understanding-lamport-timestamps-with-pythons-multiprocessing-library-12a6427881c6}{Steven Van Dorpe})
+
+(remember that $C_j(r_a) = C_j(q) + 1$ where $q$ is event immediately before $r_a$, $q <_p r_a$ (and no other event))
+
+\end{proposition}
+IR2 insures C2 satisfied; hence IR1, IR2 imply Clock Condition satisfied.
+
 
 \subsection{Ordering Events Totally}
 
 Define relation $\Longrightarrow$. \\
-Use only arbitrary total ordering $<_{(P)}$ of the processes. \\
-If event $a$ in process $P_i$, event $b$ in process $P_j$, then $a \Longleftarrow b$ iff either 
+Use any arbitrary total ordering $<_{(P)}$ of the processes to break ties. \\
+If event $a$ in process $P_i$, event $b$ in process $P_j$, then $a \Longrightarrow b$ iff either 
 \begin{enumerate}
 	\item $C_i\langle a \rangle < C_j \langle b \rangle $ or 
 	\item $C_i \langle a \rangle < C_j \langle b \rangle$ and $P_i < P_j$ 
 \end{enumerate}
-ordering $\Longleftarrow$ depends upon system of clocks $C_i$ and is not unique.
+ordering $\Longrightarrow$ depends upon system of clocks $C_i$ and is not unique.
+
+Example: use total ordering of events solving the following version of the \emph{mutual exclusion problem} (EY: mutex?).
+
+Consider system composed of fixed collection of processes $P_i$, (e.g. $N=1$, $P$, e.g. $N=2$, $P_i$, $P_j$). Processes share a \emph{single} resource (resource is external, not part of any of the processes, to any of the processes, I believe). 
+
+We wish to find an algorithm satisfying following 3 conditions:
+\begin{enumerate}
+	\item[(I)] A process $P_i$ which has been granted \emph{the} resource must release it before it can be granted to another process $P_j$ 
+	\item[(II)] Different requests for \emph{the} resource must be granted in order in which they're made
+	\item[(III)] If every process which is granted the resource eventually releases it, then every request is eventually granted
+\end{enumerate}
+
+Implement:
+
+Each  process maintains own request queue which is never seen by any other process.
+
+\begin{enumerate}
+	\item To request resource, process $P_i$, sends $T_m:P_i$ "requests resource" to every other process (e.g. if $N=2$, to $P_{i+1}$; if $N=1$, no send) \emph{and} \\
+	puts \emph{that message} $T_m:P_i$ "requests resource" on its request queue
+	\item When process $P_j$ receives message $T_m:P_i$ "requests resource", it places it on its request queue \emph{and} \\
+	sends (timestamped) acknowledgement message to $P_i$ ($N=1$ none, $N=2$, $P_j$ receives and sends ack to $P_i$)
+	\item To release resource $P_i$ remorses \emph{any} $T_m: P_i$ "requests resource" message from its request queue, \emph{and} \\
+	sends (timestamped) $P_i$ "releases resource" message to every other process ($N=1$, removes all $T_{m'}:P_i$ "requests resource" messages; $N=2$, $P_i$ removes any $T_m:P_i$ "requests resources" and $P_j$ gets sent $T_{m'}:P_i$ "releases resource")
+	\item When $P_j$ receives $P_i$ "releases resource", removes any $T_m:P_i$ "requests resource" message from its request queue.
+	\item $P_i$ granted resource if 
+	\begin{enumerate}
+		\item[(i)] $\exists \, T_m: P_i$ "requests resource" message in its request queue ordered before any \emph{other request}
+		\item[(ii)] $P_i$ received message from $\forall \, P_{i'}$ timestamped later than $T_m$ ($N=1$, none; $N=2$, $P_i$ received ack (acknowledgement) from $P_j$ at $T_{m'} > T_m$)
+	\end{enumerate}
+\end{enumerate}
+
+5(ii) $\to$ guarantees $P_i$ has learned about all requests which preceded its current request \\
+rules 3,4 are only ones which delete messages from request queue $\to$ Condition I \\
+Condition II from total ordering $\Longrightarrow $ extends partial ordering \\
+Rule 2 $\Longrightarrow$ guarantees after $P_i$ requests resonance, rule 5(ii) holds \\
+Rules 3,4 $\Longrightarrow$ if $\forall \, P_i$ granted resource eventually releases it, then rule 5(i), $\Longrightarrow$ Condition III \\
+
+$\Longrightarrow$ \\
+$\mathbf{C} :=$ set of possible commands, e.g. $\mathbf{C} = \lbrace $ rule 1, rule 3 $\rbrace = $ all commands $P_i$ requests resource, $P_i$ releases resources \\
+$\mathbf{S} :=$ set of possible states, e.g. $\mathbf{S} = $ queue of waiting request commands, where request at head of queue is currently granted \\
+
+\[
+\begin{aligned} 
+& \mathbf{e} : \mathbf{C} \times \mathbf{S} \to \mathbf{S} \\
+& \mathbf{e}(C, S) = S' 
+\end{aligned}
+\]
+
+Synchronization achieved because all processes order commands according to their timestamps (using $\Longrightarrow$ relation), so each $P_i$ uses same sequence of commands. \\
+$P_i$ can execute command timestamped $T$ where it has learned of all commands issued by all other processes with timestamps less than or equal to $T$.
+
+\section{Vector Clocks}
+
+A vector clock in a system of $N$ processes (e.g. $N=2, N=3$), is a vector of $N$ integers.
+
+Each process $P_i$ maintains its own vector clock ($V_i$ for a process $P_i$) to timestamp local events.
+
+Vector timestamps (vector of $N$ integers) are sent with each message. 
+
+Rules for vector clocks:
+
+\begin{enumerate}
+	\item vector is initialized to 0 at all processes:
+	\begin{equation}
+	V_i[j] = 0 \, \forall \, i,j = 1, \dots , N
+	\end{equation}
+	\item Before a process $P_i$ timestamps an event, it increments its element of the vector (index $i$) in its local vector (vector of $N$ integers):
+	\begin{equation}
+		V_i[i] = V_i[i] + 1
+	\end{equation}
+	\item A message is sent from process $P_i$ with $V_i$ attached to the message.
+	\item When a process $P_i$ receives a vector timestamp $t$, it compares the 2 vectors element by element, setting its local vector clock to the higher of the 2 values:
+	\begin{equation}
+		V_j[i] = \max{ (V_j[i], t[i])}  \, \forall \, i = 1, \dots, N
+	\end{equation}
+\end{enumerate}
+Remember also to, upon the receiving event, increment the local vector of the receiving process, before the comparison.
+
+We compare 2 vector timestamps by defining:
+\begin{equation}
+\begin{aligned} 
+& V = V' \iff V[j] = V'[j] \, \forall \, i = 1, \dots N \\
+& V\leq V' \iff V[j] = V'[j] \, \forall \, i = 1, \dots N
+\end{aligned} 
+\end{equation}
+
+For any 2 events $e, e'$, if $e\to e'$, then $V(e) < V(e')$ which is the same as we get from Lamport's algorithm, Lmaport's timestamps.
+
+But with vector clocks, we now have additional knowledge that if $V(e) < V(e')$ then $e\to e'$. 2 events $e, e'$ are concurrent if \emph{neither} $V(e) \leq V(e')$ nor $V(e') \leq V(e)$.
+
+
+
+
+\section{Clock Synchronization, Lamport Timestamps, Vector Clocks, References}
+
+\url{https://www.cs.rutgers.edu/~pxk/rutgers/notes/content/08-logical-clocks-slides.pdf}
+
+\url{https://towardsdatascience.com/understanding-lamport-timestamps-with-pythons-multiprocessing-library-12a6427881c6}
+
+
+Rutgers University – CS 417: Distributed Systems 2009 Paul Krzyzanowski, Lectures on distributed systems Clock Synchronization Paul Krzyzanowsk
+\url{https://www.cs.rutgers.edu/~pxk/rutgers/notes/content/08-clocks.pdf}
+
 
 \end{multicols*}
-
-
-
-
-
-
 
 \begin{thebibliography}{9}
 
