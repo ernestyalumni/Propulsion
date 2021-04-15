@@ -110,10 +110,22 @@ or, if no arguments are passed to filter, parentheses can be omitted:
 {{ variable | filter_name }}
 ```
 
+## Creating our views
+
+cf. pp. 58, Ch. 3, Gaspar and Stouffer (2018)
+
+
+
 # Creating Controllers with Blueprints
 
 **read Flasks' documentation carefully**, where variable attack methods are covered: `http:/​/flask.​pocoo.​org/docs/security/​`
 
+```
+        func.count(posts_tags_table.c.post_id).label('total')).join(
+            posts_tags_table).group_by(Tag).order_by(
+                desc('total')).limit(5).all()
+```
+Use SQLAlchemy `func` to return count on a group by query, we're able to order tags by the most used tags.
 
 
 

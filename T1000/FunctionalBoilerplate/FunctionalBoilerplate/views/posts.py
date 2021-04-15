@@ -29,8 +29,11 @@ posts_bp = Blueprint(
 
 def sidebar_data():
     recent = Post.query.order_by(Post.publish_date.desc()).limit(5).all()
+
     top_tags = db_session.query(
         Tag,
+        # Using SQLAlchemy func, return a count on a group by query, we're able
+        # to order our tags by the most used tags.
         func.count(posts_tags_table.c.post_id).label('total')).join(
             posts_tags_table).group_by(Tag).order_by(
                 desc('total')).limit(5).all()
@@ -66,3 +69,38 @@ def home(page=1):
         recent=recent,
         top_tags=top_tags
         )
+
+@posts_bp.route('/post/<int:post_id>', methods=('GET', 'POST'))
+def post(post_id):
+    #form = CommentForm()
+    return
+
+
+@posts_bp.route('/posts_by_tag/<string:tag_name>')
+def posts_by_tag(tag_name):
+    tag = db.session.query(
+        FSqlTables['Tags']).filter_by(title=tag_name).first_or_404()
+    posts = tag.posts.order_by(FSqlTables['Posts'].publish_date.desc()).all()
+    recent, top_tags = sidebar_data()
+
+    return render_template(
+        'posts/tag.html',
+        tag=tag,
+        posts=posts,
+        recent=recent,
+        top_tags=top_tags)
+
+
+@posts_bp.route('/posts_by_user/<string::username>')
+def posts_by_user(username):
+    user = db.session.query(FSqlTables['Users']).filter_by(
+        username=username).first_or_404()
+    posts = user.posts.order_by(FSqlTables['Posts'].publish_date.desc()).all()
+    recent, top_tags = sidebar_data()
+
+    return render_template(
+        'posts/user.html',
+        user=user,
+        posts=posts,
+        recent=recent,
+        top_tags=top_tags)

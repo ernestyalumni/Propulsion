@@ -1,3 +1,10 @@
+{% macro render_pagination(pagination, endpoint) %}
+<nav aria-label="Page navigation example">
+	<ul class="pagination">
+	</ul><!--/pagination-->
+</nav><!--/aria-label-->
+{% endmacro %}<!--/render_pagination-->
+
 {% macro render_posts(posts, pagination=True) %}
 {% if pagination %}
     {% set _posts = posts.items %}
