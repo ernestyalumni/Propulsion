@@ -54,7 +54,10 @@ class Post(Base):
     user_id = Column(Integer, ForeignKey('Users.uid'))
 
     # One to many relationship, but bidirectional relationship.
-    comments = relationship("Comment", back_populates="post")
+    # cf. https://docs.sqlalchemy.org/en/14/orm/relationship_api.html#sqlalchemy.orm.relationship.params.uselist
+    # uselist - boolean that indicates if this property should be loaded as a
+    # list or scalar.
+    comments = relationship("Comment", back_populates="post", uselist=False)
     #comments = relationship("Comment", backref="post")
 
     # Many to many relationship, association table indicated by 

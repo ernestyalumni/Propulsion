@@ -1,10 +1,56 @@
+<!DOCTYPE html>
+
+<html lang='en'>
+
+<head>
+
+<!-- meta -->
+<meta charset="utf-8">
+<meta name="description" content="">
+<meta name="author" content="">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- /meta -->
+
+<title>{% block title %}Functional Boilerplate Blog Main Title{% endblock %}</title>
+
+<!-- styles -->
+
+<!-- scripts -->
+<script type="text/javascript" src="/static/js/libs/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="/static/js/libs/bootstrap.bundle.min.js"></script>
+<!-- /scripts -->
+
+<!-- Bootstrap CSS -->
+<link type="text/css" rel="stylesheet" href="/static/css/bootstrap.min.css">
+<link type="text/css" rel="stylesheet" href="/static/css/bootstrap.rtl.min.css">
+<!-- /styles-->
+
+</head>
+
+<body>
+
+    <!-- Fixed navbar -->
+    {% include '/layouts/navigation_bar.html' %}
+
+    <div class="container">
+
+    {% block content %}{% endblock %}
+
+    </div><!--/container-->
+
+</body>
+
+</html>
+
+
+<!--
 {% block body %}
 <div class="row">
 	<div class="col-lg-9">
 		{% block leftbody %}
-		{% endblock %}<!--/leftbody-->
-	</div>
+		{% endblock %}--><!--/leftbody-->
+<!--	</div>
 	<div class="col-lg-3 rounded">
 		{% block rightbody %}
-		{% endblock %}<!--/rightbody-->
-{% endblock %}<!--/block body-->
+		{% endblock %}--><!--/rightbody-->
+<!--{% endblock %}--><!--/block body-->

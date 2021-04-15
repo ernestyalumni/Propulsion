@@ -1,8 +1,30 @@
-{% extends "layouts/main.html" %}
+{% extends "layouts/posts/base.html" %}
 {% import 'posts/macros.html' as macros %}
 {% block title %}Posts Home {% endblock %}
 
 {% block content %}
+
+<div class="container">
+
+<p class="lead">
+    <div class="row">
+        <div class="col-lg-9">
+            {% for post in posts.items %}
+                <div class="row">
+                    <div class="col-lg-12"><h1>{{ post.title }}</h1></div>
+                </div><!--/row-->
+                <div class="row">
+                    <div class="col-lg-12">
+                        {{ post.text | truncate(500) | safe }}
+                        <!--<a href="{{ url_for('.post', post_id=post.pid) }}">Read More</a>-->
+                    </div><!--/col-lg-12-->
+                </div><!--/row-->
+            {% endfor %}
+        </div><!--/col-lg-9-->
+    </div><!--/row-->
+</p>
+
+</div><!--/jumbotron-->
 
 
 {% block leftbody %}
@@ -13,4 +35,4 @@
 
 {% endblock %}<!--/leftbody-->
 
-{% endblock %} <!-- /block content -->
+{% endblock %} <!-- /block body -->

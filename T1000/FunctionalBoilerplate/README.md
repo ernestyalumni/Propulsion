@@ -114,9 +114,39 @@ or, if no arguments are passed to filter, parentheses can be omitted:
 
 cf. pp. 58, Ch. 3, Gaspar and Stouffer (2018)
 
+## WTForms basics
+
+cf. pp. 69, Ch. 3, Gaspar and Stouffer (2018)
+
+3 main parts of WTForms-
+1. **forms**
+2. **fields**
+3. **validators**
+
+validators are functions attached to fields that make sure data submitted in the form is within constraints.
+
+The form is a class that contains fields and validators, and validates itself on a `POST` request.
+
+The most common validators:
+* `validators.Regexp(regex)`
+
+
+`post.html`
+
+pp. 73 Gaspar and Stouffer (2018)
+
+`<form method="POST" action="{{ url_for('post', post_id=post.pid) }}">`
+First, declare an HTML form section and make it submit (using `HTTP POST`) to our `post` Flask endpoint function with current post ID.
+
+`form.hidden_tag()` adds anticross-site request forgetry measure automatically.
+
+
+Then, when calling `field.label`, an HTML label will automatically be created for our input. This can be customized when we define our `WTForm FlaskForm` class; if not, WTForm will pretty print the field name.
 
 
 # Creating Controllers with Blueprints
+
+cf. Ch. 4, Gaspar and Stouffer (2018)
 
 **read Flasks' documentation carefully**, where variable attack methods are covered: `http:/​/flask.​pocoo.​org/docs/security/​`
 

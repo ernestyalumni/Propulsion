@@ -1,3 +1,4 @@
+from ..forms.comment_form import CommentForm
 from . import models
 
 from . import (
@@ -16,6 +17,8 @@ from flask import (
     Blueprint,
     render_template)
 from sqlalchemy import func, desc
+
+import datetime
 
 
 class PostsBlueprintConstants:
@@ -72,8 +75,37 @@ def home(page=1):
 
 @posts_bp.route('/post/<int:post_id>', methods=('GET', 'POST'))
 def post(post_id):
-    #form = CommentForm()
-    return
+    comment_form = CommentForm()
+    if comment_form.validate_on_submit():
+        new_comment = Comment()
+        new_comment.name = comment_form.name.data
+        new_comment.text = comment_form.text.data
+        new_comment.post_id = post_id
+        new_comment.date = datetime.datetime.now()
+
+        db_session.add(new_comment)
+        db_session.commit()
+
+    #post = db.session.query(FSqlTables['Posts']).get_or_404(post_id)
+    post = Post.query.get(post_id)
+    tags = post.tags
+    #comments = post.comments.order_by(Comment.date.desc()).all()
+
+    try:
+        comments = post.comments.query.order_by(Comment.date.desc()).all()
+    except AttributeError as err:
+        comments = []
+
+    recent, top_tags = sidebar_data()
+
+    return render_template(
+        'posts/post.html',
+        post=post,
+        tags=tags,
+        comments=comments,
+        recent=recent,
+        top_tags=top_tags,
+        form=comment_form)
 
 
 @posts_bp.route('/posts_by_tag/<string:tag_name>')
@@ -91,7 +123,7 @@ def posts_by_tag(tag_name):
         top_tags=top_tags)
 
 
-@posts_bp.route('/posts_by_user/<string::username>')
+@posts_bp.route('/posts_by_user/<string:username>')
 def posts_by_user(username):
     user = db.session.query(FSqlTables['Users']).filter_by(
         username=username).first_or_404()
