@@ -15,13 +15,13 @@
 {% for post in _posts %}
 <div>
     <h1>
-        <a class="text-dark" href="{{ url_for('posts_bp.home', post_id=post.pid) }}">{{ post.title }}</a>
+        <a class="text-dark" href="{{ url_for('posts_bp.post', post_id=post.pid) }}">{{ post.title }}</a>
     </h1>
 </div>
 <div class="row">
     <div class="col">
         {{ post.text | truncate(500) | safe }}
-        <a href="{{ url_for('posts_bp.home', post_id=post.pid) }}">Read More</a>
+        <a href="{{ url_for('posts_bp.post', post_id=post.pid) }}">Read More</a>
     </div>
 </div>
 {% endfor %}
