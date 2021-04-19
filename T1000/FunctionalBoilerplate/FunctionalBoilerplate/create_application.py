@@ -27,7 +27,7 @@ def create_app(config_object=None):
     #bootstrap = Bootstrap(app)
 
     # Import blueprints.
-    from .views import (about, home, forms, posts)
+    from .views import (about, class_based_views, forms, home, posts)
 
 
     # Register blueprints.
@@ -35,5 +35,6 @@ def create_app(config_object=None):
     app.register_blueprint(forms.form_bp)
     app.register_blueprint(home.home_bp)
     app.register_blueprint(posts.posts_bp)
+    app.register_blueprint(class_based_views.class_based_views_bp)
 
     return app

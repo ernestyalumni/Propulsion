@@ -1,0 +1,19 @@
+{% extends "layouts/posts/base.html" %}
+
+{% block content %}
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover">
+    {% for obj in objects %}
+        <tr>
+        {% for col in columns %}
+        <td>
+        {{col}} {{ obj[col] }}
+        </td>
+        {% endfor %}
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+
+{% endblock %}

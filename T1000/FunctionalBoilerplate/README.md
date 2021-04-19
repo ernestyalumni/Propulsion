@@ -143,6 +143,12 @@ First, declare an HTML form section and make it submit (using `HTTP POST`) to ou
 
 Then, when calling `field.label`, an HTML label will automatically be created for our input. This can be customized when we define our `WTForm FlaskForm` class; if not, WTForm will pretty print the field name.
 
+# Class-based Views
+
+pp. 76, Ch. 4, Gaspar and Stouffer
+
+
+
 
 # Creating Controllers with Blueprints
 

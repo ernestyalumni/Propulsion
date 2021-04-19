@@ -1,0 +1,116 @@
+% file: Hyperloop_stuff.tex
+%
+
+\documentclass[10pt]{amsart}
+\pdfoutput=1
+\usepackage{mathtools,amssymb,caption}
+
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage[table]{xcolor}
+\usepackage{pdfpages}
+\usepackage{tikz}
+\usetikzlibrary{matrix,arrows,backgrounds, shapes}
+
+\usepackage{breqn} % for dmath
+
+%\usepackage{cancel} % for Feynman slash notation
+
+\hypersetup{colorlinks=true,citecolor=[rgb]{0,0.4,0}}
+
+%\oddsidemargin=15pt
+%\evensidemargin=5pt
+%\hoffset-45pt
+%\voffset-55pt
+%\topmargin=-4pt
+%\headsep=5pt
+%\textwidth=1120pt
+%\textheight=595pt
+%\paperwidth=1200pt
+%\paperheight=700pt
+%\footskip=40pt
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+%\newtheorem*{main}{Main Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\newenvironment{claim}[1]{\par\noindent\underline{Claim:}\space#1}{}
+\newenvironment{claimproof}[1]{\par\noindent\underline{Proof:}\space#1}{\hfill $\blacksquare$}
+
+%This defines a new command \questionhead which takes one argument and
+%prints out Question #. with some space.
+\newcommand{\questionhead}[1]
+  {\bigskip\bigskip
+   \noindent{\small\bf Question #1.}
+   \bigskip}
+
+\newcommand{\problemhead}[1]
+  {
+   \noindent{\small\bf Problem #1.}
+   }
+
+\newcommand{\exercisehead}[1]
+  { \smallskip
+   \noindent{\small\bf Exercise #1.}
+  }
+
+\newcommand{\solutionhead}[1]
+  {
+   \noindent{\small\bf Solution #1.}
+   }
+
+
+  \title[On the Hyperloop]{On the Hyperloop}
+
+\author{Ernest Yeung \href{mailto:ernestyalumni@gmail.com}{ernestyalumni@gmail.com}}
+\date{17 Avr 2021}
+\keywords{Hyperloop, convex optimization}
+
+\begin{document}
+
+\definecolor{darkgreen}{rgb}{0,0.4,0}
+\lstset{language=Python,
+ frame=bottomline,
+ basicstyle=\scriptsize,
+ identifierstyle=\color{blue},
+ keywordstyle=\bfseries,
+ commentstyle=\color{darkgreen},
+ stringstyle=\color{red},
+ }
+%\lstlistoflistings
+
+\maketitle
+
+\tableofcontents
+
+\begin{abstract}
+All things about the Hyperloop.
+
+This document is a dump of notes, thoughts, interesting references and links to the Hyperloop.
+\end{abstract}
+
+\section{Introduction}
+
+
+\part{Qualitative Summary}
+
+
+
+
+\begin{thebibliography}{9}
+
+
+
+\bibitem{kirschen2021hyperloop}
+Philippe Kirschen and Edward Burnell. \textbf{Hyperloop System Optimization}. 2104.03907. 2021. \url{https://arxiv.org/abs/2104.03907}
+
+\end{thebibliography}
+
+\end{document}
