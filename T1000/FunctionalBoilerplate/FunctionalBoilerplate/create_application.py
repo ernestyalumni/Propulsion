@@ -27,11 +27,12 @@ def create_app(config_object=None):
     #bootstrap = Bootstrap(app)
 
     # Import blueprints.
-    from .views import (about, class_based_views, forms, home, posts)
+    from .views import (about, class_based_views, examples, forms, home, posts)
 
 
     # Register blueprints.
     app.register_blueprint(about.about_bp)
+    app.register_blueprint(examples.examples_bp)
     app.register_blueprint(forms.form_bp)
     app.register_blueprint(home.home_bp)
     app.register_blueprint(posts.posts_bp)
