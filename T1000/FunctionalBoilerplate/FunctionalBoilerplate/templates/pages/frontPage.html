@@ -21,7 +21,10 @@ This is a print out of a "jinja" variable(s) title: {{ title }} subtitle {{ subt
 </p> 
 
 <p>
-<a href="{{ url_for('examples_bp.html_page_inherited') }}">Next page: front page but with inheritance</a>
+<ul>
+<li><a href="{{ url_for('examples_bp.html_page_inherited') }}">Next page: front page but with inheritance</a></li>
+<li><a href="{{ url_for('examples_bp.form_example') }}">Form example 1 with class based view from Flask</a>
+</ul>
 </p>
 
 </body>

@@ -9,6 +9,91 @@
 <p>3 Start of html p tag, end of html p tag </p>
 <p>4 Start of html p tag, end of html p tag </p>
 
+<!-- Spanning Columns -->
+<!-- ref. pp. 133, Tables, Duckett, HTML and CSS -->
 
+<table>
+  <tr>
+    <th></th>
+    <th>9am</th>
+    <th>10am</th>
+    <th>11am</th>
+    <th>12am</th>
+  </tr>
+  <tr>
+    <th>Monday</th>
+    <td colspan="2">Geography</td>
+    <td>Math</td>
+    <td>Art</td>
+  </tr>
+  <tr>
+    <th>Tuesday</th>
+    <td colspan="3">Gym</td>
+    <td>Home Ec</td>
+  </tr>
+</table>
+
+<!-- Spanning Rows -->
+<!-- ref., pp. 134, Tables, Duckett, HTML and CSS -->
+<table>
+  <tr>
+    <th></th>
+    <th>ABC</th>
+    <th>BBC</th>
+    <th>CNN</th>
+  </tr>
+  <tr>
+    <th>6pm - 7pm</th>
+    <td rowspan="2">Movie</td>
+    <td>Comedy</td>
+    <td>News</td>
+  </tr>
+  <tr>
+    <th>7pm - 8pm</th>
+    <td>Sport</td>
+    <td>Current Affairs</td>
+  </tr>
+</table>
+
+<!-- Long Tables -->
+<!-- ref., pp. 135, Tables, Duckett, HTML and CSS -->
+<!-- There are 3 elements that help distinguish between main content of table, and first and last rows (which can contain different content) - thead, tbody, tfoot,
+
+By default,browsers rarely treat content of these elements differently, however designers often use CSS styles to change appearance -->
+
+<table>
+  <thead> <!-- headings of the table -->
+    <tr>
+      <th>Date</th>
+      <th>Income</th>
+      <th>Expenditure</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1st January</th>
+      <td>250</td>
+      <td>36</td>
+    </tr>
+    <tr>
+      <th>2nd January</th>
+      <td>285</td>
+      <td>48</td>
+    </tr>
+    <!-- additional rows as above -->
+    <tr>
+      <th>31st January</th>
+      <td>129</td>
+      <td>64</td>
+    </tr>
+  </tbody>
+  <tfoot> <!-- footer belongs inside tfoot -->
+    <tr>
+      <td></td>
+      <td>7824</td>
+      <td>1241</td>
+    </tr>
+  </tfoot>
+</table>
 
 {% endblock %}<!--/content-->

@@ -1,0 +1,98 @@
+{% extends "layouts/plain_base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+
+<!-- cf. pp. 151 Forms, Duckett, HTML and CSS
+form element should always carry action attribute and will usually have a method and id attribute too.
+
+action - every form element requires an action attribute; its value is the URL
+for the page on the server that'll receive the info in the form when it's
+submitted.
+
+method - forms can be sent using 1 of 2 methods: get or post.
+
+get method - values from form are added to end of URL specified in action attribute. get method ideal for
+* short forms (such as search boxes)
+* when just retrieving data from web server (not sending info that should be added to or deleted from database)
+
+post method - values sent in HTTP headers. 
+
+Use post method if
+* very long
+* contains sensitive data (e.g. password)
+* adds info to database
+-->
+
+<form action="http://www.example.com/subscribe.php" method="get">
+  <p> This is where the form controls will appear.</p>
+</form>
+
+<!-- Text Input -->
+<!-- cf. pp. 152, Forms, Duckett, HTML and CSS -->
+<!-- input element used to create several different form controls;
+  type="text", creates single line text input,
+  size should not be used in new forms,
+  name - when users enter information into a form, server needs to know which form control each piece of data was entered into; the value of this attribute identifies form control and is sent along with info they enter to server -->
+
+
+<form action="http://www.example.com/login.php">
+  <p>Username:
+    <input type="text" name="username" maxlength="30" />
+  </p>
+  <p>Password:
+    <input type="password" name="password" maxlength="30">
+</p>
+</form>
+
+<!-- pp. 154, Forms, Duckett, HTML and CSS -->
+
+<form action="http://www.example.com/comments.php">
+  <p>What did you think of this gig?</p>
+  <!-- You should use CSS to control width and height of a textarea -->
+  <textarea name="comments" cols="20" rows="4">Enter your comments, please...</textarea>
+</form>
+
+<form action="http://www.example/com/profile.php">
+  <p>Please select your favorite genre:
+    <br>
+    <input type="radio" name="genre" value="rock" checked="checked">Rock
+    <input type="radio" name="genre" value="pop">Pop
+    <input type="radio" name="genre" value="jazz">Jazz
+  </p>
+</form>
+
+<!-- pp. 158, Multiple Select Box -->
+<form action="http://www.example.com/profile.php">
+  <p>Do you play any of the following instruments? (You can select more than one option by holding down control on a PC or command key on a Mac while selecting different options.)</p>
+  <select name="instruments" size="3" multiple="multiple">
+    <option value="guitar" selected="selected">Guitar</option>
+    <option value="drums">Drums</option>
+    <option value="keyboard" selected="selected">Keyboard</option>
+    <option value="bass">Bass</option>
+  </select>
+</form>
+
+
+<form action="http://www.example.com/review.php" method="get">
+  <fieldset>
+    <!-- legend element can come directly after opening fieldset tag and contains a caption which helps identify purpose of that group of form controls -->
+    <legend>
+      Your Details:
+    </legend>
+    <label>
+      Name:
+      <input type="text" name="name" maxlength="100">
+    </label>
+    <br>
+    <label>
+      Email:
+      <input type="email" name="email" maxlength="100">
+    </label>
+    <br>
+</fieldset>
+</form>
+
+{% endblock %}<!--/content-->

@@ -108,3 +108,47 @@ https://www.techradar.com/best/browser
 
 http://html5test.com/index.html
 
+### [Document Object Model](https://www.coursera.org/learn/html/lecture/BCsCq/02-01-the-document-object-model-dom)
+
+cf. 02.01 - The Document Object Mode [DOM](https://www.coursera.org/learn/html/lecture/BCsCq/02-01-the-document-object-model-dom)
+
+
+* Basis of HTML 5 is "New features should be based on HTML, CSS, the DOM, and JavaScript..."
+* DOM provides common tree-like structure that all pages should follow
+* Computer Scientists love trees because you can test them.
+
+HTML is built on the DOM
+
+Document -> Root element `<html>` ->
+* Element `<head>` -> Element `<title>` -> Text "my title"
+* Element `<body>` ->
+	- Element `<a>` ->
+			* Attribute "href"
+			* Text "my link"
+	- Element `<h1>` -> Text "my header"
+
+In the `<body>` is where we going to put the tags.
+
+#### 3 parts of a well-formed document
+
+* Doctype, version of HTML that you'll be using
+* Head, * metadata
+* body * displayable content.
+
+* Well-formed pages use the DOM structure
+	- Use valid attributes 
+
+
+
+# Jinja
+
+## Jinja templates
+
+[Template Designer Documentation, Jinja documentation](https://jinja.palletsprojects.com/en/3.0.x/templates/)
+
+A Jinja template is simply a text file. Jinja can generate any text-based format (HTML, XML, CSV, LATEX, etc.). A Jinja template doesn't need to have a specific extension: `.html`, `.xml` or any other extension is just fine.
+
+A template contains **variables** and/or **expressions**, which get replaced with values when a template is *rendered*, and **tags**, which control the logic of the template.
+
+
+
