@@ -5,49 +5,8 @@
 
 {% block content %}
 
-
-
-<!--
-{% set egtable_id=None %}
-
-{% if egtable_id == None %}
-<table class="table table-striped">
-{% else %}
-<table class="table table-striped" id="a_table">
-{% endif %}
-
-  <thead>
-    <tr>
-      {% for col in user_columns %}
-      <th>{{ col }}</th>
-      {% endfor %}
-    </tr>
-  </thead>
-
-  <tfoot>
-    <tr>
-      {% for col in user_columns %}
-      <th><b>{{ col }}</b></th>
-      {% endfor %}
-    </tr>
-  </tfoot>
-
-  <tbody>
-    {% for row_dict in user_objects %}
-    <tr>
-      {% for col in user_columns %}
-      <th>{{ row_dict[col] }}</th>
-      {% endfor %}
-    </tr>
-    {% endfor %}
-  </tbody>
-
-</table>
--->
-
 {{ macros.make_table(user_columns, user_objects) }}
 
 {{ macros.example_print_table() }}
-
 
 {% endblock %}<!--/content-->

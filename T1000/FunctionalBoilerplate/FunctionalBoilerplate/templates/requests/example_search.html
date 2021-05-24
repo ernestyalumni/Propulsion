@@ -1,0 +1,47 @@
+<!-- cf. HTML5: Search Input, Duckett, HTML and CSS, pp. 168 -->
+<!-- cf. https://stackoverflow.com/questions/52090187/retrieve-the-id-or-name-from-the-html-tag-using-python-flask
+What is sent to the server is a list of name value pairs, from submit. -->
+
+{% extends "layouts/plain_base.html" %}
+{% import 'pages/example_macros.html' as macros %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+<!-- Important to tell form what method; otherwise, for this example it only
+  goes back to GET -->
+
+<form action="{{ url_for('examples_bp.html_search_input_user') }}" method="POST">
+  <p>Search Users:</p>
+  <input type="search" name="search_user" placeholder="Enter User name">
+  <input type="submit" value="Search User">
+</form>
+
+{% if not search_input %}
+
+<p><i>No search input yet</i></p>
+
+{% else %}
+
+<p><i> Your search input: </i> {{ search_input }}</p>
+
+  {% if user_columns and user_rows %}
+
+    {{ macros.make_table(user_columns, user_rows) }}
+
+  {% endif %}
+
+  {% if post_columns and post_rows %}
+
+    {{ macros.make_table(post_columns, post_rows) }}
+
+  {% endif %}
+
+{% endif %}
+
+<ul>
+  <li><a href="{{ url_for('examples_bp.user_search') }}">User search as class MethodView </a></li>
+</ul>
+
+{% endblock %}<!--/content-->
