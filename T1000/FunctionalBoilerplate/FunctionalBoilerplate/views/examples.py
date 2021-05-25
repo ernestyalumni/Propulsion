@@ -36,6 +36,13 @@ def html_page_inherited():
         subtitle="Demonstrate HTML with inheritance")
 
 
+@examples_bp.route('/htmlDataTables')
+def html_datatables():
+    return render_template(
+        'pages/dataTablesExamples.html',
+        title="DataTables examples")
+
+
 def sqlalchemy_table_query_to_dict(
         query_results,
         target_mapper_class=None):
