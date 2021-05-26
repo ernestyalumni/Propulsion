@@ -134,7 +134,6 @@ def html_search_input_user():
             print(type(query_results_with_posts))
             print(type(query_results_with_posts[0]))
 
-
             user_columns, user_rows = sqlalchemy_table_query_to_dict(
                 query_results,
                 User)
@@ -254,13 +253,11 @@ class AllUsers(View):
 
     def get_user_objects(self):
 
-
         print("\n ----- get_user_object has run ----- \n")
 
         # type, Python list.
         user_object = User.query.all()
         print("\n dir of User: ", dir(User))
-        print("\n dir of user_object: ", dir(user_object))
         print("\n type of user_object: ", type(user_object))
         print(len(user_object))
         # FunctionalBoilerplate.Model.user.User        
@@ -301,3 +298,78 @@ examples_bp.add_url_rule(
     # 'all_users' defines how to name this URL for Python flask, when doing
     # examples_bp.all_users
     view_func=AllUsers.as_view('all_users'))
+
+
+class MultipleSelectInteraction(MethodView):
+
+    relative_location = '/multipleSelectExamples'
+
+    py_jinja_name = 'multiple_select_interaction'
+
+    title = 'Multiple Select Interaction'
+
+    def __init__(self):
+        self.get_multiple_select_template = 'pages/multipleSelectExamples.html'
+
+    def get_all_users_and_clean(self):
+        all_user_results = User.query.all()
+
+        # These come in as external inputs.
+        display_columns = ['username',]
+        data_columns = ['uid',]
+
+        def parse_user(input_user):
+
+            key = getattr(input_user, display_columns[0])
+            value = getattr(input_user, data_columns[0])
+
+            return (key, value)
+
+        return [parse_user(user) for user in all_user_results]
+
+
+    def get(self):
+
+        all_users_list = self.get_all_users_and_clean()
+
+        return render_template(
+            self.get_multiple_select_template,
+            title=MultipleSelectInteraction.title,
+            all_users_list=all_users_list,
+            single_user_select_id=None)
+
+    def post(self):
+
+        all_users_list = self.get_all_users_and_clean()
+
+        print("\n dir of request :")
+        print(dir(request))
+        print(dir(request.form))
+        print(request.form)
+
+        # request has no attribute POST
+        #print("\n request.POST : ", request.POST)
+        #print(dir(request.POST))
+
+        return render_template(
+            self.get_multiple_select_template,
+            title=MultipleSelectInteraction.title,
+            all_users_list=all_users_list,
+            single_user_select_id=request.form['single_user_select'])
+
+
+examples_bp.add_url_rule(
+    MultipleSelectInteraction.relative_location,
+    view_func=MultipleSelectInteraction.as_view(
+        MultipleSelectInteraction.py_jinja_name),
+    methods=['GET', 'POST'])
+
+
+"""
+examples_bp.add_url_rule(
+    MultipleSelectInteraction.relative_location,
+    view_func=MultipleSelectInteraction.as_view(
+        # endpoint name needs to be different.
+        MultipleSelectInteraction.py_jinja_name + "_post"),
+    methods=['POST',])
+"""

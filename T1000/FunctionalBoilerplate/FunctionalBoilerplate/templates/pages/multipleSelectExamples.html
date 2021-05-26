@@ -1,0 +1,57 @@
+{% extends "layouts/plain_base.html" %}
+{% import 'pages/example_macros.html' as macros %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+<!-- cf. https://getbootstrap.com/docs/5.0/forms/select/ -->
+
+<!-- multiple attribute supported -->
+<select class="form-select" multiple aria-label="multiple select example">
+  <option selected>Open this select menu</option>
+  <option value="1">One</option>
+  <option value="2">Two</option>
+  <option value="3">Three</option>
+</select>
+
+<!-- size attribute -->
+
+<select class="form-select" size="3" aria-label="size 3 select example">
+  <option selected>Open this select menu</option>
+  <option value="1">One</option>
+  <option value="2">Two</option>
+  <option value="3">Three</option>
+</select>
+
+
+<!-- cf. https://stackoverflow.com/questions/32019733/getting-value-from-select-tag-using-flask -->
+
+<form class="form-inline" method="POST" action="{{ url_for('examples_bp.multiple_select_interaction') }}">
+
+<!--<div class="input-group"> -->
+
+<select name="single_user_select" class="form-select" size=20 aria-label="size select all users">
+  <option selected>Select a single user</option>
+  {% for user_uid in all_users_list %}
+    <option value="{{ user_uid[1] }}">{{ user_uid[0] }}</option>
+  {% endfor %}  
+</select>
+
+<!-- </div> -->
+
+<!-- <input type="submit" name="single_user_select_input" value="Submit for single user choice"> -->
+
+<!-- type="submit" turns button into being able to do post -->
+<!-- cf. https://stackoverflow.com/questions/16036041/can-a-html-button-perform-a-post-request --> 
+<button name="button_for_single_user_select" type="submit" class="btn btn-primary" value="button_value_for_single_user_select"> Press button for single user</button>
+
+</form>
+
+{% if single_user_select_id %}
+<p> {{ single_user_select_id }} </p>
+{% else %}
+<p> Nothing selected yet</p>
+{% endif %}
+
+{% endblock %}<!--/content-->
