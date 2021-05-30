@@ -30,6 +30,45 @@
 </table>
 {% endmacro %}
 
+{% macro make_table_with_table_name(columns_as_list, rows_as_dicts, table_name) %}
+
+<table class="table table-striped" id="{{ table_name }}">
+
+  <thead>
+    <tr>
+      {% for col in columns_as_list %}
+      <th><b>{{ col }}</b></th>
+      {% endfor %}<!--/column_as_list-->
+    </tr>
+  </thead>
+  <tfoot>
+    <tr>
+      {% for col in columns_as_list %}
+      <th><b>{{ col }}</b></th>
+      {% endfor %}<!--/column_as_list-->
+    </tr>
+  </tfoot>
+
+  <tbody>
+    {% for row_dict in rows_as_dicts %}
+    <tr>
+      {% for col in columns_as_list %}
+      <th>{{ row_dict[col] }}</th>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+
+  </tbody>
+</table>
+<script>
+$(document).ready(function() {
+    $( {{ table_name }} ).DataTable();
+});
+</script>
+
+{% endmacro %}
+
+
 
 {% macro example_print_table() %}
 

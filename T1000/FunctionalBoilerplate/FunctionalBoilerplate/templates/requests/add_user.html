@@ -1,0 +1,69 @@
+{% extends "layouts/plain_base.html" %}
+{% import 'pages/example_macros.html' as macros %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+<!--
+{% for user_uid in all_users_list %}
+    <option value="{{ user_uid[1] }}">{{ user_uid[0] }}, {{ user_uid[1] }} </option>
+{% endfor %}  
+
+<script>
+$(document).ready(function() {
+    $('#exampleTable1').DataTable();
+});
+</script>
+-->
+
+{{ macros.make_table_with_table_name(all_users_list[0], all_users_list[1], "all_users_now") }}
+
+
+<form class="form-line" method="POST" action="{{ url_for('examples_bp.add_user') }}" novalidate>
+  <div class="row">
+
+  <div class="col">
+  <div class="form-group">
+    <!-- mb bottom padding set to 3, 1rem -->
+    <div class="mb-3">
+      New Username
+    </div>
+    <div class="input-group has-validation">
+    <input name="add_new_username" type="text" class="form-control" placeholder="Username" aria-label="Username" required>
+    <div class="invalid-feedback">
+      Please enter a non-empty username
+    </div>
+    </div>
+  </div>
+  </div>
+
+  <div class="col">
+    <div class="mb-3">
+      New Password
+    </div>
+
+  <div class="input-group mb-3">
+    <input name="add_new_password" type="text" class="form-control" placeholder="New Password" aria-label="Password">
+  </div>
+  </div>
+
+  <div class="col">
+  <div class="form-group">
+    <div class="mb-3">
+      Freeform text area
+    </div>
+
+    <div class="input-group">
+      <textarea class="form-control" aria-label="With textarea" name="free_text_area" placeholder="Add any text you like for fun"></textarea>
+    </div>
+  </div>
+  </div>
+  </div>
+
+  </div>
+
+  <input class="btn btn-primary" type="submit" value="Add User">
+</form>
+
+{% endblock %}<!--/content-->

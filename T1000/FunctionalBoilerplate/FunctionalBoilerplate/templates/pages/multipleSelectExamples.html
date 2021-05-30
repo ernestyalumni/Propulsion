@@ -54,4 +54,20 @@
 <p> Nothing selected yet</p>
 {% endif %}
 
+{% if user_post_comment %}
+{{ macros.make_table(user_post_comment[0], user_post_comment[1]) }}
+{% endif %}
+
+{% if user_post_tag %}
+{{ macros.make_table(user_post_tag[0], user_post_tag[1]) }}
+{% endif %}
+
+<h2 class="display-3">More examples</h2>
+<p class="lead">
+<ul>
+  <li><a href="{{ url_for('examples_bp.multiple_multiple_select') }}">Multiple Selects and multiple form results</a></li>
+</ul>
+</p>
+
+
 {% endblock %}<!--/content-->

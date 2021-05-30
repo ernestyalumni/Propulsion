@@ -1,12 +1,12 @@
-from . import Comment, Post, User
+from . import (db_session, posts_tags_table, Comment, Post, Tag, User)
 
+from collections import OrderedDict
 from flask import (
     Blueprint,
     render_template,
     request)
 from flask.views import (MethodView, View)
-
-from collections import OrderedDict
+from sqlalchemy import (and_, or_)
 
 
 class ExamplesBlueprintConstants:
@@ -58,11 +58,20 @@ def sqlalchemy_table_query_to_dict(
 
         if (len(query_results) > 0):
 
-            table_columns = list(query_results[0].__table__.columns.keys())
+            try:
+
+                table_columns = list(query_results[0].__table__.columns.keys())
+
+            except AttributeError as err:
+                print("\n Attribute Error found:", err)
+                print("\n dir of query_results[0]: ", dir(query_results[0]))
+
+                table_columns = list(query_results[0].keys())
+
 
         else:
 
-          return None, None
+          return None
 
     def to_row_dict(query_result, input_table_columns):
         # cf. https://stackoverflow.com/questions/1167398/python-access-class-property-from-string
@@ -299,6 +308,21 @@ examples_bp.add_url_rule(
     # examples_bp.all_users
     view_func=AllUsers.as_view('all_users'))
 
+def get_all_for_select_and_clean(TargetTable, display_columns, value_columns):
+    all_results = TargetTable.query.all()
+
+    def parse_row(row):
+        key = getattr(row, display_columns[0])
+        value = getattr(row, value_columns[0])
+        return (key, value)
+
+    return [parse_row(row) for row in all_results]
+
+def get_all_for_display_and_clean(TargetTable):
+    all_results = TargetTable.query.all()
+
+    return sqlalchemy_table_query_to_dict(all_results, TargetTable)
+
 
 class MultipleSelectInteraction(MethodView):
 
@@ -312,21 +336,48 @@ class MultipleSelectInteraction(MethodView):
         self.get_multiple_select_template = 'pages/multipleSelectExamples.html'
 
     def get_all_users_and_clean(self):
-        all_user_results = User.query.all()
 
         # These come in as external inputs.
         display_columns = ['username',]
         data_columns = ['uid',]
 
-        def parse_user(input_user):
+        return get_all_for_select_and_clean(
+            User,
+            display_columns,
+            data_columns)
 
-            key = getattr(input_user, display_columns[0])
-            value = getattr(input_user, data_columns[0])
+    def query_posts_from_user_id(self, user_id):
+        query_results = (db_session.query(
+            User.username,
+            User.uid,
+            Post.title,
+            Comment.name).
+                filter(User.uid==user_id).
+                filter(User.uid==Post.user_id).
+                filter(Post.pid==Comment.post_id)).all()
 
-            return (key, value)
+        if (len(query_results) == 0):
+            return None
 
-        return [parse_user(user) for user in all_user_results]
+        return sqlalchemy_table_query_to_dict(query_results)
 
+    def query_tags_from_user_id(self, user_id):
+        query_results = (db_session.query(
+            User.username,
+            User.uid,
+            Post.title,
+            Post.pid,
+            Post.publish_date,
+            Tag.tid).
+                filter(User.uid==user_id).
+                filter(User.uid==Post.user_id).
+                filter(Post.pid==posts_tags_table.columns.post_id).
+                filter(posts_tags_table.columns.tag_id==Tag.tid)).all()
+
+        if (len(query_results) == 0):
+            return None
+
+        return sqlalchemy_table_query_to_dict(query_results)
 
     def get(self):
 
@@ -336,26 +387,41 @@ class MultipleSelectInteraction(MethodView):
             self.get_multiple_select_template,
             title=MultipleSelectInteraction.title,
             all_users_list=all_users_list,
-            single_user_select_id=None)
+            single_user_select_id=None,
+            user_post_comment=None,
+            user_post_tag=None)
 
     def post(self):
 
         all_users_list = self.get_all_users_and_clean()
 
-        print("\n dir of request :")
-        print(dir(request))
-        print(dir(request.form))
-        print(request.form)
-
         # request has no attribute POST
         #print("\n request.POST : ", request.POST)
         #print(dir(request.POST))
+
+        # Python string type.
+        selected_user_id = request.form['single_user_select']
+        print("\n type selected_user_id:", type(selected_user_id))
+
+        selected_user_id = int(selected_user_id)
+
+        user_post_comment_data = self.query_posts_from_user_id(
+            selected_user_id)
+        print("\n user post comment: ", user_post_comment_data)
+
+        user_post_tag_data = self.query_tags_from_user_id(
+            selected_user_id)
+
+        print("\n dir of post_tags_table: ", dir(posts_tags_table))
+        print(type(posts_tags_table))
 
         return render_template(
             self.get_multiple_select_template,
             title=MultipleSelectInteraction.title,
             all_users_list=all_users_list,
-            single_user_select_id=request.form['single_user_select'])
+            single_user_select_id=request.form['single_user_select'],
+            user_post_comment=user_post_comment_data,
+            user_post_tag=user_post_tag_data)
 
 
 examples_bp.add_url_rule(
@@ -365,11 +431,156 @@ examples_bp.add_url_rule(
     methods=['GET', 'POST'])
 
 
-"""
+class MultipleMultipleSelect(MethodView):
+    relative_location = '/multipleMultipleSelectExamples'
+    py_jinja_name = 'multiple_multiple_select'
+    title = 'Multiple Multiple Select'
+    http_template = 'requests/multipleMultipleSelectExamples.html'
+
+    def __init__(self):
+        super(MultipleMultipleSelect, self).__init__()
+
+        # These come in as external inputs.
+        display_columns = ['username',]
+        data_columns = ['uid',]
+
+        self.all_users_list = get_all_for_select_and_clean(
+            User,
+            display_columns,
+            data_columns)
+
+    def get(self):
+
+        return render_template(
+            MultipleMultipleSelect.http_template,
+            title=MultipleMultipleSelect.title,
+            all_users_list=self.all_users_list,
+            selected_user_ids=None,
+            searched_posts=None)
+
+    def query_multiple_users(self, selected_user_ids):
+        query_results = (db_session.query(
+            User.username,
+            User.uid,
+            Post.title,
+            Post.pid,
+            Post.user_id).
+                filter(
+                    or_((User.uid == s_uid)
+                        for s_uid in selected_user_ids)).
+                filter(User.uid == Post.user_id)
+                ).all()
+        if (len(query_results) == 0):
+            return None
+
+        return sqlalchemy_table_query_to_dict(query_results)
+
+    def post(self):
+        selected_user_ids = None
+        searched_posts = None
+
+        form_data = request.form.to_dict(flat=False)
+        print("\n form data: ", form_data)
+
+        if (request.form['multiple_user_select'] != 'NoneSelected'):
+
+            raw_selected_user_ids = request.form.to_dict(flat=False)[
+                'multiple_user_select']
+
+            raw_selected_user_ids = [
+                int(x) for x in raw_selected_user_ids
+                if x != 'NoneSelected']
+
+            if (len(raw_selected_user_ids) > 0):
+                selected_user_ids = raw_selected_user_ids
+
+            print("\n selected user ids: ", selected_user_ids)
+
+            selected_user_ids = self.query_multiple_users(selected_user_ids)
+
+            #selected_user_ids = [
+            #    int(x) for x in request.form['multiple_user_select']]
+
+        if (form_data['post_title_search'][0] != ''):
+            print("\n Nonempty post_title_search \n")
+
+            modified_search_input = form_data['post_title_search'][0] + '%'
+
+            print("\n modified_search_input: ", modified_search_input)
+
+            query_results = Post.query.filter(
+                getattr(Post, 'title').like(modified_search_input)).all()
+
+            searched_posts = sqlalchemy_table_query_to_dict(
+                query_results,
+                Post)
+
+            print("\n searched_posts : ", searched_posts)
+
+
+        else:
+            print("\n EMPTY post_title_search \n")
+
+
+        return render_template(
+            MultipleMultipleSelect.http_template,
+            title=MultipleMultipleSelect.title,
+            all_users_list=self.all_users_list,
+            selected_user_ids=selected_user_ids,
+            searched_posts=searched_posts)
+
+
 examples_bp.add_url_rule(
-    MultipleSelectInteraction.relative_location,
-    view_func=MultipleSelectInteraction.as_view(
-        # endpoint name needs to be different.
-        MultipleSelectInteraction.py_jinja_name + "_post"),
-    methods=['POST',])
-"""
+    MultipleMultipleSelect.relative_location,
+    view_func=MultipleMultipleSelect.as_view(
+        MultipleMultipleSelect.py_jinja_name),
+    methods=['GET', 'POST'])
+
+
+class AddUser(MethodView):
+    relative_location = '/addUser'
+    py_jinja_name = 'add_user'
+    title = 'Add New User'
+    http_template = 'requests/add_user.html'
+
+    def __init__(self):
+        super(AddUser, self).__init__()
+
+        self.all_users_list = get_all_for_display_and_clean(User)
+
+    def get(self):
+
+        return render_template(
+            AddUser.http_template,
+            title=AddUser.title,
+            all_users_list=self.all_users_list)
+
+    def post(self):
+        form_data = request.form.to_dict(flat=False)
+        print("\n form data: ", form_data)
+
+        if (form_data['add_new_username']):
+            print("\n Adding new username :", form_data['add_new_username'])
+            new_user = User()
+            new_user.username = form_data['add_new_username'][0]
+            new_user.password = form_data['add_new_password'][0]
+
+            print(form_data['add_new_username'])
+            print(form_data['add_new_password'])
+
+            db_session.add(new_user)
+
+            db_session.commit()
+
+
+        return render_template(
+            AddUser.http_template,
+            title=AddUser.title,
+            all_users_list=self.all_users_list)
+
+
+examples_bp.add_url_rule(
+    AddUser.relative_location,
+    view_func=AddUser.as_view(AddUser.py_jinja_name),
+    methods=['GET', 'POST'])
+

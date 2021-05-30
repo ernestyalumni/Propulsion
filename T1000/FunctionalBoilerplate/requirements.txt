@@ -10,6 +10,8 @@ Flask-WTF
 sqlalchemy
 WTForms
 
+Flask-Restful
+
 # Requirements for databases
 
 # Postgres
