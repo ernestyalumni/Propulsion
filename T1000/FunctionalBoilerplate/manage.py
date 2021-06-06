@@ -26,11 +26,14 @@ from .DatabaseSetup.create_from_metadata import create_all_tables
 from .DatabaseSetup.custom_flask_sqlalchemy import flask_sqlalchemy_db
 from .DatabaseSetup.database_session import db_session
 from .FunctionalBoilerplate.create_application import create_app
+from .FunctionalBoilerplate.example_flask_shell import run_examples
 from .Model.comment import Comment
 from .Model.post import Post
 from .Model.tags import Tag
 from .Model.user import User
 
+from flask import url_for
+import subprocess
 
 # cf. pp. 44, Gaspar and Stouffer (2018)
 # https://flask.palletsprojects.com/en/1.1.x/config/#development-production
@@ -58,7 +61,8 @@ def make_shell_context():
         Post=Post,
         Comment=Comment,
         Tag=Tag,
-        create_all_tables=create_all_tables)
+        create_all_tables=create_all_tables,
+        run_examples=run_examples)
 
 
 if __name__ == "__main__":

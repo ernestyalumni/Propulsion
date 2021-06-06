@@ -169,6 +169,11 @@ Use SQLAlchemy `func` to return count on a group by query, we're able to order t
 
 Daniel Gaspar, Jack Stouffer. **Mastering Flask Web Development: Build enterprise-grade, scalable Python web applications**, 2nd Edition Kindle Edition. 2018.
 
+
+Shalabh Aggarwal. **Flask Framework Cookbook**. Packt Publishing (November 21, 2014). ISBN-10 : 178398340X
+ISBN-13 : 978-1783983407 
+
+
 https://github.com/realpython/flask-boilerplate
 
 https://exploreflask.com/en/latest/blueprints.html
