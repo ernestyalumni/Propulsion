@@ -2,3 +2,8 @@
 bs4
 pytest
 requests
+
+# Controls
+
+numpy
+sympy
