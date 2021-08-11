@@ -24,3 +24,10 @@ venv/
 *.out
 *.synctex.gz
 *.toc
+
+# Directories
+LaTeXandpdfs/*.log
+T1000/DivisionalBoilerplate/DivisionalBoilerplate/static/css/bootstrap-grid*
+T1000/DivisionalBoilerplate/DivisionalBoilerplate/static/css/bootstrap-reboot*
+T1000/DivisionalBoilerplate/DivisionalBoilerplate/static/css/bootstrap.*
+T1000/FunctionalBoilerplate/FunctionalBoilerplate/static/css/bootstrap.min*
