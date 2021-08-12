@@ -1,10 +1,14 @@
 ENABLE_TESTING()
 
 ADD_EXECUTABLE(Check
+  Numerical/Interpolation/Interpolation_tests.cpp
+  Utilities/BinarySearch_tests.cpp
   )
 
 TARGET_LINK_LIBRARIES(Check
-  gtest_main)
+  Utilities
+  gtest_main
+  )
 
 INCLUDE(GoogleTest)
 gtest_discover_tests(Check)

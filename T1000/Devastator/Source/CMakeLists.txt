@@ -82,3 +82,4 @@ FetchContent_MakeAvailable(googletest)
 # directory.
 ADD_SUBDIRECTORY(Numerical)
 ADD_SUBDIRECTORY(UnitTests)
+ADD_SUBDIRECTORY(Utilities)
