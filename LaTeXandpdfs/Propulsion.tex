@@ -5095,6 +5095,81 @@ and then for general $x\in N$,
 
 \part{Numerical Computation; Scientific Computation}
 
+\section{Interpolation and Extrapolation}
+
+cf. Ch. 3, Interpolation and Extrapolation, Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}.
+
+If we know $f(x)$ at $x_0, x_1, \dots x_{N-1}$, $x_0 < x_1 < \dots < x_{N-1}$,
+
+2 interpolation processes:
+\begin{enumerate}
+	\item Fit (once) interpolating function to data pts. provided
+	\item Evaluate (as many tiumes as you wish) that interpolating function at target pt. $x$
+\end{enumerate}
+Cons: typically less computationally efficient, more susceptible to round off error.
+
+\begin{enumerate}
+	\item Find right starting position in table ($x_i$ or $i$)
+	\item Perform interpolation (construct functional estimate $f(x)$) using $M$ nearby values (e.g. centered on $M \ll N$ and $O(M^2)$ time (operations))
+\end{enumerate}
+
+local interpolation using $M$ nearest neighbor points gives interpolated values $f(x)$ that don't in general, have cont. 1st. or higher derivatives, \\
+because, as $x= x_i$, $x=x_j$ tabulated values, interpolation scheme switches which tabulated pts. are "local" \\
+
+where continuity of derivatives is concern, use "stiffer" interpolation by \emph{spline} function. \emph{spline} is a polynomial between each pair of table pts., but coefficients determined "slightly" nonlocally, \\
+- nonlocality to guarantee global smoothness in interpolated function up to some order of derivative.
+
+\emph{order} of the interpolation $= M - 1$, $M \equiv $ number of pts. used in interpolation scheme. \\
+
+abscissas $x_j$, $j=0, \dots N-1$ \\
+abscissas either monotonically increasing or monotonically decreasing. \\
+
+Given $M \leq N$, number $x$, \\
+find $j_{\text{lo}} \in \mathbb{Z}$ s.t. $x$ centered among $M$ abscissas $x_{j_{\text{lo}}}, \dots x_{j_{\text{lo}} }, \dots x_{j_{\text{lo}} + M - 1}$, i.e. $x\in [ x_m, x_{m+1}]$, where
+\begin{equation}
+	m = j_{\text{lo}} + \lfloor \frac{M-2}{2} \rfloor
+\end{equation}
+
+and $j_{\text{lo}} \nless 0$ and $ j_{\text{lo}} + M  - 1 \ngtr N - 1$ \\
+
+If $M \mod{2} = 0$, $M = 2N$, so $ \frac{M-2}{2} = N-1$. \\
+If $M \mod{2} = 1$, $M= 2N+1$, so $ \frac{M-2}{2} = \frac{2(N-1) + 1}{2} \mapsto N-1$, if $M > 2$. \\
+
+\subsection{Polynomial Interpolation and Extrapolation}
+
+\subsubsection{Lagrange polynomials or Lagrange's classical formula}
+
+Given $M$ pts.
+\[
+\begin{gathered}
+	(x_0, y_0), (x_1, y_1), \dots (x_{M - 1}, y_{M- 1})
+\end{gathered}
+\]
+where no 2 $x_j$'s, $j= 0, 1 \dots M-1$ are equal, interpolation polynomial in Lagrange form is a linear combination:
+\begin{equation}
+	L(x) := \sum_{j=0}^{M- 1} y_j l_j(x)
+\end{equation}
+of Lagrange basis polynomials $l_j(x)$:
+\begin{equation}
+	l_j(x) := \prod_{ \substack{ 0 \leq m \leq M - 1 \\ m \neq j } } \frac{ x - x_m}{ x_j - x_m } = \frac{ (x- x_0) }{ (x_j - x_0) } \dots \frac{ (x- x_{j-1}) ( x - x_{j+1} ) }{ (x_j - x_{j-1} ) ( x_j - x_{j+1} ) } \dots \frac{ (x- x_{M-1}) }{ (x_j - x_{M- 1})}
+\end{equation}
+and so, for change of notation,
+\[
+\begin{gathered}
+	L(x) \equiv P(x) = \frac{ (x-x_1) (x-x_2) \dots (x-x_{M-1} ) }{ (x_0 - x_1) (x_0 - x_2) \dots (x_0 - x_{M-1})} y_0 + \frac{ (x-x_0) (x-x_1) \dots (x-x_{M-2} ) }{ (x_1 - x_0) (x_1 - x_2) \dots (x_1 - x_{M-1})} y_1 + \dots + \frac{ (x-x_0) (x-x_1) \dots (x-x_{M-2} ) }{ (x_{M-1} - x_0) (x_{M-1} - x_1) \dots (x_{M-1} - x_{M-2})} y_{M - 1}
+\end{gathered}
+\]
+
+For $M=2, M=3$ cases,
+
+\[
+\begin{aligned}
+	& L^{(2)}(x) = \frac{ x - x_1}{x_0 - x_1} y_0 + \frac{ x- x_0 }{ x_1 - x_0} y_1 \\
+	& L^{(3)}(x) = \frac{ (x - x_1)(x - x_2) }{ (x_0 - x_1) (x_0 - x_2) } y_0 + \frac{ (x - x_0)(x - x_2) }{ (x_1 - x_0) (x_1 - x_2) } y_1 + \frac{ (x- x_0)( x- x_1) }{ (x_2 - x_0)(x_2 - x_1)} y_2
+\end{aligned}
+\]
+
+
 \section{Integration of ODEs}
 
 
@@ -6573,7 +6648,21 @@ Pitaevskii and Lifshitz (1981) \cite{PL1981}
 
 Sonnendr\"{u}cker (2017) \cite{Sonn2017}.  
 
+\part{Guidance, Navigation, and Control (GNC)}
 
+\section{Software for modeling and execution}
+
+\subsection{Matlab/Simulink and alternatives}
+
+\subsubsection{Open source alternatives}
+
+GNURadio for digital signal processing (cf. Nick C.)
+
+In image processing, Matlab replaced with Python (openCV, numpy, PIL, other great modules) (cf. Katharine I.)
+
+Modelica - has fairly good documentation with examples, has standard library that may or may not be surface level of domain of interest. Has FMI support, allowing saving models/simulations in standardized plain text data. (cf. Sean M.)
+
+Use of Matlab is very team oriented (meaning very specific to the team's needs?) For example for Power Electronics, LTSpice is used, as well for PCB simulations. Simulink is good for model building and doing complex systems. (cf. Amir K.)
 
 \part{Orbital Mechanics}
 
@@ -6986,6 +7075,9 @@ Eric Sonnendr\"{u}cker.  \emph{Advanced Finite Element Methods}.  Lecture notes.
 
 \bibitem{BMW1071}
 Roger R. Bate, Donald D. Mueller, Jerry E. White. \textbf{Fundamentals of Astrodynamics} (Dover Books on Aeronautical Engineering) Revised ed. Edition. Dover Publications; Revised ed. edition (June 1, 1971). ISBN-10: 0486600610
+
+\bibitem{PTVF2007}
+William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P. Flannery. \textbf{Numerical Recipes: The Art of Scientific Computing}. 3rd Edition.  Cambridge University Press.  ISBN-10: 0521880688
 
 \bibitem{GaSt2018}
 Daniel Gaspar, Jack Stouffer.
