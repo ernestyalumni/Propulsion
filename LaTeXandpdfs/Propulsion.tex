@@ -430,13 +430,13 @@ total mass inside a control volume $B(t)$, $m=m(t)$, is given by
 m := \int_{B(t)} \rho \text{vol}^n
 \]
 Then for mass conservation,
-\[
+\begin{equation}\label{Eq:MassConservationDerivation}
 \begin{gathered}
 \dot{m} \equiv \frac{d}{dt} m = \frac{d}{dt} \int_{B(t)} \rho \text{vol}^n = \int_{B(t)} \mathcal{L}_{\frac{\partial}{\partial t} + \mathbf{u}} (\rho \text{vol}^n) = \int_{B(t)} \left[ \frac{ \partial \rho }{ \partial t} \text{vol}^n + \mathcal{L}_{\mathbf{u}} (\rho \text{vol}^n) \right] = \int_{B(t)} \left[ \frac{ \partial \rho }{ \partial t} \text{vol}^n + \mathbf{d}(i_{\mathbf{u}} \rho \text{vol}^n) \right] = \\ 
  = \int_{B(t)} \frac{ \partial \rho }{ \partial t} \text{vol}^n + \int_{\partial B} i_{\mathbf{u}} \rho \text{vol}^n = \\
  = \int_{B(t)} \frac{ \partial \rho }{ \partial t} \text{vol}^n + \int_{\partial B}\rho u^i dS_i 
 \end{gathered}
-\]
+\end{equation}
 where 
 \[
 \begin{gathered}
@@ -973,9 +973,66 @@ Eq. \ref{Eq:thrustidealrocket} is Eq. (3.129) of Humble, Henry, and Larson (1995
 
 \part{1-dim. propulsion (revisited)}
 
+\section{Fluid Flow (review)}
+
+\subsection{Mass conservation, revisited}
+
+Let $m$ also denote the $d=3$ (differential) form, $m \in \Omega^d(N)$, where $N \equiv $ spatial manifold, $\text{dim}N = d =3$. Let $V$ be the control volume. Then
+\[
+\begin{gathered}
+	M = \int_V m = \int_V \rho \text{vol}^d
+\end{gathered}
+\]
+
+Recall then Eq. \ref{Eq:MassConservationDerivation}, so that 
+
+\[
+\begin{gathered}
+\dot{M} \equiv \frac{d}{dt} M = \frac{d}{dt} \int_V \rho \text{vol}^d = \int_V \frac{ \partial \rho }{ \partial t} \text{vol}^d + \int_{\partial V} \rho u^i dS_i
+\end{gathered}
+\]
+
+\subsection{Newton's second law on continuum, fluid flow}
+
+For $(\mathbf{d}, - ) : \Omega^{d-1}(N) \otimes TN \to \Omega^d(N) \otimes TN$, where \\
+smooth (spatial) manifold $N$, \\
+$\Omega^{d}(N)$ is the space of all $d$-forms on $N$, \\
+$TN \equiv $  tangent space on $N$, \\
+$\Omega^d(N) \otimes TN$ is the tensor product space of tensor products of $d$ differential forms and tangent vectors, then
+
+\[
+\begin{gathered}
+F = \frac{d}{dt} \Pi \equiv \dot{\Pi} := \frac{d}{dt} \int_V m \otimes u = \int_V \dot{m} \otimes u + m \left( \frac{\partial u}{ \partial t} + u^k \frac{ \partial u }{ \partial x^k } \right) = \int_V \frac{\partial ( \partial u ) }{ \partial t} \text{vol}^d  + \int_{\partial V} \rho u^k dS_k \otimes u
+\end{gathered}
+\]
+where, recall,
+\[
+\frac{\partial (\rho u) }{ \partial t} \text{vol}^d = \frac{\partial \rho }{ \partial t} \text{vol}^d \otimes u + \rho \text{vol}^d \otimes \frac{ \partial u}{ \partial t} = \dot{m} \otimes u + m \frac{\partial u }{ \partial t}
+\]
+
+Hill and Peterson (1992) \cite{HiPe1992} says it's important to note that  $F \equiv \sum F$ is the sum of the forces applied to the control volume by its environment. \\
+
+$\int_V \frac{ \partial (\rho u) }{ \partial t} \text{vol}^d$ is interpreted as the changing of the total momentum instantaneously contained within the control volume $V$. \\
+
+$\int_{\partial V} \rho u^k dS_k \otimes u$ is interpreted as the changing of the net flow rate of momentum leaving the control volume. \\
+
+Practical advice from "Newton's Second Law and the Momentum Equation", pp. 26, Hill and Peterson (1992) \cite{HiPe1992}:
+
+\begin{itemize}
+	\item Steady flow means velocity, density, and "so on" (what does Hill and Peterson (1992) \cite{HiPe1992} mean by "so on") at any point in space don't change with time (though they may well vary from point to point in space). \\
+	Thus for steady flow $\frac{ \partial ( \rho u ) }{ \partial t } = 0$, \\
+	so one can do \emph{complete thermodynamic analysis} by considering only inputs and outputs of a control volume, not its contents.
+	\item If one can convert an unsteady flow problem to a steady one by moving coordinate system of observer, it's usually a good idea. 
+\end{itemize}
+
+
+
+
+
+
 \section{Ideal Rocket Equation}
 
-Sec. 1Humble, Henry, and Larson (1995)
+Sec. 1, Humble, Henry, and Larson (1995)
 
 Looking at pp. 40-41 of \cite{GOates1997}, Chapter 2, ``Thermodynamics and Fluid Flows'', 
 \[
@@ -6957,11 +7014,12 @@ Rutgers University – CS 417: Distributed Systems 2009 Paul Krzyzanowski, Lectu
 \bibitem{GOates1997}
 Gordon C. Oates. \textbf{Aerothermodynamics of Gas Turbine and Rocket Propulsion} 3rd Edition. AIAA; 3rd edition (January 1, 1997). ISBN-13: 978-1563472411
 
-
-
+\bibitem{HiPe1992}
+Philip Hill and Carl Peterson. \textbf{Mechanics and Thermodynamics of Propulsion}. 2nd Ed. Pearson.
 
 \bibitem{GSuttonOBiblarz2001}
 George P. Sutton, Oscar Biblarz. \textbf{Rocket Propulsion Elements}, 7th Edition. Wiley, 2001.  
+
 \bibitem{HHL1995} 
 Ronald W. Humble, Gary N. Henry, Wiley J. Larson.  \textbf{Space Propulsion Analysis and Design}.  First Edition-Revised.  The McGraw-Hill Companies, Inc.  Primis Custom Publishing.  1995. ISBN 0-07-031320-2   
 
