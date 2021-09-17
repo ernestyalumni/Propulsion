@@ -1222,7 +1222,7 @@ For $C_p$, consider
 \]
 
 
-cf. Ch. 3 Chemical Rockets, Oates (1997) \cite{GOAtes1997}
+cf. Ch. 3 Chemical Rockets, Oates (1997) \cite{GOates1997}
 
 rocket volume $R_0$ \\
 $\partial R_0$ includes \\
@@ -1455,6 +1455,9 @@ For an atmosphere-free planet, $D=0$,
   \Longrightarrow \Delta v= \left( u_{\text{exh}} + \frac{ (p_{\text{exh}} - p_a ) A_e }{\dot{m}} \right) \ln{ \left( \frac{M(0) }{ M(0) - m_p } \right) } - g\cos{\theta}t_f
 \end{gathered}
 \]
+
+\section{Thermochemistry, Thermodynamics, One-dimensional Fluid Flow}
+
 
 
 
@@ -5577,7 +5580,7 @@ If $\text{div}\mathbf{u} = 0$, this is the \emph{incompressible} case.
 
 If $\sqrt{g}=1$, $\frac{ \partial \rho}{ \partial t} + \frac{ \partial }{ \partial x^k}(\rho u^k) = 0 $
 
-\subsubsection{ 2 and more species, mass conservation}
+\subsubsection{2 and more species, mass conservation}
 
 Suppose $M_{\text{tot}} = M_A + M_B$, $\begin{aligned} \rho_{A} & = \frac{ M_A}{ | \int \text{vol}^d| } \\ \rho_{B} & = \frac{ M_B}{ | \int \text{vol}^d| } \end{aligned}$.  (assume, cf. Landau and Lifshitz, that species $A,B$ ``don't talk to each other'', that is, interaction between them is negligible in terms of occupying volume; this is what gases do).
 
@@ -6721,6 +6724,55 @@ Modelica - has fairly good documentation with examples, has standard library tha
 
 Use of Matlab is very team oriented (meaning very specific to the team's needs?) For example for Power Electronics, LTSpice is used, as well for PCB simulations. Simulink is good for model building and doing complex systems. (cf. Amir K.)
 
+\part{Control}
+
+\section{Signals and Systems}
+
+cf. pp. 64, Oppenheim and Willsky (1997) \cite{OpWi1997}
+
+\problemhead{1.35} Consider periodic discrete-time exponential time signal:
+\[
+x[n] = e^{i m (2 \pi / N) n}
+\]
+
+\solutionhead{1.35}
+
+For $\exp{ \left( i \frac{2\pi m}{N} n \right) }, \, n \in \mathbb{Z}$, consider $\frac{2\pi m }{N} = \frac{2\pi }{ T_0 } $ or $T_0 = N / m$.
+
+Consider $\text{gcd}(N, m) = d$, then $\exists \, r, s \in \mathbb{Z}$, s.t. $N=dr$, $m=ds$, and $\text{gcd}(r, s) = 1$.
+
+\[
+\begin{gathered}
+\frac{N}{ \text{gcd}(m, N) } = \frac{N}{d} = \frac{N}{N/r} = r \\
+\frac{N}{d} = \frac{N}{m / s} = \frac{sN}{m} \\
+r = \frac{sN}{m} \text{ or } \frac{r}{s} = \frac{N}{m}
+\end{gathered}
+\]
+But $\text{gcd}(r,s) = 1$, whereas $\text{gcd}(m, N) = d$, so $\frac{N}{m} = \frac{N/d}{m/d}$
+
+\problemhead{1.36} 
+\begin{enumerate}
+	\item[a] Let $x(t)$ cont.-time complex exponential signal $x(t) = e^{i\omega_0 t}$
+	\item
+	\item[c] Assuming $\frac{T}{T_0} = \frac{p}{q}$ (P1.36-1, pp. 64, Oppenheim and Willsky (1997) \cite{OpWi1997}), determine precisely how many periods of $x(t)$ \emph{are needed to obtain samples that form single period} of $x[n]$.
+\end{enumerate}
+
+\solutionhead{1.36}
+\begin{enumerate}
+	\item[(a)] \[
+	\begin{gathered}
+		\text{ for } \exp{ (i \omega_0 n T) },  \quad \, \omega_0 (n + k) T = \omega_n n T + 2\pi l \Longrightarrow \omega_0 k T = 2\pi l \\
+		\frac{ T}{ (2\pi / \omega_0)} = \frac{l}{k} \text{ where } l, k \in \mathbb{Z}
+	\end{gathered}	
+	\]
+	
+	We had let $T_0 = 2\pi / \omega_0$
+\end{enumerate}
+
+
+Jacobs (1994) \cite{Jaco1994}
+
+
 \part{Orbital Mechanics}
 
 cf. Wie (2008) \cite{BWie2008}
@@ -7144,17 +7196,23 @@ Daniel Gaspar, Jack Stouffer.
 \bibitem{BWie2008}
 Bong Wie. \textbf{Space Vehicle Dynamics and Control} (AIAA Education) 2nd Edition. (August 28, 2008)
 
+\bibitem{Arca2019}
+Dr. Murat Arcak. \emph{Signals and Systems}. Fall 2019 (Fa19). UC Berkeley. \url{https://inst.eecs.berkeley.edu/~ee120/fa19/}
 
+\bibitem{OpWi1997}
+Alan V. Oppenheim and Alan S. Willsky. \textbf{Signals and Systems}. Prentice-Hall, 2nd ed., 1997.  ISBN-13: 978-0138147570 
+
+\bibitem{Jaco1994}
+O. L. R. Jacobs. \textbf{Introduction to Control Theory}. 2nd Edition. Oxford University Press. 1994.
 
 
 \bibitem{Lamp1978}
 Leslie Lamport. \emph{Time, Clocks and the Ordering of Events in a Distributed System}. \textbf{Communications of the ACM 21}, 7   (July 1978), 558-565. \url{https://lamport.azurewebsites.net/pubs/time-clocks.pdf} 
+
+
   
 \end{thebibliography}
 There's an 8th edition of Biblarz and Sutton \cite{GSuttonOBiblarz2001} for 2010 that I would like to have.  If you find any of this material useful or if you'd like to help, email me or visit my Open/Tilt page \url{ernestyalumni.tilt.com} and donate to the crowdfunding campaign or click on the PayPal donate button.  
-
-
-
 
 
 
