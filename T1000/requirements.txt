@@ -9,4 +9,5 @@ scipy
 
 matplotlib
 numpy
+slycot # optional
 sympy
