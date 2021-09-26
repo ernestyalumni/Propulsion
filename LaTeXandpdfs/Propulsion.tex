@@ -22,7 +22,7 @@
 \usepackage{mhchem}
 
 \usepackage{tikz}
-\usetikzlibrary{shapes,matrix,arrows,positioning}
+\usetikzlibrary{shapes,matrix,arrows,positioning,calc}
 
 \usepackage{multicol}
 
@@ -6790,6 +6790,8 @@ cf. 1-3 "Closed loop Control versus Open-loop control" of Ogata (2009) \cite{Oga
 
 \section{Mathematical Modeling of Control Systems, Block Diagrams}
 
+\subsection{Transfer Function}
+
 cf. Ch. 2 "Mathematical Modeling of Control Systems", Ogata (2009) \cite{Ogat2009}
 
 Consider linaer time-invariant sytem:
@@ -6815,6 +6817,341 @@ The \textbf{transfer function} of this system is the ratio of the Laplace transf
 
 
 TODO: Proof with Fubini's, cf. \href{https://math.stackexchange.com/questions/3422840/proof-of-convolution-theorem-for-laplace-transform}{Math stackexchange, "Proof of convolution theorem for Laplace transform"} \url{https://www.sciencedirect.com/topics/computer-science/convolution-theorem}
+
+\[
+\begin{gathered}
+E(s)= R(s) - B(s) \text{ (at summing point) }
+\end{gathered}
+\]
+
+Feedback element (accomplishes conversion, modify output before it's compared with input), whose transfer function is $H(s)$.
+\begin{equation}
+\begin{aligned}
+& H(s) = \frac{B(s)}{ C(s)} \text{ or }  B(s) = H(s) C(s) \\ 
+& G(s) = \frac{C(s)}{E(s)}
+\end{aligned}
+\end{equation}
+
+\subsection{Automatic Control Systems, Block Diagrams}
+
+cf. Sec. 2-3 "Automatic Control Systems", pp. 17, Ogata (2009) \cite{Ogat2009}
+
+\subsubsection{Open-loop Transfer Function and Feedforward Transfer Function}
+
+Ratio of feedback signal $B(s)$ to actuating error signal $E(s)$ is \textbf{open-loop transfer function}
+\begin{equation}
+\text{ Open-loop transfer function } = \frac{B(s)}{E(s)} = G(s)H(s)
+\end{equation}
+
+ratio of output $C(s)$ to actuating error signal $E(s)$ is feedforward transfer function so 
+\begin{equation}
+\text{ Feedforward transfer function } = \frac{C(s)}{E(s)} = G(s)
+\end{equation}
+
+\subsubsection{Closed Loop Transfer Function}
+
+Now
+\[
+\begin{gathered}
+	\begin{aligned}
+& C(s) = G(s) E(s) \\
+& E(s) = R(s) - B(s) = R(s) - H(s) C(s) 
+\end{aligned} \\
+\Longrightarrow C(s) = G(s) (R(s) - H(s) C(s)) \text{ or }
+\end{gathered}
+\]
+
+\begin{equation}
+ \frac{ C(s)}{R(s) } = \frac{G(s)}{ 1 + G(s) H(s)}
+\end{equation}
+Transfer function relating $C(s)$ to $R(s)$ is called \emph{closed-loop transfer function}. It relates closed-loop system dynamics to dynamics of feedforward elements and feedback elements.
+
+
+\subsubsection{Closed Loop System Subjected to a Disturbance}
+
+Recall
+\[
+E(s) = R(s) - B(s) = R(s) - H(s)C(s)
+\]
+
+When 2 inputs (reference input and disturbance) are present in a linear time-invariant system, each input can be treated independently of the other. \\
+
+In examinng effect of disturbance $D(s)$, assume reference input $0$
+
+\[
+\begin{gathered}
+G_1(s) = \frac{Y_1(s) }{ -B(s) } \\
+G_2(s) = \frac{ C_D(s)}{ D(s) + Y_1(s)} = \frac{C_D(s) }{ D(s) +  - G_1(s)B(s) } = \frac{C_D(s)}{ D(s) - G_1(s)(H(s) C_D(s) ) } \\
+G_2(s) D(s) - G_2(s) G_1(s) H(s) C_D(s) = C_D(s) 
+\end{gathered}
+\]
+so
+\begin{equation}
+\frac{C_D(s)}{ D(s) } = \frac{G_2(s) }{ 1 + G_1(s) G_2(s) H(s) } 
+\end{equation}
+
+In considering response to reference input, assume disturbance $0$. \\
+Then response $C_R(s)$ to reference input $R(s)$ is given by
+\[
+\begin{gathered}
+	E(s) = R(s) - B(s) = R(s) - H(s) C(s) \\
+G_1(s) = \frac{Y(s)}{E(s)} \\
+G_2(s) = \frac{C_R(s)}{Y(s) } \Longrightarrow G_1(s) G_2(s) = \frac{C_R(s) }{ E(s) } = \frac{C_R(s)}{R(s) - H(s) C_R(s) }
+\end{gathered}
+\]
+thus
+\begin{equation}
+\frac{C_R(s)}{R(s)} = \frac{G_1(s) G_2(s)}{ 1 + G_1(s) G_2(s) H(s) }
+\end{equation}
+
+Response to simultaneous application of reference input and disturbance obtained by adding:
+
+\begin{equation}
+\begin{aligned}
+C(s) & = C_R(s) + C_D(s) \\
+& \frac{G_2(s) }{ 1 + G_1(s) G_2(s) H(s) } \left[ G_1(s) R(s) + D(s) \right]
+\end{aligned}
+\end{equation}
+
+Consider when $|G_1(s)H(s) | \gg 1$ and $|G_1(s) G_2(s) H(s) | \gg 1$.
+
+\subsection{Modeling in State Space}
+
+cf. pp. 29 "Modeling in State Space", Sec. 2-4, Ogata (2009) \cite{Ogat2009}
+
+Define 
+
+\begin{equation}
+\begin{gathered}
+	\begin{aligned}
+		& \mathbf{x}(t) = (\mathbf{x}(t))_i  = x_i(t), \quad \, 1 \leq i \leq n \\
+		& \mathbf{y}(t) = (\mathbf{y}(t))_i = y_i(t), \quad \, 1 \leq i \leq m \\
+		& \mathbf{u}(t) = (\mathbf{u}(t))_i = u_i(t) , \quad \, 1 \leq i \leq r 
+	\end{aligned} \\
+	\begin{aligned}
+		& \mathbf{f}(\mathbf{x}, \mathbf{u}, t) = (\mathbf{f}(\mathbf{x}, \mathbf{u}, t))_i  = f_i (x_1, x_2, \dots x_n; u_1, u_2, \dots u_r, t), \quad  1 \leq i \leq n \\
+		& \mathbf{g}(\mathbf{x}, \mathbf{u}, t) = (\mathbf{g}(\mathbf{x}, \mathbf{u}, t))_i  = g_i (x_1, x_2, \dots x_n; u_1, u_2, \dots u_r, t), \quad  1 \leq i \leq m \\
+	\end{aligned}
+\end{gathered}
+\end{equation}
+
+Then
+
+\begin{equation}\label{Eq:SystemStateDynamicsAsMatrix}
+\begin{aligned}
+& \dot{\mathbf{x}}(t) = \mathbf{f}(\mathbf{x}, \mathbf{u}, t) \\
+& \mathbf{y}(t) = \mathbf{g}(\mathbf{x}, \mathbf{u}, t) \\
+\end{aligned}
+\end{equation}
+
+If Eq. \ref{Eq:SystemStateDynamicsAsMatrix} is linearized about the operating state, then we have the following linearized state equation and output equation:
+
+\begin{equation}
+\begin{aligned}
+& \dot{\mathbf{x}}(t) = \mathbf{A}(t) \mathbf{x}(t) + \mathbf{B}(t) \mathbf{u}(t) \\
+& \mathbf{y}(t) = \mathbf{C}(t) \mathbf{x}(t) + \mathbf{D}(t) \mathbf{u}(t) \\
+\end{aligned}
+\end{equation}
+
+where $\mathbf{A}(t) \equiv $ state matrix, $\mathbf{B}(t) \equiv $ input matrix, $\mathbf{C}(t) \equiv $ output matrix, $\mathbf{D}(t) \equiv $ direct transmission matrix. 
+
+\subsubsection{Correlation Between Transfer Functions and State-Space Equations}
+
+cf. "Correlation Between Transfer Functions and State-Space Equations", pp. 33, Sec. 2-4 "Modeling in State Space",  Ogata (2009) \cite{Ogat2009}.
+
+Show how to derive transfer function of single-input, single-output system from state-space equations.
+
+Consider system with transfer function 
+\[
+	\frac{Y(s)}{U(s)} = G(s)
+\]
+
+System in state space representation:
+\[
+\begin{aligned}
+& \dot{\mathbf{x}} = \mathbf{A} \mathbf{x} + \mathbf{B} u \\
+& y = \mathbf{C} \mathbf{x} + Du 
+\end{aligned}
+\]
+where $\mathbf{x}$ is state vector, $u$ is input, $y$ is output.
+
+Apply Lapalce Transforms:
+\begin{equation}
+\begin{gathered}
+s\mathbf{X}(s) - \mathbf{X}(0) = \mathbf{A} \mathbf{X}(s) + \mathbf{B}U(s) \\
+Y(s) = \mathbf{C} \mathbf{X}(s) + DU(s) 
+\end{gathered}
+\end{equation}
+
+Let $\mathbf{X}(0) = 0$. Then $s\mathbf{X}(s)  - \mathbf{A} \mathbf{X}(s) + \mathbf{B}U(s)$  or $ (s\mathbf{1} - \mathbf{A})\mathbf{X}(s) = \mathbf{B}U(s)$; premultiply by $(s\mathbf{1} - \mathbf{A})^{-1}$ to get 
+\[
+\begin{gathered}
+\mathbf{X}(s) = (s\mathbf{1} - \mathbf{A})^{-1} \mathbf{B} U(s) \\ 
+\Longrightarrow Y(s) = [ \mathbf{C}(s\mathbf{1} - \mathbf{A})^{-1} \mathbf{B} + D ] U(s)
+\end{gathered}
+\]
+so
+\begin{equation}\label{Eq:TransferFunctionStateSpaceEquationSingleInputSingleOutput}
+G(s) = \mathbf{C} ( s\mathbf{1} - \mathbf{A})^{-1} \mathbf{B} + D
+\end{equation}
+
+Since RHS of $G(s)$ in Eq. \ref{Eq:TransferFunctionStateSpaceEquationSingleInputSingleOutput} involces $(s\mathbf{1} - \mathbf{A})^{-1}$, $G(s)$ can be written as 
+\[
+G(s) = \frac{Q(s)}{ |s\mathbf{1} - \mathbf{A} | } 
+\]
+where $Q(s)$ is a polynomial in $s$. 
+
+Notice $|s\mathbf{1}- \mathbf{A}| = $ characteristic polynomial of $G(s)$, i.e. eigenvalues of $\mathbf{A} = $ poles of $G(s)$.
+
+\subsubsection{Transfer Matrix}
+
+Consider multiple input, multiple-output system. Assume $r$ inputs $u_1, u_2, \dots u_r$, $m$ outputs $y_1, y_2, \dots y_m$.  Define $\mathbf{y} = y_i$, \quad \, $1\leq i \leq m$, $\mathbf{u} = u_i$, \quad \, $1 \leq i \leq r$. \\
+
+Transfer matrix $\mathbf{G}(s)$ relates output $\mathbf{Y}(s)$ to input $\mathbf{U}(s)$ or $\mathbf{Y}(s) = \mathbf{G}(s) \mathbf{U}(s)$, where
+\begin{equation}
+\mathbf{G}(s) = \mathbf{C} (s\mathbf{1} - \mathbf{A})^{-1} \mathbf{B} + \mathbf{D}
+\end{equation}
+
+\subsection{State-Space Representation of Scalar Differential Equation Systems}
+
+\subsubsection{State-Space Representation of $n$th-order systems of Linear Differential Equations in which the Forcing Function Does Not Involve Derivative Terms}
+
+Consider 
+\begin{equation}
+\frac{d^ny}{dt^n} + \sum_{l=1}^{n-1} a_l \frac{d^{n-l} y}{dt^{n-l} } + a_n y = u
+\end{equation}
+
+Noting that knowledge of $y(0), \dot{y}(0), \dots \frac{d^{n-1}}{dt^{n-1}} y(0)$, and input $u(t)$ for $t\geq 0$ completely determines system, take $\lbrace y(t), \dot{y}(t), \dots \frac{d^{n-1}y }{dt^{n-1}} y(t) \rbrace$ as set of $n$ state variables.
+
+Define 
+\begin{equation}
+\begin{aligned}
+& x_1 =y  \\
+& x_i = \frac{d^{i-1}y }{dt^{i-1}} \quad \, 2 \leq i \leq n
+\end{aligned}
+\end{equation}
+
+Then 
+\begin{equation}
+\begin{aligned}
+& \dot{x}_{i-1} = x_i, \quad \, 2 \leq i \leq n \\
+& \dot{x}_n = -\sum_{l=1}^n a_{n + 1 -l } x_l + u 
+\end{aligned}
+\end{equation}
+or 
+
+\begin{equation}
+\begin{gathered}
+\begin{aligned}
+& \dot{\mathbf{x}} = \mathbf{A} \mathbf{x} + \mathbf{B} u \text{ where } \\
+& \mathbf{x} = (\mathbf{x})_i = x_i \quad \, 1 \leq i \leq n 
+\end{aligned} \text{ where } \\
+\mathbf{A} = (\mathbf{A})_{ij} = \begin{cases} \delta_{i, j-1} & \text{ if } i \neq n \\ -a_{n-j}  & \text{ if } i = n \end{cases} \qquad \, \mathbf{B} = \delta_{i, n}
+\end{gathered} 
+\end{equation}
+
+\begin{equation}
+y = \left[ \begin{matrix} 1 & 0 & \dots & 0 \end{matrix} \right] \mathbf{x} = \mathbf{C} \mathbf{x}
+\end{equation}
+
+Note that state-space representation for transfer function system:
+\begin{equation}
+\frac{Y(s)}{U(s)} = \frac{1}{ s^n + \sum_{l=1}^{n} a_l s^{n-l} }
+\end{equation}
+
+\problemhead{B-2-1} cf. pp. 60, Ch. 2 "Mathematical Modeling of Control Systems", Ogata (2009) \cite{Ogat2009}
+
+\[
+\begin{aligned}
+& G_1 = \frac{C_1}{E} \\
+& G_2 = \frac{C_2}{E} \\
+& G_3 = \frac{Y_3}{C} \\
+& G_4 = \frac{Y_4}{C} 
+\end{aligned}
+\]
+
+Then
+\[
+\begin{gathered}
+\begin{aligned}
+& C_1 + C_2 = C = (G_1 + G_2)E = (G_1 + G_2)(R - C (G_3  - G_4) ) \\ 
+& E = R-(Y_3 - Y_4)
+\end{aligned} \\
+\boxed{ \frac{C}{R} = \frac{G_1 + G_2}{ 1 + (G_1 + G_2)(G_3 - G_4) } }
+\end{gathered}
+\]
+
+\tikzset{
+	block/.style={
+		draw, 
+		rectangle, 
+		minimum height=3em, 
+		minimum width=6em
+	},
+	sum/.style={
+		draw, 
+		circle, 
+	},
+	input/.style={coordinate},
+	output/.style={coordinate},
+	arrow/.style={draw, -latex,node distance=2cm},
+	pinstyle/.style={
+		pin edge={to-,thin,black}
+	}
+}  
+
+\[
+\begin{tikzpicture}[auto, node distance=1cm,>=latex']
+            \node [input, name=input] {};
+            \node [sum, right=of input] (sum) {};
+            \node [block, right=of sum] (controller) {$G_1(s) +G_2(s)$};
+            \node [output, right=of controller] (output) {};
+            \node at ($(controller)!0.5!(controller)+(0,-2)$) [block] (feedback) {$G_3(s) - G_4(s)$};
+            \draw [draw,->] (input) -- node {$U(s)$} (sum);
+            \draw [->] (sum) -- (controller);
+            \draw [->] (controller) -- node [name=y] {$C(s)$}(output);
+            \draw [->] (y) |- (feedback) ;
+            \draw [->] (feedback) -| node[pos=0.99] {$-$} (sum);
+            \end{tikzpicture}    
+\]
+
+\problemhead{B-2-7 of Ogata (2009) \cite{Ogat2009}} pp. 61, Ch. 2 "Mathematical Modeling of Control Systems"
+
+If 
+\[
+\begin{gathered}
+G_c(s) = \frac{Y_c(s)}{E(s)} \\ 
+G_p(s) = \frac{Y_p(s) }{ Y_c(s)} \\
+\text{ so } G_c(s) G_p(s) = \frac{Y_p(s)}{E(s)}
+\end{gathered}
+\]
+
+Suppose $R(s) = 0$.  Let the response be $C_D$.
+\[
+\begin{gathered}
+	G_c(s) G_p(s) = \frac{Y_p(s) }{ -C_D(s) } \\
+Y_p(s) + D(s) = C_D(s) \\
+\Longrightarrow -G_c(s) G_p(s) C_D(s) = C_D(s) - D(s)
+\end{gathered}
+\]
+so
+\[
+\boxed{
+\frac{C_D(s)}{D(s) } = \frac{1}{ 1 + G_c(s) G_p(s) }
+}
+\]
+
+Now let $D(s) =0$. 
+\[
+\begin{gathered}
+	G_c(s) G_p(s) = \frac{C_R(s) }{ R(s) - C_R(s) } \text{ or } G_c(s) G_p(s) (R(s) - C_R(s)) = C_R(s) \\
+\frac{C_R(s)}{R(s)} = \frac{G_c(s) G_p(s) }{ 1+ G_c(s) G_p(s) }
+\end{gathered}
+\]
+
+\[
+\Longrightarrow \boxed{ C(s) = C_R(s) + C_D(s) = \frac{ R(s) G_c(s) G_p(s) + D(s)}{ 1 + G_c(s) G_p(s) } }
+\]
 
 
 

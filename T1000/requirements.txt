@@ -7,7 +7,9 @@ scipy
 
 # Controls
 
+control
 matplotlib
 numpy
 slycot # optional
 sympy
+wheel # For control, on Windows Subsystem Linux
