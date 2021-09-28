@@ -7059,6 +7059,103 @@ Note that state-space representation for transfer function system:
 \frac{Y(s)}{U(s)} = \frac{1}{ s^n + \sum_{l=1}^{n} a_l s^{n-l} }
 \end{equation}
 
+\subsubsection{State-Space Representation of $n$th-order systems of Linear Differential Equations in which the Forcing Function Involves Derivative Terms}
+
+cf. pp. 37, Sec. 2-5 "State-Space Representation of Scalar Differential Equation Systems", Ogata (2009) \cite{Ogat2009}
+
+Consider system involving derivatives of forcing function $u$:
+
+\begin{equation}\label{Eq:SystemWithDerivativesForcingFunction}
+	\frac{d^n y}{dt^n} + \sum_{l=1}^{n-1} a_l \frac{d^{n-l} y}{dt^{n-l}}  + a_n y = \sum_{l=0}^{n-1} b_l \frac{d^{n-l} u}{dt^{n-l }} + b_nu
+\end{equation}
+
+Main problem in defining state variables for this case is derivative terms of input $u$. State variables must be such that they'll eliminate derivatives of $u$ in state equation.
+
+Try
+
+\begin{equation}\label{Eq:StateVariableDefinitionLinearDifferentialSystem}
+	\begin{gathered}
+		\begin{aligned}
+			& x_1 = y- \beta_0 u \\
+			& x_2 = \dot{y} - \beta_0 \dot{u} - \beta_1 u = \dot{x}_1 - \beta_1 u \\
+			& x_i = \frac{d^{i-1}y}{dt^{i-1}} - \sum_{j=0}^{i-2} \beta_j \frac{d^{i-1 -j} u}{dt^{i-1-j}} - \beta_{i-1} u = \dot{x}_{i-1} - \beta_{i-1}u \quad \, 2 \leq i \leq n
+		\end{aligned}
+	\end{gathered}
+\end{equation}
+where $\beta_j$, $0\leq j \leq n-1$ determined by
+\begin{equation}
+	\begin{aligned}
+		& \beta_0 = b_0 \\
+		& \beta_1 = b_1 - a_1 \beta_0 \\
+		& \beta_i = b_i - \sum_{l=1}^i a_l \beta_{n-1 - l } \quad \, 1 \leq i \leq n -1
+	\end{aligned}
+\end{equation}
+with this choice of state variables, existence and uniqueness of solution of state equation is guaranteed. (EY ???) With the present choice of state variables, we obtain (derivation in Problem A-2-6):
+
+\begin{equation}
+	\begin{aligned}
+		& \dot{x}_i = x_{i+1} + \beta_i u \quad \, 1 \leq i \leq n -1 \\
+		& \dot{x}_n = -\sum_{l=1}^n a_{n+1 - l} x_l + \beta_n u
+	\end{aligned}
+\end{equation}
+where 
+\[
+\beta_n = b_n - \sum_{l=1}^n a_l \beta_{n-l}
+\]
+
+\problemhead{A-2-6} From the definition of state variables, Eq. \ref{Eq:StateVariableDefinitionLinearDifferentialSystem}, 
+\[
+x_{i+1} = \dot{x}_i - \beta_i u \text{ or } \dot{x}_i = x_{i+1} + \beta_i u \text{ since }
+\]
+
+\[
+\begin{gathered}
+	\begin{aligned}
+		\dot{x}_i & = \frac{d^i y }{dt^i} - \sum_{j=0}^{i-2} \beta_j \frac{d^{i-j} u}{dt^{i-j}} - \beta_{i-1} \dot{u} = \frac{d^i y }{dt^i} - \sum_{j=0}^{i-2} \beta_j \frac{d^{i-j} u}{dt^{i-j}} - \beta_{i-1} \dot{u} -\beta_i u +\beta_i u \\
+		& = \frac{d^i y }{dt^i} - \sum_{j=0}^{i-1} \beta_j \frac{d^{i-j} u}{dt^{i-j}} - \beta_i u + \beta_i u = x_{i+1} + \beta_i u
+	\end{aligned}
+\end{gathered}
+\]
+Note that from Eq. \ref{Eq:SystemWithDerivativesForcingFunction}
+\[
+\begin{gathered}
+	\frac{d^n y}{dt^n} =- \sum_{l=1}^{n-1} a_l \frac{d^{n-l} y}{dt^{n-l}}  - a_n y + \sum_{l=0}^{n-1} b_l \frac{d^{n-l} u}{dt^{n-l }} + b_nu
+\end{gathered}
+\]
+
+Now since 
+\[
+x_n = \frac{d^{n-1}y}{dt^{n-1}} - \sum_{j=0}^{n-2} \beta_j \frac{d^{n-1 -j} u}{dt^{n-1-j}} - \beta_{n-1} u
+\]
+Then
+\[
+\begin{gathered}
+\dot{x}_n = - \sum_{l=1}^{n-1} a_l \frac{d^{n-l} y}{dt^{n-l}}  - a_n y + \sum_{l=0}^{n-1} b_l \frac{d^{n-l} u}{dt^{n-l }} + b_nu - \sum_{j=0}^{n-2} \beta_j \frac{d^{n -j} u}{dt^{n-j}} - \beta_{n-1} \dot{u} 
+\end{gathered}
+\]
+Substitute in for $\frac{ d^{n-l}y }{dt^{n-l}}$ from Eq. \ref{Eq:StateVariableDefinitionLinearDifferentialSystem}:
+\[
+\begin{gathered}
+	\dot{x}_n = - \sum_{l=1}^{n-1} a_l \left[ x_{n-l + 1} + \sum_{j=0}^{n - l - 1} \beta_j \frac{ d^{ n-l -j} u }{dt^{n-l -j}} + \beta_{n-l} u \right]  - a_n y + \sum_{l=0}^{n-1} b_l \frac{d^{n-l} u}{dt^{n-l }} + b_nu - \sum_{j=0}^{n-1} \beta_j \frac{d^{n -j} u}{dt^{n-j}} =
+\end{gathered}
+\]
+
+Consider 
+\[
+\begin{gathered}
+	\sum_{l=0}^{n-1} (b_l - \beta_l) \frac{d^{n-l} u}{dt^{n-l }} = \sum_{l=0}^{n-1} (\sum_{j = 1}^{l} a_j \beta_{n - 1 - j}) \frac{d^{n-l} u}{dt^{n-l }}
+\end{gathered}
+\]
+
+Consider the double summation in the terms 
+\[
+\begin{gathered}
+	- \sum_{l=1}^{n-1} a_l \sum_{j=0}^{n - l - 1} \beta_j \frac{ d^{ n-l -j} u }{dt^{n-l -j}} \text{ and } \\
+	\sum_{l=0}^{n-1} (\sum_{j = 1}^{l} a_j \beta_{n - 1 - j}) \frac{d^{n-l} u}{dt^{n-l }}
+\end{gathered}
+\]
+
+
 \problemhead{B-2-1} cf. pp. 60, Ch. 2 "Mathematical Modeling of Control Systems", Ogata (2009) \cite{Ogat2009}
 
 \[
