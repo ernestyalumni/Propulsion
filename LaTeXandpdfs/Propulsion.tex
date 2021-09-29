@@ -23,6 +23,7 @@
 
 \usepackage{tikz}
 \usetikzlibrary{shapes,matrix,arrows,positioning,calc}
+\usetikzlibrary{decorations.pathmorphing,patterns}
 
 \usepackage{multicol}
 
@@ -7155,6 +7156,35 @@ Consider the double summation in the terms
 \end{gathered}
 \]
 
+For each, plot the index $l$ on the $x$-axis (independent), and $j$ on the $y$ axis (dependent). For each double summation, notice the valid $(j, l)$ indices form a triangle and each double summation have the same number of points on this $l-j$ grid. 
+
+First, do this, adding one to the index of $j$ for this double sum:
+\[
+\sum_{l=1}^{n-1} \sum_{j=0}^{n-l-1} = \sum_{l=1}^{n-1} \sum_{j=1}^{n-l}
+\]
+
+Consider making the following substitutions:
+\[
+\sum_{l=1}^{n-1} \sum_{j=1}^{n-l}  \xrightarrow{m = n-1 - l} = \sum_{m=0}^{n-2} \sum_{j=1}^{m+1}  = \sum_{m=1}^{n-1} \sum_{j=1}^m
+\]
+
+So then 
+
+\[
+\begin{gathered}
+	\begin{aligned}
+		\dot{x}_n & = -\sum_{l=1}^{n-1} a_l x_{n-l + 1} - \sum_{l=1}^{n-1} a_l \beta_{n-l} u - a_n y + b_n u = -\sum_{l=1}^{n-1} a_l x_{n-l+1} + \left( b_n - \sum_{l=1}^{n-1} a_l \beta_{n-l} \right) u - a_n (x_1 + \beta_0 u) \\
+		& = -\sum_{l=1}^n a_l x_{n-l-1} + \beta_n u
+	\end{aligned}
+\end{gathered}
+\]
+
+where $x_1 = y-\beta_0 u$ and then $\beta_n = b_n - \sum_{l=1}^n a_l \beta_{n-l}$ was used.
+
+
+
+
+
 
 \problemhead{B-2-1} cf. pp. 60, Ch. 2 "Mathematical Modeling of Control Systems", Ogata (2009) \cite{Ogat2009}
 
@@ -7248,6 +7278,48 @@ Now let $D(s) =0$.
 
 \[
 \Longrightarrow \boxed{ C(s) = C_R(s) + C_D(s) = \frac{ R(s) G_c(s) G_p(s) + D(s)}{ 1 + G_c(s) G_p(s) } }
+\]
+
+
+\section{Mathematical Modeling of Mechanical Systems}
+
+Example 3-1 of Ogata (2009) \cite{Ogat2009} (\textbf{Springs in Parallel and Series})
+
+\emph{Parallel}: 
+
+\[
+\begin{tikzpicture}
+	\draw[draw=black] (4,-1) rectangle (4.3,3);
+	\draw[decoration={aspect=0.3, segment length=3mm, amplitude=3mm,coil},decorate] (0,0) -- (4,0); 
+	\draw[decoration={aspect=0.3, segment length=3mm, amplitude=3mm,coil},decorate] (0,2) -- (4,2); 
+	\fill [pattern = north east lines] (-0.2,-1) rectangle (0,3);
+	\draw[thick] (0,-1) -- (0,3);
+	\node (K1) at (2,2.5) {$k_1$};
+	\node (K2) at (2,0.5) {$k_2$};
+\end{tikzpicture}
+\]
+\[
+F = -k_1 x - k_2 x = -(k_1 + k_2) x = -k_{\text{eq}} x
+\]
+
+For springs in series, the \emph{force in each spring is the same} (EY??).
+
+\[
+\begin{gathered}
+	F = -k_1 x_1 \quad \, F = -k_2(x_2 - x_1) \text{ so } F = -k_2 x_2 + k_2 \left(\frac{-F}{k_1} \right) \text{ or } F(1 + \frac{k_2}{k_1} ) = -k_2x_2 \\
+	\Longrightarrow \frac{F}{-x_2} = k_{\text{eq}} = \frac{k_1k_2}{k_1 + k_2} = \frac{1}{ \frac{1}{k_1} + \frac{1}{k_2} }
+\end{gathered}
+\]
+
+Example 3-2 of Ogata (2009) \cite{Ogat2009} (\textbf{Dashpots in Parallel and Series})
+
+\emph{Parallel}: Force $f$ due to dampers:
+\[
+\begin{gathered}
+	f = -b_1(\dot{x}_2 - \dot{x}_1) - b_2(\dot{x}_2 - \dot{x}_1) = -(b_1 + b_2) (\dot{x}_2 - \dot{x}_1) \\
+	\text{ or } \\
+	f = -b_{\text{eq}} (\dot{x}_2 - \dot{x}_1) \text{ where } b_{\text{eq}} = b_1 + b_2
+\end{gathered}
 \]
 
 
@@ -7411,6 +7483,19 @@ Simple example Latex diagram of control system:
 	\draw [->] (y) -- ++(0,-2cm) -| node[pos=0.99] {$-$} 
 	node [near end] {$y_m$} (sum);
 \end{tikzpicture}
+
+% https://tex.stackexchange.com/questions/41608/draw-mechanical-springs-in-tikz
+\[
+\begin{tikzpicture}
+	\node[circle,fill=blue,inner sep=2.5mm] (a) at (0,0) {};
+	\node[circle,fill=blue,inner sep=2.5mm] (b) at (2,2) {};
+	\draw[decoration={aspect=0.3, segment length=3mm, amplitude=3mm,coil},decorate] (0,5) -- (a); 
+	\draw[decoration={aspect=0.3, segment length=1.5mm, amplitude=3mm,coil},decorate] (2,5) -- (b); 
+	\fill [pattern = north east lines] (-1,5) rectangle (3,5.2);
+	\draw[thick] (-1,5) -- (3,5);
+\end{tikzpicture}
+\]
+
 
 \part{Orbital Mechanics}
 
