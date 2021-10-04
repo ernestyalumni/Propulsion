@@ -7083,23 +7083,24 @@ Try
 		\end{aligned}
 	\end{gathered}
 \end{equation}
-where $\beta_j$, $0\leq j \leq n-1$ determined by
-\begin{equation}
+cf. (2-34) of Ogata (2009) \cite{Ogat2009}, where $\beta_j$, $0\leq j \leq n-1$ determined by
+
+\begin{equation}\label{Eq:BetaCoefficientsStateSpaceRepresentation}
 	\begin{aligned}
 		& \beta_0 = b_0 \\
 		& \beta_1 = b_1 - a_1 \beta_0 \\
 		& \beta_i = b_i - \sum_{l=1}^i a_l \beta_{n-1 - l } \quad \, 1 \leq i \leq n -1
 	\end{aligned}
 \end{equation}
-with this choice of state variables, existence and uniqueness of solution of state equation is guaranteed. (EY ???) With the present choice of state variables, we obtain (derivation in Problem A-2-6):
+cf. (2-35) of Ogata (2009) \cite{Ogat2009}, with this choice of state variables, existence and uniqueness of solution of state equation is guaranteed. (EY ???) With the present choice of state variables, we obtain (derivation in Problem A-2-6):
 
-\begin{equation}
+\begin{equation}\label{Eq:StateVariableDynamics}
 	\begin{aligned}
 		& \dot{x}_i = x_{i+1} + \beta_i u \quad \, 1 \leq i \leq n -1 \\
 		& \dot{x}_n = -\sum_{l=1}^n a_{n+1 - l} x_l + \beta_n u
 	\end{aligned}
 \end{equation}
-where 
+cf. (2-36) of Ogata (2009) \cite{Ogat2009}, where 
 \[
 \beta_n = b_n - \sum_{l=1}^n a_l \beta_{n-l}
 \]
@@ -7321,6 +7322,79 @@ Example 3-2 of Ogata (2009) \cite{Ogat2009} (\textbf{Dashpots in Parallel and Se
 	f = -b_{\text{eq}} (\dot{x}_2 - \dot{x}_1) \text{ where } b_{\text{eq}} = b_1 + b_2
 \end{gathered}
 \]
+
+\textbf{Example 3-3}. Consider spring-mass-dashpot system mounted on massless cart. Assume cart standing still for $t<0$, and spring-mass-dashpot system on cart also standing still for $t<0$. \\
+$y(t) \equiv $ displacement of mass is output (relative to ground), $m \equiv $ mass, $b\equiv $ viscious-frction coefficient, $k \equiv $ spring constant \\
+
+\begin{equation}\label{Eq:SpringMassDashpotDynamics}
+\begin{gathered}
+ma = \sum F \text{ so } m\ddot{y} = -b(\dot{y} - \dot{u}) - k(y - u) \text{ or } m\ddot{y}  + b\dot{y} + ky = b\dot{u} + ku 
+\end{gathered}
+\end{equation}
+
+Doing the Laplace transform:
+\[
+(ms^2 + bs +k )Y(s) = (bs+k) U(s)
+\]
+
+Thus we obtain the \emph{transfer function}
+\begin{equation}
+G(s) = \frac{Y(s)}{U(s)} = \frac{bs + k}{ ms^2 + bs + k}
+\end{equation}
+
+Such a transfer function representation of a mathematical model is used very frequently in control engineering.
+
+Next, obtain state-space model of this system.
+
+Rewrite dynamics in Eq. \ref{Eq:SpringMassDashpotDynamics} as
+\begin{equation}
+\ddot{y} + \frac{b}{m} \dot{y} + \frac{k}{m} y = \frac{b}{m} \dot{u} + \frac{k}{m} u = \ddot{y} + a_1 \dot{y} + a_2 y = b_1 \dot{u} + b_2 u
+\end{equation}
+
+Now $\beta_0 = b_0 = 0$, $\beta_1 = b_1 - a_1 \beta_0 = \frac{b}{m}$, $\beta_2 = \frac{k}{m} - \left( \frac{b}{m} \right)^2$.
+
+From Eq. \ref{Eq:BetaCoefficientsStateSpaceRepresentation}, 
+\[
+	\begin{aligned}
+		& \beta_0 = b_0 \\
+		& \beta_i = b_i - \sum_{l=1}^i a_l \beta_{n-1 - l } \quad \, 1 \leq i \leq n -1
+	\end{aligned}
+\]
+then
+\[
+\beta_0 = b_0 = 0 \quad \, \beta_1 = b_1 - a_1 \beta_0 = \frac{b}{m} \quad \, \beta_2 = \frac{k}{m} = \left( \frac{b}{m} \right)^2
+\]
+
+From Eq. \ref{Eq:StateVariableDefinitionLinearDifferentialSystem}, recall
+\[
+		\begin{aligned}
+			& x_1 = y- \beta_0 u \\
+			& x_i = \frac{d^{i-1}y}{dt^{i-1}} - \sum_{j=0}^{i-2} \beta_j \frac{d^{i-1 -j} u}{dt^{i-1-j}} - \beta_{i-1} u = \dot{x}_{i-1} - \beta_{i-1}u \quad \, 2 \leq i \leq n
+		\end{aligned}
+\]
+\[
+\Longrightarrow \begin{aligned} & x_1 := y -b_0 u = y\\ & x_2 := \dot{x}_1 - \frac{b}{m} u \end{aligned} 
+\]
+
+From Eq. \ref{Eq:StateVariableDynamics}
+\[
+	\begin{aligned}
+		& \dot{x}_i = x_{i+1} + \beta_i u \quad \, 1 \leq i \leq n -1 \\
+		& \dot{x}_n = -\sum_{l=1}^n a_{n+1 - l} x_l + \beta_n u
+	\end{aligned}
+\]
+and so
+\[
+\Longrightarrow \begin{aligned} & \dot{x}_1 = x_2 + \frac{b}{m} u \\ & \dot{x}_2 = - \frac{k}{m}x_1 - \frac{b}{m} x_2 + \left( \frac{k}{m} - \left( \frac{b}{m} \right)^2 \right) u 
+\]
+
+So output equation $y = x_1$,
+\begin{equation}
+\dot{\mathbf{x}} = \left[ \begin{matrix} 0 & 1 \\ \frac{-k}{m} & \frac{-b}{m} \end{matrix} \right] \mathbf{x} + \left[ \begin{matrix} \frac{b}{m} \\ \frac{k}{m} - \left( \frac{b}{m} \right)^2 \end{matrix} \right] u
+\end{equation}
+
+\textbf{Example 3-5}. An inverted pendulum mounted on motor-driven cart. This is a model of the attitude control of a space booster on takeoff.
+
 
 
 
