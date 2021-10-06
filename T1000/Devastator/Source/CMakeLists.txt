@@ -80,6 +80,7 @@ FetchContent_MakeAvailable(googletest)
 # Add_subdirectory call makes use of libraries.
 # Add_subdirectory adds the source CMakeLists.txt and code files in the
 # directory.
+ADD_SUBDIRECTORY(Algebra)
 ADD_SUBDIRECTORY(Numerical)
 ADD_SUBDIRECTORY(UnitTests)
 ADD_SUBDIRECTORY(Utilities)

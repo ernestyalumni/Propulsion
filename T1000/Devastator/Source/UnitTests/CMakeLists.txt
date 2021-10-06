@@ -1,6 +1,7 @@
 ENABLE_TESTING()
 
 ADD_EXECUTABLE(Check
+  Algebra/Modules/Vectors/Mat3x3_tests.cpp
   Numerical/Interpolation/Interpolation_tests.cpp
   Utilities/BinarySearch_tests.cpp
   )
