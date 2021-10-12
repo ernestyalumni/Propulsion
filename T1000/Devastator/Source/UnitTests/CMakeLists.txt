@@ -2,10 +2,13 @@ ENABLE_TESTING()
 
 ADD_EXECUTABLE(Check
   Numerical/Interpolation/Interpolation_tests.cpp
+  Numerical/ODE/RhsVan_tests.cpp
+  Numerical/ODE/RhsVanDerPol_tests.cpp
   Utilities/BinarySearch_tests.cpp
   )
 
 TARGET_LINK_LIBRARIES(Check
+  Numerical
   Utilities
   gtest_main
   )
