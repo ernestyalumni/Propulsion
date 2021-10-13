@@ -1,6 +1,7 @@
-#ifndef NUMERICAL_ODE_ODE_INTEGRATION_H
-#define NUMERICAL_ODE_ODE_INTEGRATION_H
+#ifndef NUMERICAL_ODE_ODE_INT_H
+#define NUMERICAL_ODE_ODE_INT_H
 
+#include <cmath>
 #include <vector>
 
 namespace Numerical
@@ -9,16 +10,16 @@ namespace ODE
 {
 
 template <class Stepper, class Output>
-class OdeIntegration
+class OdeInt
 {
   public:
 
     // Take at most MAXSTP steps.
     static constexpr std::size_t MAXSTP {50000};
 
-    using Derivatives = Stepper::DerivativeType;
+    using Derivative = Stepper::DerivativeType;
 
-    OdeIntegration(
+    OdeInt(
       std::vector<double>& y_start_t,
       const double xx1,
       const double xx2,
@@ -29,7 +30,7 @@ class OdeIntegration
       Output& outt,
       Stepper::DerivativeType& derivatives);
 
-    void integrate();
+    //void integrate();
 
   private:
 
@@ -45,12 +46,11 @@ class OdeIntegration
     bool dense_;
 
     std::vector<double> y_;
-    std::vector<double> dy_;
-    std::vector<double> dx_;
-    std::vector<double> ystart_;
+    std::vector<double> dy_dx_;
+    std::vector<double>& ystart_;
     Output output_;
 
-    Derivatives& derivatives_;
+    Derivative& derivatives_;
 
     Stepper s_;
     int n_stp_;
@@ -58,8 +58,8 @@ class OdeIntegration
     double h_;
 };
 
-template <class Stepper>
-OdeIntegration<Stepper>::OdeIntegration(
+template <class Stepper, class Output>
+OdeInt<Stepper, Output>::OdeInt(
   std::vector<double>& y_start_t,
   const double xx1,
   const double xx2,
@@ -70,41 +70,45 @@ OdeIntegration<Stepper>::OdeIntegration(
   Output& outt,
   Stepper::DerivativeType& derivatives
   ):
-  n_var_(ystartt.size()),
+  n_var_(y_start_t.size()),
   y_{n_var_},
-  dydx_{n_var_},
-  ystart_{ystartt},
+  dy_dx_{n_var_},
+  ystart_{y_start_t},
   x_{xx1},
   nok_{0},
   nbad_{0},
   x1_{xx1},
   x2_{xx2},
-  hmin_{hmin_n},
+  hmin_{h_min_n},
   dense_{outt.dense_},
-  out_{outt},
+  output_{outt},
   derivatives_{derivatives},
-  s_{y_, dydx_, x_, a_tolerance, r_tolerance, dense}
+  s_{y_, dy_dx_, x_, a_tolerance, r_tolerance, dense_}
 {
   EPS_ = std::numeric_limits<double>::epsilon();
-  h = SIGN(h1_, x2_ - x1_);
+  
+  h_ = std::signbit(x2_ - x1_) ? -std::abs(h1) : std::abs(h1);
+  //h = SIGN(h1_, x2_ - x1_);
+  
   for (int i {0}; i < n_var_; ++i)
   {
     y_[i] = ystart_[i];
   }
-  out_.init(s_.n_eqns_, x1_, x2_);
+  output_.init(s_.n_eqns_, x1_, x2_);
 }
 
-template <class Stepper>
-void OdeIntegration<Stepper>::integrate()
+/*
+template <class Stepper, class Output>
+void OdeInt<Stepper, Output>::integrate()
 {
-  derivatives_(x, y, dydx);
-  if (dense)
+  derivatives_(x_, y_, dy_dx_);
+  if (dense_)
   {
-    out_.out(-1, x, y, s, h);
+    output_.out(-1, x_, y_, s_, h_);
   }
   else
   {
-    out_.save(x, y);
+    output_.save(x_, y_);
   }
 
   for (n_stp_ = 0; n_stp_ < MAXSTP; ++n_stp_)
@@ -112,10 +116,10 @@ void OdeIntegration<Stepper>::integrate()
     // If stepsize can oversheet, decrease.
     if ((x_ + h_ * 1.0001 -x2_) * (x2_ - x1_) > 0.0)
     {
-      h_ = x2_ - x_
+      h_ = x2_ - x_;
     }
     // Take a step.
-    s_.step(h, derivatives_);
+    s_.step(h_, derivatives_);
 
     if (s_.hdid_ == h_)
     {
@@ -126,13 +130,13 @@ void OdeIntegration<Stepper>::integrate()
       ++nbad_;
     }
 
-    if (dense)
+    if (dense_)
     {
-      out_.out(n_stp_, x_, y_, s_, s_.hdid_);
+      output_.out(n_stp_, x_, y_, s_, s_.hdid_);
     }
     else
     {
-      out_.save(x_, y_);
+      output_.save(x_, y_);
     }
 
     if ((x_ - x2_) * (x2_ - x1_) >= 0.0)
@@ -142,25 +146,26 @@ void OdeIntegration<Stepper>::integrate()
         ystart_[i] = y_[i];
       }
       if (
-        out_.kmax_ > 0 &&
-          std::abs(out_.xsave[out_.count_ - 1] - x2_) >
+        output_.kmax_ > 0 &&
+          std::abs(output_.xsave[output_.count_ - 1] - x2_) >
             100.0 * std::abs(x2_) * EPS_)
       {
-        out_.save(x_, y_);
+        output_.save(x_, y_);
       }
       return;
     }
     if (std::abs(s_.hnext_) <= hmin_)
     {
-      throw("Step size too small in OdeIntegration");
+      throw("Step size too small in OdeInt");
     }
     h_ * s_.hnext_;
   }
 
-  throw("Too many steps in routine OdeIntegration");
+  throw("Too many steps in routine OdeInt");
 }
+*/
 
 } // namespace ODE
 } // namespace Numerical
 
-#endif // NUMERICAL_ODE_ODE_INTEGRATION_H
+#endif // NUMERICAL_ODE_ODE_INT_H

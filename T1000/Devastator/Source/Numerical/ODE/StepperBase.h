@@ -1,5 +1,5 @@
-#ifndef NUMERICAL_ODE_STEPPER_H
-#define NUMERICAL_ODE_STEPPER_H
+#ifndef NUMERICAL_ODE_STEPPER_BASE_H
+#define NUMERICAL_ODE_STEPPER_BASE_H
 
 #include <vector>
 
@@ -12,11 +12,11 @@ namespace ODE
 /// \brief Stepper Base class
 /// \details Was called StepperBase in Numerical Recipes, pp. 903.
 //------------------------------------------------------------------------------
-class Stepper
+class StepperBase
 {
   public:
 
-    Stepper(
+    StepperBase(
       std::vector<double>& yy,
       std::vector<double>& dydxx,
       double& xx,
@@ -30,10 +30,11 @@ class Stepper
       a_tolerance_{a_toll},
       r_tolerance_{r_toll},
       dense_{dens},
-      n_{y.size()},
-      n_eqns_{n},
-      y_out_{n},
-      y_err_{n}
+      n_{static_cast<int>(y_.size())},
+      n_eqns_{n_},
+      // Invoke std::vector constructor constructing with size.
+      y_out_(n_),
+      y_err_(n_)
     {}
 
   private:
@@ -59,4 +60,4 @@ class Stepper
 } // namespace ODE
 } // namespace Numerical
 
-#endif // NUMERICAL_ODE_STEPPER_H
+#endif // NUMERICAL_ODE_STEPPER_BASE_H
