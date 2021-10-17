@@ -9,31 +9,27 @@ namespace Numerical
 namespace ODE
 {
 
-template <typename ContainerX, typename ContainerY>
 struct Output
 {
-  Output(): 
-    k_max_{},
-    dense_{false},
-    count_{0}
-  {}
+  //----------------------------------------------------------------------------
+  /// \brief Default constructor that gives no output.
+  /// \details Suppresses all output.
+  /// \ref 17.0.3 The Output Object, pp. 904, Numerical Recipes.
+  //----------------------------------------------------------------------------
+  Output();
 
-  Output(const std::size_t n_save):
-    k_max_{500},
-    n_save_{n_save},
-    count_{0},
-    x_save_(k_max_)
-  {
-    dense_ = n_save_ > 0 ? true : false;
-  }
-
-  // Results stored in the vector x_save_[0..count_ - 1] and
-  ContainerX x_save_;
+  //----------------------------------------------------------------------------
+  /// \brief Provides dense output at n_save equally spaced intervals.
+  /// \details If nsave <= 0, output is saved only at the actual integration
+  /// steps. Otherwise, output at values of x of your choosing.
+  /// \ref 17.0.3 The Output Object, pp. 904, Numerical Recipes.
+  //----------------------------------------------------------------------------
+  Output(const std::size_t n_save);
 
   // Results stored in "matrix" y_save_[0..count - 1][0..n_var_ - 1].
   // Originally, pp. 904 Numerical Recipes called for
   // y_save_[0..n_var_ - 1][0..count - 1]
-  ContainerY y_save_;
+  std::vector<std::vector<double>> y_save_;
 
   double x1_;
   double x2_;
@@ -54,18 +50,15 @@ struct Output
   // True if dense output requested.
   bool dense_;
 
-  template <typename T>
-  void save(const double x, T& y)
-  {
-    if (k_max_ == 0)
-    {
-      return;
-    }
+  // Results stored in the vector x_save_[0..count_ - 1] and
+  std::vector<double> x_save_;
 
-    if (count_ == k_max_)
-  }
+  // Results stored in the matrix y_save_[0..count_ - 1][0..n_var_ - 1]
+  std::vector<std::vector<double>> y_save_;
 
+  void init(const std::size_t neqn, const double xlo, const double xhi);
 
+  void save(const double x, std::vector<double>& y);
 };
 
 } // namespace ODE
