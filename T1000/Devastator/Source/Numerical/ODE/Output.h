@@ -54,7 +54,7 @@ struct Output
   std::vector<double> x_save_;
 
   // Results stored in the matrix y_save_[0..count_ - 1][0..n_var_ - 1]
-  std::vector<std::vector<double>> y_save_;
+  //std::vector<std::vector<double>> y_save_;
 
   void init(const std::size_t neqn, const double xlo, const double xhi);
 

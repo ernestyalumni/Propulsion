@@ -8,6 +8,7 @@
 #ifndef ALGEBRA_MODULES_VECTORS_MAT_3X3_H
 #define ALGEBRA_MODULES_VECTORS_MAT_3X3_H
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <initializer_list>
@@ -30,7 +31,7 @@ class Mat3x3
 
     Mat3x3() = default;
 
-    explicit Mat3x3(std::initializer_list<Field> entries)
+    explicit Mat3x3(std::initializer_list<Field>& entries)
     {
       std::copy(entries.begin(), entries.end(), entries_.begin());
     }
