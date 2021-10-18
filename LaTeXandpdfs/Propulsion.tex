@@ -5217,7 +5217,8 @@ of Lagrange basis polynomials $l_j(x)$:
 and so, for change of notation,
 \[
 \begin{gathered}
-	L(x) \equiv P(x) = \frac{ (x-x_1) (x-x_2) \dots (x-x_{M-1} ) }{ (x_0 - x_1) (x_0 - x_2) \dots (x_0 - x_{M-1})} y_0 + \frac{ (x-x_0) (x-x_1) \dots (x-x_{M-2} ) }{ (x_1 - x_0) (x_1 - x_2) \dots (x_1 - x_{M-1})} y_1 + \dots + \frac{ (x-x_0) (x-x_1) \dots (x-x_{M-2} ) }{ (x_{M-1} - x_0) (x_{M-1} - x_1) \dots (x_{M-1} - x_{M-2})} y_{M - 1}
+	L(x) \equiv P(x) = \frac{ (x-x_1) (x-x_2) \dots (x-x_{M-1} ) }{ (x_0 - x_1) (x_0 - x_2) \dots (x_0 - x_{M-1})} y_0 + \frac{ (x-x_0) (x-x_1) \dots (x-x_{M-2} ) }{ (x_1 - x_0) (x_1 - x_2) \dots (x_1 - x_{M-1})} y_1 + \dots \\
+	+ \frac{ (x-x_0) (x-x_1) \dots (x-x_{M-2} ) }{ (x_{M-1} - x_0) (x_{M-1} - x_1) \dots (x_{M-1} - x_{M-2})} y_{M - 1}
 \end{gathered}
 \]
 
@@ -5231,9 +5232,241 @@ For $M=2, M=3$ cases,
 \]
 
 
-\section{Integration of ODEs}
+\section{Integration of ODEs: Runge-Kutta Methods}
+
+\subsection{Runge Kutta Methods}
+
+Consider an initial value problem (IVP):
+
+\begin{equation}
+	\frac{d\mathbf{x}}{dt} = \mathbf{f}(t, \mathbf{x}(t)) 
+\end{equation}
+where
+\[
+\begin{gathered}
+	\mathbf{x}(t) = (x_1(t), x_2(t), \dots, x_n(t)) \\
+	f\in [a,b] \times \mathbb{R}^n \to \mathbb{R}^n \\
+	\mathbf{x}(0) = \mathbf{x}_0
+\end{gathered}
+\]
+
+Divide $[a,b]$ into $M$ equal subintervals, select mesh points $t_j$:
+\[
+t_j = a+ jh, \, j = 0, 1\dots M, \, h = \frac{b-a}{M}
+\]
+
+Family of explicit Runge-Kutta (RK) methods of $m$th stage given by
+\begin{equation}
+\begin{gathered}
+	\mathbf{x}(t_{n+1}) \equiv \mathbf{x}_{n+1} = \mathbf{x}_n + h \sum_{i=1}^m c_i k_i \text{ where } \\
+	\begin{aligned}
+		& k_1 = \mathbf{f}(t_n, \mathbf{x}_n) \\
+		& k_2 = \mathbf{f}(t_n + \alpha_2 h, \mathbf{x}_n + h\beta_{21} k_1(t_n, \mathbf{x}_n)) \\
+		& k_3 = \mathbf{f}(t_n + \alpha_3 h, \mathbf{x}_n + h( \beta_{31} k_1(t_n, \mathbf{x}_n) + \beta_{32} k_2(t_n, \mathbf{x}_n))) \\
+		& \vdots \\
+		& k_m = \mathbf{f}(t_n + \alpha_m h, \mathbf{x}_n + h \sum_{j=1}^{m-1} \beta_{mj}k_j)
+	\end{aligned}
+\end{gathered}
+\end{equation}
+
+These data are usually arranged in a \emph{Butcher tableau}:
+\[
+\begin{tabular}{ l|c c c c c }
+	0 & & & & & \\
+	$\alpha_2$ & $\beta_{21}$ &  & & & \\ 
+	$\alpha_3$ & $\beta_{31}$ & $\beta_{32}$ & & & \\ 
+	$\vdots$ &  & & & $\ddots$ & \\ 
+	$\alpha_m$ & $\beta_{m1}$ & $\beta_{m2}$ & \dots & $\beta_{m, m-1}$ & \\
+	\hline 
+	& $c_1$ & $c_2$ & \dots & $c_{m-1}$ & $c_m$ \\
+\end{tabular}
+\]
 
 
+To specify a method, we need, 
+\begin{equation}
+\begin{aligned}
+	& m \equiv \text{ number of stages, } \\
+	& \alpha_i \quad \, (i= 2, 3 \dots m) \\
+	& \beta_{ij} \quad \, (1 \leq j < i \leq m) \text{ and } \\
+	& c_i \quad \, (i = 1, 2, \dots m)	
+\end{aligned}
+\end{equation}
+
+In summary, \\
+to solve the following initial value problem (IVP):
+\begin{equation}
+\boxed{
+\frac{d\mathbf{x}}{dt} = \mathbf{f}(t, \mathbf{x}(t)), \quad \mathbf{x} \in \mathbb{R}^n, \quad \mathbf{f} \in [a, b] \times \mathbb{R}^n \to \mathbb{R}^n
+}
+\end{equation}
+
+We need
+\begin{equation}
+\begin{aligned}
+& \alpha_i \quad (i = 2, 3, \dots m) \\
+& \beta_{ij} \quad (1 \leq j < i \leq m) , \quad (m(m-1) \text{ total $\beta_{ij}$ coefficients}) \\
+& c_i  \quad (i = 1, 2, \dots m)	
+\end{aligned}
+\end{equation}
+To calculate, for 
+\begin{equation}
+	\boxed{
+		t_j = a+jh, \quad j=0, 1, \dots M, \quad h = \frac{b-a}{M} }
+\end{equation}
+So for $n \in 0 ,1 ,\dots M$
+\begin{equation}
+	\begin{aligned}
+& 	k_1 = \mathbf{f}(t_n, \mathbf{x}_n) \\
+& k_l = \mathbf{f}(t_n + \alpha_l h, \mathbf{x}_n + h \sum_{j=1}^{l-1} \beta_{lj} k_j) , \quad \l = 2, \dots m
+	\end{aligned}	
+\end{equation}
+To obtain the result
+\begin{equation}
+	\mathbf{x}(t_{n+1}) \equiv \mathbf{x}_{n+1} = \mathbf{x}_{n} + h \sum_{i=1}^m c_i k_i
+\end{equation}
+
+\subsubsection{Examples}
+
+1. $m = 1$. Then 
+\[
+\begin{aligned}
+	& k_1 = \mathbf{f}(t_n, \mathbf{x}_n) \\
+	& \mathbf{x}_{n+1} = \mathbf{x}_n + hc_1 k_1
+\end{aligned}
+\]
+
+By Taylor expansion,
+\[
+\begin{gathered}
+	\mathbf{x}_{n+1} = \mathbf{x}_n + h \left. \dot{\mathbf{x}} \right|_{t_n} + \dots = \mathbf{x}_n + h \mathbf{f}(t_n, \mathbf{x}_n) + \mathcal{O}(h^2)
+\end{gathered}
+\]
+So $\mathbf{x}_{n+1} = \mathbf{x}_n + h f(t_n, \mathbf{x}_n)$.  \\
+
+$c_1= 1$ 
+
+$m=2$
+
+\[
+\begin{gathered}
+	\begin{aligned}
+		& k_1 = \mathbf{f}(t_n, \mathbf{x}_n) \\
+		& k_2 = \mathbf{f}(t_n + \alpha_2 h, \mathbf{x}_n + h \beta_{21} k_1)
+	\end{aligned} \\
+\begin{aligned}
+	& \mathbf{x}_{n+1} = \mathbf{x}_n + hc_1 k_1 + hc_2 k_2 \\
+	& \mathbf{x}_{n+1} = \mathbf{x}_n + h \left. \dot{ \mathbf{x}} \right|_{t_n} + \frac{h^2}{2} \left. \frac{d^2 \mathbf{x}}{ dt^2} \right|_{t_n} + \mathcal{O}(h^3)
+\end{aligned} \\
+\frac{d^2 \mathbf{x}}{dt^2} = \frac{d}{dt} \mathbf{f}(t, \mathbf{x}(t)) = \frac{\partial}{\partial t} \mathbf{f}(t, \mathbf{x}) + \dot{ \mathbf{x}}(t) \frac{\partial \mathbf{f}}{\partial \mathbf{x}} = \frac{ \partial }{ \partial t} \mathbf{f}(t, \mathbf{x}) + f_i(t,\mathbf{x}) \frac{\partial f}{ \partial x_i} \\
+\Longrightarrow \mathbf{x}_{n+1} - \mathbf{x}_n = h \mathbf{f}(t_n , \mathbf{x}_n) + \frac{h^2}{2} \left( \frac{\partial }{ \partial t} \mathbf{f}(t, \mathbf{x}) + f_i(t_n , \mathbf{x}_n) \frac{\partial f}{ \partial x_i}(t_n,\mathbf{x}_n) \right)
+\end{gathered}
+\]
+
+\[
+\begin{gathered}
+k_2 = f(t_n+\alpha_2 h, \mathbf{x}_n + h\beta_{21} k_1) = f(t_n,\mathbf{x}_n) + \alpha_2 h \frac{\partial}{\partial t} \mathbf{f}(t_n,\mathbf{x}_n) + h \beta_{21} k_{1, i} \frac{\partial}{\partial x_i} \mathbf{f}(t_n, \mathbf{x}_n) + \mathcal{O}(h^2)	 \\
+hf(t_n,\mathbf{x}_n) = (hc_1 + hc_2) k_1 \Longrightarrow c_1 + c_2 = 1 \\
+\end{gathered}
+\]
+
+\[
+\begin{aligned}
+	& \frac{h^2}{2} = h^2 c_2 \alpha_2 \Longrightarrow c_2\alpha_2 = \frac{1}{2} \\
+ 	& \frac{h^2}{2} = h^2 c_2 \beta_{21} \Longrightarrow c_2 \beta_{21} = \frac{1}{2}
+\end{aligned}
+\]
+
+Let $\alpha_2 = 1$. Then $c_2 = \frac{1}{2}$, $c_1= \frac{1}{2}$.
+
+\[
+\Longrightarrow \mathbf{x}_{n+1} = \mathbf{x}_n + \frac{h}{2} (\mathbf{f}(t_n, \mathbf{x}_n ) + \mathbf{f}(t_n + h, \mathbf{x}_n + h\mathbf{f}(t_n, \mathbf{x}_n))
+\]
+This is called Heun's method. \\
+
+Let $\alpha_2 = \frac{1}{2}$. Then $c_2 = 1, \, \beta_{21} = \frac{1}{2}, \, c_1 = 0$
+
+\[
+\mathbf{x}_{n+1} = \mathbf{x}_n + h \mathbf{f}(t_n + \frac{h}{2}, \mathbf{x}_n + \frac{h}{2} \mathbf{f}(t_n, \mathbf{x}_n))
+\]
+This is called the RK2 method.
+
+\subsubsection{Runge-Kutta 4, RK4 Methods}
+
+$m=4$.
+
+By matching coefficients with Taylor series, then for
+\begin{equation}
+	\begin{aligned}
+		& k_1 = \mathbf{f}(t_n, \mathbf{x}_n) \\
+		& k_2 = \mathbf{f}(t_n + \alpha_2 h, \mathbf{x}_n + h \beta_{21} k_1(t_n,\mathbf{x}_n)) \\
+		& k_3 = \mathbf{f}(t_n + \alpha_3 h, \mathbf{x}_n +h (\beta_{31}k_1(t_n, \mathbf{x}_n) + \beta_{32}k_2(t_n, \mathbf{x}_n)) ) \\
+		& k_4 = \mathbf{f}(t_n + \alpha_4 h, \mathbf{x}_n + h(\beta_{41} k_1 + \beta_{42} k_2 + \beta_{43} k_3))
+	\end{aligned}
+\end{equation}
+
+Now consider the Taylor series expansion
+\[
+\mathbf{x}_{n+1} = \mathbf{x}_n + h \left. \dot{ \mathbf{x}} \right|_{t_n} + \frac{h^2}{2} \left. \frac{d^2 \mathbf{x}}{ dt^2} \right|_{t_n} + \frac{h^3}{6} \left. \frac{d^3 \mathbf{x}}{ dt^3} \right|_{t_n} + \frac{h^4}{24} \left. \frac{d^4 \mathbf{x}}{ dt^4} \right|_{t_n} + \mathcal{O}(h^5)
+\]
+
+So
+\[
+\begin{gathered}
+\begin{aligned}
+\frac{d^3 \mathbf{x}}{dt^3} = & \frac{\partial^2 f}{\partial t^2} + f_i \frac{ \partial^2 f}{ \partial x_i \partial t} + \frac{ \partial f_i}{\partial t} \frac{ \partial f}{\partial x_i} + \frac{\partial f_i}{\partial x_j} f_j \frac{\partial f}{\partial x_i}  \\
+\frac{d^4 \mathbf{x}}{dt^4} = & f_{ttt} + f_{x_i tt}f_i + f_{t,i} f_{x_i t} + f_{x_j, i} f_j f_{x_i t} + f_i f_{x_i tt} + f_i f_j f_{x_i t  x_j} + f_{tt, i} f_{x_i} + f_{tx_j, i} f_j f_{x_i} + f_{t,i} f_{x_i t} + f_{t,i} f_j f_{x_i t x_j} + \\
+& + \left(\frac{ \partial}{\partial t} + \nabla \right)\left( \frac{ \partial f_i}{\partial x_j} f_j \frac{ \partial f}{\partial x_i} \right)
+\end{aligned}
+\end{gathered}
+\]
+
+TODO: Complete proof.
+
+So
+\begin{equation}
+\begin{aligned}
+	c_1 + c_2 + c_3 + c_4 & = 1 \\
+	\beta_{21} & = \alpha_2 \\
+	\beta_{31} + \beta_{32} & = \alpha_3 \\
+	c_2 \alpha_2 + c_3 \alpha_3 + c_4 \alpha_4 & = \frac{1}{2} \\
+	c_2 \alpha_2^2 + c_3 \alpha_3^2 + c_4 \alpha_4^2 & = \frac{1}{3} \\
+	c_2 \alpha_2^3 + c_3 \alpha_3^3 + c_4 \alpha_4^3 & = \frac{1}{4} \\
+	c_3 \alpha_2 \beta_{32} + c_4 (\alpha_2 \beta_{42} + \alpha_3 \beta_{43}) & = \frac{1}{6} \\
+	c_3 \alpha_2 \alpha_3 \beta_{32} + c_4 \alpha_4 (\alpha_2 \beta_{42} + \alpha_3 \beta_{43}) & = \frac{1}{8} \\
+	c_3 \alpha_2^2  \beta_{32} + c_4  (\alpha_2^2 \beta_{42} + \alpha_3^2 \beta_{43}) & = \frac{1}{12} \\
+	c_4 \alpha_2 \beta_{32} \beta_{43} & = \frac{1}{24}
+\end{aligned}
+\end{equation}
+
+13 unknowns with 11 equations yields 2 additional conditions.
+
+For
+\[
+\alpha_2 = \frac{1}{2}, \quad \beta_{31} =0 
+\]
+We obtain the classical RK4 method: \\
+
+In Butcher tableau form:
+\[
+\begin{tabular}{ l|c c c c }
+	0 & & & &  \\
+	$\frac{1}{2}$ & $\frac{1}{2}$ &  & &  \\ 
+	$\frac{1}{2}$ & $0$ & $\frac{1}{2}$ & &  \\ 
+	$1$ & $0$ & $0$ & 1 &  \\
+	& $\frac{1}{6}$ & $\frac{1}{3}$ & $\frac{1}{3}$ & $\frac{1}{6}$  \\
+\end{tabular}
+\]
+Or
+\[
+\begin{gathered}
+	\alpha_2 = \alpha_3 = \frac{1}{2}, \quad \alpha_4 = 1 \\
+	\beta_{21} = \frac{1}{2} \\
+	\beta_{31} = 0, \quad \beta_{32} = \frac{1}{2} \\
+	\beta_{41} = \beta_{42} = 0, \quad \beta_{43}=1 \\
+	c_1 = \frac{1}{6}, \quad c_2 = c_3 = \frac{1}{3}, \quad c_4 = \frac{1}{6}
+\end{gathered}
+\]
 
 
 \section{Systems of Ordinary Differential Equations ODEs}
@@ -7385,7 +7618,7 @@ From Eq. \ref{Eq:StateVariableDynamics}
 \]
 and so
 \[
-\Longrightarrow \begin{aligned} & \dot{x}_1 = x_2 + \frac{b}{m} u \\ & \dot{x}_2 = - \frac{k}{m}x_1 - \frac{b}{m} x_2 + \left( \frac{k}{m} - \left( \frac{b}{m} \right)^2 \right) u 
+\Longrightarrow \begin{aligned} & \dot{x}_1 = x_2 + \frac{b}{m} u \\ & \dot{x}_2 = - \frac{k}{m}x_1 - \frac{b}{m} x_2 + \left( \frac{k}{m} - \left( \frac{b}{m} \right)^2 \right) u \end{aligned}
 \]
 
 So output equation $y = x_1$,
