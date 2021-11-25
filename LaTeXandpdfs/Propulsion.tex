@@ -7808,6 +7808,200 @@ Simple example Latex diagram of control system:
 
 cf. Wie (2008) \cite{BWie2008}
 
+\section{$N$-body problem}
+
+cf. $N$-body problem, Sec. 1.2, Bate, Mueller, and White (1971) \cite{BMW1971}
+
+Force $\mathbf{F}_{gn}$ exerted on $m_i$ by $m_n$ is $\mathbf{F}_{gn} = \frac{ - Gm_i m_n }{ (r_{ni})^3 } \mathbf{r}_{ni}$ (cf. Eq. (1.2-1), Bate, Mueller, and White (1971) \cite{BMW1971}) where $\mathbf{r}_{ni} = \mathbf{r}_i - \mathbf{r}_n$
+
+Force $\mathbf{F}_g$ of all gravitational forces acting on $i$th body.
+\begin{equation}
+	\mathbf{F}_g = -Gm_i \sum_{ \substack{ j=1 \\ j \neq i } }^n \frac{m_j}{ (r_{ji})^3 } \mathbf{r}_{ji} \text{ where } \mathbf{r}_{ji} \equiv \mathbf{r}_i - \mathbf{r}_j
+\end{equation} cf. Eq. (1.2-5) Bate, Mueller, and White (1971) \cite{BMW1971}
+
+
+
+Consider $\mathbf{F}_{\text{tot}} = \frac{d\mathbf{p}}{dt} = \frac{d}{dt} (m\mathbf{v}) = \dot{m} \mathbf{v} + m \frac{d\mathbf{v}}{dt} $ or 
+\begin{equation}
+	\frac{d\mathbf{v}}{dt} = \frac{ \mathbf{F}_{\text{tot}} }{ m} - \frac{\dot{m}}{m} \mathbf{v}
+\end{equation}
+cf. Eq. (1.2-9), Bate, Mueller, and White (1971) \cite{BMW1971}.
+
+Assume $m_2$ is an earth satellite, $m_1$ is the earth; remaining masses $m_3$, $m_4, \dots m_n$ may be moon, sun, planets. Assume drag and other external forces aren't present. The only remaining forces are gravitational.
+
+\[
+\begin{aligned}
+	& \frac{d\mathbf{v}_1}{dt} = -G \sum_{j=2}^n \frac{m_j}{(r_{j1})^3} \mathbf{r}_{j1} \\
+	& \frac{d\mathbf{v}_2}{dt} = -G \sum_{ \substack{ j = 1 \\ j\neq 2} }^n \frac{m_j}{(r_{j2})^3} \mathbf{r}_{j2} 
+\end{aligned}
+\]
+
+Consider $\mathbf{r}_{12} = \mathbf{r}_2 - \mathbf{r}_1$, so $\ddot{\widehat{r}}_{12} = \ddot{\mathbf{r}}_2 - \ddot{\mathbf{r}}_1$, so
+\begin{equation}
+	\begin{gathered}
+		\frac{d\mathbf{v}_{12}}{dt} = -G \left[ \sum_{j=3}^n \left( \frac{m_j}{ (r_{j2})^3 } \mathbf{r}_{j2} - \frac{m_j}{ (r_{j1})^3 } \mathbf{r}_{j1} \right) + \frac{m_1}{ (r_{12})^3 } \mathbf{r}_{12} - \frac{m_2}{ (r_{21})^3 } \mathbf{r}_{21} \right] = -G \left[ \sum_{j=3}^n (m_j) \left( \frac{ \mathbf{r}_{j2} }{ (r_{j2})^3 } - \frac{ \mathbf{r}_{j1} }{ (r_{j1})^3 } \right) + (m_1 + m_2) \frac{ \mathbf{r}_{12} }{ (r_{12})^3 } \right] = \\
+		= - G \frac{ (m_1+ m_2) \mathbf{r}_{12} }{ (r_{12})^3 } - \sum_{j=3}^n Gm_j \left( \frac{ \mathbf{r}_{j2} }{ (r_{j2})^3 } - \frac{ \mathbf{r}_{j1} }{ (r_{j1})^3 } \right)
+	\end{gathered}
+\end{equation}
+since $\mathbf{r}_{12} = - \mathbf{r}_{21}$. cf. Eq. (1.2-17) Bate, Mueller, and White (1971) \cite{BMW1971}
+
+$m_2$ is the mass of a satellite, $m_1$ is the mass of the earth. $\ddot{\mathbf{r}}_{12} = \dot{\mathbf{v}}_{12}$ is the acceleration of the satellite relative to Earth.
+
+Effect of the last term is to account for the perturbing effects of the moon, sun, planets on near earth satellite. 
+
+\subsection{2-body problem, equation of relative motion}
+
+cf. 2 body Problem. 1.3.2 The Equation of Relative Motion. Bate, Mueller, and White (1971) \cite{BMW1971}.
+
+Consider 2 assumptions:
+
+\begin{enumerate}
+	\item The bodies are spherically symmetric. This enables us to treat bodies as though their masses were concentrated at their centers.
+	\item There are no external nor internal forces acting on system other than gravitational forces acting along line joining centers of the 2 bodies.
+\end{enumerate}
+
+For masses $m, M$, define
+
+\begin{equation}
+\mathbf{r} := \mathbf{r}_m - \mathbf{r}_M	
+\end{equation}
+
+Apply Newton's laws in inertial frame:
+\begin{equation}
+	\begin{gathered}
+		\begin{aligned}
+			& m \ddot{\mathbf{r}}_m = - \frac{GM m}{r^2} \frac{\mathbf{r}}{r} \\
+			& M \ddot{\mathbf{r}}_M =  \frac{GM m}{r^2} \frac{\mathbf{r}}{r} 
+		\end{aligned} \text{ i.e. } 		\begin{aligned}
+		&  \ddot{\mathbf{r}}_m = - \frac{GM }{r^2} \frac{\mathbf{r}}{r} \\
+		&  \ddot{\mathbf{r}}_M =  \frac{G m}{r^2} \frac{\mathbf{r}}{r} 
+	\end{aligned} \\
+\Longrightarrow \ddot{\mathbf{r}} = \frac{ - G (M + m) }{r^3 } \mathbf{r}
+	\end{gathered}
+\end{equation}
+cf. (1.3-1), (1.3-2) and (1.3-3) Bate, Mueller, and White (1971) \cite{BMW1971}.
+
+If $M \gg m$, then $G(M + m) \approx GM$. Define $\mu \equiv GM$, so that 
+\begin{equation}\label{Eq:ReducedMassDynamics}
+	\ddot{\mathbf{r}} = \frac{-\mu}{r^3} \mathbf{r}
+\end{equation}
+cf. Eq. (1.3-4) Bate, Mueller, and White (1971) \cite{BMW1971}
+
+\subsubsection{Mechanical energy conservation}
+
+cf. 1.4.1 "Conservation of Mechanical Energy", pp. 15, Bate, Mueller, and White (1971) \cite{BMW1971}
+
+Dot multiply $\ddot{\mathbf{r}} + \frac{\mu}{r^3} \mathbf{r} =0$ Eq. \ref{Eq:ReducedMassDynamics}, i.e. Eq. (1.3-4) of Bate, Mueller, and White (1971) \cite{BMW1971} by $\dot{\mathbf{r}}$:
+\[
+\begin{gathered}
+	\dot{\mathbf{r}} \cdot \ddot{ \mathbf{r}} + \frac{ \mu}{r^3} \dot{\mathbf{r}} \cdot \mathbf{r} = \mathbf{v} \cdot \dot{\mathbf{v}} + \frac{\mu}{r^3} \mathbf{r} \cdot \dot{\mathbf{r}} = 0
+\end{gathered}
+\]
+
+Now note that 
+\[
+\frac{d}{dt} \left( \frac{1}{\sqrt{ x_1^2 + \dots + x^2_N } } \right) = \frac{-1}{2} (x_1^2 + \dots + x_N^2 )^{-3/2} (2 x_1 \dot{x}_1 + \dots + 2 x_N \dot{x}_N )
+\]
+so then
+\[
+\begin{gathered}
+	\frac{1}{2} \frac{d}{dt} (v^2) = \frac{1}{2} \frac{d}{dt} (v_i v_i) = v_i \dot{v}_i = \mathbf{v} \cdot \dot{\mathbf{v}} \quad \quad \, \frac{d}{dt} \left( \frac{-\mu}{r} \right) = \frac{ \mu}{r^3} (r_i \dot{r}_i)
+\end{gathered}
+\]
+\[
+\Longrightarrow \frac{d}{dt} \left( \frac{v^2}{2} + \frac{-\mu}{r} + C \right) = 0
+\]
+
+So we obtain mechanical energy conservation. Let $c=0$, setting the zero of the potential energy at infinity, effectively. Then
+\begin{equation}
+	E = \frac{v^2}{2} - \frac{\mu}{r}
+\end{equation}
+cf. Eqn. (1.4-2) Bate, Mueller, and White (1971) \cite{BMW1971}.
+
+\subsubsection{Angular Momentum conservation}
+
+Cross multiply Eq. \ref{Eq:ReducedMassDynamics}, i.e. Eqn. (1.3-4) by $\mathbf{r}$
+\[
+\begin{gathered}
+	\mathbf{r} \times \ddot{\mathbf{r}} + \mathbf{r} \times \frac{\mu}{r^3} \mathbf{r} = 0 = \mathbf{r} \times \ddot{\mathbf{r}} = \frac{d}{dt} ( \mathbf{r} \times \dot{\mathbf{r}}) = \frac{d}{dt} (\mathbf{r} \times \mathbf{v})
+\end{gathered}
+\]
+Bate, Mueller, and White (1971) \cite{BMW1971} uses this notation:
+\begin{equation}
+	\mathbf{h} = \mathbf{r} \times \mathbf{v} 
+\end{equation}
+in Eq. (1.4-3) of Bate, Mueller, and White (1971) \cite{BMW1971}, where $\mathbf{h}$ is called the specific angular momentum. Instead, let's use my notation:
+\begin{equation}
+	\mathbf{l} = \mathbf{r} \times \mathbf{v}
+\end{equation}
+
+So angular momentum conservation says
+\begin{equation}\label{Eq:SpecificAngularMomentumConservation}
+	\frac{d \mathbf{l} }{dt} = 0
+\end{equation}
+
+Bate, Mueller, and White (1971) \cite{BMW1971} defines \\
+"up" $\equiv $ away from the center of the earth, \\
+"down" $\equiv$ toward the center of the earth. \\
+
+So local vertical at location of satellite coincides with direction of vector $\mathbf{r}$. \\
+
+Define direction of $\mathbf{v}$ by specifying angle $\gamma$ that $\mathbf{v}$ makes with local vertical $\equiv $ zenith angle. \\
+Define $\phi \equiv$ flight-path elevation angle $\equiv$ "flight-path angle" $\equiv$ angle between $\mathbf{v}$ and local horizontal plane. \\
+
+\[
+\Longrightarrow |\mathbf{l} | = rv \sin{\gamma}
+\]
+
+Since $\gamma, \phi$ complementary angles (i.e. $\frac{\pi}{2} - \phi = \gamma$) then
+\begin{equation}
+	\boxed{ | \mathbf{l} | = rv \cos{\phi} }
+\end{equation}
+cf. (1.4-4) of Bate, Mueller, and White (1971) \cite{BMW1971}.
+
+\subsubsection{Trajectory Equation for 2-body problem}
+
+cf. Sec. 1.5. "The Trajectory Equation" of Bate, Mueller, and White (1971) \cite{BMW1971}.
+
+Recall again Eq. \ref{Eq:ReducedMassDynamics}
+\[
+\ddot{\mathbf{r}} = - \frac{\mu}{r^3} \mathbf{r}
+\]
+Apply the cross product by $\mathbf{l}$:
+\[
+\begin{gathered}
+	\ddot{\mathbf{r}} \times \mathbf{l} = \frac{-\mu}{r^3} \mathbf{r} \times \mathbf{l} = \frac{-\mu}{r^3} \left[ (\mathbf{r} \cdot \mathbf{v}) \mathbf{r} - r^2 \mathbf{v} \right] = \mu \frac{d}{dt} \left( \frac{\mathbf{r}}{r} \right)
+\end{gathered}
+\]
+since
+\[
+\begin{gathered}
+	\frac{d}{dt} \left(\frac{\mathbf{r}}{r} \right) = \frac{-1}{r^3} (r_i \dot{r}_i ) \mathbf{r} + \frac{1}{r} \mathbf{v} = \frac{-\mathbf{r}\cdot \mathbf{v} \mathbf{v}}{r^3} + \frac{\mathbf{v}}{r}
+\end{gathered}
+\]
+
+Consider that $\dot{\mathbf{r}} \times \mathbf{l} = \mathbf{v} \times \mathbf{l} = \epsilon_{ijk} v_j l_k \mathbf{e}_i$. Then
+\[
+\begin{gathered}
+	\frac{d}{dt} (\mathbf{v} \times \mathbf{l}) = \epsilon_{ijk} \mathbf{e}_i \dot{v}_j l_k + \epsilon_{ijk} \mathbf{e}_i v_j \dot{l}_k = \ddot{\mathbf{r}} \times \mathbf{l}
+\end{gathered}
+\]
+where we had used angular momentum conservation from Eq. \ref{Eq:SpecificAngularMomentumConservation}: $\frac{d\mathbf{l}}{dt} = 0$.
+
+So then
+\[
+\begin{gathered}
+	\frac{d}{dt} ( \mathbf{v} \times \mathbf{l}) = \mu \frac{d}{dt} \left( \frac{\mathbf{r}}{r} \right) \xrightarrow{ \int } \mathbf{v} \times \mathbf{l} = \mu \frac{\mathbf{r}}{r} + \mathbf{B} \xrightarrow{ \cdot \mathbf{r} } \mathbf{r} \cdot (\mathbf{v} \times \mathbf{l} ) = \mu r + \mathbf{B} \cdot \mathbf{r}
+\end{gathered}
+\]
+where $\mathbf{B}$ is an integration constant.
+
+Now $\mathbf{a} \cdot (\mathbf{b} \times \mathbf{c}) = (\mathbf{a} \times \mathbf{b}) \cdot \mathbf{c}$ since $a_i \epsilon_{ijk} b_j c_k = (\epsilon_{ijk} a_i b_j) c_k$, so then
+\begin{equation}
+	\begin{gathered}
+		l^2 = \mu r + \mathbf{B}\cdot \mathbf{r} = \mu r + Br \cos{\nu} \text{ or } r = \frac{l^2 / \mu}{ 1 + \frac{B}{\mu} \cos{\nu} } \equiv \frac{l^2/\mu}{ 1 + \frac{B}{\mu} \cos{\varphi} }
+	\end{gathered}
+\end{equation}
 
 \part{GPS, Geodesy} 
 
@@ -8214,7 +8408,7 @@ Eric Sonnendr\"{u}cker.  \emph{Advanced Finite Element Methods}.  Lecture notes.
 \bibitem{Darm2005}
   David Darmofal. *16.901 Computational Methods in Aerospace Engineering, Spring 2005.* (Massachusetts Institute of Technology: MIT OpenCourseWare), \url{http://ocw.mit.edu} (Accessed 12 Jun, 2016). \href{http://creativecommons.org/licenses/by-nc-sa/4.0/}{License: Creative Commons BY-NC-SA}
 
-\bibitem{BMW1071}
+\bibitem{BMW1971}
 Roger R. Bate, Donald D. Mueller, Jerry E. White. \textbf{Fundamentals of Astrodynamics} (Dover Books on Aeronautical Engineering) Revised ed. Edition. Dover Publications; Revised ed. edition (June 1, 1971). ISBN-10: 0486600610
 
 \bibitem{PTVF2007}
