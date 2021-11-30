@@ -1,6 +1,7 @@
 ENABLE_TESTING()
 
 ADD_EXECUTABLE(Check
+  Algebra/Modules/Vectors/Vector3_tests.cpp
   Numerical/Interpolation/Interpolation_tests.cpp
   Numerical/ODE/ODEIntTestSetup.cpp
   Numerical/ODE/ODEInt_tests.cpp
