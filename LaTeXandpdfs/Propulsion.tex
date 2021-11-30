@@ -8003,6 +8003,77 @@ Now $\mathbf{a} \cdot (\mathbf{b} \times \mathbf{c}) = (\mathbf{a} \times \mathb
 	\end{gathered}
 \end{equation}
 
+cf. pp. 24 "Two-Body Orbital Mechanics" of Bate, Mueller, and White (1971) \cite{BMW1971}
+
+Bate, Mueller, and White (1971) \cite{BMW1971} describes the width of each (conic section) curve at the focus as a positive dimension called the \emph{latus rectum} and labels it $2p$. It is equated as Eqn. (1.5-6) in  Bate, Mueller, and White (1971) \cite{BMW1971}:
+\begin{equation}
+	p = a(1-e^2)
+\end{equation}
+
+Furthermore, \\
+periapsis - pt. nearest prime focus \\
+apoapsis - pt. farthest from the prime focus \\
+
+The distance from the prime focus to either the periapsis or apoapsis (where it exists; for open curves, parabolas, and hyperbolas, an apoapsis has no physical meaning) are given from $ r = \frac{ a(1-e^2) }{ 1 + e\cos{\theta} }$ (polar equation of a conic section with focus at origin):
+
+\begin{equation}
+	r_{\text{min}} = r_{\text{periapsis}} = \frac{p}{ 1 + e\cos{ 0 } } = \frac{p}{ 1 + e} = r_p
+\end{equation} 
+cf. Eq. (1.5-7) of Bate, Mueller, and White (1971) \cite{BMW1971}
+
+\begin{equation}
+	r_{\text{max}} = r_{\text{apoapsis}} = \frac{p}{ 1 + e\cos{\pi} } = \frac{p}{ 1 - e} = r_a
+\end{equation} 
+cf. Eq. (1.5-8) of Bate, Mueller, and White (1971) \cite{BMW1971}
+
+For an ellipse, with $e<1$, $r_p = \frac{ a(1-e^2 )}{ 1 + e} $; $r_a = \frac{ a(1-e^2) }{ 1 - e} = a(1+e)$ \\
+
+For a hyperbola, $e>1$, $r_p = -a (e-1) (e+1) / (e+1) = -a(e-1)$. \\
+
+\subsubsection{Bate, Mueller, and White's so-called "Eccentricity Vector"}
+
+Recall the derivation of Eqn. (1.5-3) of Bate, Mueller, and White (1971) \cite{BMW1971}, $r = \frac{h^2 / \mu}{ 1 + (B/\mu ) \cos{\nu} }$. Now recall from Eq. \ref{Eq:IntegrateConservedVector}:
+\[
+\begin{gathered}
+	\mathbf{v} \times \mathbf{l} = \frac{\mu \mathbf{r}}{ r} + \mathbf{B} \Longrightarrow \mathbf{B} = \mathbf{v} \times \mathbf{l} - \frac{\mu \mathbf{r}}{r}
+\end{gathered}
+\]
+
+Bate, Mueller, and White (1971) \cite{BMW1971} defines the eccentricity vector as 
+\[
+\mathbf{e} = \frac{ \mathbf{v} \times \mathbf{l} }{ \mu} - \frac{\mathbf{r}}{r}
+\]
+
+Compare this against the Laplace-Runge-Lenz vector of Sec. 3.9 "The Laplace-Runge-Lenz Vector" in Goldstein, et. al. \cite{HGoldsteinCPooleJSafko2001}.
+
+cf. 1.6 "Relating $\mathbf{E}$ and $\mathbf{l} \equiv \mathbf{h}$ to the Geometry of an Orbit in Bate, Mueller, and White (1971) \cite{BMW1971}.
+
+Bate, Mueller, and White (1971) \cite{BMW1971} compares $r = \frac{ l^2 / \mu}{ 1 + B/\mu \cos{\nu }} $  to $r = \frac{p}{ 1 + e \cos{\nu}} $, Eqns. (1.5.3), (1.5.4), respectively, from Bate, Mueller, and White (1971) \cite{BMW1971}. To obtain
+\begin{equation}
+	p = l^2 /mu 
+\end{equation}
+cf. Eqn. (1.6-1) of Bate, Mueller, and White (1971) \cite{BMW1971}.  \\
+
+Since $\mathbf{l}$ is conserved, then 
+\begin{equation}
+	l = r_p v_p = r_a v_a
+\end{equation}
+cf. (1.6-2) of Bate, Mueller, and White (1971) \cite{BMW1971}, i.e. at the periapsis or apoapsis of any conic orbit the velocity vector (which is always tangent to the orbit) is directed horizontally and flight-path angle $\nu$ is $0$.
+
+From Eqns. (1.4-2), (1.5-7), (1.5-6), (1.6.1) of Bate, Mueller, and White (1971) \cite{BMW1971},
+\[
+\begin{gathered}
+	\mathcal{E} = \frac{v^2}{2 }  - \frac{\mu}{r} = \frac{l^2}{ 2 r_p^2 } - \frac{\mu}{r_p} \xrightarrow{r_p = a(1-e) }  \frac{ l^2 - 2\mu a(1-e) }{ 2 r^2 p} \xrightarrow{ l^2 = \mu a ( 1- e^2) } \frac{- \mu}{2 a}
+\end{gathered}
+\]
+
+Since $l$ determines $p = a(1-e^2)$ so $e = \sqrt{ 1 - \frac{p}{a} }$ and so \\
+$p = l^2 / \mu$ and $a = - \frac{\mu}{2E}$. Then 
+\begin{equation}
+	e = \sqrt{ 1 + \frac{2 \mathcal{E} l^2 }{\mu^2} }
+\end{equation}
+cf. Eq (1.6-4) of Bate, Mueller, and White (1971) \cite{BMW1971}.
+
 \part{GPS, Geodesy} 
 
 D. K. Olson, "Converting Earth-Centered, Earth-Fixed Coordinates to Geodetic Coordinates" IEEE Transactions on Aerospace and Electronic Systems, 32 (1996) 473-476 Olson algorithm
