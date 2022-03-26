@@ -10,12 +10,19 @@ namespace ODE
 
 //------------------------------------------------------------------------------
 /// \brief Stepper Base class
+/// Base class for all ODE algorithms.
 /// \details Was called StepperBase in Numerical Recipes, pp. 903.
 //------------------------------------------------------------------------------
 class StepperBase
 {
   public:
 
+    //--------------------------------------------------------------------------
+    /// \details Input to the ctor are dependent variable vector y[0..n-1] and
+    /// its derivative dydx[0...n-1] at the starting value of the independent
+    /// variable x. Als input are the absolute and relative tolerances, atol and
+    /// rtol, and boolean dense, which is true if dense output is required.
+    //--------------------------------------------------------------------------
     StepperBase(
       std::vector<double>& yy,
       std::vector<double>& dydxx,
@@ -37,8 +44,6 @@ class StepperBase
       y_err_(n_)
     {}
 
-  private:
-
     double& x_;
     double x_old_;
     std::vector<double>& y_;
@@ -48,6 +53,7 @@ class StepperBase
     bool dense_;
     // Actual stepsize accomplished by the step routine.
     double hdid_;
+    // Stepsize predicted by the controller for the next step.
     double hnext_;
     double EPS_;
     int n_;

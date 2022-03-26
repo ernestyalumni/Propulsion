@@ -5,9 +5,11 @@ ADD_EXECUTABLE(Check
   Numerical/Interpolation/Interpolation_tests.cpp
   Numerical/ODE/ODEIntTestSetup.cpp
   Numerical/ODE/ODEInt_tests.cpp
+  Numerical/ODE/Output_tests.cpp
   Numerical/ODE/RKMethods/RungeKuttaMethod_tests.cpp
   Numerical/ODE/RhsVanDerPol_tests.cpp
   Numerical/ODE/RhsVan_tests.cpp
+  Numerical/ODE/StepperBase_tests.cpp
   Utilities/BinarySearch_tests.cpp
   )
 

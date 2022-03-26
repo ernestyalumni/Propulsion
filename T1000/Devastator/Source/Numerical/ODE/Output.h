@@ -53,10 +53,26 @@ struct Output
   // Results stored in the vector x_save_[0..count_ - 1] and
   std::vector<double> x_save_;
 
-  // Results stored in the matrix y_save_[0..count_ - 1][0..n_var_ - 1]
-  //std::vector<std::vector<double>> y_save_;
-
+  //----------------------------------------------------------------------------
+  /// \details Called by Odeint ctor, which passes neqn, the number of
+  /// equations, xlo, the starting point of the integration, and xhi, the ending
+  /// point.
+  //----------------------------------------------------------------------------
   void init(const std::size_t neqn, const double xlo, const double xhi);
+
+  //----------------------------------------------------------------------------
+  /// \brief Resize storage arrays by a factor of 2, keeping saved data.
+  //----------------------------------------------------------------------------
+  void resize();
+
+  //----------------------------------------------------------------------------
+  /// \details Invokes dense_out function of stepper routine to produce output
+  /// at xout. Normally called by out rather than directly. Assumes that xout is
+  /// between xold and xold+h, where the stepper must keep track of xold, the
+  /// location of the previous step, and x=xold+h, the current step.
+  //----------------------------------------------------------------------------
+  template <class Stepper>
+  void save_dense(Stepper& s, const double x_out, const double h);
 
   void save(const double x, std::vector<double>& y);
 };

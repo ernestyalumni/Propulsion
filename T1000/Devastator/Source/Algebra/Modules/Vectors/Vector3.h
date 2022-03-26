@@ -28,7 +28,7 @@ class Vector3
     Vector3():
       elements_{}
     {
-      elements.fill(static_cast<Field>(0));
+      elements_.fill(static_cast<Field>(0));
     }
 
     explicit Vector3(const std::initializer_list<Field>& entries)
@@ -39,7 +39,7 @@ class Vector3
     //--------------------------------------------------------------------------
     /// \brief Copy constructor
     //--------------------------------------------------------------------------
-    Vector3(const Vector& rhs):
+    Vector3(const Vector3& rhs):
       elements_{rhs.elements_}
     {}
 

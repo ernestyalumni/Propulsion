@@ -5468,6 +5468,23 @@ Or
 \end{gathered}
 \]
 
+\subsection{Interpreting Runge-Kutta method implementations in \textbf{Numerical Recipes}}
+
+cf. Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}.
+
+\subsubsection{StepperBase}
+
+cf. pp. 903-904, 17.0.2 The Odeint Object, Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}
+
+Inputs of the class StepperBase are the following: \\
+$\mathbf{y}_0 = \mathbf{y}_0(x_0) \in \mathbb{R}^n$ \\
+$\frac{d\mathbf{y}}{dx}(x_0) \in \mathbb{R}^n $ \\
+$x_0 = x(0) \in \mathbb{R} \equiv $ starting value of independent variable $x$ \\
+$\epsilon_a \equiv $ atol \\
+$\epsilon_r \equiv $ rtol \\
+
+
+
 
 \section{Systems of Ordinary Differential Equations ODEs}
 

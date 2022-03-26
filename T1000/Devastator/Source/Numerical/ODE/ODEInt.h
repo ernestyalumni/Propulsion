@@ -9,6 +9,13 @@ namespace Numerical
 namespace ODE
 {
 
+//------------------------------------------------------------------------------
+/// \ref Numerical Recipes, 3rd. Ed. Press, Teukolsky, Vetterling, Flannery.
+/// 17.0.2 The Odeint Object. pp. 902
+/// \brief Driver for ODE solvers with adaptive stepsize control. The template
+/// parameter should be 1 of the derived classes of StepperBase defining a
+/// particular integration algorithm.
+//------------------------------------------------------------------------------
 template <class Stepper, class Output>
 class OdeInt
 {
@@ -19,6 +26,20 @@ class OdeInt
 
     using Derivative = Stepper::DerivativeType;
 
+    //--------------------------------------------------------------------------
+    /// \details Ctor simply initializes a bunch of things, including a call to
+    /// stepper ctor.
+    ///
+    /// Ctor sets everything up. The routine integrates starting values ystart_t
+    /// [0..nvar-1] from xx1 to xx2 with absolute tolerance atol and relative
+    /// tolerance rtol. The quantity h1 should be set as a guessed first
+    /// stepsize, hmin as the minimum allowed stepsize (can be 0). An Output
+    /// object out should be input to control the saving of intermediate values.
+    /// On output, nok and nbad are number of good and bad (but retried and
+    /// fixed) steps taken, and ystart_ is replaced by values at end of
+    /// integration interval. derivatives_ is the user-supplied routine
+    /// (function or functor) for calculating the right-hand side derivative.
+    //--------------------------------------------------------------------------
     OdeInt(
       std::vector<double>& y_start_t,
       const double xx1,
@@ -31,8 +52,6 @@ class OdeInt
       Stepper::DerivativeType& derivatives);
 
     //void integrate();
-
-  private:
 
     double EPS_;
     int nok_;
@@ -48,7 +67,7 @@ class OdeInt
     std::vector<double> y_;
     std::vector<double> dy_dx_;
     std::vector<double>& ystart_;
-    Output output_;
+    Output& output_;
 
     Derivative& derivatives_;
 
