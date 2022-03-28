@@ -46,7 +46,8 @@ void Output::init(const std::size_t neqn, const double xlo, const double xhi)
 
 void Output::resize()
 {
-  const std::size_t k_old {k_max_};
+  // Unused
+  //const std::size_t k_old {k_max_};
   k_max_ *= 2;
   
   // Originally the previous values had to be saved.
