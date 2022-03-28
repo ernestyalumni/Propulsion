@@ -74,6 +74,39 @@ TEST(OutputTests, InitSetsValuesOnOutput)
   EXPECT_EQ(out.dx_out_, 0.02);
 }
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(OutputTests, SaveDoesNothingOnDefaultConstructedOutput)
+{
+  Output out {};
+  EXPECT_EQ(out.y_save_.size(), 0);
+  EXPECT_EQ(out.x_save_.size(), 0);
+
+  vector<double> input {69.0, 42.69};
+
+  out.save(42.0, input);
+  EXPECT_EQ(out.y_save_.size(), 0);
+  EXPECT_EQ(out.x_save_.size(), 0);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(OutputTests, SaveSavesValues)
+{
+  Output out {50};
+  EXPECT_EQ(out.count_, 0);
+
+  vector<double> input {69.0, 42.69};
+
+  out.save(42.0, input);
+  EXPECT_EQ(out.y_save_.size(), 1);
+  EXPECT_EQ(out.x_save_.size(), 500);
+  EXPECT_EQ(out.count_, 1);
+  EXPECT_EQ(out.x_save_.at(0), 42.0);
+  EXPECT_EQ(out.y_save_.at(0).at(0), 69.0);
+  EXPECT_EQ(out.y_save_.at(0).at(1), 42.69);
+}
+
 } // namespace ODE 
 } // namespace Numerical
 } // namespace GoogleUnitTests

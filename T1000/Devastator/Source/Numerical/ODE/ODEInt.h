@@ -1,6 +1,8 @@
 #ifndef NUMERICAL_ODE_ODE_INT_H
 #define NUMERICAL_ODE_ODE_INT_H
 
+#include "Output.h"
+
 #include <cmath>
 #include <vector>
 
@@ -16,7 +18,7 @@ namespace ODE
 /// parameter should be 1 of the derived classes of StepperBase defining a
 /// particular integration algorithm.
 //------------------------------------------------------------------------------
-template <class Stepper, class Output>
+template <class Stepper>
 class OdeInt
 {
   public:
@@ -51,12 +53,13 @@ class OdeInt
       Output& outt,
       Stepper::DerivativeType& derivatives);
 
-    //void integrate();
+    void integrate();
 
     double EPS_;
     int nok_;
     int nbad_;
     int n_var_;
+
     double x1_;
     double x2_;
     double hmin_;
@@ -73,12 +76,13 @@ class OdeInt
 
     Stepper s_;
     int n_stp_;
+
     double x_;
     double h_;
 };
 
-template <class Stepper, class Output>
-OdeInt<Stepper, Output>::OdeInt(
+template <class Stepper>
+OdeInt<Stepper>::OdeInt(
   std::vector<double>& y_start_t,
   const double xx1,
   const double xx2,
@@ -116,9 +120,8 @@ OdeInt<Stepper, Output>::OdeInt(
   output_.init(s_.n_eqns_, x1_, x2_);
 }
 
-/*
-template <class Stepper, class Output>
-void OdeInt<Stepper, Output>::integrate()
+template <class Stepper>
+void OdeInt<Stepper>::integrate()
 {
   derivatives_(x_, y_, dy_dx_);
   if (dense_)
@@ -133,7 +136,7 @@ void OdeInt<Stepper, Output>::integrate()
   for (n_stp_ = 0; n_stp_ < MAXSTP; ++n_stp_)
   {
     // If stepsize can oversheet, decrease.
-    if ((x_ + h_ * 1.0001 -x2_) * (x2_ - x1_) > 0.0)
+    if ((x_ + h_ * 1.0001 - x2_) * (x2_ - x1_) > 0.0)
     {
       h_ = x2_ - x_;
     }
@@ -158,19 +161,23 @@ void OdeInt<Stepper, Output>::integrate()
       output_.save(x_, y_);
     }
 
+    // Are we done?
     if ((x_ - x2_) * (x2_ - x1_) >= 0.0)
     {
       for (int i {0}; i < n_var_; ++i)
       {
+        // Update ystart.
         ystart_[i] = y_[i];
       }
       if (
-        output_.kmax_ > 0 &&
-          std::abs(output_.xsave[output_.count_ - 1] - x2_) >
+        output_.k_max_ > 0 &&
+          std::abs(output_.x_save_[output_.count_ - 1] - x2_) >
             100.0 * std::abs(x2_) * EPS_)
       {
+        // Make sure last step gets saved.
         output_.save(x_, y_);
       }
+      // Normal exit.
       return;
     }
     if (std::abs(s_.hnext_) <= hmin_)
@@ -182,7 +189,6 @@ void OdeInt<Stepper, Output>::integrate()
 
   throw("Too many steps in routine OdeInt");
 }
-*/
 
 } // namespace ODE
 } // namespace Numerical

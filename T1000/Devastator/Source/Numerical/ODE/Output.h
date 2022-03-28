@@ -2,6 +2,7 @@
 #define NUMERICAL_ODE_OUTPUT_H
 
 #include <cstddef>
+#include <stdexcept>
 #include <vector>
 
 namespace Numerical
@@ -72,9 +73,50 @@ struct Output
   /// location of the previous step, and x=xold+h, the current step.
   //----------------------------------------------------------------------------
   template <class Stepper>
-  void save_dense(Stepper& s, const double x_out, const double h);
+  void save_dense(Stepper& s, const double x_out, const double h)
+  {
+    if (count_ == k_max_)
+    {
+      resize();
+    }
+
+    for (std::size_t i {0}; i < n_var_; ++i)
+    {
+      y_save_[count_][i] = s.dense_out(i, x_out, h);
+    }
+
+    x_save_[count_++] = x_out;
+  }
 
   void save(const double x, std::vector<double>& y);
+
+  template <class Stepper>
+  void out(
+    const int nstp,
+    const double x,
+    std::vector<double>& y,
+    Stepper& s,
+    const double h)
+  {
+    if (!dense_)
+    {
+      throw std::runtime_error("Dense output not set in Output!");
+    }
+
+    if (nstp == -1)
+    {
+      save(x, y);
+      x_out_ += dx_out_;
+    }
+    else
+    {
+      while ((x - x_out_) * (x2_ - x1_) > 0.0)
+      {
+        save_dense(s, x_out_, h);
+        x_out_ += dx_out_;
+      }
+    }
+  }
 };
 
 } // namespace ODE

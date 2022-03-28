@@ -71,10 +71,17 @@ void Output::save(const double x, std::vector<double>& y)
     return;
   }
 
-  for (std::size_t i {0}; i < n_var_; ++i)
+  if (count_ == k_max_)
   {
-    y_save_[count_][i] = y[i];
+    resize();
   }
+
+  // Originally, this was a for loop.
+  //for (std::size_t i {0}; i < n_var_; ++i)
+  //{
+  //  y_save_[count_][i] = y[i];
+  //}
+  y_save_.emplace_back(y);
 
   x_save_[count_++] = x;
 }
