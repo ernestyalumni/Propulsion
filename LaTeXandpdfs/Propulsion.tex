@@ -5236,6 +5236,8 @@ For $M=2, M=3$ cases,
 
 \subsection{Runge Kutta Methods}
 
+cf. \href{https://www.uni-muenster.de/imperia/md/content/physik_tp/lectures/ss2017/numerische_Methoden_fuer_komplexe_Systeme_II/rkm-1.pdf}{Appendix A, Runge-Kutta Methods}
+
 Consider an initial value problem (IVP):
 
 \begin{equation}
@@ -5256,7 +5258,7 @@ t_j = a+ jh, \, j = 0, 1\dots M, \, h = \frac{b-a}{M}
 \]
 
 Family of explicit Runge-Kutta (RK) methods of $m$th stage given by
-\begin{equation}
+\begin{equation}\label{Eq:ERKmethodsMthStage}
 \begin{gathered}
 	\mathbf{x}(t_{n+1}) \equiv \mathbf{x}_{n+1} = \mathbf{x}_n + h \sum_{i=1}^m c_i k_i \text{ where } \\
 	\begin{aligned}
@@ -5326,6 +5328,85 @@ To obtain the result
 	\mathbf{x}(t_{n+1}) \equiv \mathbf{x}_{n+1} = \mathbf{x}_{n} + h \sum_{i=1}^m c_i k_i
 \end{equation}
 
+Compare this notation, include Eq. \ref{Eq:ERKmethodsMthStage} to what's in Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}:
+
+\begin{definition}[1.1, Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}]
+	Let $s \in \mathbb{Z}$, $s \equiv $ number of stages, and 
+	\begin{equation}
+		\begin{aligned}
+			& a_{21}, a_{31}, a_{32}, \dots a_{s1}, a_{s2}, \dots a_{s,s-1}, \\
+			& b_1, \dots b_s, \\
+			& c_2, \dots c_s
+		\end{aligned}
+	\end{equation}
+be real coefficients.
+
+Then
+\begin{equation}\label{Eq:ERKmethodsSthStage}
+	\begin{aligned}
+		& k_1 = f(x_0, y_0) \\
+		& k_2 = f(x_0 + c_2h, y_0 + ha_{21} k_1) \\
+		& k_3 = f(x_0 + c_3h, y_0 + h(a_{31} k_1 + a_{32}k_2)) \\
+		& \dots \\
+		& k_s = f(x_0 + c_s h, y_0 + h(a_{s1} k_1+ \dots + a_{s, s-1} k_{s-1})) \\
+		& y_1 = y_0 + h(b_1k_1 + \dots + b_s k_s)
+	\end{aligned}
+\end{equation}
+is called a s-stage explicit Runge-Kutta method (ERK) for Eq. (1.1), Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, i.e. $y' = f(x, y), \, y(x_0) = y_0$.
+
+Usually, $c_i $ satisfy conditions:
+\[
+\begin{aligned}
+	& c_2 = a_{21} \\
+	& c_3 = a_{31} + a_{32} \\
+	& \dots \\
+	& c_s = a_{s1} + \dots + a_{s,s-1}
+\end{aligned}
+\]
+or briefly
+\[
+c_i = \sum_{j=1}^{i-1} a_{ij}
+\]
+
+The notation I will use is the following, replacing Eq. \ref{Eq:ERKmethodsSthStage}:
+
+\begin{equation}\label{Eq:ERKmethodsSthStageMyNotation}
+	\begin{aligned}
+		& \mathbf{y}(x_n) \equiv \mathbf{y}_n = \mathbf{y}_{n-1} + h(b_1\mathbf{k}_1 + \dots + b_s \mathbf{k}_s) = \mathbf{y}_{n-1} + h \sum_{i=1}^s b_i \mathbf{k}_i \\
+		& \mathbf{k}_1 = \mathbf{f}(x_n, \mathbf{y}_n) \\
+		& \mathbf{k}_2 = \mathbf{f}(x_n + c_2h, \mathbf{y}_n + ha_{21} \mathbf{k}_1) \\
+		& \mathbf{k}_3 = \mathbf{f}(x_n + c_3h, \mathbf{y}_n + h(a_{31} \mathbf{k}_1 + a_{32}\mathbf{k}_2)) \\
+		& \dots \\
+		& \mathbf{k}_s = \mathbf{f}(x_n + c_s h, \mathbf{y}_n + h(a_{s1} \mathbf{k}_1+ \dots + a_{s, s-1} \mathbf{k}_{s-1})) = \mathbf{f}(x_n + c_s h, \mathbf{y}_n + h \sum_{j=1}^{s-1} a_{sj} \mathbf{k}_j)
+	\end{aligned}
+\end{equation}
+
+\end{definition}
+
+\begin{definition}[1.2, Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}]
+	Runge-Kutta method (1.8, Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, \ref{Eq:ERKmethodsSthStage}) has order $p$ if for sufficiently smooth problems (1.1, Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993})
+\begin{equation}\label{Eq:RungeKuttaMethodOrderpConditionDefinition}
+	\| y(x_0 + h) - y_1 \| \leq K h^{p + 1}
+\end{equation}
+cf. Eqn. (1.10) of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}.
+
+i.e. if Taylor series for exact solution $y(x_0 + h)$ and for $y_1$ coincide up to (and including) term $h^p$.
+
+For notation, rewrite Eq. \ref{Eq:RungeKuttaMethodOrderpConditionDefinition} as
+
+\begin{equation}
+	\| \mathbf{y}(x_n + h) - \mathbf{y}_n \| \leq Kh^{p+1}
+\end{equation}
+where
+\begin{equation}
+\mathbf{y}_n \equiv \mathbf{y}(x_n) = \mathbf{y}_{n-1} + h \sum_{i=1}^{s} b_i \mathbf{k}_i
+\end{equation}
+
+\end{definition}
+
+
+
+
 \subsubsection{Examples}
 
 1. $m = 1$. Then 
@@ -5345,6 +5426,17 @@ By Taylor expansion,
 So $\mathbf{x}_{n+1} = \mathbf{x}_n + h f(t_n, \mathbf{x}_n)$.  \\
 
 $c_1= 1$ 
+
+Using the notation of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, the case of $s=1$ is the Euler case: \\
+$s=1 \Longrightarrow b_1$ \\
+
+\[
+\begin{gathered}
+	\mathbf{y}(x_n) = \mathbf{y}(x_{n-1}) + h b_1 \mathbf{k}_1 = \mathbf{y}(x_{n-1}) + hb_1 \mathbf{f}(x_n, \mathbf{y}_n) \\
+	x_n = a +nh, \, h = \frac{b-a}{M}, \quad \, n = 0,1, \dots M
+\end{gathered}
+\]
+
 
 $m=2$
 
@@ -5390,6 +5482,24 @@ Let $\alpha_2 = \frac{1}{2}$. Then $c_2 = 1, \, \beta_{21} = \frac{1}{2}, \, c_1
 \mathbf{x}_{n+1} = \mathbf{x}_n + h \mathbf{f}(t_n + \frac{h}{2}, \mathbf{x}_n + \frac{h}{2} \mathbf{f}(t_n, \mathbf{x}_n))
 \]
 This is called the RK2 method.
+
+Using the notation of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, \\
+$s=2 \Longrightarrow$ \\
+$a_{21}$ \\
+$b_1, \, b_2$ \\
+$c_2$ \\
+
+\[
+\begin{aligned}
+	& \mathbf{k}_1 = \mathbf{f}(x_n, \mathbf{y}_n) \\
+	& \mathbf{k}_2 = \mathbf{f}(x_n + c_2h, \mathbf{y}_n + ha_{21} \mathbf{k}_1) 	
+\end{aligned}
+\]
+and 
+\[
+\mathbf{y}(x_n) = \mathbf{y}_{n-1} + h(b_1 \mathbf{k}_1 + b_2 \mathbf{k}_2)
+\]
+
 
 \subsubsection{Runge-Kutta 4, RK4 Methods}
 
@@ -5467,6 +5577,14 @@ Or
 	c_1 = \frac{1}{6}, \quad c_2 = c_3 = \frac{1}{3}, \quad c_4 = \frac{1}{6}
 \end{gathered}
 \]
+
+\subsection{Order Conditions for Runge-Kutta Methods}
+
+cf. pp. 143, II.2 Order Conditions for Runge-Kutta Methods, Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}
+
+Replace $\mathbf{k}_i$ by $\mathbf{g}_i$ s.t. $\mathbf{k}_i = \mathbf{f}(\mathbf{g}_i)$
+
+
 
 \subsection{Interpreting Runge-Kutta method implementations in \textbf{Numerical Recipes}}
 
@@ -8537,6 +8655,9 @@ Roger R. Bate, Donald D. Mueller, Jerry E. White. \textbf{Fundamentals of Astrod
 
 \bibitem{PTVF2007}
 William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P. Flannery. \textbf{Numerical Recipes: The Art of Scientific Computing}. 3rd Edition.  Cambridge University Press.  ISBN-10: 0521880688
+
+\bibitem{HNW1993}
+E. Hairer, S.P. N\o rsett, G. Wanner. \textbf{Solving Ordinary Differential Equations I: Nonstiff Problems}. Second Revised Edition. Springer. 1993. 
 
 \bibitem{GaSt2018}
 Daniel Gaspar, Jack Stouffer.
