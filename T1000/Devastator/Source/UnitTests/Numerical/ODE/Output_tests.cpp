@@ -67,7 +67,7 @@ TEST(OutputTests, InitSetsValuesOnOutput)
   Output out {50};
   out.init(2, 0.0, 1.0);
   EXPECT_EQ(out.n_var_, 2);
-  EXPECT_EQ(out.y_save_.size(), 500);
+  EXPECT_EQ(out.y_save_.capacity(), 500);
   EXPECT_EQ(out.x1_, 0.0);
   EXPECT_EQ(out.x2_, 1.0);
   EXPECT_EQ(out.x_out_, 0.0);
