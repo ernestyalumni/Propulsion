@@ -5578,6 +5578,34 @@ Or
 \end{gathered}
 \]
 
+If you use our notation, in Eq. \ref{Eq:ERKmethodsSthStageMyNotation}, 
+
+\begin{equation}
+\begin{gathered}
+	\begin{aligned}
+		& k_1 = f(x_n, y_n) \\
+		& k_2 = f(x_n + c_2h, y_n + ha_{21}k_1) \\
+		& k_3 = f(x_n + c_3h , y_n + h (a_{31} k_1+ a_{32}k_2)) \\
+		& k_4 = f(x_n + c_4h, y_n + h(a_{41} k_1 + a_{42} k_2 + a_{43}k_3))
+	\end{aligned} \\
+\begin{aligned}
+	& a_{21} = \frac{1}{2} & & \\
+	& a_{32} = \frac{1}{2} & a_{31} = 0 & \\
+	& a_{43} = 1 & a_{42} = a_{41} = 0 & \\
+	& c_2 = \frac{1}{2} & c_3 = \frac{1}{2} & \quad c_4 = 1 \\ 
+	& b_1 = \frac{1}{6} & b_2 = b_3 = \frac{1}{3} & \quad b_4 = \frac{1}{6}
+\end{aligned} \\
+\begin{aligned}
+	& k_1 = f(x_n, y_n) \\
+	& k_2 = f(x_n + \frac{h}{2}, y_n + \frac{h}{2} k_1) \\
+	& k_3 = f(x_n + \frac{h}{2}, y_n + \frac{h}{2} k_2) \\
+	& k_4 = f(x_n + h, y_n + hk_3)
+\end{aligned} \\
+y_n = y_{n-1} + h \sum_{i=1}^4 b_i k_i
+\end{gathered}
+\end{equation}
+
+
 \subsection{Order Conditions for Runge-Kutta Methods}
 
 cf. pp. 143, II.2 Order Conditions for Runge-Kutta Methods, Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}

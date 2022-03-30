@@ -6,6 +6,7 @@ ADD_EXECUTABLE(Check
   Numerical/ODE/ODEIntTestSetup.cpp
   Numerical/ODE/ODEInt_tests.cpp
   Numerical/ODE/Output_tests.cpp
+  Numerical/ODE/RK4_tests.cpp
   Numerical/ODE/RKMethods/RungeKuttaMethod_tests.cpp
   Numerical/ODE/RhsVanDerPol_tests.cpp
   Numerical/ODE/RhsVan_tests.cpp
