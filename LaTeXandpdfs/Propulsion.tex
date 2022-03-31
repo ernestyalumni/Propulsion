@@ -5612,6 +5612,121 @@ cf. pp. 143, II.2 Order Conditions for Runge-Kutta Methods, Hairer, N\o rsett, a
 
 Replace $\mathbf{k}_i$ by $\mathbf{g}_i$ s.t. $\mathbf{k}_i = \mathbf{f}(\mathbf{g}_i)$
 
+\subsection{Adaptive Stepsize Control, Stepsize Selection for Runge-Kutta and Practical Error Estimation}
+
+\subsubsection{Richardson Extrapolation}
+
+Suppose that, given initial value $(x_0, y_0)$, step size $h$, compute 2 steps (step doubling). \\
+
+Compute, starting from $(x_0, y_0)$ with one big step $2h$, \\
+approximate solution $y_1$, \\
+and approximate solution $y_2$ (2 steps of size $h$). \\
+
+Let exact solution be $y(x_0 + 2h) \equiv y(x + 2h)$:
+
+\begin{equation}
+	e_1 = y(x_0 + h) - y_1 = Ch^{p+1} + \mathcal{O}(h^{p + 2})
+\end{equation}
+cf. Eq. 4.1, Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, or in my notation,
+\begin{equation}
+	e_1 \equiv \text{err}_1 = y(x+2h) - y_1 = C(2h)^{p+1} + \mathcal{O}(h^{p+2})
+\end{equation}
+with $C = 1$, $p=4$ as an example. \\
+
+$C$ contains error coefficients of the method and elementary differentials $F^J(t)(y_0) \equiv f^J(x)(y_0)$ of order $p+1 =5$.
+
+Error of $y_2$ consists of 2 parts: 
+\begin{itemize}
+	\item transported error of first step, $(I + h \frac{\partial f}{\partial y} + \mathcal{O}(h^2)) e_1$ 
+	\item local error of 2nd. step
+	\[
+	e_1 = y(x_0 + h) - y_1 = Ch^{p+1} + \mathcal{O}(h^{p+2}) \text{ s.t. } y_1 = y_0 + \mathcal{O}(h)
+	\]
+\end{itemize}
+Thus,
+\[
+\begin{gathered}
+	\begin{aligned}
+		\Longrightarrow e_2 & = y(x_0 + 2h) - y_2 = (I + \mathcal{O}(h)) Ch^{p+1} + (C +\mathcal{O}(h))h^{p+1} + \mathcal{O}(h^{p+2}) = \\
+		& = 2Ch^{p+1} + \mathcal{O}(h^{p+2})
+	\end{aligned} \\
+\Longrightarrow y(x_0 + 2h) - y = C(2h)^{p+1} + \mathcal{O}(h^{p+2})
+\end{gathered}
+\]
+
+\subsubsection{Embedded Runge-Kutta Formulas}
+
+For $s=5$, and comparing with Eq. \ref{Eq:ERKmethodsSthStageMyNotation}, fifth order Runge-Kutta formula is, in Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}'s notation,
+\begin{equation}\label{Eq:FifthOrderRungeKuttaNumericalRecipes}
+	\begin{gathered}
+		\begin{aligned}
+			& k_1 = h f(x_n, y_n) \\
+			& k_2 = hf(x_n + c_2 h, y_n + a_{21} k_1) \\
+			& \dots \\
+			& k_6 = hf(x_n + c_6 h, y_n + \sum_{j=1}^5 a_{6j} k_j)
+		\end{aligned} \\
+	y_{n+1} = y_n + \sum_{i=1}^6 b_i k_i + \mathcal{O}(h^6)
+	\end{gathered}
+\end{equation} cf. Eq. (17.2.4),  pp. 912 of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}.
+
+The \emph{embedded} 4th-order formula is of general form
+\begin{equation}\label{Eq:RK5Embedded4thOrderNumericalRecipes}
+y^*_{n+1} = y_n + \sum_{i=1}^6 b_i^* k_i + \mathcal{O}(h^5)
+\end{equation}
+cf. pp. 912, Eq. (17.2.5), Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}, so that (the general form of) the error estimate is
+\begin{equation}
+	\Delta \equiv y_{n+1} - y^*_{n+1} = \sum_{i=1}^6 (b_i -b_i^*) k_i
+\end{equation}
+cf. pp. 921, Eq. (17.2.6), Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}.
+
+Note the notation change from Eq. \ref{Eq:RK5Embedded4thOrderNumericalRecipes} to Eqns. 4.7, 4.7' in  Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}:
+
+\[
+\begin{aligned}
+& y_{n+1} \equiv y_1  = y_0 + h \sum_{i=1}^s b_i k_i \\
+& y_{n+1}^* \equiv \widehat{y}_1 = y_0 + h \sum_{s=1}^s \widehat{b}_i k_i
+\end{aligned}
+\]
+
+Consider that the use of $y_{n+1}$ itself to provide a 7th ($s+1$th) stage. Because $f(x_n+h , y_{n+1})$ has to be evaluated anyway to start the next step, this costs nothing. This trick is called FSAL (First Same As Last).
+
+cf. pp. 912-913, 17.2 Adaptive Stepsize Control for Runge-Kutta, Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}
+cf. pp. 166-167, II.4 Practical Error Estimation and Stepsize Selection, Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}
+
+So then
+\[
+\begin{aligned}
+	& k_7 = h f(x_n + h, y_n + \sum_{i=1}^6 b_i k_i) = hf(x_n + h,y_{n+1}) \\
+	& c_7 = 1 \\
+	& k_{s+1} = f(x_n +h , y_n + h\sum_{i=1}^s b_i k_i) = f(x_n + c_{s+1}h , y_n + h\sum_{i=1}^s a_{s+1,i} k_i) = f(x_n + h,y_{n+1})
+\end{aligned}
+\]
+
+\subsubsection{Automatic Stepsize Control}
+
+Comparing Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007} and Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, respectively,
+
+\begin{equation}
+	|\Delta | = |y_{n+1} - y_{n+1}^* | \leq \texttt{scale}
+\end{equation}
+cf. Eq. (17.2.7), Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}, or
+
+\begin{equation}
+	| \Delta | = \| y_{n+1}- y^*_{n+1} | \leq \text{sc}_i
+\end{equation}
+cf. Eq. (4.10), Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}
+
+Furthermore,
+\begin{equation}
+	\texttt{scale} = \texttt{atol} + |y| \texttt{rtol}
+\end{equation}
+cf. Eq. (17.28), Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}, with $|y| \mapsto \max{(|y_n|, |y_{n+1}|)}$.
+
+In Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}'s notation,
+\begin{equation}
+	\text{sc}_i = \text{Atol}_i + \max{(|y_{0i}|, |y_{1i}|)} \cdot \text{Rtol}_i
+\end{equation}
+cf. Eq. (4.10), Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, where $\text{Atol}_i \equiv \texttt{atol}$, $\text{Rtol}_i \equiv \texttt{rtol}$ are absolute error tolerance, relative error tolerance, respectively.
 
 
 \subsection{Interpreting Runge-Kutta method implementations in \textbf{Numerical Recipes}}
