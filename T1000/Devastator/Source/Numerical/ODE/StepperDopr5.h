@@ -46,6 +46,8 @@ struct StepperDopr5 : StepperBase
 
   void step(const double htry, D& derivatives);
 
+  void dy(const double h, D& derivatives);
+
   double dense_out(const std::size_t i, const double x, const double h);
 
   double error();
@@ -142,6 +144,76 @@ void StepperDopr5<D>::step(const double htry, D& derivatives)
   x_old_ = x_;
   x_ += (h_did_ = h);
   //h_next_ = con_.h_next_;
+}
+
+//------------------------------------------------------------------------------
+/// \details Given values for n variables y[0...n-1] and their derivatives
+/// dydx[0..n-1] known at x, use the 5th-order Dormand-Prince Runge-Kutta
+/// method to advance solution over interval h and store incremented variables
+/// in y_out_[0...n-1]. Also store estimate of local truncation error in y_err_
+/// using embedded 4th-order method.
+//------------------------------------------------------------------------------
+template <class D>
+void StepperDopr5<D>::dy(const double h, D& derivatives)
+{
+  static constexpr double c2 {0.2};
+  static constexpr double c3 {0.3};
+  static constexpr double c4 {0.8};
+  static constexpr double c5 {8.0/9.0};
+  static constexpr double a21 {0.2};
+  static constexpr double a31 {3.0/40.0};
+  static constexpr double a32 {9.0/40.0};
+  static constexpr double a41 {44.0/45.0};
+  static constexpr double a42 {-56.0/15.0};
+  static constexpr double a43 {32.0/9.0};
+  static constexpr double a51 {19372.0/6561.0};
+  static constexpr double a52 {-25360.0/2187.0};
+  static constexpr double a53 {64448.0/6561.0};
+  static constexpr double a54 {-212.0/729.0};
+  static constexpr double a61 {9017.0/3168.0};
+  static constexpr double a62 {-355.0/33.0};
+  static constexpr double a63 {46732.0/5247.0};
+  static constexpr double a64 {49.0/176.0};
+  static constexpr double a65 {-5103.0/18656.0};
+  static constexpr double a71 {35.0/384.0};
+  static constexpr double a72 {};
+  static constexpr double a73 {500.0/1113.0};
+  static constexpr double a74 {125.0/192.0};
+  static constexpr double a75 {-2187.0/6784.0};
+  static constexpr double a76 {11.0/84.0};
+
+  std::vector<double> ytemp(n_);
+
+  // First step
+  for (std::size_t i {0}; i < n_; ++i)
+  {
+    ytemp[i] = y[i] + h * a21 * dydx_[i];
+  }
+  // Second step.
+  derivatives(x + c2 * h, ytemp, k2_);
+
+  for (std::size_t i {0}; i <n_; ++i)
+  {
+    ytemp[i] = y[i] + h * (a31 * dydx_[i] + a32 * k2_[i]);
+  }
+
+  // Third step.
+  derivatives(x + c3 * h, ytemp, k3_);
+
+  for (std::size_t i {0}; i < n_; ++i)
+  {
+    ytemp[i] = y[i] + h * (a41 * dydx_[i] + a42 * k2_[i] + a43 * k3_[i]);
+  }
+
+  // Fourth step.
+  derivatives(x_ + c4 * h, ytemp, k4_);
+
+  for (std::size_t i {0}; i < n_; ++i)
+  {
+    ytemp[i] = y[i] + h * (
+      a51 * dydx_[i] + a52 * k2_[i] + a53 * k3_[i] + a54 * k4_[i]);
+  }
+
 }
 
 //------------------------------------------------------------------------------
