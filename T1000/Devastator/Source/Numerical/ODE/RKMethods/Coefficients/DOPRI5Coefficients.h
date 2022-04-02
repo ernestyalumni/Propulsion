@@ -11,14 +11,10 @@ namespace ODE
 {
 namespace RKMethods
 {
-namespace Coefficients
+namespace DOPRI5Coefficients
 {
 
-template <typename Field>
-extern const ACoefficients<7, Field> a_coefficients {
-  0.2,
-  3.0 / 40.0
-};
+extern const Coefficients::ACoefficients<7, double> a_coefficients;
 
 } // namespace Coefficients  
 } // namespace RKMethods
