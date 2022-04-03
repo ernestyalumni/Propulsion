@@ -5284,6 +5284,19 @@ These data are usually arranged in a \emph{Butcher tableau}:
 \end{tabular}
 \]
 
+In the notation of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, Eq. (1.8'),
+\begin{equation}
+\begin{tabular}{ l|c c c c c }
+	0 & & & & & \\
+	$c_2$ & $a_{21}$ &  & & & \\ 
+	$c_3$ & $a_{31}$ & $a_{32}$ & & & \\ 
+	$\vdots$ &  & & & $\ddots$ & \\ 
+	$c_s$ & $a_{s1}$ & $a_{s2}$ & \dots & $a_{s, s-1}$ & \\
+	\hline 
+	& $b_1$ & $b_2$ & \dots & $b_{s-1}$ & $b_s$ \\	
+\end{tabular}
+\end{equation}
+
 
 To specify a method, we need, 
 \begin{equation}
@@ -5688,6 +5701,37 @@ Note the notation change from Eq. \ref{Eq:RK5Embedded4thOrderNumericalRecipes} t
 \end{aligned}
 \]
 
+The Butcher tableau also changes: in the notation of  Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007} on pp.913 for Dormand-Prince 5(4) Parameters for Embedded Runge-Kutta Method, it's implied that the table becomes
+\[
+	\begin{tabular}{ l|c c c c c }
+		0 & & & & & \\
+		$c_2$ & $a_{21}$ &  & & & \\ 
+		$c_3$ & $a_{31}$ & $a_{32}$ & & & \\ 
+		$\vdots$ &  & & & $\ddots$ & \\ 
+		$c_s$ & $a_{s1}$ & $a_{s2}$ & \dots & $a_{s, s-1}$ & \\
+		\hline 
+		& $b_1$ & $b_2$ & \dots & $b_{s-1}$ & $b_s$ \\	
+		\hline 
+		& $b^*_1$ & $b^*_2$ & \dots & $b^*_{s-1}$ & $b^*_s$ \\	
+	\end{tabular}
+\]
+
+In the notation of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, Eq. (4.6), pp. 166, II Runge-Kutta and Extrapolation Methods,
+\begin{equation}
+	\begin{tabular}{ l|c c c c c }
+		0 & & & & & \\
+		$c_2$ & $a_{21}$ &  & & & \\ 
+		$c_3$ & $a_{31}$ & $a_{32}$ & & & \\ 
+		$\vdots$ &  & & & $\ddots$ & \\ 
+		$c_s$ & $a_{s1}$ & $a_{s2}$ & \dots & $a_{s, s-1}$ & \\
+		\hline 
+		& $b_1$ & $b_2$ & \dots & $b_{s-1}$ & $b_s$ \\	
+		\hline
+		& $\widehat{b}_1$ & $\widehat{b}_2$ & \dots & $\widehat{b}_{s-1}$ & $\widehat{b}_s$ \\
+	\end{tabular}
+\end{equation}
+
+
 Consider that the use of $y_{n+1}$ itself to provide a 7th ($s+1$th) stage. Because $f(x_n+h , y_{n+1})$ has to be evaluated anyway to start the next step, this costs nothing. This trick is called FSAL (First Same As Last).
 
 cf. pp. 912-913, 17.2 Adaptive Stepsize Control for Runge-Kutta, Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}
@@ -5727,6 +5771,9 @@ In Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}'s notation,
 	\text{sc}_i = \text{Atol}_i + \max{(|y_{0i}|, |y_{1i}|)} \cdot \text{Rtol}_i
 \end{equation}
 cf. Eq. (4.10), Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, where $\text{Atol}_i \equiv \texttt{atol}$, $\text{Rtol}_i \equiv \texttt{rtol}$ are absolute error tolerance, relative error tolerance, respectively.
+
+\subsubsection{Embedded Formulas of Order 5}
+
 
 
 \subsection{Interpreting Runge-Kutta method implementations in \textbf{Numerical Recipes}}

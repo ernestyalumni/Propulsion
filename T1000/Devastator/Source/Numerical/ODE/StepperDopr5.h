@@ -182,6 +182,13 @@ void StepperDopr5<D>::dy(const double h, D& derivatives)
   static constexpr double a75 {-2187.0/6784.0};
   static constexpr double a76 {11.0/84.0};
 
+  static constexpr double e1 {71.0 / 57600.0};
+  static constexpr double e3 {-71.0 / 16695.0};
+  static constexpr double e4 {71.0 / 1920.0};
+  static constexpr double e5 {-17253.0 / 339200.0};
+  static constexpr double e6 {22.0 / 525.0};
+  static constexpr double e7 {-1.0 / 40.0};
+
   std::vector<double> ytemp(n_);
 
   // First step
@@ -214,6 +221,44 @@ void StepperDopr5<D>::dy(const double h, D& derivatives)
       a51 * dydx_[i] + a52 * k2_[i] + a53 * k3_[i] + a54 * k4_[i]);
   }
 
+  // Fifth step.
+  derivatives(x_ + c5 * h, ytemp, k5_);
+
+  for (std::size_t i {0}; i < n_; ++i)
+  {
+    ytemp[i] = y[i] +
+      h * (
+        a61 * dydx_[i] +
+        a62 * k2_[i] +
+        a63 * k3_[i] +
+        a64 * k4_[i] +
+        a65 * k5_[i]);
+  }
+
+  const double xph {x_ + h};
+
+  // Sixth step.
+  derivatives(xph, ytemp, k6_);
+
+  // Accumulate increments with proper weights.
+  for (std::size_t i {0}; i < n_; ++i)
+  {
+    y_out_[i] = y_[i] + h * (
+      a71 * dydx_[i] +
+      a73 * k3_[i] +
+      a74 * k4_[i] + 
+      a75 * k5_[i] +
+      a76 * k6_[i]);
+  }
+
+  // Will also be first evaluation for next step.
+  derivatives(xph, y_out_, dydxnew_);
+
+  for (std::size_t i {0}; i < n_; ++i)
+  {
+    // Estimate error as difference between fourth- and fifth-order methods.
+    //y_err_[i] = h * ()
+  }
 }
 
 //------------------------------------------------------------------------------

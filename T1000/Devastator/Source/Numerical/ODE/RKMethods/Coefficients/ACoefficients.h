@@ -15,12 +15,12 @@ namespace RKMethods
 namespace Coefficients
 {
 
-template <std::size_t M, typename Field = double>
-class ACoefficients : public std::array<Field, M * (M - 1)>
+template <std::size_t S, typename Field = double>
+class ACoefficients : public std::array<Field, S * (S - 1) / 2>
 {
   public:
 
-    using Array = std::array<Field, M * (M - 1)>;
+    using Array = std::array<Field, S * (S - 1) / 2>;
     using Array::Array;
 
     ACoefficients(const std::initializer_list<Field>& a_coefficients)
@@ -31,9 +31,22 @@ class ACoefficients : public std::array<Field, M * (M - 1)>
         this->begin());
     }
 
+    // Copy constructor
+    ACoefficients(const ACoefficients&) = default;
+
+    //--------------------------------------------------------------------------
+    /// \brief Copy assignment, when copy-and-swap idiom isn't used.
+    /// TODO: Add more to data member such as a unique_ptr to int array, for
+    /// demonstration.
+    /// cf. https://en.cppreference.com/w/cpp/language/copy_assignment
+    //--------------------------------------------------------------------------
+    ACoefficients& operator=(const ACoefficients&) = default;
+
+    virtual ~ACoefficients() = default;
+
     Field get_ij_element(const std::size_t i, const std::size_t j) const
     {
-      assert(i > j && j >= 1 && i <= M);
+      assert(i > j && j >= 1 && i <= S);
 
       std::size_t n {i - 2};
       n = n * (n + 1) / 2;

@@ -14,9 +14,9 @@ namespace RKMethods
 namespace DOPRI5Coefficients
 {
 
-extern const Coefficients::ACoefficients<7, double> a_coefficients;
+extern const Coefficients::ACoefficients<7> a_coefficients;
 
-} // namespace Coefficients  
+} // namespace DOPRI5Coefficients  
 } // namespace RKMethods
 } // namespace ODE
 } // namespace Numerical

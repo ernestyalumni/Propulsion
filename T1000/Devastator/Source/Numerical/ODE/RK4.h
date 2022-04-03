@@ -9,8 +9,6 @@ namespace Numerical
 namespace ODE
 {
 
-
-
 void rk4(
   std::vector<double>& y,
   std::vector<double>& dydx,
