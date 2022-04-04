@@ -5774,6 +5774,26 @@ cf. Eq. (4.10), Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, where $\tex
 
 \subsubsection{Embedded Formulas of Order 5}
 
+From Table 5.2. on pp. 178 of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993},
+
+\begin{equation}
+	\begin{tabular}{ l|c c c c c c c}
+		$c_i$ & $a_{ij}$ & & & & & & \\
+		0 & & & & & & & \\
+		% cf. https://tex.stackexchange.com/questions/159257/increase-latex-table-row-height
+		$\frac{1}{5}$ & $\frac{1}{5}$ &  & & & & & \\[5pt]
+		$\frac{3}{10}$ & $\frac{3}{40}$ & $\frac{9}{40}$ & & & & & \\[5pt]
+		$\frac{4}{5}$  & $\frac{44}{45}$ & $\frac{-56}{15}$ & $\frac{32}{9}$ & & & & \\[5pt]
+		$\frac{8}{9}$ & $\frac{19372}{6561}$ & $\frac{-25360}{2187}$ & $\frac{64448}{6561}$ & $\frac{-212}{729}$ & & & \\[5pt]
+		$1$ & $\frac{9017}{3168}$ & $\frac{-355}{33}$ & $\frac{46732}{5247}$ & $\frac{49}{176}$ & $\frac{-5103}{18656}$ & & \\[5pt]
+		$1$ & $\frac{35}{384}$ & $0$ & $\frac{500}{1113}$ & $\frac{125}{192}$ & $-\frac{2187}{6784}$ & $\frac{11}{84}$ & \\[5pt]
+		\hline 
+		$y_n$, $b_i$ & $\frac{35}{384}$ & $0$ & $\frac{500}{1113}$ & $\frac{125}{192}$ & $\frac{-2187}{6784}$ & $\frac{11}{84}$ & 0 \\[5pt]
+		\hline
+		$y^*_n$, $b^*_i$ & $\frac{5179}{57600}$ & $0$ & $\frac{7571}{16695}$ & $\frac{393}{640}$ & $\frac{-92097}{339200}$ & $\frac{187}{2100}$ & $\frac{1}{40}$ \\[5pt]
+	\end{tabular}
+\end{equation}
+
 
 
 \subsection{Interpreting Runge-Kutta method implementations in \textbf{Numerical Recipes}}
@@ -5791,8 +5811,48 @@ $x_0 = x(0) \in \mathbb{R} \equiv $ starting value of independent variable $x$ \
 $\epsilon_a \equiv $ atol \\
 $\epsilon_r \equiv $ rtol \\
 
+For pp. 918, Ch. 17 Integration of Ordinary Differential Equations, Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}, for the algorithm routine \texttt{dy}, it computes the 6 steps to compute $\mathbf{k}_i$, $i=1, \dots 6$ and the seventh FSAL step (which I believe computes the next $y(x_{n+1})$ value anyway), and computes $y_{n+1}$ and error $\Delta$.
 
+So for \texttt{stepperdopr5.h} code on pp. 918, \\
+\verb|template <class D>| \\
+\verb|void StepperDopr<D>::dy(const Doub h, D &derivs)|, then
 
+\texttt{c2}, \dots \texttt{c5} $\equiv c_2, \dots c_5$ and $c_6 = c_7 = 1$ are not explicitly defined in the code. \\
+\texttt{a21}, \texttt{a31, a32}, \dots \texttt{a75, a76} $\equiv a_{21}, a_{31}, a_{32} \dots a_{75}, a_{76}$ coefficients. \\
+\texttt{e1, e3}, \dots \texttt{e6, e7} $\equiv b^*_1, b^*_3, \dots b^*_6 , b^*_7$, where $b^*_2 = 0$ isn't explicitly defined in the code. \\
+
+$f \equiv $ \texttt{derivs} (in the code) \\
+
+$k_1 = f(x_n,y_n) = \frac{dy}{dx}(x_n) \equiv $ \texttt{dydx[i]} \\
+\texttt{ytemp[i]} $= y_n + ha_{21} \mathbf{k}_1 \equiv y_n + ha_{21} \frac{dy}{dx}(x_n)$ \\
+$k_2 = f(x_n + c_2h, \texttt{ytemp[i]})$ \\
+\texttt{ytemp[i]} $ = y_n + h(a_{31} \frac{dy}{dx}(x_n) + a_{32} k_2)$ \\
+$k_3 = f(x_n + c_3h , \texttt{ytemp[i]})$ \\
+$\vdots$ \\
+$k_6 = f(x_n + c_6h, y_n + h ( a_{61} \frac{dy}{dx}(x_n) + a_{62} k_2 + \dots + a_{65} k_5))$ \\
+where $c_6 = 1$. \\
+
+In the code, \texttt{yout} corresponds to the following in our notation: \\
+\texttt{yout} $\equiv y(x_{n+1})$
+\[
+y(x_{n+1}) = y(x_n) + h(a_{71} \frac{dy}{dx}(x_n) + a_{72} k_2 + \dots + a_{76} k_6) = y(x_n) + h(b_1 a_{71} + \dots + b_7 a_{76})
+\]
+
+Thus, essentially, the inputs and outputs of this function is this:
+
+\begin{equation}
+\begin{tikzpicture}
+	\matrix (m) [matrix of math nodes, row sep=0.8em, column sep=7.8em, minimum width=0.6em] 
+	{
+		\substack{\text{ constants } c_2, \dots c_2, a_{ij}; \, b_i^* \\
+			h, f: \mathbb{R}, \mathbb{R}^N \to \mathbb{R}^N \\
+		\text{ initial values } \frac{dy}{dx}(x_n), \, x_n, \mathbf{y}_n \\ } &  \mathbf{y}_{n+1}, \mathbf{f}(x_n + h , \mathbf{y}_{n+1}) \equiv \frac{d\mathbf{y}}{dx} (x_n + h); \, \mathbf{\Delta} \equiv \mathbf{y}_{n+1} - \mathbf{y}^*_{n+1} \\
+	};
+	\path[|->]
+	(m-1-1) edge node [above] {$\substack{ \texttt{dy} \equiv \\ \text{ Runge-Kutta method} \\ }$ } (m-1-2)
+	;
+\end{tikzpicture} 
+\end{equation}
 
 \section{Systems of Ordinary Differential Equations ODEs}
 
