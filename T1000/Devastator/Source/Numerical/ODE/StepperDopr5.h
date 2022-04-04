@@ -4,6 +4,7 @@
 #include "StepperBase.h"
 
 #include <cmath>
+#include <functional>
 #include <limits>
 #include <vector>
 
@@ -11,6 +12,9 @@ namespace Numerical
 {
 namespace ODE
 {
+
+using StdFunctionDerivativeType =
+  std::function<void(double, std::vector<double>, std::vector<double>)>;
 
 //------------------------------------------------------------------------------
 /// \details Was called stepperdopr5.h on pp. 917, Numerical Recipes, 17.2
@@ -20,7 +24,7 @@ template <class D>
 struct StepperDopr5 : StepperBase
 {
   // Make the type of derivs (derivatives) available to odeint.
-  typedef D = DerivativeType;
+  using DerivativeType = D;
 
   std::vector<double> k2_;
   std::vector<double> k3_;
@@ -39,7 +43,7 @@ struct StepperDopr5 : StepperBase
   StepperDopr5(
     std::vector<double>& yy,
     std::vector<double>& dydxx,
-    std::vector<double>& xx,
+    double& xx,
     const double a_toll,
     const double r_toll,
     bool dense);
@@ -58,7 +62,8 @@ struct StepperDopr5 : StepperBase
     double err_old_;
     bool reject_;
 
-    Controller();
+    // TODO: define implementation of ctor.
+    Controller() = default;
 
     bool success(const double err, double& h);
   };
@@ -194,22 +199,22 @@ void StepperDopr5<D>::dy(const double h, D& derivatives)
   // First step
   for (std::size_t i {0}; i < n_; ++i)
   {
-    ytemp[i] = y[i] + h * a21 * dydx_[i];
+    ytemp[i] = y_[i] + h * a21 * dydx_[i];
   }
   // Second step.
-  derivatives(x + c2 * h, ytemp, k2_);
+  derivatives(x_ + c2 * h, ytemp, k2_);
 
   for (std::size_t i {0}; i <n_; ++i)
   {
-    ytemp[i] = y[i] + h * (a31 * dydx_[i] + a32 * k2_[i]);
+    ytemp[i] = y_[i] + h * (a31 * dydx_[i] + a32 * k2_[i]);
   }
 
   // Third step.
-  derivatives(x + c3 * h, ytemp, k3_);
+  derivatives(x_ + c3 * h, ytemp, k3_);
 
   for (std::size_t i {0}; i < n_; ++i)
   {
-    ytemp[i] = y[i] + h * (a41 * dydx_[i] + a42 * k2_[i] + a43 * k3_[i]);
+    ytemp[i] = y_[i] + h * (a41 * dydx_[i] + a42 * k2_[i] + a43 * k3_[i]);
   }
 
   // Fourth step.
@@ -217,7 +222,7 @@ void StepperDopr5<D>::dy(const double h, D& derivatives)
 
   for (std::size_t i {0}; i < n_; ++i)
   {
-    ytemp[i] = y[i] + h * (
+    ytemp[i] = y_[i] + h * (
       a51 * dydx_[i] + a52 * k2_[i] + a53 * k3_[i] + a54 * k4_[i]);
   }
 
@@ -226,7 +231,7 @@ void StepperDopr5<D>::dy(const double h, D& derivatives)
 
   for (std::size_t i {0}; i < n_; ++i)
   {
-    ytemp[i] = y[i] +
+    ytemp[i] = y_[i] +
       h * (
         a61 * dydx_[i] +
         a62 * k2_[i] +
@@ -286,7 +291,7 @@ double StepperDopr5<D>::error()
 {
   double err {0.0};
   double sk;
-  for (int i {0}; i < n; ++i)
+  for (int i {0}; i < n_; ++i)
   {
     sk = a_tolerance_ + r_tolerance_ * std::max(
       std::abs(y_[i]),

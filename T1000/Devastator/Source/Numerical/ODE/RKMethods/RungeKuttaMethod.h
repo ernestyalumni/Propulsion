@@ -245,7 +245,6 @@ class CalculateNextStep
       return summation;
     }
 
-
   private:
 
     std::array<Field, M * (M - 1) / 2> beta_coefficients_;

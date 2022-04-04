@@ -12,6 +12,7 @@ ADD_EXECUTABLE(Check
   Numerical/ODE/RhsVanDerPol_tests.cpp
   Numerical/ODE/RhsVan_tests.cpp
   Numerical/ODE/StepperBase_tests.cpp
+  Numerical/ODE/StepperDopr5_tests.cpp
   Utilities/BinarySearch_tests.cpp
   )
 

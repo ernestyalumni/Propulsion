@@ -52,9 +52,9 @@ class StepperBase
     double r_tolerance_;
     bool dense_;
     // Actual stepsize accomplished by the step routine.
-    double hdid_;
+    double h_did_;
     // Stepsize predicted by the controller for the next step.
-    double hnext_;
+    double h_next_;
     double EPS_;
     int n_;
     // n_eqns_ = n except for StepperStoerm.
