@@ -35,9 +35,7 @@ class ACoefficients : public std::array<Field, S * (S - 1) / 2>
     ACoefficients(const ACoefficients&) = default;
 
     //--------------------------------------------------------------------------
-    /// \brief Copy assignment, when copy-and-swap idiom isn't used.
-    /// TODO: Add more to data member such as a unique_ptr to int array, for
-    /// demonstration.
+    /// \brief Copy assignment.
     /// cf. https://en.cppreference.com/w/cpp/language/copy_assignment
     //--------------------------------------------------------------------------
     ACoefficients& operator=(const ACoefficients&) = default;

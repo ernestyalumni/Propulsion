@@ -5,10 +5,6 @@
 
 using Numerical::ODE::RKMethods::Coefficients::ACoefficients;
 
-// cf. https://stackoverflow.com/questions/35533600/changing-variable-name-inside-a-loop
-const auto& DOPRI5_a_coefficients =
-  Numerical::ODE::RKMethods::DOPRI5Coefficients::a_coefficients;
-
 namespace GoogleUnitTests
 {
 namespace Numerical
@@ -19,6 +15,10 @@ namespace RKMethods
 {
 namespace Coefficients
 {
+
+// cf. https://stackoverflow.com/questions/35533600/changing-variable-name-inside-a-loop
+const auto& DOPRI5_a_coefficients =
+  ::Numerical::ODE::RKMethods::DOPRI5Coefficients::a_coefficients;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

@@ -262,7 +262,13 @@ void StepperDopr5<D>::dy(const double h, D& derivatives)
   for (std::size_t i {0}; i < n_; ++i)
   {
     // Estimate error as difference between fourth- and fifth-order methods.
-    //y_err_[i] = h * ()
+    y_err_[i] = h * (
+      e1 * dydx_[i] +
+      e3 * k3_[i] +
+      e4 * k4_[i] +
+      e5 * k5_[i] +
+      e6 * k6_[i] +
+      e7 * dydxnew_[i]);
   }
 }
 

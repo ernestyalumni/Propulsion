@@ -1,5 +1,9 @@
 #include "ACoefficients.h"
+#include "BCoefficients.h"
+#include "CCoefficients.h"
 #include "DOPRI5Coefficients.h"
+
+#include <cstddef>
 
 namespace Numerical
 {
@@ -10,7 +14,7 @@ namespace RKMethods
 namespace DOPRI5Coefficients
 {
 
-const Coefficients::ACoefficients<7> a_coefficients {
+const Coefficients::ACoefficients<s> a_coefficients {
   0.2,
   3.0 / 40.0,
   9.0 / 40.0,
@@ -32,6 +36,25 @@ const Coefficients::ACoefficients<7> a_coefficients {
   125.0 / 192.0,
   -2187.0 / 6784.0,
   11.0 / 84.0
+};
+
+const Coefficients::CCoefficients<s> c_coefficients {
+  0.2,
+  0.3,
+  0.8,
+  8.0 / 9.0,
+  1.0,
+  1.0
+};
+
+const Coefficients::DeltaCoefficients<s> delta_coefficients {
+  71.0 / 57600.0,
+  0.0,
+  -71.0 / 16695.0,
+  71.0 / 1920.0,
+  -17253.0 / 339200.0,
+  22.0 / 525.0,
+  -1.0 / 40.0
 };
 
 } // namespace Coefficients  
