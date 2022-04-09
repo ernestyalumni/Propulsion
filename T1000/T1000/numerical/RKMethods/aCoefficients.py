@@ -1,9 +1,14 @@
+import numpy as np
+
 class aCoefficients:
 
     def __init__(self, s, a_coefficients):
 
         assert (s * (s - 1) / 2) == len(a_coefficients)
-        self._a_coefficients = a_coefficients
+        # cf. https://www.statology.org/convert-list-to-numpy-array/
+        self._a_coefficients = np.asarray(a_coefficients, dtype=np.float64)
+        # cf. https://stackoverflow.com/questions/5541324/immutable-numpy-array
+        self._a_coefficients.flags.writable = False
         self._s = s
 
     def get_ij_element(self, i, j):

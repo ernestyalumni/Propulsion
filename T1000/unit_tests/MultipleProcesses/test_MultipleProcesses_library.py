@@ -4,7 +4,6 @@
 @details In multiprocessing, processes are spawned by creating a Process object
 and then calling its start() method.
 """
-
 from multiprocessing import (Pipe, Process)
 import multiprocessing as MP
 import pytest

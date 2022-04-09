@@ -9,6 +9,7 @@ ADD_EXECUTABLE(Check
   Numerical/ODE/RK4_tests.cpp
   Numerical/ODE/RKMethods/CalculateNewYAndError_tests.cpp
   Numerical/ODE/RKMethods/Coefficients/ACoefficients_tests.cpp
+  Numerical/ODE/RKMethods/Coefficients/KCoefficients_tests.cpp
   Numerical/ODE/RKMethods/RungeKuttaMethod_tests.cpp
   Numerical/ODE/RhsVanDerPol_tests.cpp
   Numerical/ODE/RhsVan_tests.cpp

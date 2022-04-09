@@ -1,10 +1,11 @@
 #ifndef NUMERICAL_ODE_RK_METHODS_COEFFICIENTS_B_COEFFICIENTS_H
 #define NUMERICAL_ODE_RK_METHODS_COEFFICIENTS_B_COEFFICIENTS_H
 
-#include <array>
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <initializer_list>
+#include <vector>
 
 namespace Numerical
 {
@@ -15,15 +16,15 @@ namespace RKMethods
 namespace Coefficients
 {
 
+//------------------------------------------------------------------------------
+/// \details Choice of std::vector<Field> over std::array is because it's an
+/// aggregate and an aggregate shouldn't allocate memory dynamically.
+/// \ref https://stackoverflow.com/questions/39548254/does-stdarray-guarantee-allocation-on-the-stack-only
+//------------------------------------------------------------------------------
 template <std::size_t S, typename Field = double>
 class BCoefficients : public std::array<Field, S>
 {
   public:
-
-    using Array = std::array<Field, S>;
-    using Array::Array;
-
-    BCoefficients() = default;
 
     BCoefficients(const std::initializer_list<Field>& b_coefficients)
     {
@@ -48,6 +49,11 @@ class BCoefficients : public std::array<Field, S>
     {
       assert(i >= 1 && i <= S);
 
+      return this->operator[](i - 1);
+    }
+
+    Field& ith_element(const std::size_t i)
+    {
       return this->operator[](i - 1);
     }
 };

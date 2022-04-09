@@ -4,8 +4,9 @@
 #include "Coefficients/ACoefficients.h"
 #include "Coefficients/BCoefficients.h"
 #include "Coefficients/CCoefficients.h"
+#include "Coefficients/KCoefficients.h"
 
-#include <algorithm> // std::transform
+#include <algorithm> // std::copy, std::transform
 #include <array>
 #include <cstddef>
 #include <initializer_list>
@@ -54,22 +55,27 @@ class CalculateNewYAndError
       delta_coefficients_{delta_coefficients}
     {}
 
-    template <typename ContainerT>
-    void operator()(
+    virtual ~CalculateNewYAndError() = default;
+
+    //--------------------------------------------------------------------------
+    /// \tparam N Dimension of out or of Container T, or of y in the ODE.
+    //--------------------------------------------------------------------------
+    template <typename ContainerT, std::size_t N>
+    void calculate_new_y(
       const Field h,
       const Field x,
       const ContainerT& y,
       const ContainerT& initial_dydx,
-      Coefficients::BCoefficients<S, ContainerT>& k_coefficients,
+      Coefficients::KCoefficients<S, ContainerT>& k_coefficients,
       ContainerT& y_out)
     {
-      k_coefficients[0] = initial_dydx;
+      k_coefficients.ith_coefficient(1) = initial_dydx;
 
       for (std::size_t l {2}; l <= S; ++l)
       {
         const Field x_l {x + get_c_i(l) * h};
 
-        sum_a_and_k_products<ContainerT>(k_coefficients, l, y_out);
+        sum_a_and_k_products<ContainerT, N>(k_coefficients, l, h, y_out);
 
         // y_out = y + h * (a_l1 * k_1 + ... + a_l,l-1 * k_{l-1})
         std::transform(
@@ -80,47 +86,61 @@ class CalculateNewYAndError
           std::plus<Field>());
 
         // k_l = f(x + c_l * h, y + h * (a_l1 * k_1 + ... + a_l,l-1 * k_{l-1}))
-        derivative_(x_l, y_out, k_coefficients[l - 1]);        
+        derivative_(x_l, y_out, k_coefficients.ith_coefficient(l));
       }
     }
 
-    template <typename ContainerT>
-    void calculate_error(
+    template <typename ContainerT, std::size_t N>
+    void calculate_new_y_and_error(
       const Field h,
-      const Coefficients::BCoefficients<S, ContainerT>& k_coefficients,
+      const Field x,
+      const ContainerT& y,
+      const ContainerT& initial_dydx,
+      Coefficients::KCoefficients<S, ContainerT>& k_coefficients,
+      ContainerT& y_out,
       ContainerT& y_err)
     {
-      ContainerT delta_l_times_k_l {};
+      calculate_new_y<ContainerT, N>(
+        h,
+        x,
+        y,
+        initial_dydx,
+        k_coefficients,
+        y_out);
+      calculate_error<ContainerT, N>(h, k_coefficients, y_err);
+    }
 
-      // delta_1 * k_1
-      std::transform(
-        k_coefficients.get_ith_element(1).begin(),
-        k_coefficients.get_ith_element(1).end()),
-        delta_l_times_k_l.begin(),
-        std::bind(
-          std::multiplies<Field>(),
-          std::placeholders::_1,
-          delta_coefficients_.get_ith_element(1));
+    template <typename ContainerT, std::size_t N>
+    void calculate_error(
+      const Field h,
+      const Coefficients::KCoefficients<S, ContainerT>& k_coefficients,
+      ContainerT& y_err)
+    {
+      std::array<Field, N> delta_l_times_k_j {};
 
-      y_err = delta_l_times_k_l;
+      k_coefficients.scalar_multiply(
+        delta_l_times_k_j,
+        1,
+        delta_coefficients_.get_ith_element(1));
+
+      std::copy(
+        delta_l_times_k_j.begin(),
+        delta_l_times_k_j.end(),
+        y_err.begin());
 
       for (std::size_t j {2}; j <= S; ++j)
       {
         // Calculate delta_j * k_j
-        std::transform(
-          k_coefficients.get_ith_element(j).begin(),
-          k_coefficients.get_ith_element(j).end(),
-          delta_l_times_k_l.begin(),
-          std::bind(
-            std::multiplies<Field>(),
-            std::placeholders::_1,
-            delta_coefficients_.get_ith_element(j)));
+        k_coefficients.scalar_multiply(
+          delta_l_times_k_j,
+          j,
+          delta_coefficients_.get_ith_element(j));
 
         // Calculate y_err += y_err + delta_j * k_j
         std::transform(
           y_err.begin(),
           y_err.end(),
-          delta_l_times_k_l.begin(),
+          delta_l_times_k_j.begin(),
           y_err.begin(),
           std::plus<Field>());
       }
@@ -137,38 +157,29 @@ class CalculateNewYAndError
 
   protected:
 
-    template <typename ContainerT>
+    //--------------------------------------------------------------------------
+    /// \tparam N Dimension of out or of Container T, or of y in the ODE.
+    //--------------------------------------------------------------------------
+    template <typename ContainerT, std::size_t N>
     void sum_a_and_k_products(
-      Coefficients::BCoefficients<S, ContainerT>& k_coefficients,
+      Coefficients::KCoefficients<S, ContainerT>& k_coefficients,
       const std::size_t l,
       const Field h,
       ContainerT& out)
     {
-      // j = 1...l-1
-      ContainerT a_lj_times_k_j;
+      std::array<Field, N> a_lj_times_k_j {};
 
-      std::transform(
-        k_coefficients.get_ith_element(1).begin(),
-        k_coefficients.get_ith_element(1).end(),
+      k_coefficients.scalar_multiply(a_lj_times_k_j, 1, get_a_ij(l, 1));
+
+      std::copy(
         a_lj_times_k_j.begin(),
-        std::bind(
-          std::multiplies<Field>(),
-          std::placeholders::_1,
-          get_a_ij(l, 1)));
-
-      out = a_lj_times_k_j;
+        a_lj_times_k_j.end(),
+        out.begin());
 
       for (std::size_t j {2}; j < l; ++j)
       {
         // Calculate a_lj * k_j
-        std::transform(
-          k_coefficients.get_ith_element(j).begin(),
-          k_coefficients.get_ith_element(j).end(),
-          a_lj_times_k_j.begin(),
-          std::bind(
-            std::multiplies<Field>(),
-            std::placeholders::_1,
-            get_a_ij(l, j)));
+        k_coefficients.scalar_multiply(a_lj_times_k_j, j, get_a_ij(l, j));
 
         // out = out + a_lj_times_k_j
         std::transform(
