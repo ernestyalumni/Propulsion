@@ -18,6 +18,8 @@ namespace DOPRI5Coefficients
 
 //------------------------------------------------------------------------------
 /// \brief Stage value.
+/// \ref Organizing static data in C++
+/// \url https://stackoverflow.com/questions/7535743/organizing-static-data-in-c
 //------------------------------------------------------------------------------
 static constexpr std::size_t s {7};
 

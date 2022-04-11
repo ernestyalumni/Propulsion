@@ -10,7 +10,9 @@ class cCoefficients:
         self._c_coefficients = np.asarray(c_coefficients, dtype=np.float64)
 
         # cf. https://stackoverflow.com/questions/5541324/immutable-numpy-array
-        self._c_coefficients.flags.writable = False
+        # AttributeError: 'numpy.core.multiarray.flagsobj' object has no
+        # attribute 'writable
+        #self._c_coefficients.flags.writable = False
         self._s = s
 
     def get_ith_element(self, i):

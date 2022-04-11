@@ -48,7 +48,7 @@ class DOPRI5Coefficients:
         Rational(187, 2100),
         Rational(1, 40)])
 
-    c_coefficients = cCoefficients(7, [
+    delta_coefficients = bCoefficients(7, [
         71.0 / 57600.0,
         0.0,
         -71.0 / 16695.0,
@@ -56,3 +56,11 @@ class DOPRI5Coefficients:
         -17253.0 / 339200.0,
         22.0 / 525.0,
         -1.0 / 40.0])
+
+    c_coefficients = cCoefficients(7, [
+        0.2,
+        0.3,
+        0.8,
+        8.0 / 9.0,
+        1.0,
+        1.0])
