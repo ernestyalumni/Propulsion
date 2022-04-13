@@ -7,7 +7,7 @@ class DOPRI5Coefficients:
 
     s = 7
 
-    a_coefficients = aCoefficients(DOPRI5Coefficients::s, [
+    a_coefficients = aCoefficients(7, [
         0.2,
         3.0 / 40.0,
         9.0 / 40.0,
