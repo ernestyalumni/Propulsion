@@ -171,10 +171,7 @@ class CalculateNewYAndError
 
       k_coefficients.scalar_multiply(a_lj_times_k_j, 1, get_a_ij(l, 1));
 
-      std::copy(
-        a_lj_times_k_j.begin(),
-        a_lj_times_k_j.end(),
-        out.begin());
+      std::copy(a_lj_times_k_j.begin(), a_lj_times_k_j.end(), out.begin());
 
       for (std::size_t j {2}; j < l; ++j)
       {

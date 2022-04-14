@@ -1,6 +1,7 @@
 #include "Numerical/ODE/RKMethods/CalculateNewYAndError.h"
 #include "Numerical/ODE/RKMethods/Coefficients/DOPRI5Coefficients.h"
 #include "Numerical/ODE/RKMethods/Coefficients/KCoefficients.h"
+#include "Numerical/ODE/RKMethods/Coefficients/RK4Coefficients.h"
 
 #include "gtest/gtest.h"
 
@@ -26,6 +27,17 @@ namespace ODE
 namespace RKMethods
 {
 
+constexpr std::size_t RK4_s {::Numerical::ODE::RKMethods::RK4Coefficients::s};
+
+const auto& RK4_a_coefficients =
+  ::Numerical::ODE::RKMethods::RK4Coefficients::a_coefficients;
+
+const auto& RK4_b_coefficients =
+  ::Numerical::ODE::RKMethods::RK4Coefficients::b_coefficients;
+
+const auto& RK4_c_coefficients =
+  ::Numerical::ODE::RKMethods::RK4Coefficients::c_coefficients;
+
 constexpr std::size_t DOPRI5_s {
   ::Numerical::ODE::RKMethods::DOPRI5Coefficients::s};
 
@@ -49,6 +61,10 @@ class TestCalculateNewYAndError :
 
     using CalculateNewYAndError<S, DerivativeType, Field>::
       sum_a_and_k_products;
+
+    using CalculateNewYAndError<S, DerivativeType, Field>::get_a_ij;
+
+    using CalculateNewYAndError<S, DerivativeType, Field>::get_c_i;
 };
 
 class Examplef
@@ -190,12 +206,131 @@ TEST(TestCalculateNewYAndError, ConstructsFromLValueDerivative)
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+TEST(TestCalculateNewYAndError, ConstructsWithRK4Coefficients)
+{
+  Examplef f {};
+
+  TestCalculateNewYAndError<RK4_s, decltype(f)> new_y_and_err {
+    f,
+    RK4_a_coefficients,
+    RK4_c_coefficients,
+    RK4_b_coefficients};
+
+    EXPECT_EQ(new_y_and_err.get_a_ij(2, 1), 0.5);
+    EXPECT_EQ(new_y_and_err.get_a_ij(3, 1), 0.0);
+    EXPECT_EQ(new_y_and_err.get_a_ij(3, 2), 0.5);
+    EXPECT_EQ(new_y_and_err.get_a_ij(4, 1), 0.0);
+    EXPECT_EQ(new_y_and_err.get_a_ij(4, 2), 0.0);
+    EXPECT_EQ(new_y_and_err.get_a_ij(4, 3), 1.0);
+
+    EXPECT_EQ(new_y_and_err.get_c_i(2), 0.5);
+    EXPECT_EQ(new_y_and_err.get_c_i(3), 0.5);
+    EXPECT_EQ(new_y_and_err.get_c_i(4), 1.0);
+}
+
+//------------------------------------------------------------------------------
+// Demonstrate the steps within the class member function sum_a_and_k_products
+//------------------------------------------------------------------------------
+TEST(TestCalculateNewYAndError, StepsForSumAAndKProductsWorksOnRK4)
+{
+  ExampleSetup setup {};
+  Examplef f {};
+  TestCalculateNewYAndError<RK4_s, decltype(f)> new_y_and_err {
+    f,
+    RK4_a_coefficients,
+    RK4_c_coefficients,
+    RK4_b_coefficients};
+
+  // k coefficients behave nominally.
+  KCoefficients<RK4_s, vector<double>> k_coefficients;
+  EXPECT_EQ(k_coefficients.size(), 4);
+  k_coefficients.ith_coefficient(1) = setup.dydx_0_;
+  EXPECT_EQ(k_coefficients.get_ith_coefficient(1).at(0), 1.5);
+  EXPECT_EQ(k_coefficients.get_ith_coefficient(2).size(), 0);
+
+  std::array<double, 1> a_lj_times_k_j {};
+
+  vector<double> out (1);
+  out.at(0) = 0.0;
+
+  k_coefficients.scalar_multiply(
+    a_lj_times_k_j, 1,
+    new_y_and_err.get_a_ij(2, 1));
+
+  EXPECT_EQ(a_lj_times_k_j[0], 0.75);
+
+  std::copy(
+    a_lj_times_k_j.begin(),
+    a_lj_times_k_j.end(),
+    out.begin());
+
+  EXPECT_EQ(out.at(0), 0.75);
+
+  std::transform(
+    out.begin(),
+    out.end(),
+    out.begin(),
+    std::bind(
+      std::multiplies<double>(),
+      std::placeholders::_1,
+      setup.h_));
+
+  EXPECT_EQ(out.size(), 1);
+  EXPECT_EQ(out.at(0), 0.375);
+
+  // l = 3 case.
+
+  k_coefficients.ith_coefficient(2) = vector<double>{1.8125};
+  EXPECT_EQ(k_coefficients.get_ith_coefficient(2).at(0), 1.8125);
+  EXPECT_EQ(k_coefficients.get_ith_coefficient(3).size(), 0);
+
+  k_coefficients.scalar_multiply(
+    a_lj_times_k_j, 1,
+    new_y_and_err.get_a_ij(3, 1));
+
+  EXPECT_EQ(a_lj_times_k_j[0], 0.0);
+
+  std::copy(a_lj_times_k_j.begin(), a_lj_times_k_j.end(), out.begin());
+
+  EXPECT_EQ(out.at(0), 0.0);
+
+  // l = 3, j = 2 case.
+
+  k_coefficients.scalar_multiply(
+    a_lj_times_k_j,
+    2,
+    new_y_and_err.get_a_ij(3, 2));
+
+  std::transform(
+    out.begin(),
+    out.end(),
+    a_lj_times_k_j.begin(),
+    out.begin(),
+    std::plus<double>());
+
+  EXPECT_EQ(out.at(0), 0.90625);
+
+  std::transform(
+    out.begin(),
+    out.end(),
+    out.begin(),
+    std::bind(std::multiplies<double>(),
+    std::placeholders::_1, setup.h_));
+
+  EXPECT_EQ(out.at(0), 0.453125);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TEST(TestCalculateNewYAndError, SumAAndKProductsWorks)
 {
   ExampleSetup setup {};
   Examplef f {};
 
   EXPECT_DOUBLE_EQ(setup.k_coefficients_.get_ith_coefficient(1).at(0), 1.5);
+  EXPECT_DOUBLE_EQ(setup.k_coefficients_.get_ith_coefficient(2).size(), 0);
+  EXPECT_EQ(setup.y_out_.size(), 1);
+  EXPECT_EQ(setup.y_out_.at(0), 0.0);
 
   TestCalculateNewYAndError<DOPRI5_s, decltype(f)> new_y_and_err {
     f,
@@ -209,9 +344,57 @@ TEST(TestCalculateNewYAndError, SumAAndKProductsWorks)
     setup.h_,
     setup.y_out_);
 
+  EXPECT_EQ(setup.k_coefficients_.get_ith_coefficient(1).at(0), 1.5);
+  EXPECT_EQ(setup.k_coefficients_.get_ith_coefficient(2).size(), 0);
+
   EXPECT_DOUBLE_EQ(setup.y_out_.at(0), 0.15);
 }
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(TestCalculateNewYAndError, SumAAndKProductsWorksForRK4Method)
+{
+  ExampleSetup setup {};
+  Examplef f {};
+  // For RK4 method.
+  KCoefficients<RK4_s, vector<double>> k_coefficients;
+  k_coefficients.ith_coefficient(1) = setup.dydx_0_;
+
+  EXPECT_DOUBLE_EQ(k_coefficients.get_ith_coefficient(1).at(0), 1.5);
+  EXPECT_DOUBLE_EQ(k_coefficients.get_ith_coefficient(2).size(), 0);
+  EXPECT_EQ(setup.y_out_.size(), 1);
+  EXPECT_EQ(setup.y_out_.at(0), 0.0);
+
+  TestCalculateNewYAndError<RK4_s, decltype(f)> new_y_and_err {
+    f,
+    RK4_a_coefficients,
+    RK4_c_coefficients,
+    RK4_b_coefficients};
+
+  new_y_and_err.sum_a_and_k_products<std::vector<double>, 1>(
+    k_coefficients,
+    2,
+    setup.h_,
+    setup.y_out_);
+
+  EXPECT_DOUBLE_EQ(setup.y_out_.at(0), 0.375);
+
+  // l = 3 case
+
+  k_coefficients.ith_coefficient(2) = vector<double>{1.8125};
+  EXPECT_EQ(k_coefficients.get_ith_coefficient(2).at(0), 1.8125);
+  EXPECT_EQ(k_coefficients.get_ith_coefficient(3).size(), 0);
+
+  new_y_and_err.sum_a_and_k_products<std::vector<double>, 1>(
+    k_coefficients,
+    3,
+    setup.h_,
+    setup.y_out_);
+
+  EXPECT_DOUBLE_EQ(setup.y_out_.at(0), 0.453125);
+}
+
+/*
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 TEST(TestCalculateNewYAndError, CalculateNewYCalculatesKCoefficients)
@@ -285,7 +468,7 @@ TEST(TestCalculateNewYAndError, CalculatesNewYAndError)
   EXPECT_DOUBLE_EQ(setup.y_err_.at(0), 0.00039204193491992542);
   EXPECT_NEAR(setup.y_out_.at(0), exact_solution(setup.h_ + setup.h_), 1e-5);
 }
-
+*/
 } // namespace RKMethods
 } // namespace ODE 
 } // namespace Numerical
