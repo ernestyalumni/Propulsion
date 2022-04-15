@@ -273,6 +273,20 @@ void StepperDopr5<D>::dy(const double h, D& derivatives)
 }
 
 //------------------------------------------------------------------------------
+/// \details The routine prepare_dense uses the coefficients to set up the dense
+/// output quantities.
+/// \ref pp. 918 Ch. 17.2 Adaptive Stepsize Control for Runge-Kutta
+/// \brief Store coefficients of interpolating polynomial for dense output in
+/// rcont1...rcont5.
+//------------------------------------------------------------------------------
+template <class D>
+void StepperDopr5<D>::prepare_dense(const double h, D& derivatives)
+{
+  std::vector<double> ytemp (n_);
+  static constexpr double d1 {-12715105075.0 / 11282082432.0};
+}
+
+//------------------------------------------------------------------------------
 /// \details Evaluate interpolating polynomial for y[i] at location x, where
 /// xold <= x <= xold + h
 //------------------------------------------------------------------------------
