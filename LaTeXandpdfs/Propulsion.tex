@@ -5794,6 +5794,130 @@ From Table 5.2. on pp. 178 of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993
 	\end{tabular}
 \end{equation}
 
+\subsection{Dense Output, Discontinuities, Derivatives, Interpolation}
+
+cf. II.6 "Dense Output, Discontinuities, Derivatives", pp. 188 of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}.
+
+Dense output formulas - Runge Kutta methods which provide in addition to numerical result $y_1 \equiv \mathbf{y}_{n+1}$, numerical approximation to $y(x_0 + \theta h) \equiv \mathbf{y}(x_n + \theta h), \quad \, \forall \, 0 \leq \theta \leq 1$. \\
+
+Start from $s$-stage Runge-Kutta method and add $s^* - s$ new stages, and consider
+
+\begin{equation}\label{Eq:DenseOutputGeneralApproximation}
+	u(\theta) = y_0 + h \sum_{i = 1}^{s^*} b_i(\theta) k_i \equiv u(\theta) = \mathbf{y}_n + h \sum_{i=1}^{s^*} b_i(\theta) \mathbf{k}_i
+\end{equation}
+cf. Eq. (6.1) of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, where
+
+\begin{equation}
+	k_i = f(x_0 + c_i h, y_0 + h \sum_{j=1}^{i-1} a_{ij} k_j ) = \mathbf{k}_i = \mathbf{f}(x_n + c_i h, \mathbf{y}_n + h \sum_{j=1}^{i-1} a_{ij} \mathbf{k}_j) \quad \, i=1, \dots s^*
+\end{equation}
+cf. Eq. (6.2)of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}.
+
+where $b_i(\theta)$ are polynomials determined s.t. 
+
+\begin{equation}
+	u(\theta) - y(x_0 + \theta h) = \mathcal{O}(h^{p^* + 1})
+\end{equation}
+usually $s^* \geq s+1$ since we include (at least) the 1st. function evaluation of the subsequent step $k_{s+1} = hf(x_0 + h, y_1)$ in formula with $a_{s+1, j} = b_j$, \, $\forall j$.
+
+
+
+\subsubsection{Interpolation}
+
+From Sec. 3, pp. 143, "Interpolation" by Shampine (1986) \cite{Sham1986}, in addition to the usual step from $(x_n, \mathbf{y}_n)$ of length $h$, we independently advance the integration a step of length $h^* = \sigma h$ by another formula:
+
+\begin{theorem}[6.1, Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}]
+Error of approximation $\mathbf{u}(\theta) = \mathbf{y}_n + h\sum_{i=1}^{s^*} b_i(\theta) \mathbf{k}_i$ is of order $p^*$ (i.e. local error satisfies Eq. (6.3) of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, i.e. $\mathbf{u}(\theta) - \mathbf{y}(x_0 + \theta h) = \mathcal{O}(h^{p^* + 1})$) iff
+\begin{equation}\label{Eq:ErrorOfApproximationConditionFrombCoefficients}
+	\sum_{j=1}^{s^*} b_j(\theta) \Phi_j(t) = \frac{\theta^{\varrho(t)}}{\gamma(t)} \text{ for } \varrho(t) \leq p^*
+\end{equation}
+with $\Phi_j(t)$, $\varrho(t)$, $\gamma(t)$ given in Sec. II.2 of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}.
+\end{theorem}
+
+\begin{proof}
+	$q$th derivative (with respect to $h$) of numerical approximation is given by (2.14) with $b_j$ replaced by $b_j(\theta)$; that of exact solution $\mathbf{y}(x_0 + \theta h)$ is $\theta^q y^{(q)}(x_0)$.
+	
+Recall Thm. 2.11 of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993},
+	\begin{equation}
+		\left. y_1^{(q)} \right|_{h=0} = \sum_{t\in LT_q} \gamma(t) \sum_{j} b_j \Phi_j(t) F(t)(y_0) = \sum_{t\in T_q} \alpha(t) \gamma(t) \sum_j b_j \Phi_j(t) F(t)(y_0) 
+	\end{equation}
+cf. Eq. (2.14) of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, which then leads to Th. 2.13 of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}.
+\end{proof}
+
+\begin{corollary}[6.2 of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}]
+	Condition (6.4) of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, Eq. \ref{Eq:ErrorOfApproximationConditionFrombCoefficients}, implies derivatives of Eq. (6.1) of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, $\mathbf{u}(\theta) = \mathbf{y}_n + h\sum_{i=1}^{s^*} b_i(\theta) \mathbf{k}_i$, Eq. \ref{Eq:DenseOutputGeneralApproximation} approximate derivatives of exact solution as
+	\begin{equation}\label{Eq:DerivativesOfApproximationOrder}
+		h^{-k} \mathbf{u}^{(k)}(\theta) = \mathbf{y}^{(k)}(x_0 + \theta h) = \mathcal{O}(h^{p^* -k + 1})
+	\end{equation}
+\end{corollary} 
+
+\begin{proof}
+Consider Eq. \ref{Eq:DenseOutputGeneralApproximation},
+\[
+\mathbf{u}(\theta) - \mathbf{y}(x_n + \theta h) = \mathcal{O}(h^{p^* + 1})
+\] which is the error of approximation $\mathbf{u}(\theta)$, i.e. local error condition.
+
+While Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993} says on pp. 189 to take the $q$th derivative with respect to $h$, I think that's wrong. Take the partial derivative with respect to $\theta$:
+
+\[
+\begin{gathered}
+	\frac{\partial \mathbf{u}(\theta) }{ \partial \theta} - \frac{ \partial \mathbf{y}}{\partial \theta}(x_n + \theta h) \equiv \mathbf{u}'(\theta) -h \mathbf{y}'(x_n + \theta h) \xrightarrow{ \frac{1}{h} } h^{-1} \mathbf{u}'(\theta) - \mathbf{y}'(x_n + \theta h) = \mathcal{O}(h^{p^* + 1 - 1}) \\
+	\frac{ \partial^k \mathbf{u}(\theta) }{ \partial \theta^k } - \frac{ \partial^k \mathbf{y} }{ \partial \theta^k} (x_n + \theta h) \equiv \frac{ \partial^k \mathbf{u}(\theta) }{\partial \theta^k} - h^k \mathbf{y}^{(k)}(x_n + \theta h) \xrightarrow{ \frac{1}{h^k} } h^{-k} \frac{ \partial^k \mathbf{u}(\theta) }{ \partial \theta^k} - \mathbf{y}^{(k)} (x_n + \theta h) = \mathcal{O}(h^{p^* + 1 -k})
+\end{gathered}
+\]
+So Eq. (6.5) of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, i.e. Eq. \ref{Eq:DerivativesOfApproximationOrder}, would be equivalent to saying that, for the $k=1$ case,
+\[
+\begin{gathered}
+	\frac{\partial}{\partial \theta} \sum_{j=1}^{s^*} b_j(\theta) \Phi_j(t) = \sum_{j=1}^{s^*} \frac{\partial b_j(\theta) }{\partial \theta} \Phi_j(t) \equiv \sum_{j=1}^{s^*} b'_j(\theta) \Phi_j(t) = \frac{ \varrho (t) \theta^{\varrho (t) - 1} }{ \gamma(t)} \text{ for } \varrho(t) \leq p^*
+\end{gathered}
+\]
+But this follows by differentiation. The immediate above has a similar form for $k>1$.
+
+\end{proof}
+
+\subsubsection{Hermite interpolation}
+
+From (Shampine 1985), Shampine had this easier and more efficient way for low order dense output formulas by using HErmite interpolation. This interpolation method makes use of information produced during integration.
+
+We have 2 function values $y_0, y_1$ ($\equiv \mathbf{y}_n, \mathbf{y}_{n+1}$) and 2 derivatives 
+\[
+\mathbf{f}_0 = \mathbf{f}(x_0, \mathbf{y}_0); \, \mathbf{f}_1 = \mathbf{f}(x_0 + h, \mathbf{y}_1) \equiv \mathbf{f}_n = \mathbf{f}(x_n, \mathbf{y}_n) , \, \mathbf{f}_{n+1} = \mathbf{f}(x_n + h, \mathbf{y}_n), \text{ i.e. } \mathbf{y} \text{ and } \frac{d\mathbf{y}}{dx} = \mathbf{f}
+\]
+at beginning and end of the step.
+
+Do cubic polynomial interpolation: \\
+Consider Eq. (6.7) on pp. 190 of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, 
+\begin{equation}\label{Eq:HermiteInterpolationHNWnotation}
+	\mathbf{u}(\theta) = (1- \theta) \mathbf{y}_n + \theta \mathbf{y}_{n+1} + \theta(\theta - 1) ((1 - 2 \theta) (\mathbf{y}_{n+1} - \mathbf{y}_n) + (\theta - 1)h \mathbf{f}_n + \theta h \mathbf{f}_{n+1})
+\end{equation}
+This is the same as Eq. (17.2.15) on pp. 916 of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}:
+
+\begin{equation}
+	\mathbf{y}(x_n + \theta h) = (1- \theta) \mathbf{y}_n + \theta \mathbf{y}_{n+1} + \theta ( \theta - 1) \left[ ( 1 - 2 \theta) ( \mathbf{y}_{n+1} - \mathbf{y}_n) + (\theta - 1) h \mathbf{f}_n + \theta h \mathbf{f}_{n+1} \right] 
+\end{equation}
+where $0\leq \theta \leq 1$.
+
+Whenever underlying method is of order $p\geq 3$, we thus obtain a continuous Runge-Kutta method, i.e. a value of $\mathbf{y}$ that's of order 3, i.e. 3rd. order accurate, as can be verified with a Taylor series.
+
+I had tried to verify this, that the "Hermite interpolation is a special case of (6.1)", pp. 190 of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, by plugging in with $\mathbf{y}_{n+1} = \mathbf{y}_n +h\sum_{i=1}^s b_i \mathbf{k}_i$, 
+\[
+\mathbf{u}(\theta) = \mathbf{y}_n + \theta h \sum_{i=1}^s b_i \mathbf{k}_i + \theta ( \theta - 1) \left[ (1 - 2\theta) (h \sum_{i=1}^s b_i \mathbf{k}_i) + (\theta - 1) h \mathbf{f}_n + \theta h \mathbf{f}_{n+1} \right]
+\]
+
+Notice that the Hermite interpolation is essentially this in terms of inputs and outputs:
+
+\begin{equation}\label{Eq:HermiteInterpolationInputsOutputs}
+	\begin{tikzpicture}
+		\matrix (m) [matrix of math nodes, row sep=0.8em, column sep=7.8em, minimum width=0.6em] 
+		{
+			\substack{\text{ numerical values } \mathbf{y}_n, \mathbf{y}_{n+1}, \frac{d\mathbf{y}}{dx}(x_n), \frac{d\mathbf{y}}{dx}(x_n + h), \\
+				\theta \\ } &  \mathbf{u}(\theta) \\
+		};
+		\path[|->]
+		(m-1-1) edge node [above] { Hermite Interpolation with parameter $\theta$ } (m-1-2)
+		;
+	\end{tikzpicture} 
+\end{equation}
+
 
 
 \subsection{Interpreting Runge-Kutta method implementations in \textbf{Numerical Recipes}}
@@ -5838,7 +5962,7 @@ In the code, \texttt{yout} corresponds to the following in our notation: \\
 y(x_{n+1}) = y(x_n) + h(a_{71} \frac{dy}{dx}(x_n) + a_{72} k_2 + \dots + a_{76} k_6) = y(x_n) + h(b_1 a_{71} + \dots + b_7 a_{76})
 \]
 
-Thus, essentially, the inputs and outputs of this function is this:
+Thus, essentially, the inputs and outputs of this function, \verb|StepperDopr<D>::dy(...)| is this:
 
 \begin{equation}
 \begin{tikzpicture}
@@ -5853,6 +5977,61 @@ Thus, essentially, the inputs and outputs of this function is this:
 	;
 \end{tikzpicture} 
 \end{equation}
+
+\subsubsection{prepare dense, dense output}
+
+Consider the coefficients shown in the code for \verb|StepperDopr5<D>::prepare_dense()| on pp. 918 of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}:
+
+\begin{equation}
+	\begin{aligned}
+		& d_1 = \frac{-12715105075.0 }{ 11282082432.0 } \\
+		& d_2 = 0 \\
+		& d_3 = \frac{ 87487479700.0 }{ 32700410799.0 } \\
+		& d_4 = \frac{ -10690763975.0 }{ 1880347072.0 } \\
+		& d_5 = \frac{ 701980252875.0 }{ 199316789632.0 } \\
+		& d_6 = \frac{-1453857185.0 }{ 822651844.0 } \\
+		& d_7 = \frac{ 69997945.0 }{ 29380423.0 }
+	\end{aligned}
+\end{equation}
+
+Furthermore, for the function \verb|prepare_dense()| it finally utilizes these class data members (EY: which may not be necessary as class data members?) \verb|rcont1, rcont2, ..|; I present the code and then use my notation: \\
+
+\verb|rcont1[i] = y[i];| $\to \mathbf{rcont1} = \mathbf{y}$ \\
+\verb|rcont2[i] = ydiff;| $\to \mathbf{rcont2} = \mathbf{y}_{\text{out}} - \mathbf{y}$ \\
+\verb|Doub bsp1 = h * dydx[i] - ydiff;| $\to \mathbf{rcont3} = h \frac{d\mathbf{y}}{dx} - (\mathbf{y}_{\text{out}} - \mathbf{y})$ \\
+\verb|rcont4[i] = ydiff-h*dydxnew[i] - bsp1| $\to \textbf{rcont4} = (\mathbf{y}_{\text{out}} - \mathbf{y}) - h \frac{d\mathbf{y}}{dx}(x_n + h) - h \frac{d\mathbf{y}}{dx}(x_n) + (\mathbf{y}_{\text{out}} - \mathbf{y}) = 2 ( \mathbf{y}_{n+1} - \mathbf{y}) - h \left( \frac{d\mathbf{y}}{dx}(x_n +h) + \frac{d\mathbf{y}}{dx} (x_n) \right)$ \\
+\verb|rcont5| $\to h \left[ d_1 \frac{d\mathbf{y}}{dx} (x_n) + d_3 \mathbf{k}_3 + d_4 \mathbf{k}_4 + d_5 \mathbf{k}_5 + d_6 \mathbf{k}_6 + d_7 \frac{d\mathbf{y}}{dx}(x_n +h) \right]$
+
+
+From Shampine (1986) \cite{Sham1986}, for what was denoted as $c_j^*$ - result at $x_n + \frac{1}{2} h$, order 4, the $c_j^*$ coefficients (Shampine numbers from $j=0, 1, \dots$ while we will number from $j = 1, 2, \dots$)
+\begin{equation}
+	\begin{aligned}
+		& c_j^* \text{ result at } x_n + \frac{1}{2}h \\
+		& \frac{6025192743}{30085553152} \\
+		& 0 \\
+		& \frac{51252292925}{65400821598} \\
+		& \frac{-2691868925}{45128329728} \\
+		& \frac{187940372067}{1594534317056} \\
+		& \frac{-1776094331}{19743644256} \\
+		& \frac{11237099}{235043384}
+	\end{aligned}
+\end{equation}
+
+Take a look on pp. 918-919 of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007} for the implementation of \verb|void StepperDopr5<D>::prepare_dense(const Doub h, D& derivs)| and \verb|Doub StepperDopr5<D>::dense_out(const Int i, const Doub x, const Doub h)||; the return value of \verb|StepperDopr5<D>::dense_out(...)| is
+\[
+\begin{gathered}
+	\mathbf{y}_n + \theta (\mathbf{y}_{n+1} - \mathbf{y}_n + (1- \theta)(h \frac{d\mathbf{y}}{dx}(x_n) - (\mathbf{y}_{n+1} - \mathbf{y}_n) + \theta (2 (\mathbf{y}_{n+1} - \mathbf{y}) - h \left[ \frac{d\mathbf{y}}{dx}(x_n + h) + \frac{d\mathbf{y}}{dx}(x_n) \right] ))) + \theta^2 (1-\theta)^2 ( h \sum_{i=1}^{s+1} d_i \mathbf{k}_i)
+\end{gathered}
+\]
+Take a look at all the terms above except for the last one. It is essentially the \emph{Hermite interpolation} found in Eq. \ref{Eq:HermiteInterpolationHNWnotation}:
+\[
+\begin{gathered}
+	(1- \theta) \mathbf{y}_n + \theta \mathbf{y}_{n+1} + \theta(\theta + 1) \left[ (1- 2\theta) (\mathbf{y}_{n+1} - \mathbf{y}) + (\theta - 1) h \frac{d\mathbf{y}}{dx}(x_n + h) + \theta h \frac{d\mathbf{y}}{dx}(x_n) \right] = \\
+	= \mathbf{u}(\theta)
+\end{gathered}
+\]
+
+To refactor this, consider the inputs and outputs needed from Eq. \ref{Eq:HermiteInterpolationInputsOutputs}.
 
 \section{Systems of Ordinary Differential Equations ODEs}
 
@@ -8908,6 +9087,9 @@ William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P. Flannery. \
 
 \bibitem{HNW1993}
 E. Hairer, S.P. N\o rsett, G. Wanner. \textbf{Solving Ordinary Differential Equations I: Nonstiff Problems}. Second Revised Edition. Springer. 1993. 
+
+\bibitem{Sham1986}
+Lawrence F. Shampine. "Some Practical Runge-Kutta Formulas." \textbf{Mathematics of Computuation}. Volume 46. Number 173. Jan. 1986, Pages 135-150.
 
 \bibitem{GaSt2018}
 Daniel Gaspar, Jack Stouffer.

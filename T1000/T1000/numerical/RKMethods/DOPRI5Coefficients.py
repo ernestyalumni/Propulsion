@@ -64,3 +64,23 @@ class DOPRI5Coefficients:
         8.0 / 9.0,
         1.0,
         1.0])
+
+    # pp. 149 "Some Practical Runge-Kutta Formulas", Shampine.
+    # c^*_j - result at x_n + h/2, order 4
+    cstar_coefficients = bCoefficients(7, [
+        Rational(6025192743, 30085553152),
+        0,
+        Rational(51252292925, 65400821598),
+        Rational(-2691868925, 45128329728),
+        Rational(187940372067, 1594534317056),
+        Rational(-1776094331, 19743644256),
+        Rational(11237099, 235043384)])
+
+    dense_output_coefficients = bCoefficients(7, [
+        Rational(-12715105075, 11282082432),
+        0,
+        Rational(87487479700, 32700410799),
+        Rational(-10690763975, 1880347072),
+        Rational(701980252875, 199316789632),
+        Rational(-1453857185, 822651844),
+        Rational(69997945, 29380423)])

@@ -52,6 +52,8 @@ struct StepperDopr5 : StepperBase
 
   void dy(const double h, D& derivatives);
 
+  void prepare_dense(const double h, D& derivatives);
+
   double dense_out(const std::size_t i, const double x, const double h);
 
   double error();
@@ -284,6 +286,15 @@ void StepperDopr5<D>::prepare_dense(const double h, D& derivatives)
 {
   std::vector<double> ytemp (n_);
   static constexpr double d1 {-12715105075.0 / 11282082432.0};
+
+  for (int i {0}; i < n_; ++i)
+  {
+    rcont1_[i] = y_[i];
+    const double ydiff = yout_[i] - y_[i];
+    rcont2_[i] = ydiff;
+    const double bsp1 = h * dydx_[i] - ydiff;
+    rcont3_[i] = bsp1;
+  }
 }
 
 //------------------------------------------------------------------------------
