@@ -1,3 +1,6 @@
+//------------------------------------------------------------------------------
+/// \ref https://github.com/blackstonep/Numerical-Recipes/blob/master/stepperdopr5.h
+//------------------------------------------------------------------------------
 #ifndef NUMERICAL_ODE_STEPPER_DOPR5_H
 #define NUMERICAL_ODE_STEPPER_DOPR5_H
 
@@ -286,14 +289,17 @@ void StepperDopr5<D>::prepare_dense(const double h, D& derivatives)
 {
   std::vector<double> ytemp (n_);
   static constexpr double d1 {-12715105075.0 / 11282082432.0};
+  static constexpr double d3 {87487479700.0 / 32700410799.0};
 
   for (int i {0}; i < n_; ++i)
   {
     rcont1_[i] = y_[i];
-    const double ydiff = yout_[i] - y_[i];
+    const double ydiff = y_out_[i] - y_[i];
     rcont2_[i] = ydiff;
     const double bsp1 = h * dydx_[i] - ydiff;
     rcont3_[i] = bsp1;
+    rcont4_[i] = ydiff - h * dydxnew_[i] - bsp1;
+    rcont5_[i] = h * (d1 * dydx_[i] + d3 * k3_[i]);
   }
 }
 
