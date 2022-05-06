@@ -5913,7 +5913,7 @@ Notice that the Hermite interpolation is essentially this in terms of inputs and
 				\theta \\ } &  \mathbf{u}(\theta) \\
 		};
 		\path[|->]
-		(m-1-1) edge node [above] { Hermite Interpolation with parameter $\theta$ } (m-1-2)
+		(m-1-1) edge node [above] { $\substack{ \text{ Hermite Interpolation } \\ \text{ with parameter } \theta \\ }$ } (m-1-2)
 		;
 	\end{tikzpicture} 
 \end{equation}
@@ -6026,7 +6026,7 @@ Take a look on pp. 918-919 of Press, Teukolsky, Vetterling, Flannery (2007) \cit
 Take a look at all the terms above except for the last one. It is essentially the \emph{Hermite interpolation} found in Eq. \ref{Eq:HermiteInterpolationHNWnotation}:
 \[
 \begin{gathered}
-	(1- \theta) \mathbf{y}_n + \theta \mathbf{y}_{n+1} + \theta(\theta + 1) \left[ (1- 2\theta) (\mathbf{y}_{n+1} - \mathbf{y}) + (\theta - 1) h \frac{d\mathbf{y}}{dx}(x_n + h) + \theta h \frac{d\mathbf{y}}{dx}(x_n) \right] = \\
+	(1- \theta) \mathbf{y}_n + \theta \mathbf{y}_{n+1} + \theta(\theta - 1) \left[ (1- 2\theta) (\mathbf{y}_{n+1} - \mathbf{y}) + (\theta - 1) h \frac{d\mathbf{y}}{dx}(x_n + h) + \theta h \frac{d\mathbf{y}}{dx}(x_n) \right] = \\
 	= \mathbf{u}(\theta)
 \end{gathered}
 \]

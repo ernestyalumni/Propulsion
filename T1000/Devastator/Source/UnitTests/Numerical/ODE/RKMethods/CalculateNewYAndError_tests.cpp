@@ -1,3 +1,4 @@
+#include "Algebra/Modules/Vectors/NVector.h"
 #include "Numerical/ODE/RKMethods/CalculateNewYAndError.h"
 #include "Numerical/ODE/RKMethods/Coefficients/DOPRI5Coefficients.h"
 #include "Numerical/ODE/RKMethods/Coefficients/KCoefficients.h"
@@ -20,6 +21,9 @@ using std::size_t;
 using std::transform;
 using std::valarray;
 using std::vector;
+
+template <size_t N>
+using NVector = Algebra::Modules::Vectors::NVector<N>;
 
 namespace GoogleUnitTests
 {
@@ -137,6 +141,14 @@ auto example_f_with_std_valarray = [](
   return y - x * x + 1.0;
 };
 
+template <std::size_t N>
+auto example_f_with_NVector = [](
+  const double x,
+  const NVector<N>& y)
+{
+  return y - x * x + 1.0;
+};
+
 auto exact_solution = [](const double x)
 {
   return x * x + 2.0 * x + 1.0 - 0.5 * std::exp(x);
@@ -181,6 +193,25 @@ struct ExampleSetupWithStdValarray
   }
 };
 
+template <size_t S, size_t N>
+struct ExampleSetupWithNVector
+{
+  double h_ {0.5};
+  const double t_0_ {0.0};
+  const double t_f_ {2.0};
+  const NVector<N> y_0_ {0.5};
+  const NVector<N> dydx_0_ {1.5};
+
+  NVector<N> y_out_ {0.0};
+  NVector<N> y_err_ {0.0};
+
+  KCoefficients<S, NVector<N>> k_coefficients_;
+
+  ExampleSetupWithNVector()
+  {
+    k_coefficients_[0] = dydx_0_;
+  }
+};
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -411,6 +442,30 @@ TEST(TestCalculateNewYAndError, SumAAndKProductsWorksForStdValarray)
       DOPRI5_delta_coefficients};
 
   const valarray<double> result {new_y_and_err.sum_a_and_k_products(
+    setup.k_coefficients_,
+    2,
+    setup.h_)};
+
+  EXPECT_DOUBLE_EQ(result[0], 0.15);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(TestCalculateNewYAndError, SumAAndKProductsWorksForNVector)
+{
+  ExampleSetupWithNVector<DOPRI5_s, 1> setup {};
+
+  EXPECT_EQ(setup.k_coefficients_.get_ith_coefficient(1)[0], 1.5);
+  EXPECT_EQ(setup.k_coefficients_.get_ith_coefficient(2)[0], 0);
+
+  TestCalculateNewYAndError<DOPRI5_s, decltype(example_f_with_NVector<1>)>
+    new_y_and_err {
+      example_f_with_NVector<1>,
+      DOPRI5_a_coefficients,
+      DOPRI5_c_coefficients,
+      DOPRI5_delta_coefficients};
+
+  const NVector<1> result {new_y_and_err.sum_a_and_k_products(
     setup.k_coefficients_,
     2,
     setup.h_)};
@@ -798,6 +853,206 @@ TEST(TestCalculateNewYAndError,
     2.7591771182645264);
 
   EXPECT_NEAR(setup.y_out_.at(0), exact_solution(3 * setup.h_), 1e-4);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(TestCalculateNewYAndError,
+  CalculateNewYWorksForDormandPrince5CoefficientsAndStdValarray)
+{
+  ExampleSetupWithStdValarray<DOPRI5_s> setup {};
+
+  TestCalculateNewYAndError<DOPRI5_s, decltype(example_f_with_std_valarray)>
+    new_y_and_err {
+      example_f_with_std_valarray,
+      DOPRI5_a_coefficients,
+      DOPRI5_c_coefficients,
+      DOPRI5_delta_coefficients};
+
+  // Step 1.
+
+  setup.y_out_ = new_y_and_err.calculate_new_y(
+    setup.h_,
+    setup.t_0_,
+    setup.y_0_,
+    setup.dydx_0_,
+    setup.k_coefficients_);
+
+  EXPECT_DOUBLE_EQ(setup.k_coefficients_.get_ith_coefficient(1)[0], 1.5);
+  EXPECT_DOUBLE_EQ(setup.k_coefficients_.get_ith_coefficient(2)[0], 1.64);
+  EXPECT_DOUBLE_EQ(setup.k_coefficients_.get_ith_coefficient(3)[0], 1.71825);
+  EXPECT_DOUBLE_EQ(setup.k_coefficients_.get_ith_coefficient(4)[0],
+    2.066666666666666);
+  EXPECT_DOUBLE_EQ(setup.k_coefficients_.get_ith_coefficient(5)[0],
+    2.1469574759945127);
+  EXPECT_DOUBLE_EQ(setup.k_coefficients_.get_ith_coefficient(6)[0],
+    2.2092840909090903);
+  EXPECT_DOUBLE_EQ(setup.k_coefficients_.get_ith_coefficient(7)[0],
+    2.175644097222222);
+
+  EXPECT_NEAR(setup.y_out_[0], exact_solution(setup.h_), 1e-5);
+
+  setup.y_out_ = new_y_and_err.calculate_new_y(
+    setup.h_,
+    setup.t_0_ + setup.h_,
+    setup.y_out_,
+    setup.k_coefficients_.get_ith_coefficient(7),
+    setup.k_coefficients_);
+
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(1)[0],
+    2.175644097222222);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(2)[0],
+    2.2832085069444443);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(3)[0],
+    2.341591707899305);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(4)[0],
+    2.5801328124999987);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(5)[0],
+    2.633202642222983);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(6)[0],
+    2.667628162582859);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(7)[0],
+    2.6408707492856616);
+
+  EXPECT_NEAR(setup.y_out_[0], exact_solution(2 * setup.h_), 1e-4);
+
+  setup.y_out_ = new_y_and_err.calculate_new_y(
+    setup.h_,
+    setup.t_0_ + 2 * setup.h_,
+    setup.y_out_,
+    setup.k_coefficients_.get_ith_coefficient(7),
+    setup.k_coefficients_);
+
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(1)[0],
+    2.6408707492856616);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(2)[0],
+    2.694957824214227);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(3)[0],
+    2.7205861576079746);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(4)[0],
+    2.77797279059516);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(5)[0],
+    2.786162739074309);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(6)[0],
+    2.7745870563781194);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(7)[0],
+    2.7591771182645264);
+
+  EXPECT_NEAR(setup.y_out_[0], exact_solution(3 * setup.h_), 1e-4);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(TestCalculateNewYAndError,
+  CalculateNewYWorksForDormandPrince5CoefficientsAndNVector)
+{
+  ExampleSetupWithNVector<DOPRI5_s, 1> setup {};
+
+  TestCalculateNewYAndError<DOPRI5_s, decltype(example_f_with_NVector<1>)>
+    new_y_and_err {
+      example_f_with_NVector<1>,
+      DOPRI5_a_coefficients,
+      DOPRI5_c_coefficients,
+      DOPRI5_delta_coefficients};
+
+  // Step 1.
+
+  setup.y_out_ = new_y_and_err.calculate_new_y(
+    setup.h_,
+    setup.t_0_,
+    setup.y_0_,
+    setup.dydx_0_,
+    setup.k_coefficients_);
+
+  EXPECT_DOUBLE_EQ(setup.k_coefficients_.get_ith_coefficient(1)[0], 1.5);
+  EXPECT_DOUBLE_EQ(setup.k_coefficients_.get_ith_coefficient(2)[0], 1.64);
+  EXPECT_DOUBLE_EQ(setup.k_coefficients_.get_ith_coefficient(3)[0], 1.71825);
+  EXPECT_DOUBLE_EQ(setup.k_coefficients_.get_ith_coefficient(4)[0],
+    2.066666666666666);
+  EXPECT_DOUBLE_EQ(setup.k_coefficients_.get_ith_coefficient(5)[0],
+    2.1469574759945127);
+  EXPECT_DOUBLE_EQ(setup.k_coefficients_.get_ith_coefficient(6)[0],
+    2.2092840909090903);
+  EXPECT_DOUBLE_EQ(setup.k_coefficients_.get_ith_coefficient(7)[0],
+    2.175644097222222);
+
+  EXPECT_NEAR(setup.y_out_[0], exact_solution(setup.h_), 1e-5);
+
+  setup.y_out_ = new_y_and_err.calculate_new_y(
+    setup.h_,
+    setup.t_0_ + setup.h_,
+    setup.y_out_,
+    setup.k_coefficients_.get_ith_coefficient(7),
+    setup.k_coefficients_);
+
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(1)[0],
+    2.175644097222222);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(2)[0],
+    2.2832085069444443);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(3)[0],
+    2.341591707899305);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(4)[0],
+    2.5801328124999987);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(5)[0],
+    2.633202642222983);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(6)[0],
+    2.667628162582859);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(7)[0],
+    2.6408707492856616);
+
+  EXPECT_NEAR(setup.y_out_[0], exact_solution(2 * setup.h_), 1e-4);
+
+  setup.y_out_ = new_y_and_err.calculate_new_y(
+    setup.h_,
+    setup.t_0_ + 2 * setup.h_,
+    setup.y_out_,
+    setup.k_coefficients_.get_ith_coefficient(7),
+    setup.k_coefficients_);
+
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(1)[0],
+    2.6408707492856616);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(2)[0],
+    2.694957824214227);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(3)[0],
+    2.7205861576079746);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(4)[0],
+    2.77797279059516);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(5)[0],
+    2.786162739074309);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(6)[0],
+    2.7745870563781194);
+  EXPECT_DOUBLE_EQ(
+    setup.k_coefficients_.get_ith_coefficient(7)[0],
+    2.7591771182645264);
+
+  EXPECT_NEAR(setup.y_out_[0], exact_solution(3 * setup.h_), 1e-4);
 }
 
 //------------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 #ifndef NUMERICAL_ODE_RK_METHODS_CALCULATE_NEW_Y_AND_ERROR_H
 #define NUMERICAL_ODE_RK_METHODS_CALCULATE_NEW_Y_AND_ERROR_H
 
+#include "Algebra/Modules/Vectors/NVector.h"
 #include "Coefficients/ACoefficients.h"
 #include "Coefficients/BCoefficients.h"
 #include "Coefficients/CCoefficients.h"
@@ -27,6 +28,9 @@ template <std::size_t S, typename DerivativeType, typename Field = double>
 class CalculateNewYAndError
 {
   public:
+
+    template <std::size_t M>
+    using NVector = Algebra::Modules::Vectors::NVector<M, Field>;
 
     CalculateNewYAndError() = delete;
     CalculateNewYAndError(
@@ -89,6 +93,54 @@ class CalculateNewYAndError
         // k_l = f(x + c_l * h, y + h * (a_l1 * k_1 + ... + a_l,l-1 * k_{l-1}))
         derivative_(x_l, y_out, k_coefficients.ith_coefficient(l));
       }
+    }
+
+    std::valarray<Field> calculate_new_y(
+      const Field h,
+      const Field x,
+      const std::valarray<Field>& y,
+      const std::valarray<Field>& initial_dydx,
+      Coefficients::KCoefficients<S, std::valarray<Field>>& k_coefficients)
+    {
+      std::valarray<Field> y_out;
+
+      k_coefficients.ith_coefficient(1) = initial_dydx;
+
+      for (std::size_t l {2}; l <= S; ++l)
+      {
+        const Field x_l {x + get_c_i(l) * h};
+
+        // y_out = y + h * (a_l1 * k_1 + ... + a_l,l-1 * k_{l-1})
+        y_out = y + sum_a_and_k_products(k_coefficients, l, h);
+
+        k_coefficients.ith_coefficient(l) = derivative_(x_l, y_out);
+      }
+
+      return y_out;
+    }
+
+    template <std::size_t N>
+    NVector<N> calculate_new_y(
+      const Field h,
+      const Field x,
+      const NVector<N>& y,
+      const NVector<N>& initial_dydx,
+      Coefficients::KCoefficients<S, NVector<N>>& k_coefficients)
+    {
+      NVector<N> y_out {};
+      k_coefficients.ith_coefficient(1) = initial_dydx;
+
+      for (std::size_t l {2}; l <= S; ++l)
+      {
+        const Field x_l {x + get_c_i(l) * h};
+
+        // y_out = y + h * (a_l1 * k_1 + ... + a_l,l-1 * k_{l-1})
+        y_out = y + sum_a_and_k_products<N>(k_coefficients, l, h);
+
+        k_coefficients.ith_coefficient(l) = derivative_(x_l, y_out);
+      }
+
+      return y_out;
     }
 
     template <typename ContainerT, std::size_t N>
@@ -204,7 +256,25 @@ class CalculateNewYAndError
       const std::size_t l,
       const Field h)
     {
-      std::valarray<Field> a_lj_times_kj {get_a_ij(l, 1) * k_coefficients.ith_coefficient(1)};
+      std::valarray<Field> a_lj_times_kj {
+        get_a_ij(l, 1) * k_coefficients.ith_coefficient(1)};
+
+      for (std::size_t j {2}; j < l; ++j)
+      {
+        a_lj_times_kj += get_a_ij(l, j) * k_coefficients.ith_coefficient(j);
+      }
+
+      return h * a_lj_times_kj;
+    }
+
+    template <std::size_t N>
+    NVector<N> sum_a_and_k_products(
+      Coefficients::KCoefficients<S, NVector<N>>& k_coefficients,
+      const std::size_t l,
+      const Field h)
+    {
+      NVector<N> a_lj_times_kj {
+        get_a_ij(l, 1) * k_coefficients.ith_coefficient(1)};
 
       for (std::size_t j {2}; j < l; ++j)
       {
