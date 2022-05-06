@@ -8,14 +8,17 @@
 #include <algorithm> // std::transform
 #include <array>
 #include <cmath>
+#include <cstddef>
 #include <iterator>
+#include <valarray>
 #include <vector>
 
-using Numerical::ODE::RKMethods::Coefficients::KCoefficients;
-
 using Numerical::ODE::RKMethods::CalculateNewYAndError;
+using Numerical::ODE::RKMethods::Coefficients::KCoefficients;
 using std::back_inserter;
+using std::size_t;
 using std::transform;
+using std::valarray;
 using std::vector;
 
 namespace GoogleUnitTests
@@ -27,7 +30,7 @@ namespace ODE
 namespace RKMethods
 {
 
-constexpr std::size_t RK4_s {::Numerical::ODE::RKMethods::RK4Coefficients::s};
+constexpr size_t RK4_s {::Numerical::ODE::RKMethods::RK4Coefficients::s};
 
 const auto& RK4_a_coefficients =
   ::Numerical::ODE::RKMethods::RK4Coefficients::a_coefficients;
@@ -38,7 +41,7 @@ const auto& RK4_b_coefficients =
 const auto& RK4_c_coefficients =
   ::Numerical::ODE::RKMethods::RK4Coefficients::c_coefficients;
 
-constexpr std::size_t DOPRI5_s {
+constexpr size_t DOPRI5_s {
   ::Numerical::ODE::RKMethods::DOPRI5Coefficients::s};
 
 const auto& DOPRI5_a_coefficients =
@@ -50,7 +53,7 @@ const auto& DOPRI5_c_coefficients =
 const auto& DOPRI5_delta_coefficients =
   ::Numerical::ODE::RKMethods::DOPRI5Coefficients::delta_coefficients;
 
-template <std::size_t S, typename DerivativeType, typename Field = double>
+template <size_t S, typename DerivativeType, typename Field = double>
 class TestCalculateNewYAndError :
   public CalculateNewYAndError<S, DerivativeType, Field>
 {
@@ -127,6 +130,13 @@ auto examplef = [](
     });
 };
 
+auto example_f_with_std_valarray = [](
+  const double x,
+  valarray<double>& y)
+{
+  return y - x * x + 1.0;
+};
+
 auto exact_solution = [](const double x)
 {
   return x * x + 2.0 * x + 1.0 - 0.5 * std::exp(x);
@@ -150,6 +160,27 @@ struct ExampleSetup
     k_coefficients_[0] = dydx_0_;
   }
 };
+
+template <size_t S>
+struct ExampleSetupWithStdValarray
+{
+  double h_ {0.5};
+  const double t_0_ {0.0};
+  const double t_f_ {2.0};
+  const valarray<double> y_0_ {0.5};
+  const valarray<double> dydx_0_ {1.5};
+
+  valarray<double> y_out_ {0.0};
+  valarray<double> y_err_ {0.0};
+
+  KCoefficients<S, valarray<double>> k_coefficients_;
+
+  ExampleSetupWithStdValarray()
+  {
+    k_coefficients_[0] = dydx_0_;
+  }
+};
+
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -361,6 +392,30 @@ TEST(TestCalculateNewYAndError, SumAAndKProductsWorks)
   EXPECT_EQ(setup.k_coefficients_.get_ith_coefficient(2).size(), 0);
 
   EXPECT_DOUBLE_EQ(setup.y_out_.at(0), 0.15);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(TestCalculateNewYAndError, SumAAndKProductsWorksForStdValarray)
+{
+  ExampleSetupWithStdValarray<DOPRI5_s> setup {};
+
+  EXPECT_EQ(setup.k_coefficients_.get_ith_coefficient(1)[0], 1.5);
+  EXPECT_EQ(setup.k_coefficients_.get_ith_coefficient(2).size(), 0);
+
+  TestCalculateNewYAndError<DOPRI5_s, decltype(example_f_with_std_valarray)>
+    new_y_and_err {
+      example_f_with_std_valarray,
+      DOPRI5_a_coefficients,
+      DOPRI5_c_coefficients,
+      DOPRI5_delta_coefficients};
+
+  const valarray<double> result {new_y_and_err.sum_a_and_k_products(
+    setup.k_coefficients_,
+    2,
+    setup.h_)};
+
+  EXPECT_DOUBLE_EQ(result[0], 0.15);
 }
 
 //------------------------------------------------------------------------------

@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <initializer_list>
 #include <utility> // std::forward
+#include <valarray>
 
 namespace Numerical
 {
@@ -196,6 +197,21 @@ class CalculateNewYAndError
           std::multiplies<Field>(),
           std::placeholders::_1,
           h));
+    }
+
+    std::valarray<Field> sum_a_and_k_products(
+      Coefficients::KCoefficients<S, std::valarray<Field>>& k_coefficients,
+      const std::size_t l,
+      const Field h)
+    {
+      std::valarray<Field> a_lj_times_kj {get_a_ij(l, 1) * k_coefficients.ith_coefficient(1)};
+
+      for (std::size_t j {2}; j < l; ++j)
+      {
+        a_lj_times_kj += get_a_ij(l, j) * k_coefficients.ith_coefficient(j);
+      }
+
+      return h * a_lj_times_kj;
     }
 
     Field get_a_ij(const std::size_t i, const std::size_t j) const
