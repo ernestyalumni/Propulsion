@@ -4,6 +4,7 @@
 #include "Algebra/Modules/Vectors/NVector.h"
 
 #include <cstddef>
+#include <type_traits>
 #include <valarray>
 
 namespace Numerical
@@ -35,6 +36,22 @@ Algebra::Modules::Vectors::NVector<N, Field> calculate_hermite_interpolation(
   const Algebra::Modules::Vectors::NVector<N, Field>& y_1,
   const Algebra::Modules::Vectors::NVector<N, Field>& dydx_0,
   const Algebra::Modules::Vectors::NVector<N, Field>& dydx_1,
+  const Field theta,
+  const Field h)
+{
+  return ((1. - 3. * theta * theta + 2. * theta * theta * theta) * y_0) +
+    ((3. * theta * theta - 2. * theta * theta * theta) * y_1) +
+    (theta * (theta - 1)) * (
+      (((theta - 1.) * h) * dydx_0) +
+      ((theta * h) * dydx_1));
+}
+
+template <typename ContainerT, typename Field = double>
+ContainerT calculate_hermite_interpolation(
+  const ContainerT& y_0,
+  const ContainerT& y_1,
+  const ContainerT& dydx_0,
+  const ContainerT& dydx_1,
   const Field theta,
   const Field h)
 {

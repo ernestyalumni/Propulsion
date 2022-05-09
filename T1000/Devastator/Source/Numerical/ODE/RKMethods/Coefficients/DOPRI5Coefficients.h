@@ -29,6 +29,11 @@ extern const Coefficients::CCoefficients<s> c_coefficients;
 
 extern const Coefficients::DeltaCoefficients<s> delta_coefficients;
 
+//------------------------------------------------------------------------------
+/// \brief Coefficients for dense outputs.
+//------------------------------------------------------------------------------
+extern const Coefficients::DeltaCoefficients<s> dense_coefficients;
+
 } // namespace DOPRI5Coefficients  
 } // namespace RKMethods
 } // namespace ODE

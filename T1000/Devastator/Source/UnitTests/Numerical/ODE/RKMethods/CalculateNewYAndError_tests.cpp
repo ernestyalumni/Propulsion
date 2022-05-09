@@ -1094,6 +1094,118 @@ TEST(TestCalculateNewYAndError, CalculatesNewYAndError)
   EXPECT_NEAR(setup.y_out_.at(0), exact_solution(setup.h_ + setup.h_), 1e-4);
 }
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(TestCalculateNewYAndError, CalculateErrorCalculatesWithStdValarray)
+{
+  ExampleSetupWithStdValarray<DOPRI5_s> setup {};
+
+  TestCalculateNewYAndError<DOPRI5_s, decltype(example_f_with_std_valarray)>
+    new_y_and_err {
+      example_f_with_std_valarray,
+      DOPRI5_a_coefficients,
+      DOPRI5_c_coefficients,
+      DOPRI5_delta_coefficients};
+
+  setup.y_out_ = new_y_and_err.calculate_new_y(
+  setup.h_,
+  setup.t_0_,
+  setup.y_0_,
+  setup.dydx_0_,
+  setup.k_coefficients_);
+
+  {
+    const auto result = new_y_and_err.calculate_error(
+      setup.h_,
+      setup.k_coefficients_);
+    EXPECT_DOUBLE_EQ(result[0], -2.4370659722241367e-05);
+  }
+
+  setup.y_out_ = new_y_and_err.calculate_new_y(
+    setup.h_,
+    setup.t_0_ + setup.h_,
+    setup.y_out_,
+    setup.k_coefficients_.get_ith_coefficient(7),
+    setup.k_coefficients_);
+
+  {
+    const auto result = new_y_and_err.calculate_error(
+      setup.h_,
+      setup.k_coefficients_);
+    EXPECT_DOUBLE_EQ(result[0], -1.7718829684792992e-05);
+  }
+
+  setup.y_out_ = new_y_and_err.calculate_new_y(
+    setup.h_,
+    setup.t_0_ + 2 * setup.h_,
+    setup.y_out_,
+    setup.k_coefficients_.get_ith_coefficient(7),
+    setup.k_coefficients_);
+
+  {
+    const auto result = new_y_and_err.calculate_error(
+      setup.h_,
+      setup.k_coefficients_);
+    EXPECT_DOUBLE_EQ(result[0], -6.75179813536958e-06);
+  }
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(TestCalculateNewYAndError, CalculateErrorCalculatesWithNVector)
+{
+  ExampleSetupWithNVector<DOPRI5_s, 1> setup {};
+
+  TestCalculateNewYAndError<DOPRI5_s, decltype(example_f_with_NVector<1>)>
+    new_y_and_err {
+      example_f_with_NVector<1>,
+      DOPRI5_a_coefficients,
+      DOPRI5_c_coefficients,
+      DOPRI5_delta_coefficients};
+
+  setup.y_out_ = new_y_and_err.calculate_new_y(
+  setup.h_,
+  setup.t_0_,
+  setup.y_0_,
+  setup.dydx_0_,
+  setup.k_coefficients_);
+
+  {
+    const auto result = new_y_and_err.calculate_error(
+      setup.h_,
+      setup.k_coefficients_);
+    EXPECT_DOUBLE_EQ(result[0], -2.4370659722241367e-05);
+  }
+
+  setup.y_out_ = new_y_and_err.calculate_new_y(
+    setup.h_,
+    setup.t_0_ + setup.h_,
+    setup.y_out_,
+    setup.k_coefficients_.get_ith_coefficient(7),
+    setup.k_coefficients_);
+
+  {
+    const auto result = new_y_and_err.calculate_error(
+      setup.h_,
+      setup.k_coefficients_);
+    EXPECT_DOUBLE_EQ(result[0], -1.7718829684792992e-05);
+  }
+
+  setup.y_out_ = new_y_and_err.calculate_new_y(
+    setup.h_,
+    setup.t_0_ + 2 * setup.h_,
+    setup.y_out_,
+    setup.k_coefficients_.get_ith_coefficient(7),
+    setup.k_coefficients_);
+
+  {
+    const auto result = new_y_and_err.calculate_error(
+      setup.h_,
+      setup.k_coefficients_);
+    EXPECT_DOUBLE_EQ(result[0], -6.75179813536958e-06);
+  }
+}
+
 } // namespace RKMethods
 } // namespace ODE 
 } // namespace Numerical

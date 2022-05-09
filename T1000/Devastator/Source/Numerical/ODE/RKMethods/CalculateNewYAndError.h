@@ -208,6 +208,25 @@ class CalculateNewYAndError
           h));
     }
 
+    template <typename ContainerT>
+    ContainerT calculate_error(
+      const Field h,
+      const Coefficients::KCoefficients<S, ContainerT>& k_coefficients)
+    {
+      ContainerT y_err {
+        delta_coefficients_.get_ith_element(1) *
+          k_coefficients.get_ith_coefficient(1)};
+
+      for (std::size_t j {2}; j <= S; ++j)
+      {
+        y_err += delta_coefficients_.get_ith_element(j) *
+          k_coefficients.get_ith_coefficient(j);
+      }
+
+      // h * \sum_{j=1}^s (b_j - b^*_j) k_j
+      return h * y_err;
+    }
+
   protected:
 
     //--------------------------------------------------------------------------

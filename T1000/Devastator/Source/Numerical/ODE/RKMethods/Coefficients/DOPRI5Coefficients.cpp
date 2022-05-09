@@ -57,6 +57,16 @@ const Coefficients::DeltaCoefficients<s> delta_coefficients {
   -1.0 / 40.0
 };
 
+const Coefficients::DeltaCoefficients<s> dense_coefficients {
+  -12715105075.0 / 11282082432.0,
+  0.0,
+  87487479700.0 / 32700410799.0,
+  -10690763975.0 / 1880347072.0,
+  701980252875.0 / 199316789632.0,
+  1453857185.0 / 822651844.0,
+  69997945.0 / 29380423.0
+};
+
 } // namespace Coefficients  
 } // namespace RKMethods
 } // namespace ODE

@@ -8,6 +8,7 @@ ADD_EXECUTABLE(Check
   Numerical/ODE/ODEInt_tests.cpp
   Numerical/ODE/Output_tests.cpp
   Numerical/ODE/RK4_tests.cpp
+  Numerical/ODE/RKMethods/calculate_hermite_interpolation_tests.cpp
   Numerical/ODE/RKMethods/CalculateNewYAndError_tests.cpp
   Numerical/ODE/RKMethods/Coefficients/ACoefficients_tests.cpp
   Numerical/ODE/RKMethods/Coefficients/KCoefficients_tests.cpp

@@ -50,7 +50,3 @@ class CalculateNewYAndError:
             k_coefficients._k_coefficients[l - 1] = self._derivative(x_l, y_out)
 
         return y_out
-
-    #def calculate_new_y(self, h, y, k_coefficients):
-
-    #    y_out = y
