@@ -5982,7 +5982,7 @@ Thus, essentially, the inputs and outputs of this function, \verb|StepperDopr<D>
 
 Consider the coefficients shown in the code for \verb|StepperDopr5<D>::prepare_dense()| on pp. 918 of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}:
 
-\begin{equation}
+\begin{equation}\label{Eq:DenseOutputCoefficients}
 	\begin{aligned}
 		& d_1 = \frac{-12715105075.0 }{ 11282082432.0 } \\
 		& d_2 = 0 \\
@@ -5993,6 +5993,8 @@ Consider the coefficients shown in the code for \verb|StepperDopr5<D>::prepare_d
 		& d_7 = \frac{ 69997945.0 }{ 29380423.0 }
 	\end{aligned}
 \end{equation}
+
+Someone had wondered how these dense output coefficients in Eq. \ref{Eq:DenseOutputCoefficients} were derived: \url{https://math.stackexchange.com/questions/2947231/how-can-i-derive-the-dense-output-of-ode45}
 
 Furthermore, for the function \verb|prepare_dense()| it finally utilizes these class data members (EY: which may not be necessary as class data members?) \verb|rcont1, rcont2, ..|; I present the code and then use my notation: \\
 
