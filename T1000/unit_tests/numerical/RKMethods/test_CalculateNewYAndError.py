@@ -291,6 +291,8 @@ def test_apply_method_works_with_DOPRI5Coefficients(
         example_exact_solution(2 * setup.h),
         0.00001)
 
+    # Step 3
+
     y_in = y_out
     y_out = calc.apply_method(
         setup.h,
