@@ -5618,6 +5618,42 @@ y_n = y_{n-1} + h \sum_{i=1}^4 b_i k_i
 \end{gathered}
 \end{equation}
 
+\subsubsection{Explicit Runge-Kutta Methods}
+
+Recall Eq. \ref{Eq:ERKmethodsSthStageMyNotation}:
+
+\begin{equation}
+	\begin{gathered}
+		\mathbf{k}_i = \mathbf{f}(x_n + c_i h, \mathbf{y}_n + h\sum_{j=1}^{i-1} a_{ij} \mathbf{k}_j) \\
+		\mathbf{y}(x_{n+1}) = \mathbf{y}_n + h \sum_{i=1}^s b_i \mathbf{k}_i
+	\end{gathered}
+\end{equation}
+
+This can be rewritten as
+\begin{equation}
+\begin{gathered}
+	g_i = y_m + h J \sum_{j=1}^{i-1} a_{ij} g_j  \\
+	y_{m+1} = y_m + hJ \sum_{j=1}^s b_j g_j
+\end{gathered}
+\end{equation}
+or 
+\begin{equation}
+	\begin{gathered}
+		\mathbf{g}_i = \mathbf{y}_n + hJ \sum_{j=1}^{i-1}a_{ij} \mathbf{g}_j \\
+	\mathbf{y}_{n+1} = \mathbf{y}_n + h J \sum_{j=1}^s b_j \mathbf{g}_j
+	\end{gathered}
+\end{equation}
+cf. Eq. (2.7) of Hairer and Wanner (2010) \cite{HaWa2010}.
+
+Insert $\mathbf{g}_j$ into the expression for $\mathbf{y}_{n+1}$, so then
+\begin{equation}
+	\mathbf{y}_{n+1} = R(hJ) \mathbf{y}_m
+\end{equation}
+where
+\begin{equation}
+	R(z) = 1 + z \sum_j b_j + z^2 \sum_{j, k} b_j a_{jk} + z^3 \sum_{j,k,l} b_j a_{jk} a_{kl} + \dots
+\end{equation}
+is a polynomial of degree $\leq s$. This is Eq. (2.8) of Hairer and Wanner (2010) \cite{HaWa2010}.
 
 \subsection{Order Conditions for Runge-Kutta Methods}
 
@@ -5748,6 +5784,8 @@ So then
 
 \subsubsection{Automatic Stepsize Control}
 
+D'ordinaire, on se content de multiplier ou de diviser par 2 la valeur du pas. -Ceschino 1961, pp. 167 II. Runge-Kutta and Extrapolation Methods of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993} (Usually, we're content multiplying or dividing by the value 2 each step).
+
 Comparing Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007} and Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, respectively,
 
 \begin{equation}
@@ -5756,7 +5794,7 @@ Comparing Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007} and Hair
 cf. Eq. (17.2.7), Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}, or
 
 \begin{equation}
-	| \Delta | = \| y_{n+1}- y^*_{n+1} | \leq \text{sc}_i
+	| \Delta | = \| y_{n+1}- y^*_{n+1} \| \leq \text{sc}_i
 \end{equation}
 cf. Eq. (4.10), Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}
 
@@ -5771,6 +5809,89 @@ In Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}'s notation,
 	\text{sc}_i = \text{Atol}_i + \max{(|y_{0i}|, |y_{1i}|)} \cdot \text{Rtol}_i
 \end{equation}
 cf. Eq. (4.10), Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, where $\text{Atol}_i \equiv \texttt{atol}$, $\text{Rtol}_i \equiv \texttt{rtol}$ are absolute error tolerance, relative error tolerance, respectively.
+
+Usually $\text{Atol}_i$, $\text{rtol}_i$ are both different from 0; they may also depend on the component of the solution, says Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993} (pp. 167), but Press, Teukolsky, Vetterling, Flannery (2007) says that while \texttt{atol},\texttt{rtol} could be different for each component of $\mathbf{y}$, we'll take them as constant.
+
+Take as a measure of error Eq. (4.11) of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}
+\begin{equation}\label{Eq:EmbeddedRKError}
+	\text{err} = \sqrt{ \frac{1}{n} \sum_{i=1}^n \left( \frac{ y_{1i} - \widehat{y}_{1i} }{sc_i} \right)^2 }
+\end{equation}
+and compare this to Press, Teukolsky, Vetterling, Flannery (2007) for Eq. (17.2.9)
+\begin{equation}
+	\texttt{err} = \sqrt{ \frac{1}{N} \sum_{i=0}^{N-1} \left( \frac{ \Delta_i}{ \texttt{scale}_i } \right)^2 }
+\end{equation}
+
+Consider Eq. \ref{Eq:EmbeddedRKError}, $\text{err} = \sqrt{ \frac{1}{N} \sum_{i=0}^{N-1} \left( \frac{ \Delta_i}{ \text{sc}_i } \right)^2 }$ where $\Delta_i \equiv y_{n+1,i} - y^*_{n+1, i}$. 
+
+Since $\mathbf{y}_1 \equiv \mathbf{y}_{n+1}$ is of order p, $\widehat{y}_1 \equiv \mathbf{y}_{n+1}$ of order $\widehat{p}$ (usually $\widehat{p} = p -1$, or $\widehat{p} = p+1$), with $\widehat{p} = 5$. 
+
+From Eqns. (17.2.4), (17.2.5) of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}, i.e. Eq. \ref{ERKmethodsSthStageMyNotation}, for the embedded 4th order Runge-Kutta method, $\Delta_i$ scales as $h^5 \equiv h^{\widehat{p}} = h^{p+1}$, and hence so does $\text{err}$.  
+
+If we take step $h_1$ and produce error $\text{err}_1$, then for step $h_0$, that would've given some other value $\text{err}_0$, as explained on pp. 913 of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}, the error $\text{err}_0$ is estimated as
+\begin{equation}\label{Eq:NoSafetyErrorStepRatio}
+	h_0 = h_1 \left|\frac{ \text{err}_0 }{ \text{err}_1} \right|^{1/5} \equiv h_1 \left| \frac{ \text{err}_0}{ \text{err}_1 } \right|^{\frac{1}{q+1} }
+\end{equation}
+cf. (17.2.10) of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}, pp. 913.
+
+Or from error behavior $\text{err} \approx C \cdot h^{q+1}$, and from $1 \approx C \cdot h^{q+1}_{\text{opt}}$ (where $q= \min{(p, \widehat{p})}$), $\text{err}_0 =1$ is "an efficient integration", i.e. $\frac{ y_{n+1, i} - y^*_{n+1,i} }{ \text{sc}_i } = \frac{ y_{n+1, i} - y^*_{n+1, i} }{ a_{\text{tol}} + |y| \text{rtol} } = 1$
+
+Instead of Eq. (17.2.10) of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}, i.e. Eq. \ref{Eq:NoSafetyErrorStepRatio}, put in a safety factor $S$, $S<1$ ($S$ smaller than 1 by a few percent)
+\[
+h_{n+1} = S h_n \left( \frac{1}{ \text{err}_n } \right)^{1/5} \equiv S h_n \left( \frac{1}{ \text{err}_n } \right)^{ \frac{1}{q+1} }
+\]
+
+\subsubsection{Step-Control Stability}
+
+cf. pp. 24, IV.II Stiff Problems - One-Step Methods, Hairer and Wanner (2010) \cite{HaWa2010}
+
+Consider 
+
+\begin{equation}
+	\text{err}_1 = y_1  - \widehat{y}_1 \equiv \textbf{err}_{n+1} = \mathbf{y}_{n+1} - \mathbf{y}^*_{n+1}
+\end{equation}
+For the stiff case, consider
+\begin{equation}
+	d_0 = y_0 - y(x_0) \equiv \mathbf{d}_n = \mathbf{y}_n - \mathbf{y}(x_n)
+\end{equation}
+and so error estimator satisfies
+\[
+\begin{gathered}
+	\text{err}_1 \approx E(hJ) d_0 \text{ with } E(z) = R(z) - \widehat{R}(z) \text{ i.e. } \\
+	\text{err}_{n+1} \approx E(hJ) \mathbf{d}_n
+\end{gathered}
+\]
+Consider the numerical process for $y' = \lambda y$,
+\begin{equation}\label{Eq:RKMethodErrorNextStep}
+	\begin{aligned}
+		\mathbf{y}_{n+1} &= R(h_n \lambda) \mathbf{y}_n \\
+		\textbf{err}_n = E(h_n \lambda) \mathbf{y}_n \\
+		h_{n+1} = h_n \left( \frac{\text{tol}}{ |\text{err}_n | } \right)^{\alpha}
+	\end{aligned}
+\end{equation}
+cf. Eq. (2.28) of Hairer and Wanner (2010) \cite{HaWa2010}, where $\text{err}_{n}$ is the estimated error, $\alpha = \frac{1}{ \widehat{p} + 1}$, $\widehat{p}$ is order of $\widehat{R}(z)$.
+
+Let $\eta_n = \log{ |y_n| }$, $\chi_n = \log{h_n}$.
+
+So Eq. (2.28) of Hairer and Wanner (2010) \cite{HaWa2010}, i.e. Eq. \ref{Eq:RKMethodErrorNextStep}, becomes
+\begin{equation}
+	\begin{gathered}
+		\eta_{n+1} = \log{R} + \eta_n = \log{ |R(\exp{(\chi_n)} \lambda)|} + \eta_n \\
+		\chi_{n+1} = \chi_n + \alpha \left( \log{\text{tol}} - \log{|\text{err}_n|} \right) = \alpha (\gamma -\log{|E(\exp{(\chi_n)})|} - \eta_n) + \chi_n
+	\end{gathered}
+\end{equation}
+where $\gamma$ is a constant.
+
+The fixed pt. $(\eta, \chi)$ satisfies 
+\begin{equation}
+	|R(\exp{(\chi_n)} \lambda)| =1
+\end{equation}
+cf. (2.31) of Hairer and Wanner (2010) \cite{HaWa2010}.
+
+\subsubsection{PI Step Size Control}
+
+Hairer and Wanner (2010) \cite{HaWa2010}
+
+
 
 \subsubsection{Embedded Formulas of Order 5}
 
@@ -6034,6 +6155,33 @@ Take a look at all the terms above except for the last one. It is essentially th
 \]
 
 To refactor this, consider the inputs and outputs needed from Eq. \ref{Eq:HermiteInterpolationInputsOutputs}.
+
+\subsubsection{Controller success is PI Control Step Size}
+
+Consider the class member function \verb| bool StepperDopr5<D>::Controller::success(const Doub err, Doub& h)| on pp. 919 of  Press, Teukolsky, Vetterling, Flannery (2007). Rewrite it in pseudocode: \\
+
+if err $ = 0$ \\
+\quad \, scale $=$ maxscale \\
+if $0 < \text{err} \leq 1.0$ \\
+\quad \, scale $ =$ safe $\cdot \text{err}^{-\alpha} \cdot \text{errold}^{\beta}$ \\
+\quad \, if scale $<$ minscale \\
+\quad \, \quad \, scale $=$ minscale \\
+\quad \, if scale $>$ maxscale \\
+\quad \, \quad \, scale $=$ maxscale \\
+
+if (reject) \\
+\quad \, hnext $= h \cdot \min{(\text{scale}, 1.0)}$ \\
+else \\
+\quad \, hnext $= h\cdot \text{ scale }$ \\
+errold $= \max{ (\text{err}, 10^{-4})}$ \\
+reject $=$ false \\
+return true \\
+
+else (if err $> 0$) \\
+scale $= \max{(\text{safe} \cdot \text{err}^{-\alpha}, \text{minscale})}$ \\
+$h \mapsto h \cdot \text{ scale }$ \\
+reject $=$ true \\
+return false
 
 \section{Systems of Ordinary Differential Equations ODEs}
 
@@ -7676,7 +7824,7 @@ E(s) = R(s) - B(s) = R(s) - H(s)C(s)
 
 When 2 inputs (reference input and disturbance) are present in a linear time-invariant system, each input can be treated independently of the other. \\
 
-In examinng effect of disturbance $D(s)$, assume reference input $0$
+In examining effect of disturbance $D(s)$, assume reference input $0$
 
 \[
 \begin{gathered}
@@ -9089,6 +9237,9 @@ William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P. Flannery. \
 
 \bibitem{HNW1993}
 E. Hairer, S.P. N\o rsett, G. Wanner. \textbf{Solving Ordinary Differential Equations I: Nonstiff Problems}. Second Revised Edition. Springer. 1993. 
+
+\bibitem{HaWa2010}
+E. Hairer, G. Wanner. \textbf{Solving Ordinary Differential Equations II: Stiff and Differential-Algebraic Problems}. Second Revised Edition. Springer. 2010.
 
 \bibitem{Sham1986}
 Lawrence F. Shampine. "Some Practical Runge-Kutta Formulas." \textbf{Mathematics of Computuation}. Volume 46. Number 173. Jan. 1986, Pages 135-150.

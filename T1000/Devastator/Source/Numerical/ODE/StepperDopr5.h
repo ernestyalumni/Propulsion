@@ -68,7 +68,7 @@ struct StepperDopr5 : StepperBase
     bool reject_;
 
     // TODO: define implementation of ctor.
-    Controller() = default;
+    Controller();
 
     bool success(const double err, double& h);
   };
@@ -336,6 +336,80 @@ double StepperDopr5<D>::error()
     err += std::pow(y_err_[i] / sk, 2);
   }
   return std::sqrt(err / n_);
+}
+
+//------------------------------------------------------------------------------
+/// \ref pp. 919 of Numerical Methods, Ch. 17. Integration of Ordinary
+/// Differential Equations.
+//------------------------------------------------------------------------------
+template <class D>
+StepperDopr5<D>::Controller::Controller():
+  reject_{false},
+  errold_{1.0e-4}
+{}
+
+//------------------------------------------------------------------------------
+/// \ref pp. 919 of Numerical Methods, Ch. 17. Integration of Ordinary
+/// Differential Equations.
+/// \brief Step size controller for 5th-order Dormand-Prince method.
+/// \details Returns true if err <= 1, false otherwise. If step was successful,
+/// sets hnext to the estimated optimal stepsize for the next step. If the step
+/// failed, reduces h appropriately for another try.
+//------------------------------------------------------------------------------
+template <class D>
+bool StepperDopr5<D>::Controller::success(const double err, double h)
+{
+  // Set beta to a nonzero value for PI control. beta = 0.04 - 0.08 is a good
+  // default.
+  static const double beta {0.0};
+  static const double alpha {0.2 - beta * 0.75};
+  static const double safe {0.9};
+  static const double minscale {0.2};
+  static const double maxscale {10.0};
+
+  double scale;
+  if (err <= 1.0)
+  {
+    if (err == 0.0)
+    {
+      scale = maxscale;
+    }
+    else
+    {
+      scale = safe * std::pow(err, -alpha) * std::pow(errold_, beta);
+
+      // Ensure minscale <= hnext /h <= maxscale
+      if (scale < minscale)
+      {
+        scale = minscale;
+      }
+      if (scale > maxscale)
+      {
+        scale = maxscale;
+      }
+    }
+    if (reject)
+    {
+      // Don't let step increase if last one was rejected.
+      hnext_ = h * std::min(scale, 1.0);
+    }
+    else
+    {
+      hnext_ = h * scale;
+    }
+
+    // Bookkeeping for next call.
+    errold_ = std::max(err, 1.0e-4);
+    reject = false;
+    return true;
+  }
+  else
+  {
+    scale = std::max(safe * std::pow(err, -alpha), minscale);
+    h *= scale;
+    reject = true;
+    return false;
+  }
 }
 
 } // namespace ODE
