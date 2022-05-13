@@ -132,10 +132,10 @@ void StepperDopr5<D>::step(const double htry, D& derivatives)
     double err {error()};
 
     // Step rejected. Try again with reduced h set by controller.
-    //if (con_.success(err, h))
-    //{
-    //  break;
-    //}
+    if (con_.success(err, h))
+    {
+      break;
+    }
     if (std::abs(h) <= std::abs(x_) * EPS_)
     {
       throw("stepsize underflow in StepperDopr5");
@@ -145,7 +145,7 @@ void StepperDopr5<D>::step(const double htry, D& derivatives)
   // Step succeeded. Compute coefficients for dense output.
   if (dense_)
   {
-    //prepare_dense(h, derivatives);
+    prepare_dense(h, derivatives);
   }
 
   dydx_ = dydxnew_;
@@ -290,6 +290,10 @@ void StepperDopr5<D>::prepare_dense(const double h, D& derivatives)
   std::vector<double> ytemp (n_);
   static constexpr double d1 {-12715105075.0 / 11282082432.0};
   static constexpr double d3 {87487479700.0 / 32700410799.0};
+  static constexpr double d4 {-10690763975.0 / 1880347072.0};
+  static constexpr double d5 {701980252875.0 / 199316789632.0};
+  static constexpr double d6 {-1453857185.0/822651844.0};
+  static constexpr double d7 {69997945.0/29380423.0};
 
   for (int i {0}; i < n_; ++i)
   {
@@ -299,7 +303,8 @@ void StepperDopr5<D>::prepare_dense(const double h, D& derivatives)
     const double bsp1 = h * dydx_[i] - ydiff;
     rcont3_[i] = bsp1;
     rcont4_[i] = ydiff - h * dydxnew_[i] - bsp1;
-    rcont5_[i] = h * (d1 * dydx_[i] + d3 * k3_[i]);
+    rcont5_[i] = h * (d1 * dydx_[i] + d3 * k3_[i] + d4 * k4_[i] + d5 * k5_[i] +
+      d6 * k6_[i] + d7 * dydxnew_[i]);
   }
 }
 
@@ -388,7 +393,7 @@ bool StepperDopr5<D>::Controller::success(const double err, double h)
         scale = maxscale;
       }
     }
-    if (reject)
+    if (reject_)
     {
       // Don't let step increase if last one was rejected.
       hnext_ = h * std::min(scale, 1.0);
@@ -400,14 +405,14 @@ bool StepperDopr5<D>::Controller::success(const double err, double h)
 
     // Bookkeeping for next call.
     errold_ = std::max(err, 1.0e-4);
-    reject = false;
+    reject_ = false;
     return true;
   }
   else
   {
     scale = std::max(safe * std::pow(err, -alpha), minscale);
     h *= scale;
-    reject = true;
+    reject_ = true;
     return false;
   }
 }

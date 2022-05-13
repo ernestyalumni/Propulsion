@@ -5873,7 +5873,7 @@ cf. Eq. (2.28) of Hairer and Wanner (2010) \cite{HaWa2010}, where $\text{err}_{n
 Let $\eta_n = \log{ |y_n| }$, $\chi_n = \log{h_n}$.
 
 So Eq. (2.28) of Hairer and Wanner (2010) \cite{HaWa2010}, i.e. Eq. \ref{Eq:RKMethodErrorNextStep}, becomes
-\begin{equation}
+\begin{equation}\label{Eq:RKMethodErrorNextStepAsLogs}
 	\begin{gathered}
 		\eta_{n+1} = \log{R} + \eta_n = \log{ |R(\exp{(\chi_n)} \lambda)|} + \eta_n \\
 		\chi_{n+1} = \chi_n + \alpha \left( \log{\text{tol}} - \log{|\text{err}_n|} \right) = \alpha (\gamma -\log{|E(\exp{(\chi_n)})|} - \eta_n) + \chi_n
@@ -5889,9 +5889,92 @@ cf. (2.31) of Hairer and Wanner (2010) \cite{HaWa2010}.
 
 \subsubsection{PI Step Size Control}
 
-Hairer and Wanner (2010) \cite{HaWa2010}
+cf. pp. 28-29, Hairer and Wanner (2010) \cite{HaWa2010}
 
+From the wikipedia page for a "PID controller", consider a control function
+\[
+u(t) = K_p e(t) + K_i \int_0^t e(\tau) d\tau + K_d \frac{de(t)}{dt}
+\]
+where $K_p, K_i, K_d \geq 0$ with \\
+$e(t) \equiv$ error value as difference between desired set point SP $\equiv r(t)$, and \\
+$y(t) \equiv PV =$ measured process variable, $e(t) = r(t) - y(t)$ \\
 
+Then
+\[
+\dot{u}(t) = K_p \dot{e} + K_i e(t) + K_d \dot{e}
+\]
+
+Or, from the point of view of Hairer and Wanner (2010) \cite{HaWa2010}, consider $\theta(t) \equiv$ departure at time $t$ of quantity to be controlled from its normal value (i.e. $e(t)$), \\
+Let $C(t) \equiv$ effect of control, $-m\theta(t) \equiv$ self-regulating effect such as "vessel in a constant temperature bath." \\
+
+Suppose
+\[
+\dot{\theta}(t) = C(t) - m\theta(t)
+\]
+
+Assume (more realisitically) that our system has some time lag.
+
+So choose $C(t)$ s.t. (i.e. replace as our assumption)
+\[
+-\dot{C}(t) = n_1 \theta(t-T) + n_2 \dot{\theta}(t-T) + n_3 \ddot{\theta}(t-T)
+\]
+cf. Eq. (2.40''') of Hairer and Wanner (2010) \cite{HaWa2010}.
+
+First term $n_1\theta(t-T)$ represents "Integral feedback" (I), $K_i \int_0^t e(\tau) d\tau$, $K_ie$, \\
+2nd. term $n_2 \dot{\theta}(t-T)$ is "proportional feedback" (P), $K_pe(t), \, K_p \dot{e}$ \\
+last term $n_3 \ddot{\theta}(t-T)$ is "Derivative feedback" (D), $K_d \frac{de(t)}{dt}$, $K_d\ddot{e}$ \\
+
+P term increases constant $m$, thus adding extra friction.
+
+So analogously, recall Eq. \ref{Eq:RKMethodErrorNextStepAsLogs}
+\[
+\begin{gathered}
+\chi_n = \log{h_n} \\
+\chi_{n+1} = \chi_n + (-\alpha) (\log{ |\text{err}|} - \log{\text{tol}})	
+\end{gathered}
+\]
+
+Let $\theta(t) \equiv e(t) \Leftrightarrow \log{ |\text{err} | } - \log{\text{tol}}$ (the "deviation") \\
+Let $C(t) \equiv u(t) \Leftrightarrow \log{h_n} \equiv \chi_n$ (control variable) \\
+Then 
+\[
+h_{n+1} = h_n \left( \frac{ \text{tol}}{ |\text{err}_n | } \right)^{n_1}
+\]
+corresponds to
+\[
+\chi_{n+1} - \chi_n = -n_1 ( \log{| \text{err} | } - \log{\text{tol}} )
+\]
+
+which corresponds to only integral "I" control.
+
+Consider \emph{PI}:
+\[
+\begin{gathered}
+	\chi_{n+1} - \chi_n = -n_1(\log{ |\text{err}_{n+1}| } - \log{ \text{tol} }) - n_2 \left[ \log{ |\text{err}_{n+1} | } - \log{\text{tol} } - ( \log{ | \text{err}_n| } - \log{ \text{tol} })\right] = \\
+	= -(n_1 + n_2) (\log{ |\text{err}_{n+1} | } - \log{\text{tol} }) + n_2 (\log{ |\text{err}_n |} - \log{\text{tol}})
+\end{gathered}
+\]
+\begin{equation}
+	\Longrightarrow h_{n+1} = h_n \left( \frac{\text{tol}}{ |\text{err}_{n + 1} | } \right)^{\alpha} \left( \frac{ |\text{err}_n | }{ \text{tol} } \right)^{\beta}
+\end{equation}
+
+where $\alpha = n_1 + n_2$, $\beta = n_2$, i.e. $\alpha = n_1 + \beta$.
+
+\subsubsection{Suggestions for values for parameters in Automatic Step-Size Control}
+
+For Atol, Rtol, tolerances, \\
+Hairer and Wanner (2010) \cite{HaWa2010}, pp. 30 of IV. Stiff Problems - One-Step Methods, for DOPRI5 with $\beta = 0.13$, and $\beta = 0$ (undamped step size control), an extra-large tolerance was chosen to make the difference between the two $\beta$ values clearly visible, Atol $=$ Rtol$ = 8\cdot 10^{-2}$. \\
+
+For the \emph{safety factor}, labeled $S$ or \verb|safe| in pp. 914 of Press, Teukolsky, Vetterling, Flannery (2007)\cite{PTVF2007}, labeled as \text{fac} on pp. 168 of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, \\
+Press, Teukolsky, Vetterling, Flannery (2007)\cite{PTVF2007}: safety factor $S$ should be a few percent smaller than unity (1), \\
+Hairer, N\o rsett, and Wanner (1993)\cite{HNW1993}: fac $ = 0.8, 0.9, (0.25)^{1/(q+1)}, (0.38)^{1/(q+1)}$ so error will be acceptable the next time with high probability; further $h$ is not allowed to increase nor to decrease too fast. \\
+
+For $\alpha, \beta$, \\
+Hairer and Wanner (2010) \cite{HaWa2010}, quoted a good choice, found by Gustafsson (1991), after studying small $h$ and studying a characteristic equation, found
+\begin{equation}
+	\alpha \approx 0.7 / p, \quad \, \beta \approx 0.4 / p
+\end{equation}
+for $p = $ exponent of $h$ of the leading term in the error estimator, cf. (2.48) of Hairer and Wanner (2010) \cite{HaWa2010}.
 
 \subsubsection{Embedded Formulas of Order 5}
 
