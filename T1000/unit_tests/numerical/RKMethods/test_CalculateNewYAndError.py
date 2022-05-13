@@ -319,3 +319,51 @@ def test_apply_method_works_with_DOPRI5Coefficients(
     assert y_out[0] == pytest.approx(
         example_exact_solution(3 * setup.h),
         0.00001)
+
+
+def test_calculate_error_works_with_DOPRI5Coefficients(
+        DOPRI5_fixture,
+        example_setup):
+    calc = DOPRI5_fixture
+    setup = example_setup
+    k_coefficients = kCoefficients(DOPRI5Coefficients.s, 1)
+    y_out = np.array([0.0,])
+
+    # Step 1.
+
+    y_out = calc.apply_method(
+        setup.h,
+        setup.x_0,
+        setup.y_0,
+        setup.dydx_0,
+        k_coefficients)
+
+    error_result = calc.calculate_error(setup.h, k_coefficients)
+
+    assert error_result[0] == -2.4370659722241367e-05
+
+    # Step 2
+
+    y_in = y_out
+    y_out = calc.apply_method(
+        setup.h,
+        setup.x_0 + setup.h,
+        y_out,
+        example_derivative(setup.x_0 + setup.h, y_out),
+        k_coefficients)
+
+    error_result = calc.calculate_error(setup.h, k_coefficients)
+
+    assert error_result[0] == -1.7718829684792992e-05
+
+    y_in = y_out
+    y_out = calc.apply_method(
+        setup.h,
+        setup.x_0 + 2 * setup.h,
+        y_out,
+        example_derivative(setup.x_0 + 2 * setup.h, y_out),
+        k_coefficients)
+
+    error_result = calc.calculate_error(setup.h, k_coefficients)
+
+    assert error_result[0] == -6.75179813536958e-06

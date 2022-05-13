@@ -50,3 +50,15 @@ class CalculateNewYAndError:
             k_coefficients._k_coefficients[l - 1] = self._derivative(x_l, y_out)
 
         return y_out
+
+    def calculate_error(self, h, k_coefficients):
+
+        y_error = k_coefficients.scalar_multiply(
+            1,
+            self._delta_coefficients.get_ith_element(1))
+
+        for j in range(2, self._s + 1):
+            y_error += k_coefficients.scalar_multiply(
+                j,
+                self._delta_coefficients.get_ith_element(j))
+        return h * y_error

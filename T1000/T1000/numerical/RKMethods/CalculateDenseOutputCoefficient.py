@@ -17,4 +17,4 @@ class CalculateDenseOutputCoefficient:
                     k_coefficients._k_coefficients[l - 1]
 
         return theta * theta * (1.0 - theta) * (1.0 - theta) * h * \
-          dense_output_coefficient
+            dense_output_coefficient
