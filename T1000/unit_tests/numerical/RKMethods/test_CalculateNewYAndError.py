@@ -4,6 +4,8 @@ from T1000.numerical.RKMethods.DOPRI5Coefficients import DOPRI5Coefficients
 from T1000.numerical.RKMethods.RK4Coefficients import RK4Coefficients
 from T1000.numerical.RKMethods.kCoefficients import kCoefficients
 from collections import namedtuple
+from unit_tests.numerical.RKMethods.fixtures import DOPRI5_fixture, \
+    example_derivative, example_setup
 
 import numpy as np
 import pytest
@@ -19,33 +21,6 @@ def RK4_fixture():
 
     return calc
 
-
-@pytest.fixture
-def DOPRI5_fixture():
-    calc = CalculateNewYAndError(
-        DOPRI5Coefficients.s,
-        example_derivative,
-        DOPRI5Coefficients.a_coefficients,
-        DOPRI5Coefficients.c_coefficients,
-        DOPRI5Coefficients.delta_coefficients)
-
-    return calc    
-
-@pytest.fixture
-def example_setup():
-
-    return namedtuple("ExampleSetup", ["x_0", "y_0", "dydx_0", "h"])(
-        0.0,
-        np.array([0.5,]),
-        np.array([1.5,]),
-        0.5)
-
-
-def example_derivative(t, y):
-    """
-    @param k [in/out] k serves as the output.
-    """
-    return y - t * t + 1.0
 
 def example_exact_solution(t):
     return t * t + 2 * t + 1 - 0.5 * np.exp(t)
@@ -229,7 +204,6 @@ def test_apply_method_works_with_DOPRI5Coefficients(
     calc = DOPRI5_fixture
     setup = example_setup
     k_coefficients = kCoefficients(DOPRI5Coefficients.s, 1)
-    y_out = np.array([0.0,])
 
     # Step 1.
 
@@ -327,7 +301,6 @@ def test_calculate_error_works_with_DOPRI5Coefficients(
     calc = DOPRI5_fixture
     setup = example_setup
     k_coefficients = kCoefficients(DOPRI5Coefficients.s, 1)
-    y_out = np.array([0.0,])
 
     # Step 1.
 
@@ -344,7 +317,6 @@ def test_calculate_error_works_with_DOPRI5Coefficients(
 
     # Step 2
 
-    y_in = y_out
     y_out = calc.apply_method(
         setup.h,
         setup.x_0 + setup.h,
@@ -356,7 +328,8 @@ def test_calculate_error_works_with_DOPRI5Coefficients(
 
     assert error_result[0] == -1.7718829684792992e-05
 
-    y_in = y_out
+    # Step 3
+
     y_out = calc.apply_method(
         setup.h,
         setup.x_0 + 2 * setup.h,

@@ -5960,10 +5960,11 @@ Consider \emph{PI}:
 
 where $\alpha = n_1 + n_2$, $\beta = n_2$, i.e. $\alpha = n_1 + \beta$.
 
-\subsubsection{Suggestions for values for parameters in Automatic Step-Size Control}
+\subsubsection{Suggestions for values for parameters in Automatic Step-Size Control} \quad \\
 
-For Atol, Rtol, tolerances, \\
+For \textbf{Atol}, \textbf{Rtol}, tolerances, \\
 Hairer and Wanner (2010) \cite{HaWa2010}, pp. 30 of IV. Stiff Problems - One-Step Methods, for DOPRI5 with $\beta = 0.13$, and $\beta = 0$ (undamped step size control), an extra-large tolerance was chosen to make the difference between the two $\beta$ values clearly visible, Atol $=$ Rtol$ = 8\cdot 10^{-2}$. \\
+From Press, Teukolsky, Vetterling, Flannery (2007)\cite{PTVF2007}, tl;dr: first choice is to set \verb|atol| $=$ \verb|rtol| $= \epsilon = 10^{-6}$; Press, Teukolsky, Vetterling, Flannery (2007)\cite{PTVF2007} says that you may be dealing with a set of equations differing enormously in magnitude; you'd want to use fractional errors, \verb|atol| $= 0$, \verb|rtol| $=\epsilon$, where $\epsilon$ is the number like $10^{-6}$ or "whatever." If you have oscillatory functions that pass through 0 but are bounded by some max values, you'd want to set \verb|atol| $=$ \verb|rtol| $= \epsilon = 10^{-6}$. This choice is afest in general, and should usually be your first choice.  \\
 
 For the \emph{safety factor}, labeled $S$ or \verb|safe| in pp. 914 of Press, Teukolsky, Vetterling, Flannery (2007)\cite{PTVF2007}, labeled as \text{fac} on pp. 168 of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, \\
 Press, Teukolsky, Vetterling, Flannery (2007)\cite{PTVF2007}: safety factor $S$ should be a few percent smaller than unity (1), \\
