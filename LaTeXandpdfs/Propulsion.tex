@@ -5836,9 +5836,9 @@ cf. (17.2.10) of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}, 
 Or from error behavior $\text{err} \approx C \cdot h^{q+1}$, and from $1 \approx C \cdot h^{q+1}_{\text{opt}}$ (where $q= \min{(p, \widehat{p})}$), $\text{err}_0 =1$ is "an efficient integration", i.e. $\frac{ y_{n+1, i} - y^*_{n+1,i} }{ \text{sc}_i } = \frac{ y_{n+1, i} - y^*_{n+1, i} }{ a_{\text{tol}} + |y| \text{rtol} } = 1$
 
 Instead of Eq. (17.2.10) of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}, i.e. Eq. \ref{Eq:NoSafetyErrorStepRatio}, put in a safety factor $S$, $S<1$ ($S$ smaller than 1 by a few percent)
-\[
+\begin{equation}\label{Eq:ScaleStepSizeWithSafety}
 h_{n+1} = S h_n \left( \frac{1}{ \text{err}_n } \right)^{1/5} \equiv S h_n \left( \frac{1}{ \text{err}_n } \right)^{ \frac{1}{q+1} }
-\]
+\end{equation}
 
 \subsubsection{Step-Control Stability}
 
@@ -5964,7 +5964,7 @@ where $\alpha = n_1 + n_2$, $\beta = n_2$, i.e. $\alpha = n_1 + \beta$.
 
 For \textbf{Atol}, \textbf{Rtol}, tolerances, \\
 Hairer and Wanner (2010) \cite{HaWa2010}, pp. 30 of IV. Stiff Problems - One-Step Methods, for DOPRI5 with $\beta = 0.13$, and $\beta = 0$ (undamped step size control), an extra-large tolerance was chosen to make the difference between the two $\beta$ values clearly visible, Atol $=$ Rtol$ = 8\cdot 10^{-2}$. \\
-From Press, Teukolsky, Vetterling, Flannery (2007)\cite{PTVF2007}, tl;dr: first choice is to set \verb|atol| $=$ \verb|rtol| $= \epsilon = 10^{-6}$; Press, Teukolsky, Vetterling, Flannery (2007)\cite{PTVF2007} says that you may be dealing with a set of equations differing enormously in magnitude; you'd want to use fractional errors, \verb|atol| $= 0$, \verb|rtol| $=\epsilon$, where $\epsilon$ is the number like $10^{-6}$ or "whatever." If you have oscillatory functions that pass through 0 but are bounded by some max values, you'd want to set \verb|atol| $=$ \verb|rtol| $= \epsilon = 10^{-6}$. This choice is afest in general, and should usually be your first choice.  \\
+From Press, Teukolsky, Vetterling, Flannery (2007)\cite{PTVF2007}, tl;dr: first choice is to set \verb|atol| $=$ \verb|rtol| $= \epsilon = 10^{-6}$; Press, Teukolsky, Vetterling, Flannery (2007)\cite{PTVF2007} says that you may be dealing with a set of equations differing enormously in magnitude; you'd want to use fractional errors, \verb|atol| $= 0$, \verb|rtol| $=\epsilon$, where $\epsilon$ is the number like $10^{-6}$ or "whatever." If you have oscillatory functions that pass through 0 but are bounded by some max values, you'd want to set \verb|atol| $=$ \verb|rtol| $= \epsilon = 10^{-6}$. This choice is safest in general, and should usually be your first choice.  \\
 
 For the \emph{safety factor}, labeled $S$ or \verb|safe| in pp. 914 of Press, Teukolsky, Vetterling, Flannery (2007)\cite{PTVF2007}, labeled as \text{fac} on pp. 168 of Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, \\
 Press, Teukolsky, Vetterling, Flannery (2007)\cite{PTVF2007}: safety factor $S$ should be a few percent smaller than unity (1), \\
@@ -5976,6 +5976,17 @@ Hairer and Wanner (2010) \cite{HaWa2010}, quoted a good choice, found by Gustafs
 	\alpha \approx 0.7 / p, \quad \, \beta \approx 0.4 / p
 \end{equation}
 for $p = $ exponent of $h$ of the leading term in the error estimator, cf. (2.48) of Hairer and Wanner (2010) \cite{HaWa2010}.
+
+From pp. 915, 17.2.1 "PI Stepsize Control" of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}, typically $\alpha$ and $\beta$ should be scaled as $1/k$, where $k$ is the exponent of $h$ in \verb|err| $\equiv \sqrt{ \frac{1}{N} \sum_{i=0}^{N-1} \left( \frac{\Delta_i}{ \text{scale}_i} \right)^2 }$ ($k=5$ for a 5th-order method).
+
+Setting $\alpha = \frac{1}{k}$, $\beta=0$ recovers the classical controller, Eqn. (17.2.12) of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007} or Eqn. \ref{Eq:ScaleStepSizeWithSafety}, $h_{n+1} = Sh_n \left( \frac{1}{\text{err}_n} \right)^{1/5}$.
+
+Nonzero $\beta$ improves stability but loses some efficiency for "easy" parts of the solution.
+
+A good compromise is
+\begin{equation}
+	\beta \approx \frac{0.4}{k}, \quad \, \alpha \approx \frac{0.7}{k} = \frac{1}{k} - 0.75 \beta
+\end{equation}
 
 \subsubsection{Embedded Formulas of Order 5}
 
@@ -6266,6 +6277,11 @@ scale $= \max{(\text{safe} \cdot \text{err}^{-\alpha}, \text{minscale})}$ \\
 $h \mapsto h \cdot \text{ scale }$ \\
 reject $=$ true \\
 return false
+
+Let's see where \verb|success(...)| method gets used. Note that essentially,  \\
+\verb|bool StepperDopr<D>::Controller::success(const Doub err, Doub& h)| $\mapsto$ \verb|reject|, \verb|errold|, \verb|hnext|, i.e. this method affects these 3 data members of the \verb|struct Controller|. Indeed, the \verb|struct Controller| has these data members, \verb|hnext, errold, reject|.
+
+This method gets called in \verb|con.success(err, h)| and appears to only be in this class method - \verb|void StepperDopr5<D>::step(const Doub htry, D& derivs)|. And so if we look at pp. 917 for the code right above, then \verb|Doub err = error()|, i.e. it's the scaled error estimate, given by Eq. \ref{Eq:EmbeddedRKError}, that gets fed into the class method \verb|success|.
 
 \section{Systems of Ordinary Differential Equations ODEs}
 

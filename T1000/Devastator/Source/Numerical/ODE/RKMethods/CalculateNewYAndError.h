@@ -163,6 +163,12 @@ class CalculateNewYAndError
       calculate_error<ContainerT, N>(h, k_coefficients, y_err);
     }
 
+    //--------------------------------------------------------------------------
+    /// \details The error calculated in these cases is the difference between
+    /// y_{n+1} and y^*_{n+1} \equiv \widehat{y}_{n+1}, i.e. y_{n+1} - y^*_{n+1}
+    /// which is obtained directly from the "delta" coefficients.
+    //--------------------------------------------------------------------------
+
     template <typename ContainerT, std::size_t N>
     void calculate_error(
       const Field h,

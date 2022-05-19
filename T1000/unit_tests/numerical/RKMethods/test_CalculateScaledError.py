@@ -163,7 +163,7 @@ def test_calculate_scaled_error_calculates_with_larger_tolerances(
 
     epsilon = 10**(-2)
 
-    scaled_err = CalculateScaledError(0.0, epsilon)
+    scaled_err = CalculateScaledError(epsilon, epsilon)
 
     # Step 1
 
@@ -182,7 +182,7 @@ def test_calculate_scaled_error_calculates_with_larger_tolerances(
         y_out,
         calculated_error)
 
-    assert result == 0.0017094490672479945
+    assert result == 0.0010047088008562322
 
     # Step 2
 
@@ -202,7 +202,7 @@ def test_calculate_scaled_error_calculates_with_larger_tolerances(
         y_out,
         calculated_error)
 
-    assert result == 0.0006709464932952822
+    assert result == 0.000486664616926306
 
     # Step 3
 
@@ -222,4 +222,4 @@ def test_calculate_scaled_error_calculates_with_larger_tolerances(
         y_out,
         calculated_error)
 
-    assert result == 0.0009180963231338264
+    assert result == 0.0007554414512354116

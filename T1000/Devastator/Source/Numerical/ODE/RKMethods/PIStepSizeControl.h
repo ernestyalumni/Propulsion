@@ -45,6 +45,11 @@ class PIStepSizeControl
       return false;
     }
 
+    Field get_previous_error() const
+    {
+      return previous_error_;
+    }
+
   private:
 
     Field previous_error_;

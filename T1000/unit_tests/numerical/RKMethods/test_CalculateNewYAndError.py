@@ -5,7 +5,7 @@ from T1000.numerical.RKMethods.RK4Coefficients import RK4Coefficients
 from T1000.numerical.RKMethods.kCoefficients import kCoefficients
 from collections import namedtuple
 from unit_tests.numerical.RKMethods.fixtures import DOPRI5_fixture, \
-    example_derivative, example_setup
+    example_derivative, example_exact_solution, example_setup
 
 import numpy as np
 import pytest
@@ -20,10 +20,6 @@ def RK4_fixture():
         RK4Coefficients.delta_coefficients)
 
     return calc
-
-
-def example_exact_solution(t):
-    return t * t + 2 * t + 1 - 0.5 * np.exp(t)
 
 
 def test_CalculateNewYAndErrorConstructsWithRK4Coefficients():

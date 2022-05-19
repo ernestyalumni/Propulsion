@@ -3,6 +3,7 @@
 #include "Numerical/ODE/RKMethods/Coefficients/DOPRI5Coefficients.h"
 #include "Numerical/ODE/RKMethods/Coefficients/KCoefficients.h"
 #include "Numerical/ODE/RKMethods/Coefficients/RK4Coefficients.h"
+#include "TestSetup.h"
 
 #include "gtest/gtest.h"
 
@@ -44,18 +45,6 @@ const auto& RK4_b_coefficients =
 
 const auto& RK4_c_coefficients =
   ::Numerical::ODE::RKMethods::RK4Coefficients::c_coefficients;
-
-constexpr size_t DOPRI5_s {
-  ::Numerical::ODE::RKMethods::DOPRI5Coefficients::s};
-
-const auto& DOPRI5_a_coefficients =
-  ::Numerical::ODE::RKMethods::DOPRI5Coefficients::a_coefficients;
-
-const auto& DOPRI5_c_coefficients =
-  ::Numerical::ODE::RKMethods::DOPRI5Coefficients::c_coefficients;
-
-const auto& DOPRI5_delta_coefficients =
-  ::Numerical::ODE::RKMethods::DOPRI5Coefficients::delta_coefficients;
 
 template <size_t S, typename DerivativeType, typename Field = double>
 class TestCalculateNewYAndError :
@@ -134,26 +123,6 @@ auto examplef = [](
     });
 };
 
-auto example_f_with_std_valarray = [](
-  const double x,
-  valarray<double>& y)
-{
-  return y - x * x + 1.0;
-};
-
-template <std::size_t N>
-auto example_f_with_NVector = [](
-  const double x,
-  const NVector<N>& y)
-{
-  return y - x * x + 1.0;
-};
-
-auto exact_solution = [](const double x)
-{
-  return x * x + 2.0 * x + 1.0 - 0.5 * std::exp(x);
-};
-
 struct ExampleSetup
 {
   double h_ {0.5};
@@ -168,46 +137,6 @@ struct ExampleSetup
   KCoefficients<DOPRI5_s, vector<double>> k_coefficients_;
 
   ExampleSetup()
-  {
-    k_coefficients_[0] = dydx_0_;
-  }
-};
-
-template <size_t S>
-struct ExampleSetupWithStdValarray
-{
-  double h_ {0.5};
-  const double t_0_ {0.0};
-  const double t_f_ {2.0};
-  const valarray<double> y_0_ {0.5};
-  const valarray<double> dydx_0_ {1.5};
-
-  valarray<double> y_out_ {0.0};
-  valarray<double> y_err_ {0.0};
-
-  KCoefficients<S, valarray<double>> k_coefficients_;
-
-  ExampleSetupWithStdValarray()
-  {
-    k_coefficients_[0] = dydx_0_;
-  }
-};
-
-template <size_t S, size_t N>
-struct ExampleSetupWithNVector
-{
-  double h_ {0.5};
-  const double t_0_ {0.0};
-  const double t_f_ {2.0};
-  const NVector<N> y_0_ {0.5};
-  const NVector<N> dydx_0_ {1.5};
-
-  NVector<N> y_out_ {0.0};
-  NVector<N> y_err_ {0.0};
-
-  KCoefficients<S, NVector<N>> k_coefficients_;
-
-  ExampleSetupWithNVector()
   {
     k_coefficients_[0] = dydx_0_;
   }

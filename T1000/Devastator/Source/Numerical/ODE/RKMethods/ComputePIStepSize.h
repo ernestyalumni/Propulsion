@@ -41,6 +41,7 @@ class ComputePIStepSize
 
     Field compute_new_step_size(
       const Field error,
+      const Field previous_error,
       const Field h,
       const bool was_rejected) const
     {
@@ -50,7 +51,9 @@ class ComputePIStepSize
       {
         // If there's no error, we can step forward by the largest amount.
         scale = error == static_cast<Field>(0) ? max_scale_ :
-          safety_factor_ * std::pow(error, -alpha_) * std::pow(error, beta_);
+          safety_factor_ * std::pow(error, -alpha_) * std::pow(
+            previous_error,
+            beta_);
 
         // Ensure min_scale_ <= h_new / h <= max_scale_.
         scale = std::min(std::max(scale, min_scale_), max_scale_);

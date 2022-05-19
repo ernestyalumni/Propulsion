@@ -34,7 +34,7 @@ class CalculateScaledError
     Field operator()(
       const ContainerT& y_0,
       const ContainerT& y_out,
-      const ContainerT& y_err)
+      const ContainerT& y_err) const
     {
       Field error {static_cast<Field>(0)};
 
@@ -49,7 +49,12 @@ class CalculateScaledError
 
       return std::sqrt(error / N);
     }
-}
+
+  private:
+
+    Field a_tolerance_;
+    Field r_tolerance_;
+};
 
 } // namespace RKMethods
 } // namespace ODE

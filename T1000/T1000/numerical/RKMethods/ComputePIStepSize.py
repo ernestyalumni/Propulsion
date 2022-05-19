@@ -15,12 +15,16 @@ class ComputePIStepSize:
         self.min_scale = min_scale
         self.max_scale = max_scale
 
-    def compute_new_step_size(self, error, h, was_rejected):
+    @staticmethod
+    def calculate_recommended_alpha_beta(k):
+        return 0.7 / float(k), 0.4 / float(k)
+
+    def compute_new_step_size(self, error, previous_error, h, was_rejected):
         if error <= 1:
 
             scale = self.max_scale if error == 0 else (
                 self.safety_factor *
-                    pow(error, -self.alpha) * pow(error, self.beta))
+                    pow(error, -self.alpha) * pow(previous_error, self.beta))
 
             # Ensure min_scale <= h_new / h <= max_scale
 
@@ -28,5 +32,7 @@ class ComputePIStepSize:
 
             return h * min(scale, 1) if was_rejected else h * scale
 
-        scale = max(self.safety_factor * pow(error, -alpha), self.min_scale)
+        scale = max(
+            self.safety_factor * pow(error, -self.alpha),
+            self.min_scale)
         return h * scale

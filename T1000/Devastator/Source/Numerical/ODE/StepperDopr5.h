@@ -64,13 +64,13 @@ struct StepperDopr5 : StepperBase
   struct Controller
   {
     double h_next_;
-    double err_old_;
+    double errold_;
     bool reject_;
 
     // TODO: define implementation of ctor.
     Controller();
 
-    bool success(const double err, double& h);
+    bool success(const double err, const double h);
   };
 
   Controller con_;
@@ -349,8 +349,8 @@ double StepperDopr5<D>::error()
 //------------------------------------------------------------------------------
 template <class D>
 StepperDopr5<D>::Controller::Controller():
-  reject_{false},
-  errold_{1.0e-4}
+  errold_{1.0e-4},
+  reject_{false}
 {}
 
 //------------------------------------------------------------------------------
@@ -396,11 +396,11 @@ bool StepperDopr5<D>::Controller::success(const double err, double h)
     if (reject_)
     {
       // Don't let step increase if last one was rejected.
-      hnext_ = h * std::min(scale, 1.0);
+      h_next_ = h * std::min(scale, 1.0);
     }
     else
     {
-      hnext_ = h * scale;
+      h_next_ = h * scale;
     }
 
     // Bookkeeping for next call.
