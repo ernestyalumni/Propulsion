@@ -1,5 +1,5 @@
-#ifndef NUMERICAL_ODE_RK_METHODS_STEP_WITH_PI_CONTROL_H
-#define NUMERICAL_ODE_RK_METHODS_STEP_WITH_PI_CONTROL_H
+#ifndef NUMERICAL_ODE_RK_METHODS_STEP_INPUTS_H
+#define NUMERICAL_ODE_RK_METHODS_STEP_INPUTS_H
 
 #include "CalculateNewYAndError.h"
 #include "CalculateScaledError.h"
@@ -12,8 +12,8 @@ namespace ODE
 namespace RKMethods
 {
 
-template <std::size_t S, typename DerivativeType, typename Field = double>
-class StepWithPIControl
+template <typename ContainerT, typename Field = double>
+class StepInputs
 {
   public:
 
@@ -36,17 +36,13 @@ class StepWithPIControl
 
     }
 
-  private:
-
-    CalculateNewYAndError<S, DerivativeType, Field>& new_y_and_err_;
-    CalculateScaledError<Field> scaled_error_;
-    ComputePIStepSize& pi_step_;
     ContainerT y_n_;
-    Field x_n_;
+    ContainerT dydx_n_;
+    
 };
 
 } // namespace RKMethods
 } // namespace ODE
 } // namespace Numerical
 
-#endif // NUMERICAL_ODE_RK_METHODS_STEP_WITH_PI_CONTROL_H
+#endif // NUMERICAL_ODE_RK_METHODS_STEP_INPUTS_H
