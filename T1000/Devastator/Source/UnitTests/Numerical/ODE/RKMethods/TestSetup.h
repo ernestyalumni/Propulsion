@@ -4,6 +4,7 @@
 #include "Algebra/Modules/Vectors/NVector.h"
 #include "Numerical/ODE/RKMethods/Coefficients/DOPRI5Coefficients.h"
 #include "Numerical/ODE/RKMethods/Coefficients/KCoefficients.h"
+#include "Numerical/ODE/RKMethods/StepInputs.h"
 
 #include <valarray>
 
@@ -15,6 +16,12 @@ namespace ODE
 {
 namespace RKMethods
 {
+
+inline constexpr double epsilon {1.0e-6};
+
+// k = 5 for 5th order for O(h^5)
+inline constexpr double alpha_5 {0.7 / 5.0};
+inline constexpr double beta_5 {0.08};
 
 inline constexpr size_t DOPRI5_s {
   ::Numerical::ODE::RKMethods::DOPRI5Coefficients::s};
@@ -101,6 +108,22 @@ struct ExampleSetupWithNVector
     k_coefficients_[0] = dydx_0_;
   }
 };
+
+inline ::Numerical::ODE::RKMethods::StepInputs<DOPRI5_s, std::valarray<double>>
+  step_inputs_with_std_valarray {
+    std::valarray<double>{0.5},
+    std::valarray<double>{1.5},
+    0.5,
+    0.0};
+
+inline ::Numerical::ODE::RKMethods::StepInputs<
+  DOPRI5_s,
+  Algebra::Modules::Vectors::NVector<1>>
+    step_inputs_with_nvector {
+      Algebra::Modules::Vectors::NVector<1>{0.5},
+      Algebra::Modules::Vectors::NVector<1>{1.5},
+      0.5,
+      0.0};
 
 } // namespace RKMethods
 } // namespace ODE 

@@ -9,6 +9,8 @@
 
 #include <stdexcept>
 
+#include <iostream>
+
 namespace Numerical
 {
 namespace ODE
@@ -22,7 +24,7 @@ class StepWithPIControl
   public:
 
     StepWithPIControl(
-      const CalculateNewYAndError<S, DerivativeType, Field>& new_y_and_err,
+      CalculateNewYAndError<S, DerivativeType, Field>& new_y_and_err,
       const CalculateScaledError<Field>& scaled_error,
       const ComputePIStepSize<Field>& pi_step
       ):
@@ -32,28 +34,43 @@ class StepWithPIControl
       pi_control_{}
     {}
 
+    StepWithPIControl(
+      CalculateNewYAndError<S, DerivativeType, Field>&& new_y_and_err,
+      const CalculateScaledError<Field>&& scaled_error,
+      const ComputePIStepSize<Field>&& pi_step
+      ):
+      new_y_and_err_{new_y_and_err},
+      scaled_error_{scaled_error},
+      pi_step_{pi_step},
+      pi_control_{}
+    {}
+
     template <std::size_t N, typename ContainerT>
-    void step(StepInputs& inputs, const std::size_t max_iterations = 100)
+    void step(
+      StepInputs<S, ContainerT, Field>& inputs,
+      const std::size_t max_iterations = 100)
     {
-      const std::size_t iterations {0};
+      std::size_t iterations {0};
       ContainerT y_out;
       Field h {inputs.h_n_};
       Field error {1.0};
 
       while (error >= 1.0 && iterations < max_iterations)
       {
+        std::cout << "\n iterations: " << iterations << "\n";
+
         y_out = new_y_and_err_.calculate_new_y(
           h,
           inputs.x_n_,
           inputs.y_n_,
-          inputs.k_coefficients_.get_ith_coefficient(S),
+          inputs.dydx_n_,
           inputs.k_coefficients_);
 
         auto calculated_error = new_y_and_err_.calculate_error(
           h,
           inputs.k_coefficients_);
 
-        auto error = scaled_error_.operator()<ContainerT, N>(
+        error = scaled_error_.template operator()<ContainerT, N>(
           inputs.y_n_,
           y_out,
           calculated_error);
@@ -62,9 +79,11 @@ class StepWithPIControl
           error,
           pi_control_.get_previous_error(),
           h,
-          pi_control_.get_is_rejected())
+          pi_control_.get_is_rejected());
 
         pi_control_.accept_computed_step(error);
+
+        std::cout << y_out[0] << " " << error << " " << h << "\n";
 
         ++iterations;
       }
@@ -75,6 +94,7 @@ class StepWithPIControl
       }
 
       inputs.y_n_ = y_out;
+      inputs.dydx_n_ = inputs.k_coefficients_.get_ith_coefficient(S);
       inputs.h_n_ = h;
       inputs.x_n_ += h;
     }
@@ -83,8 +103,8 @@ class StepWithPIControl
 
     CalculateNewYAndError<S, DerivativeType, Field>& new_y_and_err_;
     CalculateScaledError<Field> scaled_error_;
-    ComputePIStepSize<Field>& pi_step_;
-    PIStepSizeControl<Field>& pi_control_;
+    ComputePIStepSize<Field> pi_step_;
+    PIStepSizeControl<Field> pi_control_;
 };
 
 } // namespace RKMethods

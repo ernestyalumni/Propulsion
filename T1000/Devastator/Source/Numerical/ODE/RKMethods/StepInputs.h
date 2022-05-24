@@ -16,30 +16,31 @@ class StepInputs
   public:
 
     StepInputs():
-      k_coefficients_{}
+      k_coefficients_{},
       y_n_{},
+      dydx_n_{},
       h_n_{},
       x_n_{}
     {}
 
     StepInputs(
       const ContainerT& y_n,
-      const ContainerT& dydx_0,
+      const ContainerT& dydx_n,
       const Field h_n,
       const Field x_n
       ):
       k_coefficients_{},
       y_n_{y_n},
+      dydx_n_{dydx_n},
       h_n_{h_n},
       x_n_{x_n}
-    {
-      k_coefficients_.ith_coefficient(S) = dydx_0;
-    }
+    {}
 
     virtual ~StepInputs() = default;
 
-    Coefficients::KCoefficients<S, ContainerT>& k_coefficients_
+    Coefficients::KCoefficients<S, ContainerT> k_coefficients_;
     ContainerT y_n_;
+    ContainerT dydx_n_;
     Field h_n_;
     Field x_n_;
 };

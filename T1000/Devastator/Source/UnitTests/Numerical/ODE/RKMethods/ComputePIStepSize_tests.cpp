@@ -25,10 +25,6 @@ namespace ODE
 namespace RKMethods
 {
 
-// k = 5 for 5th order for O(h^5)
-inline constexpr double alpha_5 {0.7 / 5.0};
-inline constexpr double beta_5 {0.08};
-
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 TEST(TestComputePIStepSize, ConstructsForDefaultValues)
@@ -221,8 +217,6 @@ TEST(TestComputePIStepSize, ComputeNewStepSizeComputes)
 TEST(TestComputePIStepSize,
   ComputeNewStepSizeComputesWithScaledErrorOfZeroATolerance)
 {
-  constexpr double epsilon {1.0e-6};
-
   ExampleSetupWithNVector<DOPRI5_s, 1> setup {};
 
   CalculateNewYAndError<DOPRI5_s, decltype(example_f_with_NVector<1>)>

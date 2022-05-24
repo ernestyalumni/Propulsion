@@ -20,7 +20,7 @@ class PIStepSizeControl
     static constexpr Field minimum_error_ {static_cast<Field>(1.0e-4)};
 
     PIStepSizeControl():
-      previous_error_{minimum_error}
+      previous_error_{minimum_error_},
       is_rejected_{false}
     {}
 
