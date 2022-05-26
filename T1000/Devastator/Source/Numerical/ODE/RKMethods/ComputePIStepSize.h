@@ -50,7 +50,7 @@ class ComputePIStepSize
       if (error <= static_cast<Field>(1))
       {
         // If there's no error, we can step forward by the largest amount.
-        scale = error == static_cast<Field>(0) ? max_scale_ :
+        scale = (error == static_cast<Field>(0)) ? max_scale_ :
           safety_factor_ * std::pow(error, -alpha_) * std::pow(
             previous_error,
             beta_);

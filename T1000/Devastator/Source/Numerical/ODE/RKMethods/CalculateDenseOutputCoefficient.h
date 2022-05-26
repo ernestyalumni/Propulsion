@@ -16,6 +16,12 @@ namespace ODE
 namespace RKMethods
 {
 
+//------------------------------------------------------------------------------
+/// \ref pp. 919, 17.2 Adaptive Stepsize Control for Runge-Kutta, Numerical
+/// Recipes, last line of Doub StepperDopr5<D>::dense_out(const Int i,const Doub
+/// x,const Doub h) function for stepperdopr5.h.
+//------------------------------------------------------------------------------
+
 template <std::size_t S, typename Field = double>
 class CalculateDenseOutputCoefficient
 {
