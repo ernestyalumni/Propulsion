@@ -278,7 +278,6 @@ TEST(TestStepWithPIControl, StepWorksOnStdValarrayInputsWithLargerATolerance)
   EXPECT_DOUBLE_EQ(inputs.x_n_, 1.7929174073588516);
 }
 
-
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 TEST(TestStepWithPIControl, StepWorksOnNVectorInputsWithLargerATolerance)

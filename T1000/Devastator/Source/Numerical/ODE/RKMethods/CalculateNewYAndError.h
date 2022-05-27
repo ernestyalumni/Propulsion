@@ -143,6 +143,14 @@ class CalculateNewYAndError
       return y_out;
     }
 
+    template <typename ContainerT>
+    ContainerT calculate_derivative(
+      const Field x,
+      const ContainerT& y)
+    {
+      return derivative_(x, y);
+    }
+
     template <typename ContainerT, std::size_t N>
     void calculate_new_y_and_error(
       const Field h,

@@ -4,8 +4,10 @@
 #include "Algebra/Modules/Vectors/NVector.h"
 #include "Numerical/ODE/RKMethods/Coefficients/DOPRI5Coefficients.h"
 #include "Numerical/ODE/RKMethods/Coefficients/KCoefficients.h"
+#include "Numerical/ODE/RKMethods/IntegrationInputs.h"
 #include "Numerical/ODE/RKMethods/StepInputs.h"
 
+#include <cmath>
 #include <valarray>
 
 namespace GoogleUnitTests
@@ -37,7 +39,7 @@ inline const auto& DOPRI5_delta_coefficients =
 
 inline auto example_f_with_std_valarray = [](
   const double x,
-  std::valarray<double>& y)
+  const std::valarray<double>& y)
 {
   return y - x * x + 1.0;
 };
@@ -53,6 +55,16 @@ auto example_f_with_NVector = [](
 inline auto exact_solution = [](const double x)
 {
   return x * x + 2.0 * x + 1.0 - 0.5 * std::exp(x);
+};
+
+//------------------------------------------------------------------------------
+/// \ref https://www.unf.edu/~mzhan/chapter4.pdf
+//------------------------------------------------------------------------------
+inline auto exact_solution_2 = [](const double t)
+{
+  return std::valarray<double>{
+    3.0 * std::exp(2.0 * t) - std::exp(-5.0 * t) + t * t,
+    2.0 * std::exp(2.0 * t) - 3.0 * std::exp(-5.0 * t) + t};
 };
 
 template <size_t S>
@@ -124,6 +136,19 @@ inline ::Numerical::ODE::RKMethods::StepInputs<
       Algebra::Modules::Vectors::NVector<1>{1.5},
       0.5,
       0.0};
+
+inline ::Numerical::ODE::RKMethods::IntegrationInputs<std::valarray<double>>
+  integrate_inputs_with_std_valarray {
+    std::valarray<double>{0.5},
+    0.0,
+    2.0};
+
+inline ::Numerical::ODE::RKMethods::IntegrationInputs<
+  Algebra::Modules::Vectors::NVector<1>>
+    integrate_inputs_with_nvector {
+      Algebra::Modules::Vectors::NVector<1>{0.5},
+      0.0,
+      2.0};
 
 } // namespace RKMethods
 } // namespace ODE 

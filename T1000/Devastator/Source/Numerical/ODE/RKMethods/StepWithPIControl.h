@@ -7,6 +7,7 @@
 #include "PIStepSizeControl.h"
 #include "StepInputs.h"
 
+#include <cstdint>
 #include <stdexcept>
 
 namespace Numerical
@@ -102,6 +103,14 @@ class StepWithPIControl
       inputs.x_n_ += h;
 
       return h;
+    }
+
+    template <typename ContainerT>
+    ContainerT calculate_derivative(
+      const Field x,
+      const ContainerT& y)
+    {
+      return new_y_and_err_.calculate_derivative(x, y);
     }
 
   private:

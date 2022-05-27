@@ -13,6 +13,7 @@ ADD_EXECUTABLE(Check
   Numerical/ODE/RKMethods/Coefficients/ACoefficients_tests.cpp
   Numerical/ODE/RKMethods/Coefficients/KCoefficients_tests.cpp
   Numerical/ODE/RKMethods/ComputePIStepSize_tests.cpp
+  Numerical/ODE/RKMethods/IntegrateWithPIControl_tests.cpp
   Numerical/ODE/RKMethods/RungeKuttaMethod_tests.cpp
   Numerical/ODE/RKMethods/StepWithPIControl_tests.cpp
   Numerical/ODE/RhsVanDerPol_tests.cpp
