@@ -5,9 +5,11 @@
 #include "CalculateScaledError.h"
 #include "ComputePIStepSize.h"
 #include "IntegrationInputs.h"
-#include "StepWithPIControl.h"
 #include "StepInputs.h"
+#include "StepWithPIControl.h"
+#include "calculate_hermite_interpolation.h"
 
+#include <cassert>
 #include <cstdint>
 #include <tuple>
 #include <vector>
@@ -92,8 +94,10 @@ class IntegrateWithPIControl
     }
 
     template <std::size_t N, typename ContainerT>
-    void integrate_for_dense_output(
-      const IntegrationInputsForDenseOutput<ContainerT, Field>& inputs)
+    std::tuple<std::vector<ContainerT>, std::vector<Field>>
+      integrate_for_dense_output(
+        const IntegrationInputsForDenseOutput<ContainerT, Field>& inputs,
+        const std::size_t max_step_iterations = 100)
     {
       StepInputs<S, ContainerT, Field> step_inputs {
         inputs.y_0_,
@@ -104,6 +108,49 @@ class IntegrateWithPIControl
       std::vector<ContainerT> y_save {};
       y_save.reserve(inputs.x_.size());
       y_save.emplace_back(inputs.y_0_);
+      std::vector<Field> h_used_save {};
+      h_used_save.reserve(inputs.x_.size());
+
+      Field x_n {inputs.x_1_};
+      Field x_np1 {inputs.x_1_};
+      ContainerT y_n {inputs.y_0_};
+      ContainerT y_np1 {inputs.y_0_};
+      ContainerT dydx_n {step_inputs.dydx_n_};
+      ContainerT dydx_np1 {step_inputs.dydx_n_};
+
+      for (auto iter = inputs.x_.begin() + 1; iter != inputs.x_.end(); ++iter)
+      {
+        Field h_used {};
+
+        while (*iter > x_np1)
+        {
+          h_used = step_.template step<N, ContainerT>(
+            step_inputs,
+            max_step_iterations);
+          x_n = x_np1;
+          x_np1 = step_inputs.x_n_;
+          y_n = y_np1;
+          y_np1 = step_inputs.y_n_;
+          dydx_n = dydx_np1;
+          dydx_np1 = step_inputs.dydx_n_;
+        }
+
+        h_used_save.emplace_back(h_used);
+
+        assert(*iter <= x_np1);
+
+        const auto y_out = calculate_hermite_interpolation<ContainerT, Field>(
+          y_n,
+          y_np1,
+          dydx_n,
+          dydx_np1,
+          (*iter - x_n) / (x_np1 - x_n),
+          (x_np1 - x_n));
+
+        y_save.emplace_back(y_out);
+      }
+
+      return std::make_tuple(y_save, h_used_save);
     }    
 
   private:

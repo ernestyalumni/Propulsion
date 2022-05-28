@@ -6134,6 +6134,41 @@ Notice that the Hermite interpolation is essentially this in terms of inputs and
 	\end{tikzpicture} 
 \end{equation}
 
+\subsubsection{Dense output implementation}
+
+Consider developing an implementation for dense output.
+
+We can generate the desired points along $x$ (independent variable, which could be dneoted as $t$), from the endpoints $x_1, x_2$, and number of intervals $N$,
+\[
+h = \frac{x_2 - x_1}{N}, \quad \, x_j = x_1 + hj , \quad \, \forall \, j = 0, 1, \dots , N
+\]
+
+Given a method with stepsize PI control,
+\[
+x_n , y_n, \frac{dy}{dx}(x_n) \mapsto x_{n+1}, y_{n+1}, \frac{dy}{dx}(x_{n+1})
+\]
+
+Suppose we have run this step and obtained
+\[
+x_{n+1}, y_{n+1}, \frac{dy}{dx}(x_{n+1})
+\]
+and we had saved our initial inputs:
+\[
+x_n, y_n, \frac{dy}{dx}(x_n)
+\]
+
+Give a $x$ point in the "dense output", $x_j$, we can do hermite interpolation only if 
+\[
+x_n \leq x_j \leq x_{n+1}
+\]
+
+Since $x_1 \leq x_j$, let's focus in on this case: $x_{n+1} < x_j$. If that's the case, run the step again so that 
+\[
+x_j \leq x_{n+1}
+\]
+or until it is so.
+
+Consider checking first that $x_j \leq x_{n+1}$. If so, interpolate, and then consider $x_{j+1}$. Otherwise, then $x_j > x_{n+1}$, so run the step so that $x_n$ is set to $x_{n+1}$, but $x_{n+1}$ is the new value. Then check again. So we'll need to keep track of $x_n, x_{n+1}$ for $x_j$ to be in the interval $[x_n, x_{n+1}]$
 
 
 \subsection{Interpreting Runge-Kutta method implementations in \textbf{Numerical Recipes}}
