@@ -6339,6 +6339,12 @@ void StepperDopr5<D>::step(const Doub htry, D& derivs)
 \end{lstlisting}
 where \verb|success|, recall, passes by reference the local variable $h$, which I personally don't advise. But let's figure out what \verb|success| is doing. It mutates (again, a programming no-no) \verb|hnext| if the error is less than or equal to 1.0 and mutates our reference to h otherwise.
 
+\subsubsection{References for Runge-Kutta method}
+
+\begin{itemize}
+\item \url{https://www.unige.ch/~hairer/software.html}
+\end{itemize}
+
 \section{Systems of Ordinary Differential Equations ODEs}
 
 EY : 20160228 There's a lack of fully general and useful examples of solving a system of ordinary differential equations (ODEs) in \verb|scipy| if one does a search on Google.  There is the \href{http://scipy-cookbook.readthedocs.org/items/numpy_scipy_ordinary_differential_equations.html}{scipy cookbook}, which has toy examples for the \href{http://scipy-cookbook.readthedocs.org/items/CoupledSpringMassSystem.html}{Coupled spring-mass system}, \href{http://scipy-cookbook.readthedocs.org/items/KdV.html}{Korteweg de Vries equation}, \href{http://scipy-cookbook.readthedocs.org/items/LoktaVolterraTutorial.html}{Matplotlib: lotka volterra tutorial}, \href{http://scipy-cookbook.readthedocs.org/items/Zombie_Apocalypse_ODEINT.html}{Modeling a Zombie Apocalypse}, \href{http://scipy-cookbook.readthedocs.org/items/Theoretical_Ecology_Hastings_and_Powell.html}{Theoretical ecology: Hastings and Powell}.  Then, there's Kevin Dunn's material for Process Model Formulation and Solution, which is \emph{excellent} for its layout, thoroughness, side-by-side comparison between Matlab and Python (scipy), and \emph{real-world} examples, though related to \emph{chemical engineering} (but which is an interesting and useful subject in its own right; so we'd might as well learn some chemical engineering).    

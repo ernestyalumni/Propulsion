@@ -22,11 +22,12 @@ namespace Coefficients
 /// \ref https://stackoverflow.com/questions/39548254/does-stdarray-guarantee-allocation-on-the-stack-only
 //------------------------------------------------------------------------------
 template <std::size_t S, typename Field = double>
-class BCoefficients : public std::array<Field, S>
+class BCoefficients : public std::vector<Field>
 {
   public:
 
-    BCoefficients(const std::initializer_list<Field>& b_coefficients)
+    BCoefficients(const std::initializer_list<Field>& b_coefficients):
+      std::vector<Field>(S)
     {
       std::copy(
         b_coefficients.begin(),

@@ -1,6 +1,7 @@
 #include "Algebra/Modules/Vectors/NVector.h"
 #include "Numerical/ODE/RKMethods/CalculateNewYAndError.h"
 #include "Numerical/ODE/RKMethods/CalculateScaledError.h"
+#include "Numerical/ODE/RKMethods/Coefficients/DOPR853Coefficients.h"
 #include "Numerical/ODE/RKMethods/Coefficients/DOPRI5Coefficients.h"
 #include "Numerical/ODE/RKMethods/ComputePIStepSize.h"
 #include "Numerical/ODE/RKMethods/IntegrateWithPIControl.h"
@@ -27,6 +28,22 @@ namespace ODE
 {
 namespace RKMethods
 {
+
+// k = 8 for 8th order for O(h^8)
+inline constexpr double alpha_8 {0.0875};
+inline constexpr double beta_8 {0.05};
+
+inline constexpr size_t DOPR853_s {
+  ::Numerical::ODE::RKMethods::DOPR853Coefficients::s};
+
+inline const auto& DOPR853_a_coefficients =
+  ::Numerical::ODE::RKMethods::DOPR853Coefficients::a_coefficients;
+
+inline const auto& DOPR853_c_coefficients =
+  ::Numerical::ODE::RKMethods::DOPR853Coefficients::c_coefficients;
+
+inline const auto& DOPR853_delta_coefficients =
+  ::Numerical::ODE::RKMethods::DOPR853Coefficients::delta_coefficients;
 
 constexpr double larger_epsilon {1e-2};
 
@@ -74,6 +91,34 @@ TEST(TestIntegrateWithPIControl, ConstructsWithLValueObjects)
 
     IntegrateWithPIControl integrate {new_y_and_err, scaled_error, pi_step};
   }
+  {
+    CalculateNewYAndError<DOPR853_s, decltype(example_f_with_std_valarray)>
+      new_y_and_err {
+        example_f_with_std_valarray,
+        DOPR853_a_coefficients,
+        DOPR853_c_coefficients,
+        DOPR853_delta_coefficients};
+
+    CalculateScaledError scaled_error {epsilon, 2 * epsilon};
+
+    ComputePIStepSize pi_step {alpha_8, beta_8};
+
+    IntegrateWithPIControl integrate {new_y_and_err, scaled_error, pi_step};
+  }
+  {
+    CalculateNewYAndError<DOPR853_s, decltype(example_f_with_NVector<1>)>
+      new_y_and_err {
+        example_f_with_NVector<1>,
+        DOPR853_a_coefficients,
+        DOPR853_c_coefficients,
+        DOPR853_delta_coefficients};
+
+    CalculateScaledError scaled_error {epsilon, 2 * epsilon};
+
+    ComputePIStepSize pi_step {alpha_8, beta_8};
+
+    IntegrateWithPIControl integrate {new_y_and_err, scaled_error, pi_step};
+  }
 
   SUCCEED();
 }
@@ -102,6 +147,27 @@ TEST(TestIntegrateWithPIControl, ConstructsWithRValueObjects)
         DOPRI5_delta_coefficients},
       CalculateScaledError{epsilon, 2 * epsilon},
       ComputePIStepSize{alpha_5, beta_5}};
+  }
+  {
+    IntegrateWithPIControl integrate {
+      CalculateNewYAndError<DOPR853_s, decltype(example_f_with_std_valarray)>{
+        example_f_with_std_valarray,
+        DOPR853_a_coefficients,
+        DOPR853_c_coefficients,
+        DOPR853_delta_coefficients},
+      CalculateScaledError{epsilon, 2 * epsilon},
+      ComputePIStepSize{alpha_8, beta_8}
+      };
+  }
+  {
+    IntegrateWithPIControl integrate {
+      CalculateNewYAndError<DOPR853_s, decltype(example_f_with_NVector<1>)>{
+        example_f_with_NVector<1>,
+        DOPR853_a_coefficients,
+        DOPR853_c_coefficients,
+        DOPR853_delta_coefficients},
+      CalculateScaledError{epsilon, 2 * epsilon},
+      ComputePIStepSize{alpha_8, beta_8}};
   }
 
   SUCCEED();
@@ -143,6 +209,49 @@ TEST(TestIntegrateWithPIControl, IntegrateIntegratesWithStdValarray)
   {
     EXPECT_DOUBLE_EQ(result_h[i], result_x[i + 1] - result_x[i]);
   }
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(TestIntegrateWithPIControl, IntegrateIntegratesWithDOPR853AndStdValarray)
+{
+  IntegrateWithPIControl integrate {
+    CalculateNewYAndError<DOPR853_s, decltype(example_f_with_std_valarray)>{
+      example_f_with_std_valarray,
+      DOPR853_a_coefficients,
+      DOPR853_c_coefficients,
+      DOPR853_delta_coefficients},
+    CalculateScaledError{1e-2, 2e-2},
+    ComputePIStepSize{alpha_8, beta_8}
+    };
+
+  const auto result = integrate.integrate<1, valarray<double>>(
+    integrate_inputs_with_std_valarray);  
+
+  const auto result_x = std::get<0>(result);
+  const auto result_y = std::get<1>(result);
+  const auto result_h = std::get<2>(result);
+
+  /*
+  EXPECT_EQ(result_x.size(), 11);
+  EXPECT_DOUBLE_EQ(result_x[0], 0.0);
+  EXPECT_DOUBLE_EQ(result_x[1], 0.2);
+  EXPECT_DOUBLE_EQ(result_x[2], 0.31741001868168683);
+  EXPECT_DOUBLE_EQ(result_x[3], 0.49769643876973546);
+  EXPECT_DOUBLE_EQ(result_x[result_x.size() - 1], 2.207196030542153);
+
+  for (std::size_t i {0}; i < result_x.size(); ++i)
+  {
+    EXPECT_NEAR(result_y[i][0], exact_solution(result_x[i]), 1e-6);
+  }
+  */
+
+  /*
+  for (std::size_t i {0}; i < result_x.size() - 1; ++i)
+  {
+    EXPECT_DOUBLE_EQ(result_h[i], result_x[i + 1] - result_x[i]);
+  }
+  */
 }
 
 //------------------------------------------------------------------------------
@@ -199,7 +308,7 @@ TEST(TestIntegrateWithPIControl,
     ComputePIStepSize{alpha_5, beta_5}};
 
   const auto result = integrate.integrate<1, valarray<double>>(
-    integrate_inputs_with_std_valarray);  
+    integrate_inputs_with_std_valarray);
 
   const auto result_x {std::get<0>(result)};
   const auto result_y {std::get<1>(result)};

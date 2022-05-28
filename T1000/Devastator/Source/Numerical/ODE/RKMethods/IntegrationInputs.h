@@ -76,10 +76,11 @@ class IntegrationInputsForDenseOutput
         x_.begin(),
         x_.end(),
         x_.begin(),
-        [&x, this](const Field){
-          const Field x_to_insert {x};
-          x += this->h_;
-          return x_to_insert;
+        [&x, this](const Field)
+          {
+            const Field x_to_insert {x};
+            x += this->h_;
+            return x_to_insert;
           });
     }
 

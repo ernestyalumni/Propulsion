@@ -67,7 +67,7 @@ const Coefficients::DeltaCoefficients<s> dense_coefficients {
   69997945.0 / 29380423.0
 };
 
-} // namespace Coefficients  
+} // namespace DOPRI5Coefficients  
 } // namespace RKMethods
 } // namespace ODE
 } // namespace Numerical

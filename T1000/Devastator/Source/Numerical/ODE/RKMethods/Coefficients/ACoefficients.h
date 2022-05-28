@@ -1,10 +1,10 @@
 #ifndef NUMERICAL_ODE_RK_METHODS_COEFFICIENTS_A_COEFFICIENTS_H
 #define NUMERICAL_ODE_RK_METHODS_COEFFICIENTS_A_COEFFICIENTS_H
 
-#include <array>
 #include <cassert>
 #include <cstddef>
 #include <initializer_list>
+#include <vector>
 
 namespace Numerical
 {
@@ -16,14 +16,12 @@ namespace Coefficients
 {
 
 template <std::size_t S, typename Field = double>
-class ACoefficients : public std::array<Field, S * (S - 1) / 2>
+class ACoefficients : public std::vector<Field>
 {
   public:
 
-    using Array = std::array<Field, S * (S - 1) / 2>;
-    using Array::Array;
-
-    ACoefficients(const std::initializer_list<Field>& a_coefficients)
+    ACoefficients(const std::initializer_list<Field>& a_coefficients):
+      std::vector<Field>(S * (S - 1) / 2)
     {
       std::copy(
         a_coefficients.begin(),
