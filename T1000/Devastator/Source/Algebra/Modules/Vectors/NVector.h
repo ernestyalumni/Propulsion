@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <functional> // std::placeholders
 #include <initializer_list>
 #include <iostream>
 #include <vector>
@@ -83,6 +84,20 @@ class NVector
         x.components_.begin(),
         components_.begin(),
         std::minus<Field>());
+
+      return *this;
+    }
+
+    NVector<N, Field>& operator*=(const Field h)
+    {
+      std::transform(
+        components_.begin(),
+        components_.end(),
+        components_.begin(),
+        [h](const Field element)
+        {
+          return element * h;
+        });
 
       return *this;
     }

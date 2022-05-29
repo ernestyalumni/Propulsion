@@ -5,8 +5,6 @@
 #include "BCoefficients.h"
 #include "CCoefficients.h"
 
-#include <array>
-
 namespace Numerical
 {
 namespace ODE
@@ -21,9 +19,11 @@ namespace DOPR853Coefficients
 /// \ref Organizing static data in C++
 /// \url https://stackoverflow.com/questions/7535743/organizing-static-data-in-c
 //------------------------------------------------------------------------------
-static constexpr std::size_t s {16};
+inline constexpr std::size_t s {12};
 
 extern const Coefficients::ACoefficients<s> a_coefficients;
+
+extern const Coefficients::BCoefficients<s> b_coefficients;
 
 extern const Coefficients::CCoefficients<s> c_coefficients;
 

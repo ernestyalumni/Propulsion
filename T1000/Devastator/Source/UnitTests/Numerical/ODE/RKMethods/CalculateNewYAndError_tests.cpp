@@ -4,7 +4,6 @@
 #include "Numerical/ODE/RKMethods/Coefficients/KCoefficients.h"
 #include "Numerical/ODE/RKMethods/Coefficients/RK4Coefficients.h"
 #include "TestSetup.h"
-
 #include "gtest/gtest.h"
 
 #include <algorithm> // std::transform

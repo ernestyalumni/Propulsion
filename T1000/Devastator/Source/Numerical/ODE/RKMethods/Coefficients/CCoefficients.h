@@ -23,6 +23,14 @@ class CCoefficients : public std::vector<Field>
     CCoefficients(const std::initializer_list<Field>& c_coefficients):
       std::vector<Field>(S - 1)
     {
+      assert(S - 1 == c_coefficients.size());
+
+      //------------------------------------------------------------------------
+      /// If you don't enforce size check before copying the input values,
+      /// you'll get a Segmentation Fault during make when Google Unit Test's
+      /// main() runs.
+      //------------------------------------------------------------------------
+
       std::copy(
         c_coefficients.begin(),
         c_coefficients.end(),

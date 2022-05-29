@@ -2,6 +2,7 @@
 #define GOOGLE_UNIT_TESTS_NUMERICAL_ODE_RK_METHODS_TEST_SETUP_H
 
 #include "Algebra/Modules/Vectors/NVector.h"
+#include "Numerical/ODE/RKMethods/Coefficients/DOPR853Coefficients.h"
 #include "Numerical/ODE/RKMethods/Coefficients/DOPRI5Coefficients.h"
 #include "Numerical/ODE/RKMethods/Coefficients/KCoefficients.h"
 #include "Numerical/ODE/RKMethods/IntegrationInputs.h"
@@ -36,6 +37,18 @@ inline const auto& DOPRI5_c_coefficients =
 
 inline const auto& DOPRI5_delta_coefficients =
   ::Numerical::ODE::RKMethods::DOPRI5Coefficients::delta_coefficients;
+
+inline constexpr size_t DOPR853_s {
+  ::Numerical::ODE::RKMethods::DOPR853Coefficients::s};
+
+inline const auto& DOPR853_a_coefficients =
+  ::Numerical::ODE::RKMethods::DOPR853Coefficients::a_coefficients;
+
+inline const auto& DOPR853_b_coefficients =
+  ::Numerical::ODE::RKMethods::DOPR853Coefficients::b_coefficients;
+
+inline const auto& DOPR853_c_coefficients =
+  ::Numerical::ODE::RKMethods::DOPR853Coefficients::c_coefficients;
 
 inline auto example_f_with_std_valarray = [](
   const double x,

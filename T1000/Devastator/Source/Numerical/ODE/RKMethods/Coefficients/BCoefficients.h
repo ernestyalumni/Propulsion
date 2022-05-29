@@ -29,6 +29,14 @@ class BCoefficients : public std::vector<Field>
     BCoefficients(const std::initializer_list<Field>& b_coefficients):
       std::vector<Field>(S)
     {
+      assert(S == b_coefficients.size());
+
+      //------------------------------------------------------------------------
+      /// If you don't enforce size check before copying the input values,
+      /// you'll get a Segmentation Fault during make when Google Unit Test's
+      /// main() runs.
+      //------------------------------------------------------------------------
+
       std::copy(
         b_coefficients.begin(),
         b_coefficients.end(),

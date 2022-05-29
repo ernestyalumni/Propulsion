@@ -84,8 +84,13 @@ const Coefficients::ACoefficients<s> a_coefficients {
   -2.85899827713502369474065508674e0,
   -8.87285693353062954433549289258e0,
   1.23605671757943030647266201528e1,
-  6.43392746015763530355970484046e-1,
+  6.43392746015763530355970484046e-1};
 
+// The following are the remaining "a" coefficients, but they are not used in
+// the calculation of a new y, y_{n+1}.
+// cf. https://github.com/blackstonep/Numerical-Recipes/blob/master/stepperdopr853.h
+// cf. http://www.unige.ch/~hairer/prog/nonstiff/cprog.tar
+/*
   0.0,
   0.0,
   0.0,
@@ -144,6 +149,21 @@ const Coefficients::ACoefficients<s> a_coefficients {
   -1.39902416515901462129418009734e-3,
   2.9475147891527723389556272149e0,
   -9.15095847217987001081870187138e0};
+*/
+
+const Coefficients::BCoefficients<s> b_coefficients {
+  5.42937341165687622380535766363E-2,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  4.45031289275240888144113950566E0,
+  1.89151789931450038304281599044E0,
+  -5.8012039600105847814672114227E0,
+  3.1116436695781989440891606237E-1,
+  -1.52160949662516078556178806805E-1,
+  2.01365400804030348374776537501E-1,
+  4.47106157277725905176885569043E-2};
 
 const Coefficients::CCoefficients<s> c_coefficients {
   0.526001519587677318785587544488e-01,
@@ -156,11 +176,14 @@ const Coefficients::CCoefficients<s> c_coefficients {
   0.651282051282051282051282051282e+00,
   0.6e+00,
   0.857142857142857142857142857142e+00,
+  1.0};
+  /*
   0.0,
   0.0,
   0.1e+00,
   0.2e+00,
   0.777777777777777777777777777778e+00};
+  */
 
 const Coefficients::DeltaCoefficients<s> delta_coefficients {
   0.1312004499419488073250102996e-01,
@@ -174,11 +197,7 @@ const Coefficients::DeltaCoefficients<s> delta_coefficients {
   -0.3503288487499736816886487290e+00,
   0.3341791187130174790297318841e+00,
   0.8192320648511571246570742613e-01,
-  -0.2235530786388629525884427845e-01,
-  0.0,
-  0.0,
-  0.0,
-  0.0};
+  -0.2235530786388629525884427845e-01};
 
 } // namespace DOPR853Coefficients  
 } // namespace RKMethods

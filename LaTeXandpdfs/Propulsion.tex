@@ -6171,7 +6171,7 @@ or until it is so.
 Consider checking first that $x_j \leq x_{n+1}$. If so, interpolate, and then consider $x_{j+1}$. Otherwise, then $x_j > x_{n+1}$, so run the step so that $x_n$ is set to $x_{n+1}$, but $x_{n+1}$ is the new value. Then check again. So we'll need to keep track of $x_n, x_{n+1}$ for $x_j$ to be in the interval $[x_n, x_{n+1}]$
 
 
-\subsection{Interpreting Runge-Kutta method implementations in \textbf{Numerical Recipes}}
+\subsection{Interpreting Runge-Kutta method implementations in \textbf{Numerical Recipes}, and other software}
 
 cf. Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}.
 
@@ -6270,7 +6270,11 @@ From Shampine (1986) \cite{Sham1986}, for what was denoted as $c_j^*$ - result a
 	\end{aligned}
 \end{equation}
 
-Take a look on pp. 918-919 of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007} for the implementation of \verb|void StepperDopr5<D>::prepare_dense(const Doub h, D& derivs)| and \verb|Doub StepperDopr5<D>::dense_out(const Int i, const Doub x, const Doub h)||; the return value of \verb|StepperDopr5<D>::dense_out(...)| is
+Take a look on pp. 918-919 of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007} for the implementation of \\
+\verb|void StepperDopr5<D>::prepare_dense(const Doub h, D& derivs)| \\
+and \\
+\verb|Doub StepperDopr5<D>::dense_out(const Int i, const Doub x, const Doub h)|; \\
+the return value of \verb|StepperDopr5<D>::dense_out(...)| is
 \[
 \begin{gathered}
 	\mathbf{y}_n + \theta (\mathbf{y}_{n+1} - \mathbf{y}_n + (1- \theta)(h \frac{d\mathbf{y}}{dx}(x_n) - (\mathbf{y}_{n+1} - \mathbf{y}_n) + \theta (2 (\mathbf{y}_{n+1} - \mathbf{y}) - h \left[ \frac{d\mathbf{y}}{dx}(x_n + h) + \frac{d\mathbf{y}}{dx}(x_n) \right] ))) + \theta^2 (1-\theta)^2 ( h \sum_{i=1}^{s+1} d_i \mathbf{k}_i)
@@ -6288,7 +6292,9 @@ To refactor this, consider the inputs and outputs needed from Eq. \ref{Eq:Hermit
 
 \subsubsection{Controller success is PI Control Step Size}
 
-Consider the class member function \verb| bool StepperDopr5<D>::Controller::success(const Doub err, Doub& h)| on pp. 919 of Press, Teukolsky, Vetterling, Flannery (2007). Rewrite it in pseudocode: \\
+Consider the class member function \\
+\verb| bool StepperDopr5<D>::Controller::success(const Doub err, Doub& h)| \\
+on pp. 919 of Press, Teukolsky, Vetterling, Flannery (2007). Rewrite it in pseudocode: \\
 
 if err $ = 0$ \\
 \quad \, scale $=$ maxscale \\
@@ -6339,7 +6345,53 @@ void StepperDopr5<D>::step(const Doub htry, D& derivs)
 \end{lstlisting}
 where \verb|success|, recall, passes by reference the local variable $h$, which I personally don't advise. But let's figure out what \verb|success| is doing. It mutates (again, a programming no-no) \verb|hnext| if the error is less than or equal to 1.0 and mutates our reference to h otherwise.
 
-\subsubsection{References for Runge-Kutta method}
+\subsubsection{Interpreting code for DOPR853 methods}
+
+Consider these implementations of the DOPR853 method provided for \href{https://github.com/blackstonep/Numerical-Recipes/blob/master/stepperdopr853.h}{Numerical Reciples} and from \href{http://www.unige.ch/~hairer/prog/nonstiff/cprog.tar}{Hairer}.
+
+In both implementations, the only coefficients involved with calculating $\mathbf{y}_{n+1}$ and $\frac{d\mathbf{y}}{dx}(x_{n+1})$ are
+\[
+a_{21}, a_{31}, a_{32}, \dots, a_{12,1} , a_{12,2} \dots a_{21, 11}
+\]
+and
+\[
+b_1, \dots, b_6, b_7, \dots b_{12}
+\]
+
+We \emph{could} have, or had the possibiltiy of, copying the values of $b_i$ into another "row" of $a$ coefficients as used in the "Embedded Formulas" scheme of  Hairer, N\o rsett, and Wanner (1993) \cite{HNW1993}, but we will not; so we'll follow Eq. \ref{Eq:ERKmethodsSthStageMyNotation}
+
+\begin{equation}
+\begin{gathered}
+\mathbf{k}_j = \mathbf{f}(x_n + c_j h, \mathbf{y}_n + h \sum_{i=1}^{j-1} a_{j, i} \mathbf{k}_i ) \, \forall \, j = 1, \dots s \\
+\mathbf{y}(x_{n+1}) = \mathbf{y}_n + h \sum_{i=1}^s b_i \mathbf{k}_i
+\end{gathered}
+\end{equation}
+
+with $s=12$ for DOPR853.
+
+Likewise, for the c coefficients that are used in the Runge-Kutta method in calculating the value of the independent or "x" (or "t") value, while both codes provide c coefficients indexed from 2 to 16, we'll only use the coefficients indexed from 2 to 11, and add a $c_{12} = 1$.
+
+Consider
+
+\texttt{yerr} $\equiv \mathbf{y}_{err}$
+\[
+\mathbf{y}_{err} = \left( \frac{\mathbf{y}_{out} - \mathbf{y}_n }{ h} \right) - b_{hh1} \frac{d\mathbf{y}}{dx} - b_{hh2} \mathbf{k}_9 - b_{hh3} \mathbf{k}_{12}
+\]
+
+\texttt{yerr2} $\equiv \mathbf{y}_{err,2}$
+
+\[
+\mathbf{y}_{err2} = e_1 \mathbf{k}_1 + e_6 \mathbf{k}_6 + e_7 \mathbf{k}_7 + \dots + e_{11}\mathbf{k}_{11} + e_{12} \mathbf{k}_{12}
+\]
+
+\[
+\begin{aligned}
+& \texttt{err2} = \sum_{i=1}^n \left( \frac{y_{err, i}}{sk_i }\right)^2 \\
+& \texttt{err} = \sum_{i=1}^n \left( \frac{ y_{err2, i} }{sk_i} \right)^2
+\end{aligned}
+\]
+
+\subsection{References for Runge-Kutta method}
 
 \begin{itemize}
 \item \url{https://www.unige.ch/~hairer/software.html}
