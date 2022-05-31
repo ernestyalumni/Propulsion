@@ -185,6 +185,11 @@ const Coefficients::CCoefficients<s> c_coefficients {
   0.777777777777777777777777777778e+00};
   */
 
+const Coefficients::BCoefficients<BHHCoefficientSize> bhh_coefficients {
+  0.244094488188976377952755905512E+00,
+  0.733846688281611857341361741547E+00,
+  0.220588235294117647058823529412E-01};
+
 const Coefficients::DeltaCoefficients<s> delta_coefficients {
   0.1312004499419488073250102996e-01,
   0.0,

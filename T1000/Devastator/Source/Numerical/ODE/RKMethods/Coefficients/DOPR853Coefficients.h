@@ -20,12 +20,15 @@ namespace DOPR853Coefficients
 /// \url https://stackoverflow.com/questions/7535743/organizing-static-data-in-c
 //------------------------------------------------------------------------------
 inline constexpr std::size_t s {12};
+inline constexpr std::size_t BHHCoefficientSize {3};
 
 extern const Coefficients::ACoefficients<s> a_coefficients;
 
 extern const Coefficients::BCoefficients<s> b_coefficients;
 
 extern const Coefficients::CCoefficients<s> c_coefficients;
+
+extern const Coefficients::BCoefficients<BHHCoefficientSize> bhh_coefficients;
 
 extern const Coefficients::DeltaCoefficients<s> delta_coefficients;
 
