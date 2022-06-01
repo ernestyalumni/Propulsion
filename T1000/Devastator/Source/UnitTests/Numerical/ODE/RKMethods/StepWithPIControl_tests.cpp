@@ -1,7 +1,6 @@
 #include "Algebra/Modules/Vectors/NVector.h"
 #include "Numerical/ODE/RKMethods/CalculateNewYAndError.h"
 #include "Numerical/ODE/RKMethods/CalculateScaledError.h"
-#include "Numerical/ODE/RKMethods/Coefficients/DOPRI5Coefficients.h"
 #include "Numerical/ODE/RKMethods/ComputePIStepSize.h"
 #include "Numerical/ODE/RKMethods/StepWithPIControl.h"
 #include "TestSetup.h"

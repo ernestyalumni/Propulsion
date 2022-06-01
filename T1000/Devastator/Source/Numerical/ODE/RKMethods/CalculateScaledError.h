@@ -1,12 +1,9 @@
 #ifndef NUMERICAL_ODE_RK_METHODS_CALCULATE_SCALED_ERROR_H
 #define NUMERICAL_ODE_RK_METHODS_CALCULATE_SCALED_ERROR_H
 
-#include "Algebra/Modules/Vectors/NVector.h"
-
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
-#include <valarray>
 
 namespace Numerical
 {

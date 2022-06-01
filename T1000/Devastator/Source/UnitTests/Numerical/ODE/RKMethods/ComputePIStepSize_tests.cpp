@@ -1,13 +1,16 @@
 #include "Algebra/Modules/Vectors/NVector.h"
+#include "Numerical/ODE/RKMethods/CalculateError.h"
+#include "Numerical/ODE/RKMethods/CalculateNewY.h"
 #include "Numerical/ODE/RKMethods/CalculateNewYAndError.h"
 #include "Numerical/ODE/RKMethods/CalculateScaledError.h"
-#include "Numerical/ODE/RKMethods/Coefficients/DOPRI5Coefficients.h"
 #include "Numerical/ODE/RKMethods/ComputePIStepSize.h"
 #include "TestSetup.h"
 #include "gtest/gtest.h"
 
 #include <valarray>
 
+using Numerical::ODE::RKMethods::CalculateError;
+using Numerical::ODE::RKMethods::CalculateNewY;
 using Numerical::ODE::RKMethods::CalculateNewYAndError;
 using Numerical::ODE::RKMethods::CalculateScaledError;
 using Numerical::ODE::RKMethods::ComputePIStepSize;
@@ -24,6 +27,8 @@ namespace ODE
 {
 namespace RKMethods
 {
+
+constexpr double beta_8 {0.4 / 8};
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -43,8 +48,6 @@ TEST(TestComputePIStepSize, ConstructsForDefaultValues)
 //------------------------------------------------------------------------------
 TEST(TestComputePIStepSize, ComputeNewStepSizeComputes)
 {
-  constexpr double epsilon {1.0e-6};
-
   ExampleSetupWithStdValarray<DOPRI5_s> setup {};
 
   CalculateNewYAndError<DOPRI5_s, decltype(example_f_with_std_valarray)>
@@ -210,6 +213,171 @@ TEST(TestComputePIStepSize, ComputeNewStepSizeComputes)
       false);
 
   EXPECT_DOUBLE_EQ(new_h, 0.1782310754175909);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(TestComputePIStepSize, ComputeNewStepSizeComputesWithDOPR853)
+{
+  ExampleSetupWithStdValarray<DOPR853_s> setup {};
+
+  CalculateNewY<DOPR853_s, decltype(example_f_with_std_valarray)> new_y {
+    example_f_with_std_valarray,
+    DOPR853_a_coefficients,
+    DOPR853_b_coefficients,
+    DOPR853_c_coefficients};
+
+  CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, valarray<double>>
+    calculate_error {
+      DOPR853_delta_coefficients,
+      DOPR853_bhh_coefficients,
+      valarray<double>(epsilon, 1),
+      valarray<double>(2 * epsilon, 1)};
+
+  ComputePIStepSize pi_step {1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0};
+
+  setup.x_n_ = setup.t_0_;
+  setup.y_n_ = setup.y_0_;
+  double new_h {0.000125};
+
+  // Step 1.
+
+  setup.y_out_ = new_y.calculate_new_y(
+    new_h,
+    setup.x_n_,
+    setup.y_n_,
+    setup.dydx_0_,
+    setup.k_coefficients_);
+
+  auto error = calculate_error.calculate_scaled_error<1>(
+    setup.y_0_,
+    setup.y_out_,
+    setup.k_coefficients_,
+    new_h);
+
+  EXPECT_DOUBLE_EQ(error, 1.229773621240583);
+
+  new_h = pi_step.compute_new_step_size(
+    error,
+    setup.previous_error_,
+    new_h,
+    false);
+
+  EXPECT_DOUBLE_EQ(new_h, 0.00011076833671953456);
+
+  setup.y_out_ = new_y.calculate_new_y(
+    new_h,
+    setup.x_n_,
+    setup.y_n_,
+    setup.dydx_0_,
+    setup.k_coefficients_);
+
+  error = calculate_error.calculate_scaled_error<1>(
+    setup.y_n_,
+    setup.y_out_,
+    setup.k_coefficients_,
+    new_h);
+
+  EXPECT_DOUBLE_EQ(error, 1.0897830910504656);
+
+  new_h = pi_step.compute_new_step_size(
+      error,
+      setup.previous_error_,
+      new_h,
+      true);
+
+  EXPECT_DOUBLE_EQ(new_h, 9.9050720510786676e-05);
+
+  setup.y_out_ = new_y.calculate_new_y(
+    new_h,
+    setup.x_n_,
+    setup.y_n_,
+    setup.dydx_0_,
+    setup.k_coefficients_);
+
+  error = calculate_error.calculate_scaled_error<1>(
+    setup.y_n_,
+    setup.y_out_,
+    setup.k_coefficients_,
+    new_h);
+
+  EXPECT_DOUBLE_EQ(error, 0.97451763517510881);
+
+  setup.x_n_ += new_h;
+
+  EXPECT_DOUBLE_EQ(setup.x_n_, new_h);
+
+  new_h = pi_step.compute_new_step_size(
+      error,
+      setup.previous_error_,
+      new_h,
+      true);
+
+  EXPECT_DOUBLE_EQ(new_h, 5.6356098659731305e-05);
+
+  // Step 2.
+
+  setup.y_n_ = setup.y_out_;
+  auto dydx_n = setup.k_coefficients_.get_ith_coefficient(12);
+
+  setup.y_out_ = new_y.calculate_new_y(
+    new_h,
+    setup.x_n_,
+    setup.y_n_,
+    dydx_n,
+    setup.k_coefficients_);
+
+  error = calculate_error.calculate_scaled_error<1>(
+    setup.y_n_,
+    setup.y_out_,
+    setup.k_coefficients_,
+    new_h);
+
+  EXPECT_DOUBLE_EQ(error, 0.55447157681078107);
+
+  setup.x_n_ += new_h;
+
+  EXPECT_DOUBLE_EQ(setup.x_n_, 0.00015540681917051798);
+
+  new_h = pi_step.compute_new_step_size(
+      error,
+      setup.previous_error_,
+      new_h,
+      false);
+
+  EXPECT_DOUBLE_EQ(new_h, 3.3449719755678483e-05);
+
+  // Step 3.
+
+  setup.y_n_ = setup.y_out_;
+  dydx_n = setup.k_coefficients_.get_ith_coefficient(12);
+
+  setup.y_out_ = new_y.calculate_new_y(
+    new_h,
+    setup.x_n_,
+    setup.y_n_,
+    dydx_n,
+    setup.k_coefficients_);
+
+  error = calculate_error.calculate_scaled_error<1>(
+    setup.y_n_,
+    setup.y_out_,
+    setup.k_coefficients_,
+    new_h);
+
+  EXPECT_DOUBLE_EQ(error, 0.329104282396947);
+
+  setup.x_n_ += new_h;
+
+  EXPECT_DOUBLE_EQ(setup.x_n_, 0.00018885653892619647);
+
+  new_h = pi_step.compute_new_step_size(
+      error,
+      setup.previous_error_,
+      new_h,
+      false);
+
+  EXPECT_DOUBLE_EQ(new_h, 2.0645955075026511e-05);
 }
 
 //------------------------------------------------------------------------------
@@ -385,6 +553,172 @@ TEST(TestComputePIStepSize,
       false);
 
   EXPECT_DOUBLE_EQ(new_h, 0.15674696777373567);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(TestComputePIStepSize,
+  ComputeNewStepSizeComputesWithScaledErrorOfZeroAToleranceAndDOPR853)
+{
+  ExampleSetupWithNVector<DOPR853_s, 1> setup {};
+
+  CalculateNewY<DOPR853_s, decltype(example_f_with_NVector<1>)> new_y {
+    example_f_with_NVector<1>,
+    DOPR853_a_coefficients,
+    DOPR853_b_coefficients,
+    DOPR853_c_coefficients};
+
+  CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, NVector<1>>
+    calculate_error {
+      DOPR853_delta_coefficients,
+      DOPR853_bhh_coefficients,
+      NVector<1>(0.0),
+      NVector<1>(epsilon)};
+
+  ComputePIStepSize pi_step {1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0};
+
+  setup.x_n_ = setup.t_0_;
+  setup.y_n_ = setup.y_0_;
+  double new_h {0.00003125};
+
+  // Step 1.
+
+  setup.y_out_ = new_y.calculate_new_y(
+    new_h,
+    setup.x_n_,
+    setup.y_n_,
+    setup.dydx_0_,
+    setup.k_coefficients_);
+
+  auto error = calculate_error.calculate_scaled_error<1>(
+    setup.y_0_,
+    setup.y_out_,
+    setup.k_coefficients_,
+    new_h);
+
+  EXPECT_DOUBLE_EQ(error, 1.2298889143184415);
+
+  new_h = pi_step.compute_new_step_size(
+    error,
+    setup.previous_error_,
+    new_h,
+    false);
+
+  EXPECT_DOUBLE_EQ(new_h, 2.7691889476686576e-05);
+
+  setup.y_out_ = new_y.calculate_new_y(
+    new_h,
+    setup.x_n_,
+    setup.y_n_,
+    setup.dydx_0_,
+    setup.k_coefficients_);
+
+  error = calculate_error.calculate_scaled_error<1>(
+    setup.y_n_,
+    setup.y_out_,
+    setup.k_coefficients_,
+    new_h);
+
+  EXPECT_DOUBLE_EQ(error, 1.0898659651280267);
+
+  new_h = pi_step.compute_new_step_size(
+      error,
+      setup.previous_error_,
+      new_h,
+      true);
+
+  EXPECT_DOUBLE_EQ(new_h, 2.4762364794476034e-05);
+
+  setup.y_out_ = new_y.calculate_new_y(
+    new_h,
+    setup.x_n_,
+    setup.y_n_,
+    setup.dydx_0_,
+    setup.k_coefficients_);
+
+  error = calculate_error.calculate_scaled_error<1>(
+    setup.y_n_,
+    setup.y_out_,
+    setup.k_coefficients_,
+    new_h);
+
+  EXPECT_DOUBLE_EQ(error, 0.97457762136244164);
+
+  setup.x_n_ += new_h;
+
+  EXPECT_DOUBLE_EQ(setup.x_n_, new_h);
+
+  new_h = pi_step.compute_new_step_size(
+      error,
+      setup.previous_error_,
+      new_h,
+      true);
+
+  EXPECT_DOUBLE_EQ(new_h, 1.4088780211807704e-05);
+
+  // Step 2.
+
+  setup.y_n_ = setup.y_out_;
+  auto dydx_n = setup.k_coefficients_.get_ith_coefficient(12);
+
+  setup.y_out_ = new_y.calculate_new_y(
+    new_h,
+    setup.x_n_,
+    setup.y_n_,
+    dydx_n,
+    setup.k_coefficients_);
+
+  error = calculate_error.calculate_scaled_error<1>(
+    setup.y_n_,
+    setup.y_out_,
+    setup.k_coefficients_,
+    new_h);
+
+  EXPECT_DOUBLE_EQ(error, 0.55448539401722419);
+
+  setup.x_n_ += new_h;
+
+  EXPECT_DOUBLE_EQ(setup.x_n_, 3.8851145006283739e-05);
+
+  new_h = pi_step.compute_new_step_size(
+      error,
+      setup.previous_error_,
+      new_h,
+      false);
+
+  EXPECT_DOUBLE_EQ(new_h, 8.3622692170408084e-06);
+
+  // Step 3.
+
+  setup.y_n_ = setup.y_out_;
+  dydx_n = setup.k_coefficients_.get_ith_coefficient(12);
+
+  setup.y_out_ = new_y.calculate_new_y(
+    new_h,
+    setup.x_n_,
+    setup.y_n_,
+    dydx_n,
+    setup.k_coefficients_);
+
+  error = calculate_error.calculate_scaled_error<1>(
+    setup.y_n_,
+    setup.y_out_,
+    setup.k_coefficients_,
+    new_h);
+
+  EXPECT_DOUBLE_EQ(error, 0.32910621674343121);
+
+  setup.x_n_ += new_h;
+
+  EXPECT_DOUBLE_EQ(setup.x_n_, 4.7213414223324549e-05);
+
+  new_h = pi_step.compute_new_step_size(
+      error,
+      setup.previous_error_,
+      new_h,
+      false);
+
+  EXPECT_DOUBLE_EQ(new_h, 5.1613872921863078e-06);
 }
 
 } // namespace RKMethods

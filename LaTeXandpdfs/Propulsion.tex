@@ -5984,9 +5984,17 @@ Setting $\alpha = \frac{1}{k}$, $\beta=0$ recovers the classical controller, Eqn
 Nonzero $\beta$ improves stability but loses some efficiency for "easy" parts of the solution.
 
 A good compromise is
-\begin{equation}
+\begin{equation}\label{Eq:AlphaBetaCompromise}
 	\beta \approx \frac{0.4}{k}, \quad \, \alpha \approx \frac{0.7}{k} = \frac{1}{k} - 0.75 \beta
 \end{equation}
+
+Be wary, however, of whether this applies to DOPR853, an 8th order Runge-Kutta method. For instance, take a look at the \href{https://www.unige.ch/~hairer/software.html}{code from Hairer and Wanner (1994)}, in particular \verb|dopri5.c|: $\beta$'s suggested default value is 0.04 and the formula for $\alpha$ is $\alpha = 0.2 - \beta * 0.75$. The formula corresponds to what was said in Eq. \ref{Eq:AlphaBetaCompromise}. Likewise, for Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}, in particular \verb|stepperdopr5.h| found \href{https://github.com/blackstonep/Numerical-Recipes/blob/master/stepperdopr5.h}{here}, the default value of $\alpha$ is also given by Eq. \ref{Eq:AlphaBetaCompromise}.
+
+However, for the DOPR853 implementation, Numerical Recipes suggests for the default value of $\alpha$ to be given by
+\begin{equation}\label{Eq:AlphaBetaCompromise8thOrder}
+\frac{1.0}{8.0} - \beta * 0.2 = \frac{1.0}{k} - \beta * 0.2
+\end{equation}
+where I speculate that $8$ in the denominator is from the order of the Runge-Kutta method in consideration (i.e. DOPR853). Likewise, from Hairer and Wanner's code, in particular for \verb|dopr853.c|, $\alpha$ or \verb|expo1| in Hairer and Wanner's code is given by Eq. \ref{Eq:AlphaBetaCompromise8thOrder} as well. The suggested default value is also 0.0 for $\beta$ and is checked to be between 0.0 and 0.2.
 
 \subsubsection{Embedded Formulas of Order 5}
 

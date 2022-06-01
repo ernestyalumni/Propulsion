@@ -15,6 +15,8 @@ namespace Modules
 namespace Vectors
 {
 
+constexpr double epsilon {1e-6};
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 TEST(NVectorTests, DefaultConstructible)
@@ -95,6 +97,18 @@ TEST(NVectorTests, ConstructsWithInitializerList)
   EXPECT_EQ(A.dimension, 3);
 }
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(NVectorTests, ConstructsWithInitialValue)
+{
+  NVector<1, double> A1 (epsilon);
+  EXPECT_DOUBLE_EQ(A1[0], epsilon);
+
+  NVector<2, double> A2 (epsilon) ;
+  EXPECT_DOUBLE_EQ(A2[0], epsilon);
+  EXPECT_DOUBLE_EQ(A2[1], epsilon);
+}
+
 // cf. 12.4 Exercises, Exercise 1 of Apostol, Calculus, Vol. 1.
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -131,6 +145,18 @@ TEST(NVectorTests, LeftScalarMultiplicationWorks)
   EXPECT_EQ(D[0], -7);
   EXPECT_EQ(D[1], 24);
   EXPECT_EQ(D[2], 21);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(NVectorTests, RightScalarDivisionWorks)
+{
+  const NVector<3> A {1, 3, 6};
+  const NVector<3> D {A / 2.0};
+
+  EXPECT_EQ(D[0], 0.5);
+  EXPECT_EQ(D[1], 1.5);
+  EXPECT_EQ(D[2], 3.0);
 }
 
 //------------------------------------------------------------------------------

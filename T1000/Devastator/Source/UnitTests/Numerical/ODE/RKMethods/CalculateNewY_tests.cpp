@@ -1,4 +1,3 @@
-#include "Algebra/Modules/Vectors/NVector.h"
 #include "Numerical/ODE/RKMethods/CalculateNewY.h"
 #include "TestSetup.h"
 #include "gtest/gtest.h"

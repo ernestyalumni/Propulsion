@@ -41,6 +41,9 @@ inline const auto& DOPRI5_delta_coefficients =
 inline constexpr size_t DOPR853_s {
   ::Numerical::ODE::RKMethods::DOPR853Coefficients::s};
 
+inline constexpr size_t DOPR853_BHHCoefficientSize {
+  ::Numerical::ODE::RKMethods::DOPR853Coefficients::BHHCoefficientSize};
+
 inline const auto& DOPR853_a_coefficients =
   ::Numerical::ODE::RKMethods::DOPR853Coefficients::a_coefficients;
 
@@ -49,6 +52,12 @@ inline const auto& DOPR853_b_coefficients =
 
 inline const auto& DOPR853_c_coefficients =
   ::Numerical::ODE::RKMethods::DOPR853Coefficients::c_coefficients;
+
+inline const auto& DOPR853_bhh_coefficients =
+  ::Numerical::ODE::RKMethods::DOPR853Coefficients::bhh_coefficients;
+
+inline const auto& DOPR853_delta_coefficients =
+  ::Numerical::ODE::RKMethods::DOPR853Coefficients::delta_coefficients;
 
 inline auto example_f_with_std_valarray = [](
   const double x,
@@ -145,6 +154,22 @@ inline ::Numerical::ODE::RKMethods::StepInputs<
   DOPRI5_s,
   Algebra::Modules::Vectors::NVector<1>>
     step_inputs_with_nvector {
+      Algebra::Modules::Vectors::NVector<1>{0.5},
+      Algebra::Modules::Vectors::NVector<1>{1.5},
+      0.5,
+      0.0};
+
+inline ::Numerical::ODE::RKMethods::StepInputs<DOPR853_s, std::valarray<double>>
+  step_inputs_with_std_valarray_for_DOPR853 {
+    std::valarray<double>{0.5},
+    std::valarray<double>{1.5},
+    0.5,
+    0.0};
+
+inline ::Numerical::ODE::RKMethods::StepInputs<
+  DOPR853_s,
+  Algebra::Modules::Vectors::NVector<1>>
+    step_inputs_with_nvector_for_DOPR853 {
       Algebra::Modules::Vectors::NVector<1>{0.5},
       Algebra::Modules::Vectors::NVector<1>{1.5},
       0.5,

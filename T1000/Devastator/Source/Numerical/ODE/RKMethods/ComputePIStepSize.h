@@ -22,15 +22,15 @@ class ComputePIStepSize
     ComputePIStepSize(
       const Field alpha,
       const Field beta,
-      const Field safety_factor = 0.9,
       const Field min_scale = 0.2,
-      const Field max_scale = 5.0
+      const Field max_scale = 5.0,
+      const Field safety_factor = 0.9
       ):
       alpha_{alpha},
       beta_{beta},
-      safety_factor_{safety_factor},
       min_scale_{min_scale},
-      max_scale_{max_scale}
+      max_scale_{max_scale},
+      safety_factor_{safety_factor}
     {
       assert(alpha >= static_cast<Field>(0));
       assert(beta >= static_cast<Field>(0));
@@ -51,6 +51,8 @@ class ComputePIStepSize
       {
         // If there's no error, we can step forward by the largest amount.
         scale = (error == static_cast<Field>(0)) ? max_scale_ :
+          // Includes Lund-stabilization with the multiplication of the factor
+          // with previous error.
           safety_factor_ * std::pow(error, -alpha_) * std::pow(
             previous_error,
             beta_);
@@ -73,7 +75,6 @@ class ComputePIStepSize
 
     Field alpha_;
     Field beta_;
-    Field safety_factor_;
 
     // Hairer, Norsett, and Wanner (1993), Ordinary Differential Equations, Vol.
     // 1, pp. 168, calls these 2 factors facmin, facmax, respectively.
@@ -87,6 +88,8 @@ class ComputePIStepSize
     // It's also advisable to put facmax = 1 in steps right after a
     // step-rejection.
     Field max_scale_;
+
+    Field safety_factor_;
 };
 
 } // namespace RKMethods

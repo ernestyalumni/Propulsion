@@ -40,6 +40,10 @@ class NVector
       components_.reserve(N);
     }
 
+    explicit NVector(const Field initial_value):
+      components_(N, initial_value)
+    {}
+
     // Copy ctor.
     NVector(const NVector& other) = default;
 
@@ -128,6 +132,14 @@ class NVector
     friend NVector<M, F> operator*(
       const F scalar_value,
       const NVector<M, F>& x);
+
+    //--------------------------------------------------------------------------
+    /// \brief Right scalar division.
+    //--------------------------------------------------------------------------
+    template <std::size_t M, typename F>
+    friend NVector<M, F> operator/(
+      const NVector<M, F>& x,
+      const F scalar_value);
 
   private:
 
@@ -219,6 +231,20 @@ inline NVector<N, Field> operator*(
     x.components_.end(),
     result.components_.begin(),
     std::bind(std::multiplies<Field>(), std::placeholders::_1, scalar_value));
+  return result;
+}
+
+template <std::size_t N, typename Field>
+inline NVector<N, Field> operator/(
+  const NVector<N, Field>& x,
+  const Field scalar_value)
+{
+  NVector<N, Field> result {};
+  std::transform(
+    x.components_.begin(),
+    x.components_.end(),
+    result.components_.begin(),
+    std::bind(std::divides<Field>(), std::placeholders::_1, scalar_value));
   return result;
 }
 

@@ -9,11 +9,14 @@ ADD_EXECUTABLE(Check
   Numerical/ODE/Output_tests.cpp
   Numerical/ODE/RK4_tests.cpp
   Numerical/ODE/RKMethods/calculate_hermite_interpolation_tests.cpp
+  Numerical/ODE/RKMethods/CalculateError_tests.cpp
   Numerical/ODE/RKMethods/CalculateNewY_tests.cpp
   Numerical/ODE/RKMethods/CalculateNewYAndError_tests.cpp
   Numerical/ODE/RKMethods/Coefficients/ACoefficients_tests.cpp
   Numerical/ODE/RKMethods/Coefficients/KCoefficients_tests.cpp
   Numerical/ODE/RKMethods/ComputePIStepSize_tests.cpp
+  Numerical/ODE/RKMethods/HigherOrderIntegrateWithPIControl_tests.cpp
+  Numerical/ODE/RKMethods/HigherOrderStepWithPIControl_tests.cpp
   Numerical/ODE/RKMethods/IntegrateWithPIControl_tests.cpp
   Numerical/ODE/RKMethods/RungeKuttaMethod_tests.cpp
   Numerical/ODE/RKMethods/StepWithPIControl_tests.cpp
