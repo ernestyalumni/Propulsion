@@ -197,6 +197,8 @@ TEST(TestHigherOrderIntegrateWithPIControl, IntegrateIntegratesWithNVector)
   }
 }
 
+// cf. http://www.math.utah.edu/~gustafso/2250systems-de.pdf
+
 } // namespace RKMethods
 } // namespace ODE 
 } // namespace Numerical
