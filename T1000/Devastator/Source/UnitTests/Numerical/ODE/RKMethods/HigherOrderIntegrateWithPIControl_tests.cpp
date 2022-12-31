@@ -197,7 +197,100 @@ TEST(TestHigherOrderIntegrateWithPIControl, IntegrateIntegratesWithNVector)
   }
 }
 
-// cf. http://www.math.utah.edu/~gustafso/2250systems-de.pdf
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(TestHigherOrderIntegrateWithPIControl,
+  IntegrateIntegratesWithStdValarrayForSystemOfEquations)
+{
+  constexpr double given_epsilon {1e-3};
+
+  HigherOrderIntegrateWithPIControl integrate {
+    CalculateNewY<DOPR853_s, decltype(example_f_with_std_valarray_2)>{
+      example_f_with_std_valarray_2,
+      DOPR853_a_coefficients,
+      DOPR853_b_coefficients,
+      DOPR853_c_coefficients},
+    CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, valarray<double>>{
+      DOPR853_delta_coefficients,
+      DOPR853_bhh_coefficients,
+      valarray<double>(given_epsilon, 2),
+      valarray<double>(given_epsilon, 2)},
+    ComputePIStepSize{1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0}};
+
+  const auto result = integrate.integrate<2>(
+    integrate_inputs_with_std_valarray_2);
+
+  const auto result_x = std::get<0>(result);
+  const auto result_y = std::get<1>(result);
+  const auto result_h = std::get<2>(result);
+
+  EXPECT_EQ(result_x.size(), 1049);
+  EXPECT_DOUBLE_EQ(result_x[0], 0.0);
+  EXPECT_DOUBLE_EQ(result_x[1], 0.0032849410332814431);
+  EXPECT_DOUBLE_EQ(result_x[2], 0.0051555348479529689);
+  EXPECT_DOUBLE_EQ(result_x[result_x.size() - 2], 0.99681917261739073);
+  EXPECT_DOUBLE_EQ(result_x[result_x.size() - 1], 1.0126176628239383);
+  EXPECT_DOUBLE_EQ(result_h[0], 0.0032849410332814431);
+  EXPECT_DOUBLE_EQ(result_h[1], 0.0018705938146715258);
+
+  for (std::size_t i {0}; i < result_x.size(); ++i)
+  {
+    EXPECT_NEAR(result_y[i][0], exact_solution_2(result_x[i])[0], 1e-12);
+    EXPECT_NEAR(result_y[i][1], exact_solution_2(result_x[i])[1], 1e-11);
+  }
+
+  for (std::size_t i {0}; i < result_x.size() - 1; ++i)
+  {
+    EXPECT_NEAR(result_h[i], result_x[i + 1] - result_x[i], 1e-15);
+  }
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(TestHigherOrderIntegrateWithPIControl,
+  IntegrateIntegratesWithNVectorForSystemOfEquations)
+{
+  constexpr double given_epsilon {1e-3};
+
+  HigherOrderIntegrateWithPIControl integrate {
+    CalculateNewY<DOPR853_s, decltype(example_f_with_NVector_2)>{
+      example_f_with_NVector_2,
+      DOPR853_a_coefficients,
+      DOPR853_b_coefficients,
+      DOPR853_c_coefficients},
+    CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, NVector<2>>{
+      DOPR853_delta_coefficients,
+      DOPR853_bhh_coefficients,
+      NVector<2>(given_epsilon),
+      NVector<2>(given_epsilon)},
+    ComputePIStepSize{1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0}};
+
+  const auto result = integrate.integrate<2>(integrate_inputs_with_nvector_2);
+
+  const auto result_x = std::get<0>(result);
+  const auto result_y = std::get<1>(result);
+  const auto result_h = std::get<2>(result);
+
+  EXPECT_EQ(result_x.size(), 1049);
+  EXPECT_DOUBLE_EQ(result_x[0], 0.0);
+  EXPECT_DOUBLE_EQ(result_x[1], 0.0032849410332814431);
+  EXPECT_DOUBLE_EQ(result_x[2], 0.0051555348479529689);
+  EXPECT_DOUBLE_EQ(result_x[result_x.size() - 2], 0.99681917261739073);
+  EXPECT_DOUBLE_EQ(result_x[result_x.size() - 1], 1.0126176628239383);
+  EXPECT_DOUBLE_EQ(result_h[0], 0.0032849410332814431);
+  EXPECT_DOUBLE_EQ(result_h[1], 0.0018705938146715258);
+
+  for (std::size_t i {0}; i < result_x.size(); ++i)
+  {
+    EXPECT_NEAR(result_y[i][0], exact_solution_2(result_x[i])[0], 1e-12);
+    EXPECT_NEAR(result_y[i][1], exact_solution_2(result_x[i])[1], 1e-11);
+  }
+
+  for (std::size_t i {0}; i < result_x.size() - 1; ++i)
+  {
+    EXPECT_NEAR(result_h[i], result_x[i + 1] - result_x[i], 1e-15);
+  }
+}
 
 } // namespace RKMethods
 } // namespace ODE 

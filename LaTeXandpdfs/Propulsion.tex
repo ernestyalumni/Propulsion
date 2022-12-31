@@ -8676,9 +8676,39 @@ Apply $\tan$ equation to $\omega_a$ before converting with the bilinear transfor
 s \mapsto \frac{ \omega_a}{\tan{\left(\frac{\omega_aT}{2}\right)}} \frac{z-1}{z+1}
 \]
 
+\section{Spacecraft Attitude Control}
+
+\subsection{Reaction Wheels}
+
+cf. Slide 21/45, M. Peet, Lecture 15.
+
+A momentum exchange device applies torque to wheel to spin up wheel. \\
+- An equal and opposite amount of torque is imparted to the spacecraft. \\
+The resulting angular momentum of wheel and craft each are equal in magnitude and opposite in direction by angular momentum conservation.
+
+Consider rotation about x-axis. \\
+Let $J_x$ be moment of inertia of spacecraft about x-axis. \\
+Let $I_x$ be moment of inertia of flywheel. \\
+By anglar umomentum conservation,
+\[
+I_x(\omega_f + \omega_s) + J_x\omega_s = 0
+\]
+where $\omega_s \equiv $ angular velocity of craft in inertial space. \\
+\phantom{where} $\omega_f \equiv$ angular velocity ofh flywheel wih respect to craft. \\
+
+So if craft has some angular velocity $\omega_s$ in $\widehat{b}_1$-direction (body-frame axis 1?) and reaction wheel is aligned with this axis, null out velocity by spinning up to
 
 
 \section{More resources}
+
+Daniel Block, Karl \"{A}str\"{o}m, Mark W. Spong. \textbf{The Reaction Wheel Pendulum}, i.e. Block, \"{A}str\"{o}m, and Spong (2007) \cite{BAS2007}
+
+
+Kuo. \textbf{Digital Control Systems}.
+
+Sidi. \textbf{Spacecraft Dynamics and Control}.
+
+\subsection{Miscellaneous}
 
 barfoot wedge $SO(3)$. barfoot lie algebra. \url{http://asrl.utias.utoronto.ca/~tdb/bib/barfoot_ser17.pdf}
 
@@ -9487,6 +9517,10 @@ O. L. R. Jacobs. \textbf{Introduction to Control Theory}. 2nd Edition. Oxford Un
 
 \bibitem{Ogat2009}
 Katsuhiko Ogata. \textbf{Modern Control Engineering}. Pearson; 5th edition (August 25, 2009).
+
+\bibitem{BAS2007}
+Daniel J. Block, Karl J. \"{A}str\"{o}m, Mark W. Spong. \textbf{The Reaction Wheel Pendulum}. Springer Cham. 2007.
+
 
 \bibitem{Lamp1978}
 Leslie Lamport. \emph{Time, Clocks and the Ordering of Events in a Distributed System}. \textbf{Communications of the ACM 21}, 7   (July 1978), 558-565. \url{https://lamport.azurewebsites.net/pubs/time-clocks.pdf} 

@@ -80,9 +80,39 @@ inline auto exact_solution = [](const double x)
 };
 
 //------------------------------------------------------------------------------
+/// \ref https://www.math.utah.edu/~gustafso/2250systems-de.pdf "Forecasting
+/// Prices"
+//------------------------------------------------------------------------------
+
+inline auto example_f_with_std_valarray_2 = [](
+  const double,
+  const std::valarray<double>& x)
+{
+  return std::valarray<double>{
+    x[1] - 50.0,
+    13.0 / 4.0 * x[0] - 6.0 * x[1] + 289.0};
+};
+
+inline auto example_f_with_NVector_2 = [](
+  const double,
+  const Algebra::Modules::Vectors::NVector<2>& x)
+{
+  return Algebra::Modules::Vectors::NVector<2>{
+    x[1] - 50.0,
+    13.0 / 4.0 * x[0] - 6.0 * x[1] + 289.0};
+};
+
+inline auto exact_solution_2 = [](const double t)
+{
+  return std::valarray<double>{
+    44.0 / 13.0 + (86.0 / 13.0) * std::exp(-13.0 * t / 2.0),
+    50.0 - 43.0 * std::exp(-13.0 * t / 2.0)};
+};
+
+//------------------------------------------------------------------------------
 /// \ref https://www.unf.edu/~mzhan/chapter4.pdf
 //------------------------------------------------------------------------------
-inline auto exact_solution_2 = [](const double t)
+inline auto exact_solution_3 = [](const double t)
 {
   return std::valarray<double>{
     3.0 * std::exp(2.0 * t) - std::exp(-5.0 * t) + t * t,
@@ -187,6 +217,24 @@ inline ::Numerical::ODE::RKMethods::IntegrationInputs<
       Algebra::Modules::Vectors::NVector<1>{0.5},
       0.0,
       2.0};
+
+//------------------------------------------------------------------------------
+/// \ref https://www.math.utah.edu/~gustafso/2250systems-de.pdf "Forecasting
+/// Prices"
+//------------------------------------------------------------------------------
+
+inline ::Numerical::ODE::RKMethods::IntegrationInputs<std::valarray<double>>
+  integrate_inputs_with_std_valarray_2 {
+    std::valarray<double>{10.0, 7.0},
+    0.0,
+    1.0};
+
+inline ::Numerical::ODE::RKMethods::IntegrationInputs<
+  Algebra::Modules::Vectors::NVector<2>>
+    integrate_inputs_with_nvector_2 {
+      Algebra::Modules::Vectors::NVector<2>{10.0, 7.0},
+      0.0,
+      1.0};
 
 } // namespace RKMethods
 } // namespace ODE 
