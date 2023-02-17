@@ -1,3 +1,5 @@
+pub mod quaternions;
+
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Vector3<T>
 {
