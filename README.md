@@ -1,6 +1,26 @@
 # Propulsion
 Propulsion - Numerical recipes for (rocket) propulsion, including notes and solutions in LaTeX; **Cantera** implementations in *Python*
 
+## Python virtual environment setup
+
+### Ubuntu Linux
+
+e.g. 22.04 LTS
+
+On Debian/Ubuntu systems, you need to install the python3-venv
+package using the following command.
+
+```
+sudo apt install python3.10-venv
+```
+
+Then
+
+```
+Propulsion$ python3 -m venv ./venv
+```
+
+
 ## Liquid-Vapor Equilibrium: 
 ### Clausius-Clapeyron Equation and Antoine Equation from NIST Chemistry Webbook
 
