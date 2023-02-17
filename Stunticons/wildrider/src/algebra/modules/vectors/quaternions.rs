@@ -1,4 +1,4 @@
-use crate::algebra::modules::vectors::RingOperations;
+use crate::algebra::rings::RingOperations;
 
 use std::ops::{Add, Sub, Index, Mul, Neg};
 
@@ -39,7 +39,7 @@ impl<T: RingOperations> Sub for VectorPart<T>
 impl<T: RingOperations> Index<usize> for VectorPart<T>
 {
   // Self is the type of the current object.
-  type Output = Self;
+  type Output = T;
 
   fn index(&self, index_value: usize) -> &Self::Output
   {
@@ -68,7 +68,7 @@ impl<T: RingOperations> Mul<VectorPart<T>> for (T, )
 
   fn mul(self: Self, rhs: VectorPart<T>) -> Self::Output
   {
-    Self {data: [
+    VectorPart::<T> {data: [
       rhs.data[0] * self.0,
       rhs.data[1] * self.0,
       rhs.data[2] * self.0]}
@@ -104,10 +104,31 @@ impl<T: RingOperations> VectorPart<T>
       self.data[2] * rhs.data[2]
   }
 
-  fn norm(self) -> T
+  fn norm_squared(self) -> T
   {
     self.data[0] * self.data[0] +
       self.data[1] * self.data[1] +
       self.data[2] * self.data[2]
+  }
+}
+
+#[cfg(test)]
+mod tests
+{
+  use super::*;
+
+  fn create_sample_vectorparts() -> (VectorPart<i32>, VectorPart<i32>)
+  {
+    let a = VectorPart::<i32> {data: [1, 6, 18]};
+    let b = VectorPart::<i32> {data: [42, -69, 98]};
+    (a, b)
+  }
+
+  #[test]
+  fn vector_part_dot_product_works_as_euclidean_dot_product()
+  {
+    let (a, b) = create_sample_vectorparts();
+
+    assert_eq!(a.dot_product(b), 1392)
   }
 }
