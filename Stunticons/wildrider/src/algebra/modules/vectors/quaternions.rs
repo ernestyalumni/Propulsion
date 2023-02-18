@@ -1,14 +1,14 @@
-use crate::algebra::rings::RingOperations;
+use crate::algebra::fields::FieldOperations;
 
 use std::ops::{Add, Sub, Index, Mul, Neg};
 
 #[derive(Copy, Clone, Debug, PartialEq)]
-pub struct VectorPart<T: RingOperations>
+pub struct VectorPart<T: FieldOperations>
 {
   data: [T; 3],
 }
 
-impl<T: RingOperations> Add for VectorPart<T>
+impl<T: FieldOperations> Add for VectorPart<T>
 {
   // Self is the type of the current object.
   type Output = Self;
@@ -22,7 +22,7 @@ impl<T: RingOperations> Add for VectorPart<T>
   }
 }
 
-impl<T: RingOperations> Sub for VectorPart<T>
+impl<T: FieldOperations> Sub for VectorPart<T>
 {
   // Self is the type of the current object.
   type Output = Self;
@@ -36,7 +36,7 @@ impl<T: RingOperations> Sub for VectorPart<T>
   }
 }
 
-impl<T: RingOperations> Index<usize> for VectorPart<T>
+impl<T: FieldOperations> Index<usize> for VectorPart<T>
 {
   // Self is the type of the current object.
   type Output = T;
@@ -47,7 +47,7 @@ impl<T: RingOperations> Index<usize> for VectorPart<T>
   }
 }
 
-impl<T: RingOperations> Mul<T> for VectorPart<T>
+impl<T: FieldOperations> Mul<T> for VectorPart<T>
 {
   // Self is the type of the current object.
   type Output = Self;
@@ -61,7 +61,7 @@ impl<T: RingOperations> Mul<T> for VectorPart<T>
   }
 }
 
-impl<T: RingOperations> Mul<VectorPart<T>> for (T, )
+impl<T: FieldOperations> Mul<VectorPart<T>> for (T, )
 {
   // Self is the type of the current object.
   type Output = VectorPart<T>;
@@ -75,7 +75,7 @@ impl<T: RingOperations> Mul<VectorPart<T>> for (T, )
   }
 }
 
-impl<T: RingOperations> Neg for VectorPart<T>
+impl<T: FieldOperations> Neg for VectorPart<T>
 {
   // Self is the type of the current object.
   type Output = Self;
@@ -86,7 +86,7 @@ impl<T: RingOperations> Neg for VectorPart<T>
   }
 }
 
-impl<T: RingOperations> VectorPart<T>
+impl<T: FieldOperations> VectorPart<T>
 {
   fn cross_product(self, rhs: Self) -> Self
   {

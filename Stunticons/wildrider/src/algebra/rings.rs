@@ -1,18 +1,4 @@
-use std::ops::{Add, Sub, Mul, Neg};
+// See https://stackoverflow.com/questions/28010796/move-struct-into-a-separate-file-without-splitting-into-a-separate-module
 
-pub trait RingOperations:
-	Add<Output=Self> +
-    Sub<Output=Self> +
-    Mul<Output=Self> +
-    Copy +
-    Neg<Output=Self>
-  where Self: std::marker::Sized
-{}
-
-impl<T> RingOperations for T
-  where T: Add<Output=T> +
-    Sub<Output=T> +
-    Mul<Output=T> +
-    Copy +
-    Neg<Output=T> +
-{}
+pub use self::rotations::Rotation3;
+mod rotations;
