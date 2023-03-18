@@ -5818,7 +5818,7 @@ Consider Eq. \ref{Eq:EmbeddedRKError}, $\text{err} = \sqrt{ \frac{1}{N} \sum_{i=
 
 Since $\mathbf{y}_1 \equiv \mathbf{y}_{n+1}$ is of order p, $\widehat{y}_1 \equiv \mathbf{y}_{n+1}$ of order $\widehat{p}$ (usually $\widehat{p} = p -1$, or $\widehat{p} = p+1$), with $\widehat{p} = 5$. 
 
-From Eqns. (17.2.4), (17.2.5) of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}, i.e. Eq. \ref{ERKmethodsSthStageMyNotation}, for the embedded 4th order Runge-Kutta method, $\Delta_i$ scales as $h^5 \equiv h^{\widehat{p}} = h^{p+1}$, and hence so does $\text{err}$.  
+From Eqns. (17.2.4), (17.2.5) of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}, i.e. Eq. \ref{Eq:ERKmethodsSthStageMyNotation}, for the embedded 4th order Runge-Kutta method, $\Delta_i$ scales as $h^5 \equiv h^{\widehat{p}} = h^{p+1}$, and hence so does $\text{err}$.
 
 If we take step $h_1$ and produce error $\text{err}_1$, then for step $h_0$, that would've given some other value $\text{err}_0$, as explained on pp. 913 of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}, the error $\text{err}_0$ is estimated as
 \begin{equation}\label{Eq:NoSafetyErrorStepRatio}
@@ -5894,7 +5894,7 @@ $y(t) \equiv PV =$ measured process variable, $e(t) = r(t) - y(t)$ \\
 
 Then
 \[
-\dot{u}(t) = K_p \dot{e} + K_i e(t) + K_d \dot{e}
+\dot{u}(t) = K_p \dot{e} + K_i e(t) + K_d \ddot{e}
 \]
 
 Or, from the point of view of Hairer and Wanner (2010) \cite{HaWa2010}, consider $\theta(t) \equiv$ departure at time $t$ of quantity to be controlled from its normal value (i.e. $e(t)$), \\
