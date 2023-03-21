@@ -3,6 +3,7 @@
 #include "Numerical/ODE/RKMethods/CalculateNewY.h"
 #include "Numerical/ODE/RKMethods/ComputePIStepSize.h"
 #include "Numerical/ODE/RKMethods/HigherOrderIntegrateWithPIControl.h"
+#include "Numerical/ODE/RKMethods/IntegrationInputs.h"
 #include "TestSetup.h"
 #include "gtest/gtest.h"
 
@@ -12,6 +13,7 @@ using Numerical::ODE::RKMethods::CalculateError;
 using Numerical::ODE::RKMethods::CalculateNewY;
 using Numerical::ODE::RKMethods::ComputePIStepSize;
 using Numerical::ODE::RKMethods::HigherOrderIntegrateWithPIControl;
+using Numerical::ODE::RKMethods::IntegrationInputs;
 using std::valarray;
 
 template <size_t N>
@@ -289,6 +291,55 @@ TEST(TestHigherOrderIntegrateWithPIControl,
   for (std::size_t i {0}; i < result_x.size() - 1; ++i)
   {
     EXPECT_NEAR(result_h[i], result_x[i + 1] - result_x[i], 1e-15);
+  }
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(TestHigherOrderIntegrateWithPIControl,
+  IntegrateIntegratesForcedOscillation)
+{
+  HigherOrderIntegrateWithPIControl integrate {
+    CalculateNewY<
+      DOPR853_s,
+      decltype(forced_oscillation_eq_of_motion<valarray<double>>)
+      >{
+      forced_oscillation_eq_of_motion<valarray<double>>,
+      DOPR853_a_coefficients,
+      DOPR853_b_coefficients,
+      DOPR853_c_coefficients},
+    CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, valarray<double>>{
+      DOPR853_delta_coefficients,
+      DOPR853_bhh_coefficients,
+      valarray<double>(epsilon, 1),
+      valarray<double>(epsilon, 2)},
+    ComputePIStepSize{1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0}};
+
+  IntegrationInputs<valarray<double>> inputs {
+    valarray<double>{0.0, 0.0},
+    0.0,
+    110.0};
+
+  const auto result = integrate.integrate<2>(inputs);
+
+  const auto result_t = std::get<0>(result);
+  const auto result_x = std::get<1>(result);
+  const auto result_h = std::get<2>(result);
+
+  ForcedOscillationExactSolution ex {};
+
+  EXPECT_EQ(result_t.size(), 50001);
+  EXPECT_EQ(result_x.size(), 50001);
+  EXPECT_EQ(result_h.size(), 50000);
+
+  for (std::size_t i {0}; i < result_x.size(); ++i)
+  {
+    EXPECT_NEAR(result_x[i][0], ex.compute_exact_solution(result_t[i]), 1e-8);
+  }
+
+  for (std::size_t i {0}; i < result_t.size() - 1; ++i)
+  {
+    EXPECT_NEAR(result_h[i], result_t[i + 1] - result_t[i], 1e-16);
   }
 }
 

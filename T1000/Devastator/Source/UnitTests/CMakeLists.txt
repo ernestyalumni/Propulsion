@@ -21,6 +21,7 @@ ADD_EXECUTABLE(Check
   Numerical/ODE/RKMethods/IntegrateWithPIControl_tests.cpp
   Numerical/ODE/RKMethods/RungeKuttaMethod_tests.cpp
   Numerical/ODE/RKMethods/StepWithPIControl_tests.cpp
+  Numerical/ODE/RKMethods/TestSetup_tests.cpp
   Numerical/ODE/RhsVanDerPol_tests.cpp
   Numerical/ODE/RhsVan_tests.cpp
   Numerical/ODE/StepperBase_tests.cpp

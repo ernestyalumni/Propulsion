@@ -236,6 +236,34 @@ inline ::Numerical::ODE::RKMethods::IntegrationInputs<
       0.0,
       1.0};
 
+struct ForcedOscillationExactSolution
+{
+  static constexpr double A_ {-0.0339858618814573};
+  static constexpr double B_ {1.18950516585101};
+  static constexpr double c_ {0.0339858618814573};
+  static constexpr double d_ {-0.474996286928106};
+  static constexpr double Gamma_ {0.06};
+  static constexpr double omega_d_ {0.4};
+  static constexpr double omega_ {std::sqrt(0.9991)};
+
+  inline static double compute_exact_solution(const double x)
+  {
+    return std::exp(-Gamma_ * x / 2.0) * (
+      c_ * std::cos(omega_ * x) + d_ * std::sin(omega_ * x)) +
+        A_ * std::cos(omega_d_ * x) + B_ * std::sin(omega_d_ * x);
+  }
+};
+
+template <typename ContainerT>
+inline auto forced_oscillation_eq_of_motion = [](
+  const double t,
+  const ContainerT& x)
+{
+  return ContainerT {
+    x[1],
+    -0.06*x[1] - x[0] + std::sin(0.4 * t)};
+};
+
 } // namespace RKMethods
 } // namespace ODE 
 } // namespace Numerical

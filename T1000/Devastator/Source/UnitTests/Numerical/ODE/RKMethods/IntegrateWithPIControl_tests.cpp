@@ -4,6 +4,7 @@
 #include "Numerical/ODE/RKMethods/Coefficients/DOPRI5Coefficients.h"
 #include "Numerical/ODE/RKMethods/ComputePIStepSize.h"
 #include "Numerical/ODE/RKMethods/IntegrateWithPIControl.h"
+#include "Numerical/ODE/RKMethods/IntegrationInputs.h"
 #include "TestSetup.h"
 #include "gtest/gtest.h"
 
@@ -13,6 +14,7 @@ using Numerical::ODE::RKMethods::CalculateNewYAndError;
 using Numerical::ODE::RKMethods::CalculateScaledError;
 using Numerical::ODE::RKMethods::ComputePIStepSize;
 using Numerical::ODE::RKMethods::IntegrateWithPIControl;
+using Numerical::ODE::RKMethods::IntegrationInputs;
 using Numerical::ODE::RKMethods::IntegrationInputsForDenseOutput;
 using std::valarray;
 
@@ -571,6 +573,44 @@ TEST(TestIntegrateWithPIControl,
       result_y[i][0],
       exact_solution(dense_inputs_for_nvector.x_[i]),
       1e-2);
+  }
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(TestIntegrateWithPIControl, IntegrateWorksForForcedOscillation)
+{
+  IntegrateWithPIControl integrate {
+    CalculateNewYAndError<
+      DOPRI5_s,
+      decltype(forced_oscillation_eq_of_motion<valarray<double>>)
+      >{
+      forced_oscillation_eq_of_motion<valarray<double>>,
+      DOPRI5_a_coefficients,
+      DOPRI5_c_coefficients,
+      DOPRI5_delta_coefficients},
+    CalculateScaledError{epsilon, 2 * epsilon},
+    ComputePIStepSize{alpha_5, beta_5}};
+
+  IntegrationInputsForDenseOutput<valarray<double>> inputs {
+    valarray<double>{0.0, 0.0},
+    0.0,
+    110.0};
+
+  const auto result = integrate.integrate_for_dense_output<2, valarray<double>>(
+    inputs);
+
+  const auto result_x = std::get<0>(result);
+  const auto result_h = std::get<1>(result);
+
+  EXPECT_EQ(result_x.size(), 101);
+  EXPECT_EQ(result_h.size(), 100);
+
+  ForcedOscillationExactSolution ex {};
+
+  for (std::size_t i {0}; i < 101; ++i)
+  {
+    EXPECT_NEAR(result_x[i][0], ex.compute_exact_solution(inputs.x_[i]), 1e-5);
   }
 }
 
