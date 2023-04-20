@@ -6,4 +6,5 @@ ADD_LIBRARY(Numerical
   ODE/RKMethods/Coefficients/DOPRI5Coefficients.cpp
   ODE/RKMethods/Coefficients/RK4Coefficients.cpp
   ODE/RhsVan.cpp
+  Optimization/mins.cpp
   )

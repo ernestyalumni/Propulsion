@@ -8,7 +8,6 @@ ADD_EXECUTABLE(Check
   Numerical/ODE/ODEIntTestSetup.cpp
   Numerical/ODE/ODEInt_tests.cpp
   Numerical/ODE/Output_tests.cpp
-  Numerical/ODE/RK4_tests.cpp
   Numerical/ODE/RKMethods/calculate_hermite_interpolation_tests.cpp
   Numerical/ODE/RKMethods/CalculateError_tests.cpp
   Numerical/ODE/RKMethods/CalculateNewY_tests.cpp
@@ -26,6 +25,7 @@ ADD_EXECUTABLE(Check
   Numerical/ODE/RhsVan_tests.cpp
   Numerical/ODE/StepperBase_tests.cpp
   Numerical/ODE/StepperDopr5_tests.cpp
+  Numerical/Optimization/mins_tests.cpp
   Utilities/BinarySearch_tests.cpp
   )
 

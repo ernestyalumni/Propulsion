@@ -50,10 +50,8 @@ namespace ODE
 //------------------------------------------------------------------------------
 TEST_F(TestOdeInt, Constructs)
 {
-
   SUCCEED();
 }
-
 
 } // namespace ODE 
 } // namespace Numerical
