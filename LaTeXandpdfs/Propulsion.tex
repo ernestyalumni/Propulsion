@@ -7176,7 +7176,159 @@ respectively (wikipedia and Qian's notation vs. T\"{o}lke's notation), the micro
 
 Niemeyer (2013) \cite{NiSu2013}
 
+\part{Optimization}
 
+\section{Minimization or Maximization of Functions}
+
+Ch. 10. "Minimization or Maximization of Functions", Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}
+
+\subsection{Initially Bracketing a Minimum}
+
+Sec. 10.1 "Initially Bracketing a Minimum", Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}
+
+\subsubsection{Pseudocode}
+
+Pseudocode for "Bracket", for initial bracketing of a minimum. The purpose is to show the existence of a minimum.
+
+$G_l = 1.618032$, \\
+$G_L = 100.0$ \\
+$T = 1\times 10^{-20}$ \\
+
+Let $a,b \in \mathbb{R}$, \\
+Consider $f: \mathbb{R} \to \mathbb{R}$, and $f(a) \geq f(b)$. Otherwise for $f(a) < f(b)$, then switch $a,b$.
+\[
+c = b + G_l (b-a)
+\]
+
+While $f(b) > f(c)$, \\
+\[
+\begin{aligned} 
+& r = (b-a)(f(b) - f(c)) \\
+& q = (b-c)(f(b) - f(a)) = (c-b)(f(a) - f(b)) \\
+& u = b - ((b-c)* q - (b-a) r) / (2 \max{ \lbrace|q-r, T\rbrace} \frac{q-r}{ |q-r| } ) \\
+& u_{\text{lim}} = b + G_L ( c-b)
+\end{aligned}
+\]
+
+If $(b - u )(u-c) > 0$, i.e. $b<u <c$ or $b> u > c$ (and $f(a) > f(b)$), \\
+\[
+\begin{aligned}
+& fu = f(u) \\
+& \text{ if } fu < f(c), \text{ go a minimum between $b$ and $c$ } \\
+& \quad \, b, u, c
+\end{aligned}
+\]
+
+else if $f(b) < f(u)$, got a minimum between $a$, and $u$ \\
+\quad \, return $a,b,u$ \\
+
+Otherwise, $u$ is between $b$ and $c$ but $f(b) \geq f(u) \geq f(c)$, and so \\
+parabolic fit was no use. Use default magnification: \\
+$ u = c + G_l (c-b)$ \\
+$\text{fu} = f(u)$ \\
+
+else if $(c-u)(u - u_l) > 0.0$ i.e. $c < u < u_l$ or $(c > u > u_l)$ (and also $(b-u)(u-c) \leq 0.0$) \\ i.e. Parabolic fit is between $c$ and its allowed limit.
+\quad \, if $f(u) < f(c)$ \\
+\quad \quad \, shift $b_x, c_x, u, u + G_l(u-c_x)$ \\
+\quad \quad \, shift $f(b), f(c), f(u), f(u)$ \\
+
+else if $(u_l -u)(c-u_l) > 0.0$, i.e. limit parabolic $u$ to maximum allowed value, \\
+\quad \, $\begin{aligned}
+& u := u_l \\
+& f_u := f(u) 
+\end{aligned}$ \\
+
+else $(u_l - u)(c- u_l) \leq 0.0$, and $(c-u)(u - u_l) \leq 0$, \\
+\quad \, reject parabolic $u$, use default magnification. \\
+\[
+\begin{aligned}
+& u = c + G_l (c-b) \\
+& fu = f(u)
+\end{aligned}
+\]
+
+Otherwise, \\
+shift $a,b,c, u$, \\
+shift $f(a), f(b), f(c), f(u)$ \\
+
+\subsection{Parabolic Interpolation, Parabolic Extrapolation}
+
+See \href{Numerical Methods with Programming, Leonid Kovalev}{https://drlvk.github.io/nm/section-parabolic-interpolation.html}
+
+Consider Newton interpolating polynomial:
+
+\begin{equation}
+\begin{aligned}
+& g(x) = f(a) + \alpha(x-a) + \beta(x-a)(x-b) \\
+& g'(x) = \alpha + \beta( 2x - a- b) \\
+& g''(x) = 2\beta
+\end{aligned}
+\end{equation}
+
+If $g'(x) = 0$, then $x = \frac{a+b}{2} - \frac{\alpha}{2\beta}$.
+
+\[
+\begin{aligned}
+& g(b) = f(a) + \alpha (b-a) \text{ so let } g(b) = f(b), \text{ so } \frac{f(b) - f(a)}{b-a} = \alpha \\
+& g(c) = f(a) + \alpha(c-a) + \beta(c-a)(c-b), \text{ so let } g(c) = f(c), \text{ so } \beta = \frac{f(c) - f(a) - \alpha(c-a) }{(c-a)(c-b)}
+\end{aligned}
+\]
+and so in summary, consider the interpolating parabola $g(x)$ for 3 points $a,b,c$
+\begin{equation}\label{Eq:ParabolicInterpolation}
+\boxed{
+\begin{aligned}
+& g(x) = f(a) + \alpha (x-a) + \beta(x-a) (x-b) \text{ where } \\
+& \alpha := \frac{ f(b) - f(a) }{b-a} \\
+& \beta := \frac{ f(c) - f(a) - \alpha (c-a) }{ (c-a)(c-b)} \text{ and } \\
+& x = \frac{ a + b}{2} - \frac{\alpha}{2 \beta} \text{ for } g'(x) = 0  \\
+& g''(x) = 2\beta
+\end{aligned}
+}
+\end{equation}
+
+Change notation: $a \leftrightarrow b$
+
+$\beta \mapsto \beta = \frac{f(c) - f(b) - \alpha (c-b) }{(c-a)(c-b) } = \frac{f(c) - f(b)}{(c-a)(c-b)} - \frac{\alpha}{c-a}$ \text{ or } \\
+$\beta ( c-a)(c-b) (b-a) = -r - (f(b) - f(a))(c-b) = -r +q$ \text{ where } \\
+\[
+\begin{aligned}
+& r := (b-a)(f(b)- f(c)) \\
+& r = q - \beta(c-a)(c-b)(b-a) \\
+& q:= (f(b) - f(a))(b-c) = (b-a)(b-c) \alpha
+\end{aligned}
+\]
+
+If we take a look at the code for \verb|mins.h| for \verb|void bracket(..)| for \verb|struct Bracketmethod| of pp. 491, Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}, then $u$ is found to be where our interpolating parabola $g(x)$ has a zero value for the derivative, i.e. $g'(x) = 0$:
+\[
+\begin{gathered}
+u = b - \frac{ (b-c)q - (b-a) r }{ 2 (q-r) } = b - \frac{ (b-c) q - (b-a)(q- \beta(c-a) (c-b)(b-a) ) }{ 2(q-r) } = \\
+= b - \frac{(a-c)q + \beta(c-a)(c-b)(b-a)^2 }{2\beta(c-a)(c-b)(b-a) } = b-  \frac{b-a}{2} + \frac{-\alpha}{2\beta} = \frac{b+a}{2} - \frac{\alpha}{2\beta}
+\end{gathered}
+\]
+
+\subsubsection{Derivation of Initially Bracketing a Minimum code directly from Parabolic Interpolation}
+
+Consider instead using Eq. \ref{Eq:ParabolicInterpolation} directly:
+
+\[
+\begin{gathered}
+u = \frac{a+b}{2} - \frac{\alpha}{2\beta} = \frac{1}{2} \left[ a + b - \frac{f(b) - f(a) }{b-a} \frac{ (c-a)(c-b)}{ f(c) - f(a) - \frac{f(b) - f(a)}{b-a} (c-a) } \right] = \\
+= \frac{1}{2} \left[ a+b - \frac{ (f(b) -f(a)) (c-a)(c-b) }{ (b-a)(f(c) - f(a)) - (f(b) - f(a))(c- a) } \right]
+\end{gathered}
+\]
+Redefine $q,r$ to be this:
+
+\begin{align}
+& q := (b-a)(f(c) - f(a)) \\
+& r:= (c-a) (f(b)-f(a))
+\end{align}
+
+So then
+\begin{align}
+& u = \frac{1}{2} \left[ (a+b) - \frac{r(c-b)}{q- r} \right] \\
+& \alpha = \frac{r}{(c-a)(b-a)} \\
+& \beta = \frac{ \frac{q}{b-a} - \frac{r}{ (c-a) (b-a) } (c-a) }{ (c-a) (c-b) } = \frac{ q- r}{ (b-a) (c-a) (c-b) }
+\end{align}
 
 \part{Cantera}
 
