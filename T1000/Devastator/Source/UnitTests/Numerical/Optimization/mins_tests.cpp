@@ -1,5 +1,6 @@
 #include "Numerical/Optimization/mins.h"
 
+#include "TestSetup.h"
 #include "gtest/gtest.h"
 
 #include <cmath> // std::isfinite
@@ -14,21 +15,6 @@ namespace Numerical
 {
 namespace Optimization
 {
-
-double example_f1(const double x)
-{
-  return x * x + 1.0;
-};
-
-double example_f2(const double x)
-{
-  return x * x - 4.0 * x + 4.0;
-};
-
-double example_f3(const double x)
-{
-  return -x;
-};
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

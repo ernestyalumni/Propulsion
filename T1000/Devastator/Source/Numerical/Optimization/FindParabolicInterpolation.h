@@ -31,7 +31,7 @@ struct FindParabolicInterpolation
     // specialization does not define a nested type called ::type.
     typename = typename std::enable_if_t<std::is_floating_point<T>::value>
     >
-  static Results find_extrema(
+  static Results<T> find_extrema(
     const T a,
     const T b,
     const T c,

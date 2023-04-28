@@ -25,6 +25,7 @@ ADD_EXECUTABLE(Check
   Numerical/ODE/RhsVan_tests.cpp
   Numerical/ODE/StepperBase_tests.cpp
   Numerical/ODE/StepperDopr5_tests.cpp
+  Numerical/Optimization/FindParabolicInterpolation_tests.cpp
   Numerical/Optimization/mins_tests.cpp
   Utilities/BinarySearch_tests.cpp
   )
