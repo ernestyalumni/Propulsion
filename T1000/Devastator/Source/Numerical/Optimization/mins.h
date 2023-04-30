@@ -1,10 +1,11 @@
 #ifndef NUMERICAL_OPTIMIZATION_MINS_H
 #define NUMERICAL_OPTIMIZATION_MINS_H
 
+#include <array>
+#include <cassert>
 #include <math.h> // std::copysign
+#include <tuple>
 #include <utility> // std::swap
-
-using std::swap;
 
 namespace Numerical
 {
@@ -44,8 +45,8 @@ struct Bracketmethod
 
     if (fb > fa)
     {
-      swap(ax, bx);
-      swap(fa, fb);
+      std::swap(ax, bx);
+      std::swap(fa, fb);
     }
 
     // First guess for c.
@@ -147,6 +148,71 @@ struct Bracketmethod
     a = d;
     b = e;
     c = f;
+  }
+};
+
+struct GoldenSectionSearch
+{
+  const double tol_;
+
+  GoldenSectionSearch(const double tol=3.0e-8): tol_{tol}
+  {}
+
+  template <class T>
+  std::tuple<double, double, std::array<double, 4>> minimize(
+    T& input_function,
+    const double ax,
+    const double bx,
+    const double cx)
+  {
+    // TODO: See if this is necessary or not.
+    //assert(ax < bx && bx < cx);
+
+    static constexpr double R {0.61803399};
+    static constexpr double C {1.0 - R};
+
+    double x1 {0.0};
+    double x2 {0.0};
+
+    double x0 {ax};
+    double x3 {cx};
+
+    if (std::abs(cx - bx) > std::abs(bx - ax))
+    {
+      x1 = bx;
+      x2 = bx + C * (cx - bx);
+    }
+    else
+    {
+      x2 = bx;
+      x2 = bx + C * (bx - ax);
+    }
+
+    double f1 {input_function(x1)};
+    double f2 {input_function(x2)};
+
+    while (std::abs(x3 - x0) > tol_ * (std::abs(x1) + std::abs(x2)))
+    {
+      if (f2 < f1)
+      {
+        Bracketmethod::shift3(x0, x1, x2, R*x2 + C*x3);
+        Bracketmethod::shift2(f1, f2, input_function(x2));
+      }
+      else
+      {
+        Bracketmethod::shift3(x3, x2, x1, R*x1 + C*x0);
+        Bracketmethod::shift2(f2, f1, input_function(x1));
+      }
+    }
+
+    if (f1 < f2)
+    {
+      return std::make_tuple(x1, f1, std::array<double, 4>{x0, x1, x2, x3});
+    }
+    else
+    {
+      return std::make_tuple(x2, f2, std::array<double, 4>{x0, x1, x2, x3});
+    }
   }
 };
 

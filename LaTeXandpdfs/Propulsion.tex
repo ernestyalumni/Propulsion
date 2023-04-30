@@ -7330,6 +7330,113 @@ So then
 & \beta = \frac{ \frac{q}{b-a} - \frac{r}{ (c-a) (b-a) } (c-a) }{ (c-a) (c-b) } = \frac{ q- r}{ (b-a) (c-a) (c-b) }
 \end{align}
 
+And let's rederive and reformulate the initially bracketing a minimum code. \\
+
+Let $a,b$ s.t. $f(a) > f(b)$. Let $G_l > 0$. Let $c= b+ G_l(b-a)$.  \\
+
+If $f(b) < f(c)$, done. \\
+
+Otherwise, given that $f(b) \geq f(c)$, \\
+
+find $u$ s.t. $g'(u) = 0$ and $c<u < u_{\lim}$ or $c> u > u_{\lim}$ for some limit on $u$, $u_{\lim}$. \\
+
+If $c< u_{\lim} < u$ or $c> u_{\lim} > u$ then we fail finding a minimum bracket.
+
+Otherwise, \\
+if $a< u <b$ or $a> u >b$ and $f(u) < f(b)$, return $(a, u, b)$. \\
+if $b< u < c$ or $b> u >c$ and $f(b) < f(a)$ or $f(u) < f(c)$, return $(b, u ,c)$ \\
+if $b< c < u$ or $u<c< b$ and $f(u) > f(c)$, return $(b, c, u)$.
+
+Otherwise fail. \\
+
+If we had failure and $c< u_{\lim} < u$, or $c> u_{\lim} > u$, then let $u= u_{\lim}$.  \\
+
+Otherwise, if we had failure, then let $u=c + G_l(c-b)$, i.e. we continue to advance in the same direction.
+
+\subsection{Golden Section Search in 1-dim.}
+
+See Sec. 10.2 "Golden Section Search in One Dimension", Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007}
+
+\subsubsection{How small of a bracket about a minimum $(a,b,c)$ is "tolerably" small?}
+
+How small of a bracket about a minimum $(a,b,c)$ is "tolerably" small?
+
+Consider Taylor's Thm., with $f'(b) = 0$.
+
+\[
+f(x) \approx f(b) + \frac{1}{2} f''(b) (x-b)^2
+\]
+Want $\epsilon | f(b) | > \frac{1}{2} |f''(b) | (x-b)^2$ or $|x-b| < \sqrt{\epsilon} |b| \sqrt{ \frac{2 |f(b)| }{b^2 f''(b)} }$. $f''(b) > 0$ for a minimum. \\
+
+Included $\frac{1}{b^2}$ because $\sqrt{ \frac{2 | f(b)| }{ f''(b)} } \sim 1$ (number of order unity) while $\sqrt{\epsilon}$ is $10^{-4}$ or $10^{-8}$. \\
+
+Choose tolerance \texttt{tol} to be square root of machine's floating-pt. precision.
+
+\subsubsection{Step Derivation of Golden Section Search}
+
+Consider problem of choosing new pt. $x$, given $(a,b,c)$. \\
+
+Suppose $\frac{b-a}{c-a} = w$, $\frac{c-b}{c-a} = 1 - w$. \\
+
+Suppose additional fraction $z$ beyond $b$, $\frac{x-b}{c-a} = z$. \\
+
+Next, bracketing segment will either be $w+z$ or $1-w$ (depending on where minimum is). \\
+
+Choose $z$ to make these lengths equal, so to "hedge our bets" equally (no prior information). \\
+
+$w+z = 1 -w$ or $z=1-2w$. \\
+
+Note that $z>0$ only if $w< \frac{1}{2}$. \\
+
+Consider scale similarity in previous step, $w$ chosen with same strategy. So $x$ should be same fraction of way from $b-c$ as $b$ from $a$ to $c$, i.e.
+
+\[
+\frac{z}{1-w} = w
+\]
+
+So $w^2-w + (1-2w) = 0 $ or $w^2 - 3w + 1=0$ or $w = \frac{ 3 - \sqrt{ 9 -4}}{ 2} = \frac{3 - \sqrt{5}}{2} \approx 0.38197$
+
+\subsubsection{Overall Golden Section Search algorithm}
+
+See pp. 492 - 493, Sec. 10.2 "Golden Section Search in One Dimension", Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007} \\
+
+Given $(a,b,c)$, choosen new point $x$ to be either $(a,b)$ or $(b,c)$. \\
+
+Then evaluate $f(x)$:
+\quad \, If $f(b) < f(x)$, choose $(a,b,x)$. \\
+\quad \, If $f(b) > f(x)$, choose $(b,x,c)$. \\
+
+Continue until distance between 2 outer points of triplet is tolerably small.
+
+\subsubsection{Pseudocode for Golden Section Search}
+
+See pp. 495 - 496, Sec. 10.2 "Golden Section Search in One Dimension", Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007} \\
+
+I will try to write with math what the code is doing for \verb|struct Golden : Bracketmethod {} |: \\
+
+Defining $\begin{aligned} & \quad \\
+& C = 0.38197 \\
+& R = 0.61803399 \\
+\end{aligned}$
+
+Given $(a,b,c)$ \\
+\quad \, $x_0 = a$ \\
+\quad \, $x_3 = c$ \\
+if $|c-b| > |b-a|$, \\
+\quad \, $x_1 = b$ \\
+\quad \, $x_2 = b + C(c-b)$ \\
+else, \\
+$\begin{aligned}
+& \quad \, \\
+& x_2 = b \\
+& x_1 = b-C (b-a)
+\end{aligned}$ \\
+
+while $|x_3 - x_0| > \epsilon (|x_1| + |x_2|)$ (EY: 20230430, I don't understand this condition and how it checks for "tolerably small"), \\
+\quad \, if $f(x_2) < f(x_1)$ (then, EY: 20230430, I expected to choose $(x_1, x_2, c)$ but the code says the following) \\
+\quad \quad \, $(x_1,x_2, (1-C)x_2 + Cx_3)$ \\
+\quad \, if $f(x_2) \geq f(x_1)$, $(x_2, x_1, (1-C)x_1 + C x_0)$ \\
+
 \part{Cantera}
 
 \section{Professor David Goodwin, 1957-2012}
