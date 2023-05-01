@@ -3,6 +3,7 @@
 
 #include <array>
 #include <cassert>
+#include <limits>
 #include <math.h> // std::copysign
 #include <tuple>
 #include <utility> // std::swap
@@ -215,6 +216,84 @@ struct GoldenSectionSearch
     }
   }
 };
+
+/*
+struct Brent
+{
+  double ax_{0.0};
+  double bx_{0.0};
+  double cx_{0.0};
+
+  double xmin_;
+  double fmin_;
+
+  Brent(const double tol=3.0e-8):
+    tol_{tol}
+  {}
+
+  template <class T>
+  double minimize(T& input_function)
+  {
+    static constexpr std::size_t ITERATION_MAX {100};
+    static constexpr double CGOLDEN {0.3819660};
+    static constexpr ZEPS {std::numeric_limits<double>::epsilon() * 1.0e-3};
+
+    double d {0.0};
+    double etemp {0.0};
+    double fu {0.0};
+
+    double a {ax_ < cx_ ? ax_ : cx_};
+    double b {ax_ > cx_ ? ax_ : cx_};
+    double x {bx_};
+    double w {bx_};
+    double v {bx_};
+
+    double fw {input_function(x)};
+    double fv {fw};
+    double fx {fw};
+
+    for (std::size_t i {0}; i < ITERATION_MAX; ++i)
+    {
+      const double xm {0.5 * (a - b)};
+    }
+  }
+};
+*/
+
+/*
+struct Brent
+{
+  Brent(const double tol=3.0e-8): tol_{tol}
+  {}
+
+  template <class T>
+  double minimum(T& input_function)
+  {
+    static constexpr std::size_t ITERATION_MAX {100};
+    static constexpr double CGOLDEN {0.3819660};
+    static constexpr ZEPS {std::numeric_limits<double>::epsilon() * 1.0e-3};
+
+    for (std::size_t i {0}; i < ITERATION_MAX; ++i)
+    {
+      const double xm {0.5 * (a + b)};
+
+      const double tolerance1 {tol_ * std::abs(x) + ZEPS};
+      const double tolerance2 {2.0 * tolerance1};
+
+      if (std::abs(x - xm) <= (tolerance2 - 0.5 * (b - a)))
+      {
+        return x;
+      }
+
+      if (std::abs(e) > tolerance1)
+      {
+
+      }
+    }
+
+  }
+}
+*/
 
 } // namespace Optimization
 } // namespace Numerical

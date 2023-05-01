@@ -7310,12 +7310,12 @@ u = b - \frac{ (b-c)q - (b-a) r }{ 2 (q-r) } = b - \frac{ (b-c) q - (b-a)(q- \be
 
 Consider instead using Eq. \ref{Eq:ParabolicInterpolation} directly:
 
-\[
+\begin{equation}\label{Eq:ParabolicInterpolationFit}
 \begin{gathered}
 u = \frac{a+b}{2} - \frac{\alpha}{2\beta} = \frac{1}{2} \left[ a + b - \frac{f(b) - f(a) }{b-a} \frac{ (c-a)(c-b)}{ f(c) - f(a) - \frac{f(b) - f(a)}{b-a} (c-a) } \right] = \\
 = \frac{1}{2} \left[ a+b - \frac{ (f(b) -f(a)) (c-a)(c-b) }{ (b-a)(f(c) - f(a)) - (f(b) - f(a))(c- a) } \right]
 \end{gathered}
-\]
+\end{equation}
 Redefine $q,r$ to be this:
 
 \begin{align}
@@ -7436,6 +7436,89 @@ while $|x_3 - x_0| > \epsilon (|x_1| + |x_2|)$ (EY: 20230430, I don't understand
 \quad \, if $f(x_2) < f(x_1)$ (then, EY: 20230430, I expected to choose $(x_1, x_2, c)$ but the code says the following) \\
 \quad \quad \, $(x_1,x_2, (1-C)x_2 + Cx_3)$ \\
 \quad \, if $f(x_2) \geq f(x_1)$, $(x_2, x_1, (1-C)x_1 + C x_0)$ \\
+
+\subsection{Parabolic Interpolation and Brent's Method in 1 dim.}
+
+See Sec. 10.3 "Parabolic Interpolation and Brent's Method in One Dimension", Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007} \\
+
+On pp. 496, given Eq. (10.3.1) of Press, Teukolsky, Vetterling, Flannery (2007) \cite{PTVF2007},
+\begin{equation}\label{Eq:InverseParabolicInterpolationFormulaForAbscissax}
+x = b - \frac{1}{2} \frac{ (b-a)^2 (f(b) - f(c)) - (b-c)^2 (f(b) - f(a)) }{ (b-a) (f(b) -f(c)) - (b-c) (f(b) - f(a)) }
+\end{equation}
+
+We had derived Eq. \ref{Eq:ParabolicInterpolationFit}. We will show that Eq. \ref{Eq:ParabolicInterpolationFit} and Eq. \ref{Eq:InverseParabolicInterpolationFormulaForAbscissax} are equal. 
+
+Now Eq. \ref{Eq:InverseParabolicInterpolationFormulaForAbscissax} can be transformed into the following by factoring out a $b$ factor from the second term of the equation:
+
+\begin{equation}\label{Eq:ShowingParabolicInterpolationExpressionsAreEqual1}
+\begin{gathered}
+x = b - \frac{1}{2} \frac{ (b-a)^2 (f(b) - f(c)) - (b-c)^2 (f(b) - f(a)) }{ (b-a) (f(b) -f(c)) - (b-c) (f(b) - f(a)) } = \frac{1}{2} b - \frac{1}{2} \frac{ -a (b-a) (f(b) - f(c)) + c(b-c) (f(b) -f(a)) }{ (b-a) (f(b)-f(c) ) - (b-c) (f(b) - f(a)) }
+\end{gathered}
+\end{equation}
+
+We will show that the denominators of Eq. \ref{Eq:InverseParabolicInterpolationFormulaForAbscissax} and Eq. \ref{Eq:ParabolicInterpolationFit} are equal, except for a $(-1)$ factor:
+
+\[
+\begin{gathered}
+(b-a) (f(b) -f(c)) - (b-c)(f(b)-f(a)) = c(f(b) - f(a)) - b(f(b) -f(a)) + b(f(b) - f(c)) - a(f(b) -f(c))
+\end{gathered}
+\]
+Now
+\[
+\begin{gathered}
+a(f(b)-f(c)) = a (f(b)- f(a) + f(a) - f(c)) = a(f(b) - f(a)) - a(f(c) - f(a))
+\end{gathered}
+\]
+
+So then using the very previous expression in the denominator,
+\[
+\begin{gathered}
+\Longrightarrow (c-a)(f(b)-f(a)) - (b-a)(f(c) -f(a))
+\end{gathered}
+\]
+So modulo $(-1)$, the denominators of Eq. \ref{Eq:InverseParabolicInterpolationFormulaForAbscissax}, Eq. \ref{Eq:ParabolicInterpolationFit}, are the same!
+
+Now
+\[
+\begin{gathered}
+a = \frac{ a(b-a) (f(c) -f(a)) - a(c-a)(f(b) - f(a)) }{ (b-a)(f(c) - f(a)) - (f(b)-f(a))(c-a) }
+\end{gathered}
+\]
+
+Consider, for Eq. \ref{Eq:ParabolicInterpolationFit}, 
+\[
+\begin{gathered}
+a(b-a)(f(c) -f(a)) - a(c-a)(f(b)-f(a)) - (c-b)(c-a) (f(b) - f(a)) = \\
+= a(b-a)(f(c) - f(a)) - (c-b+a) (c-a) (f(b) - f(a)) = \\
+= a(b-a) f(c) - a(b-a) f(a) + c(b-c) (f(b) - f(a)) - (-ac + ab + ac -a^2) (f(b)-f(a)) = \\
+= a(b-a) (f(c) - f(b) ) + c(b-c) (f(b)-f(a))
+\end{gathered}
+\]
+where the last expression is because the $-a(b-a)f(a)$ terms cancel.
+
+Comparing this expression on the "$x$" side, Eq. \ref{Eq:InverseParabolicInterpolationFormulaForAbscissax}, in Eq. \ref{Eq:ShowingParabolicInterpolationExpressionsAreEqual1}, we have the same numerator, and since denominators are equal other than $(-1)$ factor, so $\frac{-1}{2} (-1) = \frac{1}{2}$, we have equal expressions. \\
+
+Consider 6 pts., not necessarily distinct, $a,b,u,v,w,x$. \\
+
+Minimum is bracketed between $a,b$; $x$ is pt. with very least function value so far (or most recent, in case of tie). \\
+
+$w \equiv$ pt. with 2nd. least function value \\
+$v \equiv$ previous value of $w$ \\
+$u = $ pt. which function was evaluated most recently \\
+
+General principles: \\
+parabolic interpolation attempted, fitting through the pts. $x,v, w$.  \\
+To be acceptable, parabolic step must 
+\begin{enumerate}
+\item fall within bounding interval $(a,b)$ and \\
+\item imply movement from best current value $x$ that is \emph{less} than half movement of \emph{step before last} \\
+
+This ensures parabolic steps actually converging to something, rather than, say, bouncing around some nonconvergent limit cycle.
+\end{enumerate}
+
+Reason for comparing to step \emph{before} last seems essentially heuristic: by experience, it's better not to "punish" the algorithm for a single bad step if it can make it up on next one.
+
+
 
 \part{Cantera}
 
