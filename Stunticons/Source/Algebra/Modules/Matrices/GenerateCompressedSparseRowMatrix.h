@@ -9,15 +9,15 @@ namespace Modules
 {
 namespace Matrices
 {
-namespace CompressedSparseRow
+namespace SparseMatrices
 {
 
 //------------------------------------------------------------------------------
 /// \ref https://github.com/NVIDIA/cuda-samples/tree/master/Samples/4_CUDA_Libraries/conjugateGradient
 //------------------------------------------------------------------------------
-void generate_tridiagonal_matrix(HostCompressedSparseRowMatrix& a)
+void generate_tridiagonal_matrix(HostCompressedSparseRowMatrix& a);
 
-} // namespace CompressedSparseRow
+} // namespace SparseMatrices
 
 } // namespace Matrices
 } // namespace Modules

@@ -1,10 +1,15 @@
 #include "Algebra/Modules/Matrices/CompressedSparseRow.h"
+#include "Algebra/Modules/Matrices/GenerateCompressedSparseRowMatrix.h"
+#include "Algebra/Modules/Matrices/HostCompressedSparseRow.h"
 #include "gtest/gtest.h"
 
 #include <cstddef>
 
 using Algebra::Modules::Matrices::SparseMatrices::CompressedSparseRowMatrix;
 using Algebra::Modules::Matrices::SparseMatrices::DenseVector;
+using Algebra::Modules::Matrices::SparseMatrices::generate_tridiagonal_matrix;
+using Algebra::Modules::Matrices::SparseMatrices::HostCompressedSparseRowMatrix;
+using std::size_t;
 
 namespace GoogleUnitTests
 {
@@ -18,8 +23,8 @@ namespace Matrices
 namespace CompressedSparseRow
 {
 
-constexpr std::size_t M {1048576};
-constexpr std::size_t N {1048576 + 1};
+constexpr size_t M {1048576};
+constexpr size_t N {1048576 + 1};
 
 } // namespace CompressedSparseRow
 
@@ -27,7 +32,7 @@ constexpr std::size_t N {1048576 + 1};
 //------------------------------------------------------------------------------
 TEST(CompressedSparseRowTests, Constructible)
 {
-  constexpr std::size_t number_of_nonzero_elements {
+  constexpr size_t number_of_nonzero_elements {
     (CompressedSparseRow::M - 2) * 3 + 4};
 
   CompressedSparseRowMatrix csr {
@@ -41,7 +46,7 @@ TEST(CompressedSparseRowTests, Constructible)
 //------------------------------------------------------------------------------
 TEST(CompressedSparseRowTests, Destructible)
 {
-  constexpr std::size_t number_of_nonzero_elements {
+  constexpr size_t number_of_nonzero_elements {
     (CompressedSparseRow::M - 2) * 3 + 4};
 
   {
@@ -51,6 +56,46 @@ TEST(CompressedSparseRowTests, Destructible)
   }
 
   SUCCEED();
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(CompressedSparseRowTests, CopiesToDevice)
+{
+  constexpr size_t number_of_nonzero_elements {
+    (CompressedSparseRow::M - 2) * 3 + 4};
+
+  HostCompressedSparseRowMatrix h_csr {
+    CompressedSparseRow::M,
+    CompressedSparseRow::N,
+    number_of_nonzero_elements};
+
+  generate_tridiagonal_matrix(h_csr);
+
+  CompressedSparseRowMatrix csr {
+    CompressedSparseRow::M,
+    CompressedSparseRow::N,
+    number_of_nonzero_elements};
+
+  csr.copy_host_input_to_device(h_csr);
+
+  HostCompressedSparseRowMatrix h_output {
+    CompressedSparseRow::M,
+    CompressedSparseRow::N,
+    number_of_nonzero_elements};
+
+  csr.copy_device_output_to_host(h_output);
+
+  for (size_t i {0}; i < h_csr.number_of_elements_; ++i)
+  {
+    EXPECT_FLOAT_EQ(h_csr.values_[i], h_output.values_[i]);
+    EXPECT_EQ(h_csr.J_[i], h_output.J_[i]);
+  }
+
+  for (size_t i {0}; i < h_csr.M_ + 1; ++i)
+  {{
+    EXPECT_EQ(h_csr.I_[i], h_output.I_[i]);
+  }}
 }
 
 //------------------------------------------------------------------------------

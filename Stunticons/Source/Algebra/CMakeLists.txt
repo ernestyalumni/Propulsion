@@ -15,5 +15,6 @@ TARGET_LINK_LIBRARIES(ALGEBRA_CU ${CUDA_cusparse_LIBRARY})
 
 ADD_LIBRARY(ALGEBRA
   Modules/Matrices/GenerateCompressedSparseRowMatrix.cpp
+  Modules/Matrices/HostCompressedSparseRow.cpp
   Modules/Vectors/HostVectorAdditionArrays.cpp
   )

@@ -9,6 +9,8 @@ namespace Modules
 {
 namespace Matrices
 {
+namespace SparseMatrices
+{
 
 CStyleHostCompressedSparseRowMatrix::CStyleHostCompressedSparseRowMatrix(
   const std::size_t M,
@@ -50,6 +52,7 @@ HostCompressedSparseRowMatrix::~HostCompressedSparseRowMatrix()
   delete [] I_;
 }
 
+} // namespace SparseMatrices
 } // namespace Matrices
 } // namespace Modules
 } // namespace Algebra
