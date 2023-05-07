@@ -1,7 +1,7 @@
 #include "DeviceVectorAdditionArrays.h"
 
 #include <cstddef> // std::size_t
-#include <cstdlib> // free
+#include <cuda_runtime.h> // cudaFree, cudaMalloc
 #include <iostream> // std::cerr
 #include <stdexcept>
 

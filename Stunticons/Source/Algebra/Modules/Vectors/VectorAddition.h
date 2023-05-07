@@ -25,6 +25,11 @@ __global__ void vector_addition(
   float* C,
   std::size_t number_of_elements);
 
+void vector_addition(
+  HostVectorAdditionArrays& h_arrays,
+  DeviceVectorAdditionArrays& d_arrays,
+  const std::size_t threads_per_block = 256);
+
 void copy_host_input_to_device(
   const HostVectorAdditionArrays& hab,
   DeviceVectorAdditionArrays& dab);

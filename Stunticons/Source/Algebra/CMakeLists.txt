@@ -1,4 +1,5 @@
 SET(ALGEBRA_CU_SOURCES
+  Modules/Matrices/CompressedSparseRow.cu
   Modules/Vectors/VectorAddition.cu
   Modules/Vectors/DeviceVectorAdditionArrays.cu
   )
@@ -10,6 +11,9 @@ ADD_LIBRARY(ALGEBRA_CU
   ${ALGEBRA_CU_SOURCES}
   )
 
+TARGET_LINK_LIBRARIES(ALGEBRA_CU ${CUDA_cusparse_LIBRARY})
+
 ADD_LIBRARY(ALGEBRA
+  Modules/Matrices/GenerateCompressedSparseRowMatrix.cpp
   Modules/Vectors/HostVectorAdditionArrays.cpp
   )

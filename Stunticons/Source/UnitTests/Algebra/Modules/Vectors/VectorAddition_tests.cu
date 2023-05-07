@@ -25,7 +25,7 @@ namespace Vectors
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-TEST(VectorAdditionTests, Adds)
+TEST(VectorAdditionTests, VectorAdditionAddsAsKernel)
 {
   HostVectorAdditionArrays h_arrays {};
 
@@ -61,6 +61,28 @@ TEST(VectorAdditionTests, Adds)
   for (std::size_t i {0}; i < h_arrays.number_of_elements_; ++i)
   {
     EXPECT_FLOAT_EQ(h_arrays.h_C_[i], 2.0 * static_cast<float>(i) + 2.0f);
+  }
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(VectorAdditionTests, VectorAdditionAdds)
+{
+  HostVectorAdditionArrays h_arrays {};
+
+  for (std::size_t i {0}; i < h_arrays.number_of_elements_; ++i)
+  {
+    h_arrays.h_A_[i] = static_cast<float>(i);
+    h_arrays.h_B_[i] = 2.0 * static_cast<float>(i) + 3.0f;
+  }
+
+  DeviceVectorAdditionArrays d_arrays {};
+
+  vector_addition(h_arrays, d_arrays);
+
+  for (std::size_t i {0}; i < h_arrays.number_of_elements_; ++i)
+  {
+    EXPECT_FLOAT_EQ(h_arrays.h_C_[i], 3.0 * static_cast<float>(i) + 3.0f);
   }
 }
 

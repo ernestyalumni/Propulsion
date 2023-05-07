@@ -7176,6 +7176,54 @@ respectively (wikipedia and Qian's notation vs. T\"{o}lke's notation), the micro
 
 Niemeyer (2013) \cite{NiSu2013}
 
+\section{Sparse Matrices}
+
+\subsection{Compressed Sparse Row (CSR)}
+
+Consider $M\times N$ matrix $A$. Let $|A| = $ total number of nonzero entries in $M$, $|A| < MN$. \\
+
+Let $V = \lbrace A_{ij} | A_{ij} \neq 0 \rbrace$, so $|V| = |A|$. \\
+
+Let $J \equiv $ column indices, $|J| = |A|$, consist of column index $j_k$ of $k$th non-zero entries. \\
+
+So 
+\[
+\begin{gathered}
+V_k = A_{i_k j_k} \text{ s.t. } A_{i_k j_k } \neq 0, \, k= 0 , 1, \dots |A| -1 \\
+J_k = j_k, \quad \, k = 0, \dots, |A| - 1
+\end{gathered}
+\]
+
+Let $I \equiv $ row indices, $|I| = M + 1$. \\
+\phantom{Let } It encodes the index in $V,J$, where the given row starts; i.e. \\
+\phantom{Let It } $I[j]$ encodes total number of nonzero elements above row $j$. \\
+\phantom{Let It } $I[M} \equiv I_M = |A| \equiv $ total number of nonzero entries.  \\
+
+So $I_l \in \lbrace 0, 1 , \dots |A| \rbrace$. \\
+
+Note that $I_{l + 1} - I_l = $ total number of nonzero elements in row $l$. \\
+
+Consider $k$th nonzero elements, $k=0,1, \dots |A| - 1$. \\
+\quad \, $V_k$ is its value. \\
+\quad \, $J_k = j_k$ \\
+
+For $I_l$, $l=0,1, \dots M$, find $l$ s.t. $k\geq I_l $ and $I_{l+1} < k$. \\
+
+Thus $A_{ij} = V_k$ with $j=j_k$ and $i = l$ s.t. $k\geq I_l$ and $I_{l+1} < k$.
+
+\subsubsection{Example: Tridiagonal symmetric matrix}
+
+Consider $M \times N$ matrix $A$, s.t. $ i = 0,1, \dots M-1$, $j = 0,1, \dots N-1$. \\
+
+Diagonal entries $A_{ii}$. $i=0, 1, \dots \min{ \lbrace M, N \rbrace}$. \\
+
+Consider $A_{ij}$ s.t. $j=i+1$. If $M=N$, $i=0,1,\dots M-2$, and so $M-1$ entries. \\
+
+\quad \, If $M > N$, $j=1, \dots N-1$, so $N-1$ entries. \\
+\quad \, If $M < N$, $i=0, \dots M-1$, and so $\min{ \lbrace M -1, N-1 \rbrace}$ entries. \\
+
+Consider $A_{ij}$ s.t. $i=j + 1$. Likewise $\min{ \lbrace M- 1, N-1 \rbrace}$ entries. \\
+
 \part{Optimization}
 
 \section{Minimization or Maximization of Functions}

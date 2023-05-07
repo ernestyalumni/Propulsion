@@ -31,6 +31,33 @@ __global__ void vector_addition(
   }
 }
 
+void vector_addition(
+  HostVectorAdditionArrays& h_arrays,
+  DeviceVectorAdditionArrays& d_arrays,
+  const std::size_t threads_per_block)
+{
+  copy_host_input_to_device(h_arrays, d_arrays);
+
+  const size_t blocks_per_grid {
+    (h_arrays.number_of_elements_ + threads_per_block - 1) / threads_per_block};
+
+  vector_addition<<<blocks_per_grid, threads_per_block>>>(
+    d_arrays.d_A_,
+    d_arrays.d_B_,
+    d_arrays.d_C_,
+    d_arrays.number_of_elements_);
+
+  const cudaError_t err {cudaGetLastError()};
+
+  if (err != cudaSuccess)
+  {
+    cerr << "Failed to launch vector_addition kernel (error code " <<
+      cudaGetErrorString(err) << ")!\n";
+  }
+
+  copy_device_output_to_host(d_arrays, h_arrays);
+}
+
 void copy_host_input_to_device(
   const HostVectorAdditionArrays& hab,
   DeviceVectorAdditionArrays& dab)
