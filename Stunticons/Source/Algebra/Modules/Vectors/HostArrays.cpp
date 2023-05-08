@@ -14,12 +14,12 @@ CStyleHostArray::CStyleHostArray(
   const std::size_t input_size
   ):
   number_of_elements_{input_size},
-  h_x_{static_cast<float*>(malloc(input_size * sizeof(float)))}
+  values_{static_cast<float*>(malloc(input_size * sizeof(float)))}
 {}
 
 CStyleHostArray::~CStyleHostArray()
 {
-  free(h_x_);
+  free(values_);
 }
 
 //------------------------------------------------------------------------------

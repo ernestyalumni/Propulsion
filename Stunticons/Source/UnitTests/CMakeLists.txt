@@ -2,6 +2,9 @@ ENABLE_TESTING()
 
 SET(TEST_CU_SOURCES
   Algebra/Modules/Matrices/CompressedSparseRow_tests.cu
+  Algebra/Modules/Morphisms/SparseMatrixMorphism_tests.cu
+  Algebra/Modules/Vectors/Array_tests.cu
+  Algebra/Modules/Vectors/CuBLASVectorOperations_tests.cu
   Algebra/Modules/Vectors/Vector2_tests.cu
   Algebra/Modules/Vectors/VectorAddition_tests.cu
   Utilities/DeviceManagement/GetCUDADeviceProperties_tests.cu
@@ -11,9 +14,10 @@ SET(TEST_CU_SOURCES
 SET_SOURCE_FILES_PROPERTIES(${TEST_CU_SOURCES} PROPERTIES LANGUAGE CUDA)
 
 ADD_EXECUTABLE(Check
-  Algebra/Modules/Matrices/GenerateCompressedSparseRowMatrix_tests.cpp
-  Algebra/Modules/Vectors/HostVectorAdditionArrays_tests.cpp
   ${TEST_CU_SOURCES}
+  Algebra/Modules/Matrices/GenerateCompressedSparseRowMatrix_tests.cpp
+  Algebra/Modules/Vectors/HostArrays_tests.cpp
+  Algebra/Modules/Vectors/HostVectorAdditionArrays_tests.cpp
   )
 
 TARGET_LINK_LIBRARIES(Check

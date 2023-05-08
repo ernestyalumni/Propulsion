@@ -39,4 +39,4 @@ struct HostArray
 } // namespace Modules
 } // namespace Algebra
 
-#endif // ALGEBRA_MODULES_VECTORS_HOST_VECTOR_ADDITION_ARRAYS_H
+#endif // ALGEBRA_MODULES_VECTORS_HOST_ARRAYS_H

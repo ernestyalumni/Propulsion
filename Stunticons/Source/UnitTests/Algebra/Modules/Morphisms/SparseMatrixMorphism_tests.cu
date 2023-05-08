@@ -13,19 +13,20 @@ namespace Algebra
 {
 namespace Modules
 {
-namespace Matrices
+namespace Morphisms
 {
 
 namespace GenerateCompressedSparseRow
 {
 
 constexpr size_t M {1048576};
+//constexpr size_t N {1048576 + 1};
 
 } // namespace GenerateCompressedSparseRow
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-TEST(GenerateCompressedSparseRowMatrixTests, HasCorrectIndiciesForSquareMatrix)
+TEST(SparseMatrixMorphismTests, HasCorrectIndiciesForSquareMatrix)
 {
   constexpr size_t number_of_nonzero_elements {
     (GenerateCompressedSparseRow::M - 2) * 3 + 4};
@@ -93,7 +94,7 @@ TEST(GenerateCompressedSparseRowMatrixTests, HasCorrectIndiciesForSquareMatrix)
     GenerateCompressedSparseRow::M - 1);
 }
 
-} // namespace Matrices
+} // namespace Morphisms
 } // namespace Modules
 } // namespace Algebra
 } // namespace GoogleUnitTests

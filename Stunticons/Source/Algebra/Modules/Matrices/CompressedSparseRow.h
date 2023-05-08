@@ -41,7 +41,7 @@ class CompressedSparseRowMatrix
     const std::size_t N_;
     const std::size_t number_of_elements_;    
 
-    cusparseSpMatDescr_t matrix_handler_;
+    cusparseSpMatDescr_t matrix_descriptor_;
 };
 
 class DenseVector

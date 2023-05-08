@@ -36,7 +36,7 @@ CompressedSparseRowMatrix::CompressedSparseRowMatrix(
   M_{M},
   N_{N},
   number_of_elements_{number_of_elements},
-  matrix_handler_{nullptr}  
+  matrix_descriptor_{nullptr}  
 {
   const cudaError_t err_values {
     cudaMalloc(
@@ -73,7 +73,7 @@ CompressedSparseRowMatrix::CompressedSparseRowMatrix(
   // cusparseCreateCsr initializes sparse matrix descriptor cusparseSpMatDescr_t
   // spMatDescr in CSR format.
   const cusparseStatus_t create_sparse_status {cusparseCreateCsr(
-    &matrix_handler_,
+    &matrix_descriptor_,
     // number of rows
     M,
     // number of columns
@@ -124,12 +124,12 @@ CompressedSparseRowMatrix::~CompressedSparseRowMatrix()
       cudaGetErrorString(err_rows) << ")!\n";
   }
 
-  if (matrix_handler_)
+  if (matrix_descriptor_)
   {
     // ref. https://docs.nvidia.com/cuda/cusparse/index.html#cusparsedestroyspmat
     // Releases host memory allocated for sparse matrix descriptor spMatDescr.
     const cusparseStatus_t destroy_matrix_status {cusparseDestroySpMat(
-      matrix_handler_)};
+      matrix_descriptor_)};
 
     if (destroy_matrix_status != CUSPARSE_STATUS_SUCCESS)
     {
@@ -273,7 +273,7 @@ void DenseVector::copy_device_output_to_host(HostArray& h_a)
     h_a.values_,
     d_values_,
     number_of_elements_ * sizeof(float),
-    cudaMemcpyDeviceToHost));  
+    cudaMemcpyDeviceToHost));
 }
 
 } // namespace SparseMatrices

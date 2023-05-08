@@ -1,6 +1,7 @@
 #include "Algebra/Modules/Matrices/CompressedSparseRow.h"
 #include "Algebra/Modules/Matrices/GenerateCompressedSparseRowMatrix.h"
 #include "Algebra/Modules/Matrices/HostCompressedSparseRow.h"
+#include "Algebra/Modules/Vectors/HostArrays.h"
 #include "gtest/gtest.h"
 
 #include <cstddef>
@@ -9,6 +10,7 @@ using Algebra::Modules::Matrices::SparseMatrices::CompressedSparseRowMatrix;
 using Algebra::Modules::Matrices::SparseMatrices::DenseVector;
 using Algebra::Modules::Matrices::SparseMatrices::generate_tridiagonal_matrix;
 using Algebra::Modules::Matrices::SparseMatrices::HostCompressedSparseRowMatrix;
+using Algebra::Modules::Vectors::HostArray;
 using std::size_t;
 
 namespace GoogleUnitTests
@@ -93,9 +95,9 @@ TEST(CompressedSparseRowTests, CopiesToDevice)
   }
 
   for (size_t i {0}; i < h_csr.M_ + 1; ++i)
-  {{
+  {
     EXPECT_EQ(h_csr.I_[i], h_output.I_[i]);
-  }}
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -116,6 +118,44 @@ TEST(DenseVectorTests, Destructible)
   }
 
   SUCCEED();
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(DenseVectorTests, CopiesToDevice)
+{
+  HostArray rhs {CompressedSparseRow::M};
+  HostArray x {CompressedSparseRow::M};
+
+  for (size_t i {0}; i < CompressedSparseRow::M; ++i)
+  {
+    rhs.values_[i] = 1.0;
+    x.values_[i] = 0.0;
+  }
+
+  DenseVector d_x {CompressedSparseRow::M};
+  DenseVector d_r {CompressedSparseRow::M};
+
+  d_x.copy_host_input_to_device(x);
+  d_r.copy_host_input_to_device(rhs);
+
+  HostArray rhs_out {CompressedSparseRow::M};
+  HostArray x_out {CompressedSparseRow::M};
+
+  for (size_t i {0}; i < CompressedSparseRow::M; ++i)
+  {
+    rhs_out.values_[i] = 42.0;
+    x_out.values_[i] = 69.0;
+  }
+
+  d_x.copy_device_output_to_host(x_out);
+  d_r.copy_device_output_to_host(rhs_out);
+
+  for (size_t i {0}; i < CompressedSparseRow::M; ++i)
+  {
+    EXPECT_FLOAT_EQ(rhs_out.values_[i], 1.0);
+    EXPECT_FLOAT_EQ(x_out.values_[i], 0.0);
+  }
 }
 
 } // namespace Matrices

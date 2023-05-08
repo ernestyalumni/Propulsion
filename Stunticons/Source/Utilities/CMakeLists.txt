@@ -1,7 +1,8 @@
 SET(UTILITIES_CU_SOURCES
   DeviceManagement/GetCUDADeviceProperties.cu
-  HandleUnsuccessfulCudaCall.cu
+  HandleUnsuccessfulCuBLASCall.cu
   HandleUnsuccessfulCuSparseCall.cu
+  HandleUnsuccessfulCudaCall.cu
   )
 
 ADD_LIBRARY(UTILITIES_CU
