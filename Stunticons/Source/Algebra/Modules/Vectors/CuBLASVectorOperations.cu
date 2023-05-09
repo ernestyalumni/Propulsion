@@ -99,7 +99,7 @@ bool CuBLASVectorOperations::scalar_multiply_and_add_vector(
   Array& y)
 {
   HandleUnsuccessfulCuBLASCall handle_vector_operations {
-    "Failed to scalar multiple and add in cuBLAS"};
+    "Failed to scalar multiply and add in cuBLAS"};
 
   const float alpha {input_alpha};
 
@@ -120,6 +120,58 @@ bool CuBLASVectorOperations::scalar_multiply_and_add_vector(
     1));
 
   return handle_vector_operations.is_cuBLAS_success();
+}
+
+bool CuBLASVectorOperations::scalar_multiply(
+  const float scalar,
+  DenseVector& x,
+  const std::size_t stride)
+{
+  HandleUnsuccessfulCuBLASCall handle_scalar_multiplication {
+    "Failed to scalar multiply in cuBLAS"};
+
+  const float alpha {scalar};
+
+  // ref. https://docs.nvidia.com/cuda/cublas/index.html#using-the-cublas-api
+  // This function scales vector x by scalar alpha and overwrites it with the
+  // result. Hence, performed operation is x[j] = \alpha * x[j]
+  // Notice that i = 1...n, j = 1 + (i - 1) * incx reflect 1-based indexing used
+  // for compatibility with Fortran.
+  handle_scalar_multiplication(cublasSscal(
+    cublas_handle_,
+    x.number_of_elements_,
+    &alpha,
+    x.d_values_,
+    static_cast<int>(stride)
+    ));
+
+  return handle_scalar_multiplication.is_cuBLAS_success();
+}
+
+bool CuBLASVectorOperations::scalar_multiply(
+  const float scalar,
+  Array& x,
+  const std::size_t stride)
+{
+  HandleUnsuccessfulCuBLASCall handle_scalar_multiplication {
+    "Failed to scalar multiply in cuBLAS"};
+
+  const float alpha {scalar};
+
+  // ref. https://docs.nvidia.com/cuda/cublas/index.html#using-the-cublas-api
+  // This function scales vector x by scalar alpha and overwrites it with the
+  // result. Hence, performed operation is x[j] = \alpha * x[j]
+  // Notice that i = 1...n, j = 1 + (i - 1) * incx reflect 1-based indexing used
+  // for compatibility with Fortran.
+  handle_scalar_multiplication(cublasSscal(
+    cublas_handle_,
+    x.number_of_elements_,
+    &alpha,
+    x.values_,
+    static_cast<int>(stride)
+    ));
+
+  return handle_scalar_multiplication.is_cuBLAS_success();
 }
 
 optional<float> CuBLASVectorOperations::dot_product(

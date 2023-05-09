@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <cusparse.h> // cusparseSpMatDescr_t
+#include <vector>
 
 namespace Algebra
 {
@@ -58,6 +59,10 @@ class DenseVector
       const Algebra::Modules::Vectors::HostArray& h_a);
 
     void copy_device_output_to_host(Algebra::Modules::Vectors::HostArray& h_a);
+
+    void copy_host_input_to_device(const std::vector<float>& h_a);
+
+    void copy_device_output_to_host(std::vector<float>& h_a);
 
     float* d_values_;
 

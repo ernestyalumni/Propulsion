@@ -50,11 +50,6 @@ struct Array
   bool asynchronous_copy_device_output_to_host(
     HostArray& h_a,
     cudaStream_t stream = 0);
-
-  std::size_t get_number_of_elements() const
-  {
-    return number_of_elements_;
-  }
 };
 
 } // namespace Vectors

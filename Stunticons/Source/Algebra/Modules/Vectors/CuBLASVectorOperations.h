@@ -51,6 +51,16 @@ class CuBLASVectorOperations
       const Array& x,
       Array& y);
 
+    bool scalar_multiply(
+      const float scalar,
+      DenseVector& x,
+      const std::size_t stride=1);
+
+    bool scalar_multiply(
+      const float scalar,
+      Array& x,
+      const std::size_t stride=1);
+
     // TODO: Figure out if the dot product, cublas<t>dot() are blocking
     // (synchronous) calls. It is expected that they should be.
 

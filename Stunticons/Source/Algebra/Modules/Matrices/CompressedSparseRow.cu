@@ -9,12 +9,14 @@
 #include <cuda_runtime.h> // cudaFree, cudaMalloc
 #include <cusparse.h> // cuSparseCreateCsr
 #include <iostream> // std::cerr
+#include <vector>
 
 using Algebra::Modules::Vectors::HostArray;
 using Utilities::HandleUnsuccessfulCUDACall;
 using Utilities::HandleUnsuccessfulCuSparseCall;
 using std::cerr;
 using std::size_t;
+using std::vector;
 
 namespace Algebra
 {
@@ -271,6 +273,30 @@ void DenseVector::copy_device_output_to_host(HostArray& h_a)
 
   handle_values(cudaMemcpy(
     h_a.values_,
+    d_values_,
+    number_of_elements_ * sizeof(float),
+    cudaMemcpyDeviceToHost));
+}
+
+void DenseVector::copy_host_input_to_device(const vector<float>& h_a)
+{
+  HandleUnsuccessfulCUDACall handle_values {
+    "Failed to copy values from host to device"};
+
+  handle_values(cudaMemcpy(
+    d_values_,
+    h_a.data(),
+    h_a.size() * sizeof(float),
+    cudaMemcpyHostToDevice));
+}
+
+void DenseVector::copy_device_output_to_host(vector<float>& h_a)
+{
+  HandleUnsuccessfulCUDACall handle_values {
+    "Failed to copy values from device to host"};
+
+  handle_values(cudaMemcpy(
+    h_a.data(),
     d_values_,
     number_of_elements_ * sizeof(float),
     cudaMemcpyDeviceToHost));

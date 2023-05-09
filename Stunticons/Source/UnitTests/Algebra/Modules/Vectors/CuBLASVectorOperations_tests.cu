@@ -1,9 +1,11 @@
+#include "Algebra/Modules/Matrices/CompressedSparseRow.h"
 #include "Algebra/Modules/Vectors/Array.h"
 #include "Algebra/Modules/Vectors/CuBLASVectorOperations.h"
 #include "gtest/gtest.h"
 
 #include <vector>
 
+using Algebra::Modules::Matrices::SparseMatrices::DenseVector;
 using Algebra::Modules::Vectors::Array;
 using Algebra::Modules::Vectors::CuBLASVectorOperations;
 using std::vector;
@@ -91,6 +93,52 @@ TEST(CuBLASVectorOperationsTests, TakesDotProduct)
 
   EXPECT_TRUE(result.has_value());
   EXPECT_FLOAT_EQ(*result, 70.0);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(CuBLASVectorOperationsTests, ScalarMultiplies)
+{
+  const vector<float> h_a {1.0, 2.0, 3.0, 4.0};
+  Array X {h_a.size()};
+
+  X.copy_host_input_to_device(h_a);
+
+  CuBLASVectorOperations operations {};
+
+  EXPECT_TRUE(operations.scalar_multiply(2.2, X));
+
+  vector<float> result (4, 0.0f);
+
+  X.copy_device_output_to_host(result);
+
+  EXPECT_FLOAT_EQ(result.at(0), 2.2);
+  EXPECT_FLOAT_EQ(result.at(1), 4.4);
+  EXPECT_FLOAT_EQ(result.at(2), 6.6);
+  EXPECT_FLOAT_EQ(result.at(3), 8.8);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(CuBLASVectorOperationsTests, ScalarMultipliesWithDenseVector)
+{
+  const vector<float> h_a {1.0, 2.0, 3.0, 4.0};
+  DenseVector X {h_a.size()};
+
+  X.copy_host_input_to_device(h_a);
+
+  CuBLASVectorOperations operations {};
+
+  EXPECT_TRUE(operations.scalar_multiply(2.2, X));
+
+  vector<float> result (4, 0.0f);
+
+  X.copy_device_output_to_host(result);
+
+  EXPECT_FLOAT_EQ(result.at(0), 2.2);
+  EXPECT_FLOAT_EQ(result.at(1), 4.4);
+  EXPECT_FLOAT_EQ(result.at(2), 6.6);
+  EXPECT_FLOAT_EQ(result.at(3), 8.8);
 }
 
 } // namespace Vectors

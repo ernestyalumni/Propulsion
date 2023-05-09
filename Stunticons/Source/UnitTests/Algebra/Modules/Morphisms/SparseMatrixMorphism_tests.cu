@@ -1,5 +1,6 @@
 #include "Algebra/Modules/Matrices/GenerateCompressedSparseRowMatrix.h"
 #include "Algebra/Modules/Matrices/HostCompressedSparseRow.h"
+#include "Algebra/Modules/Morphisms/SparseMatrixMorphism.h"
 #include "gtest/gtest.h"
 
 #include <cstddef>
