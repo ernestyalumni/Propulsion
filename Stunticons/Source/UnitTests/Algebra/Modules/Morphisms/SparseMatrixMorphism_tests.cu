@@ -1,11 +1,18 @@
-#include "Algebra/Modules/Matrices/GenerateCompressedSparseRowMatrix.h"
+#include "Algebra/Modules/Matrices/CompressedSparseRow.h"
 #include "Algebra/Modules/Matrices/HostCompressedSparseRow.h"
 #include "Algebra/Modules/Morphisms/SparseMatrixMorphism.h"
+#include "Algebra/Modules/Vectors/HostArrays.h"
 #include "gtest/gtest.h"
 
+#include <array>
 #include <cstddef>
 
+using Algebra::Modules::Matrices::SparseMatrices::CompressedSparseRowMatrix;
+using Algebra::Modules::Matrices::SparseMatrices::DenseVector;
 using Algebra::Modules::Matrices::SparseMatrices::HostCompressedSparseRowMatrix;
+using Algebra::Modules::Morphisms::SparseMatrixMorphismOnDenseVector;
+using Algebra::Modules::Vectors::HostArray;
+using std::array;
 using std::size_t;
 
 namespace GoogleUnitTests
@@ -17,82 +24,117 @@ namespace Modules
 namespace Morphisms
 {
 
-namespace GenerateCompressedSparseRow
+struct SparseMatrixMorphismTestSetup
 {
+  static constexpr size_t NNZ_ {9};
+  static constexpr size_t M_ {4};
 
-constexpr size_t M {1048576};
-//constexpr size_t N {1048576 + 1};
+  CompressedSparseRowMatrix A_;
+  DenseVector X_;
+  DenseVector Y_;
 
-} // namespace GenerateCompressedSparseRow
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-TEST(SparseMatrixMorphismTests, HasCorrectIndiciesForSquareMatrix)
-{
-  constexpr size_t number_of_nonzero_elements {
-    (GenerateCompressedSparseRow::M - 2) * 3 + 4};
-
-  HostCompressedSparseRowMatrix h_csr {
-    GenerateCompressedSparseRow::M,
-    GenerateCompressedSparseRow::M,
-    number_of_nonzero_elements};
-
-  generate_tridiagonal_matrix(h_csr);
-
-  // Now, essentially check the properties of a triagonal matrix.
-
-  // The first row should have only 2 elements.
-  EXPECT_EQ(h_csr.I_[0], 0);
-  EXPECT_EQ(h_csr.J_[0], 0);
-  EXPECT_EQ(h_csr.J_[1], 1);
-
-  // The second row should now start to have 3 elements.
-
-  EXPECT_EQ(h_csr.I_[1], 2);
-  EXPECT_EQ(h_csr.J_[2], 0);
-  EXPECT_EQ(h_csr.J_[3], 1);
-  EXPECT_EQ(h_csr.J_[4], 2);
-
-  std::size_t cumulative_sum_of_elements {5};
-  for (std::size_t i {2}; i < GenerateCompressedSparseRow::M - 1; ++i)
+  SparseMatrixMorphismTestSetup():
+    A_{M_, M_, NNZ_},
+    X_{M_},
+    Y_{M_}
   {
-    EXPECT_EQ(h_csr.I_[i], cumulative_sum_of_elements);
-    EXPECT_EQ(h_csr.J_[cumulative_sum_of_elements], i - 1);
-    EXPECT_EQ(h_csr.J_[cumulative_sum_of_elements + 1], i);
-    EXPECT_EQ(h_csr.J_[cumulative_sum_of_elements + 2], i + 1);
+    HostCompressedSparseRowMatrix h_A {M_, M_, NNZ_};
+    const array<float, NNZ_> values {
+      1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
+    h_A.copy_values(values);
 
-    cumulative_sum_of_elements += 3;
+    const array<int, M_ + 1> row_offsets {0, 3, 4, 7, 9};
+    h_A.copy_row_offsets(row_offsets);
+
+    const array<int, NNZ_> column_indices {0, 2, 3, 1, 0, 2, 3, 1, 3};
+
+    h_A.copy_column_indices(column_indices);
+
+    A_.copy_host_input_to_device(h_A);
+
+    const array<float, M_> h_x {1.0f, 2.0f, 3.0f, 4.0f};
+    const array<float, M_> h_y {0.0f, 0.0f, 0.0f, 0.0f};
+
+    X_.copy_host_input_to_device(h_x);
+    Y_.copy_host_input_to_device(h_y);
   }
 
-  EXPECT_EQ(cumulative_sum_of_elements, h_csr.number_of_elements_ - 2);
+  ~SparseMatrixMorphismTestSetup() = default;
+};
 
-  // There should only be 2 elements in the very last row, as the "upper"
-  // diagonal gets "cut off."
-  EXPECT_EQ(
-    h_csr.I_[GenerateCompressedSparseRow::M - 1],
-    h_csr.number_of_elements_ - 2);
-  EXPECT_EQ(
-    h_csr.I_[GenerateCompressedSparseRow::M],
-    h_csr.number_of_elements_);
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(SparseMatrixMorphismOnDenseVectorTests, Constructible)
+{
+  SparseMatrixMorphismOnDenseVector morphism {1.0f, 0.0f};
 
-  // For the last 2 rows of the tridiagonal matrix:
+  EXPECT_FLOAT_EQ(morphism.get_alpha(), 1.0f);
+  EXPECT_FLOAT_EQ(morphism.get_beta(), 0.0f);
+  EXPECT_EQ(morphism.get_buffer_size(), 0);
+}
 
-  EXPECT_EQ(
-    h_csr.J_[h_csr.number_of_elements_ - 5],
-    GenerateCompressedSparseRow::M - 3);
-  EXPECT_EQ(
-    h_csr.J_[h_csr.number_of_elements_ - 4],
-    GenerateCompressedSparseRow::M - 2);
-  EXPECT_EQ(
-    h_csr.J_[h_csr.number_of_elements_ - 3],
-    GenerateCompressedSparseRow::M - 1);
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(SparseMatrixMorphismOnDenseVectorTests, Destructible)
+{
+  {
+    SparseMatrixMorphismOnDenseVector morphism {1.0f, 0.0f};
+  }
 
-  EXPECT_EQ(
-    h_csr.J_[h_csr.number_of_elements_ - 2],
-    GenerateCompressedSparseRow::M - 2);
-  EXPECT_EQ(
-    h_csr.J_[h_csr.number_of_elements_ - 1],
-    GenerateCompressedSparseRow::M - 1);
+  SUCCEED();
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(SparseMatrixMorphismOnDenseVectorTests, BufferSizeBuffersSize)
+{
+  SparseMatrixMorphismOnDenseVector morphism {1.0f, 0.0f};
+
+  SparseMatrixMorphismTestSetup setup {};
+
+  EXPECT_TRUE(morphism.buffer_size(setup.A_, setup.X_, setup.Y_));
+
+  EXPECT_EQ(morphism.get_buffer_size(), 8);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(
+  SparseMatrixMorphismOnDenseVectorTests,
+  LinearTransformBeforeBufferReturnsFalse)
+{
+  SparseMatrixMorphismOnDenseVector morphism {1.0f, 0.0f};
+
+  SparseMatrixMorphismTestSetup setup {};
+
+  EXPECT_FALSE(morphism.linear_transform(setup.A_, setup.X_, setup.Y_));
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(SparseMatrixMorphismOnDenseVectorTests, LinearTransformAppliesMatrix)
+{
+  SparseMatrixMorphismOnDenseVector morphism {1.0f, 0.0f};
+
+  SparseMatrixMorphismTestSetup setup {};
+
+  EXPECT_TRUE(morphism.buffer_size(setup.A_, setup.X_, setup.Y_));
+
+  // [1, 0, 2, 3]   [1]   [19]
+  // [0, 4, 0, 0]   [2]    [8]
+  // [5, 0, 6, 7]   [3]   [51]
+  // [0, 8, 0, 9] x [4] = [52]
+
+  EXPECT_TRUE(morphism.linear_transform(setup.A_, setup.X_, setup.Y_));
+
+  HostArray y_out {setup.M_};
+
+  setup.Y_.copy_device_output_to_host(y_out);
+
+  EXPECT_FLOAT_EQ(y_out.values_[0], 19.0);
+  EXPECT_FLOAT_EQ(y_out.values_[1], 8.0);
+  EXPECT_FLOAT_EQ(y_out.values_[2], 51.0);
+  EXPECT_FLOAT_EQ(y_out.values_[3], 52.0);
 }
 
 } // namespace Morphisms

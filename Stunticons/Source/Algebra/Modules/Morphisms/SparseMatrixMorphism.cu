@@ -17,12 +17,12 @@ namespace Modules
 namespace Morphisms
 {
 
-SparseMatrixMorphismOnDenseVectors::SparseMatrixMorphismOnDenseVectors(
+SparseMatrixMorphismOnDenseVector::SparseMatrixMorphismOnDenseVector(
   const float alpha,
   const float beta
   ):
   buffer_{nullptr},
-  cusparse_handle_{0},
+  cusparse_handle_{nullptr},
   buffer_size_{0},
   alpha_{alpha},
   beta_{beta}
@@ -37,7 +37,7 @@ SparseMatrixMorphismOnDenseVectors::SparseMatrixMorphismOnDenseVectors(
   handle_create_handle(cusparseCreate(&cusparse_handle_));
 }
 
-SparseMatrixMorphismOnDenseVectors::~SparseMatrixMorphismOnDenseVectors()
+SparseMatrixMorphismOnDenseVector::~SparseMatrixMorphismOnDenseVector()
 {
   HandleUnsuccessfulCuSparseCall handle_destroy_handle {
     "Failed to destroy cuSparse handle"};
@@ -47,16 +47,24 @@ SparseMatrixMorphismOnDenseVectors::~SparseMatrixMorphismOnDenseVectors()
   // resources maybe deferred until application shuts down.
   handle_destroy_handle(cusparseDestroy(cusparse_handle_));    
 
-  HandleUnsuccessfulCUDACall handle_free_buffer {"Failed to free buffer"};
+  if (buffer_)
+  {
+    HandleUnsuccessfulCUDACall handle_free_buffer {"Failed to free buffer"};
 
-  handle_free_buffer(cudaFree(buffer_));
+    handle_free_buffer(cudaFree(buffer_));
+  }
 }
 
-bool SparseMatrixMorphismOnDenseVectors::linear_transform(
+bool SparseMatrixMorphismOnDenseVector::linear_transform(
   CompressedSparseRowMatrix& A,
   DenseVector& x,
   DenseVector& y)
 {
+  if (buffer_ == nullptr)
+  {
+    return false;
+  }
+
   HandleUnsuccessfulCuSparseCall handle_multiplication {
     "Failed to multiply with sparse matrix and dense vector"};
 
@@ -77,7 +85,7 @@ bool SparseMatrixMorphismOnDenseVectors::linear_transform(
   return handle_multiplication.is_cusparse_success();
 }
 
-bool SparseMatrixMorphismOnDenseVectors::buffer_size(
+bool SparseMatrixMorphismOnDenseVector::buffer_size(
   CompressedSparseRowMatrix& A,
   DenseVector& x,
   DenseVector& y)

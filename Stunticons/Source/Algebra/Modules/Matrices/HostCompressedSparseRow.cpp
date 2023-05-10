@@ -1,7 +1,12 @@
 #include "HostCompressedSparseRow.h"
 
+#include <algorithm>
 #include <cstddef> // std::size_t
 #include <cstdlib> // free
+#include <vector>
+
+using std::copy;
+using std::vector;
 
 namespace Algebra
 {
@@ -50,6 +55,24 @@ HostCompressedSparseRowMatrix::~HostCompressedSparseRowMatrix()
   delete [] values_;
   delete [] J_;
   delete [] I_;
+}
+
+auto HostCompressedSparseRowMatrix::copy_values(
+  const vector<float>& input_values)
+{
+  return copy(input_values.begin(), input_values.end(), values_);
+}
+
+const int* HostCompressedSparseRowMatrix::copy_row_offsets(
+  const vector<int>& row_offsets)
+{
+  return copy(row_offsets.begin(), row_offsets.end(), I_);
+}
+
+auto HostCompressedSparseRowMatrix::copy_column_indices(
+  const vector<int>& column_indices)
+{
+  return copy(column_indices.begin(), column_indices.end(), J_);
 }
 
 } // namespace SparseMatrices

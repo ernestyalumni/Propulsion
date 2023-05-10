@@ -40,10 +40,14 @@ CompressedSparseRowMatrix::CompressedSparseRowMatrix(
   number_of_elements_{number_of_elements},
   matrix_descriptor_{nullptr}  
 {
-  const cudaError_t err_values {
+  HandleUnsuccessfulCUDACall handle_malloc_values {
+    "Failed to allocate device array for values"};
+
+  handle_malloc_values(
     cudaMalloc(
       reinterpret_cast<void**>(&d_values_),
-      number_of_elements_ * sizeof(float))};
+      number_of_elements_ * sizeof(float)));
+
   const cudaError_t err_columns {
     cudaMalloc(
       reinterpret_cast<void**>(&d_columns_),
@@ -52,12 +56,6 @@ CompressedSparseRowMatrix::CompressedSparseRowMatrix(
     cudaMalloc(
       reinterpret_cast<void**>(&d_rows_),
       (M + 1) * sizeof(int))};
-
-  if (err_values != cudaSuccess)
-  {
-    cerr << "Failed to allocate device array for values (error code " <<
-      cudaGetErrorString(err_values) << ")!\n";
-  }  
 
   if (err_columns != cudaSuccess)
   {
@@ -106,15 +104,14 @@ CompressedSparseRowMatrix::CompressedSparseRowMatrix(
 
 CompressedSparseRowMatrix::~CompressedSparseRowMatrix()
 {
-  const cudaError_t err_values {cudaFree(d_values_)};
+  HandleUnsuccessfulCUDACall handle_free_values {
+    "Failed to free device array for values"};
+
+  handle_free_values(cudaFree(d_values_));
+
   const cudaError_t err_columns {cudaFree(d_columns_)};
   const cudaError_t err_rows {cudaFree(d_rows_)};
 
-  if (err_values != cudaSuccess)
-  {
-    cerr << "Failed to free device array for values (error code " <<
-      cudaGetErrorString(err_values) << ")!\n";
-  }
   if (err_columns != cudaSuccess)
   {
     cerr << "Failed to free device array for column indicies (error code " <<
@@ -254,7 +251,7 @@ DenseVector::~DenseVector()
   }
 }
 
-void DenseVector::copy_host_input_to_device(const HostArray& h_a)
+bool DenseVector::copy_host_input_to_device(const HostArray& h_a)
 {
   HandleUnsuccessfulCUDACall handle_values {
     "Failed to copy values from host to device"};
@@ -264,9 +261,11 @@ void DenseVector::copy_host_input_to_device(const HostArray& h_a)
     h_a.values_,
     h_a.number_of_elements_ * sizeof(float),
     cudaMemcpyHostToDevice));
+
+  return handle_values.is_cuda_success();
 }
 
-void DenseVector::copy_device_output_to_host(HostArray& h_a)
+bool DenseVector::copy_device_output_to_host(HostArray& h_a)
 {
   HandleUnsuccessfulCUDACall handle_values {
     "Failed to copy values from device to host"};
@@ -276,9 +275,11 @@ void DenseVector::copy_device_output_to_host(HostArray& h_a)
     d_values_,
     number_of_elements_ * sizeof(float),
     cudaMemcpyDeviceToHost));
+
+  return handle_values.is_cuda_success();
 }
 
-void DenseVector::copy_host_input_to_device(const vector<float>& h_a)
+bool DenseVector::copy_host_input_to_device(const vector<float>& h_a)
 {
   HandleUnsuccessfulCUDACall handle_values {
     "Failed to copy values from host to device"};
@@ -288,9 +289,11 @@ void DenseVector::copy_host_input_to_device(const vector<float>& h_a)
     h_a.data(),
     h_a.size() * sizeof(float),
     cudaMemcpyHostToDevice));
+
+  return handle_values.is_cuda_success();
 }
 
-void DenseVector::copy_device_output_to_host(vector<float>& h_a)
+bool DenseVector::copy_device_output_to_host(vector<float>& h_a)
 {
   HandleUnsuccessfulCUDACall handle_values {
     "Failed to copy values from device to host"};
@@ -300,6 +303,8 @@ void DenseVector::copy_device_output_to_host(vector<float>& h_a)
     d_values_,
     number_of_elements_ * sizeof(float),
     cudaMemcpyDeviceToHost));
+
+  return handle_values.is_cuda_success();
 }
 
 } // namespace SparseMatrices

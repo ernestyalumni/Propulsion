@@ -13,7 +13,7 @@ namespace Modules
 namespace Morphisms
 {
 
-class SparseMatrixMorphismOnDenseVectors
+class SparseMatrixMorphismOnDenseVector
 {
   public:
 
@@ -21,11 +21,11 @@ class SparseMatrixMorphismOnDenseVectors
       Algebra::Modules::Matrices::SparseMatrices::CompressedSparseRowMatrix;
     using DenseVector = Algebra::Modules::Matrices::SparseMatrices::DenseVector;
 
-    SparseMatrixMorphismOnDenseVectors(
+    SparseMatrixMorphismOnDenseVector(
       const float alpha = 1.0,
       const float beta = 0.0);
 
-    ~SparseMatrixMorphismOnDenseVectors();
+    ~SparseMatrixMorphismOnDenseVector();
 
     float get_alpha() const
     {
@@ -69,14 +69,14 @@ class SparseMatrixMorphismOnDenseVectors
       DenseVector& x,
       DenseVector& b);
 
+    float alpha_;
+    float beta_;
+
   private:
 
     void* buffer_;
     cusparseHandle_t cusparse_handle_;
     std::size_t buffer_size_;
-
-    float alpha_;
-    float beta_;
 };
 
 } // namespace Morphisms

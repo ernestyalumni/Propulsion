@@ -39,7 +39,8 @@ TEST(CompressedSparseRowTests, Constructible)
 
   CompressedSparseRowMatrix csr {
     CompressedSparseRow::M,
-    CompressedSparseRow::N,number_of_nonzero_elements};
+    CompressedSparseRow::N,
+    number_of_nonzero_elements};
 
   SUCCEED();
 }
@@ -54,7 +55,8 @@ TEST(CompressedSparseRowTests, Destructible)
   {
     CompressedSparseRowMatrix csr {
       CompressedSparseRow::M,
-      CompressedSparseRow::N,number_of_nonzero_elements};
+      CompressedSparseRow::N,
+      number_of_nonzero_elements};
   }
 
   SUCCEED();

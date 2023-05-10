@@ -16,6 +16,7 @@ SET_SOURCE_FILES_PROPERTIES(${TEST_CU_SOURCES} PROPERTIES LANGUAGE CUDA)
 ADD_EXECUTABLE(Check
   ${TEST_CU_SOURCES}
   Algebra/Modules/Matrices/GenerateCompressedSparseRowMatrix_tests.cpp
+  Algebra/Modules/Matrices/HostCompressedSparseRow_tests.cpp
   Algebra/Modules/Vectors/HostArrays_tests.cpp
   Algebra/Modules/Vectors/HostVectorAdditionArrays_tests.cpp
   )
