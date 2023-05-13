@@ -7,6 +7,7 @@ SET(TEST_CU_SOURCES
   Algebra/Modules/Vectors/CuBLASVectorOperations_tests.cu
   Algebra/Modules/Vectors/Vector2_tests.cu
   Algebra/Modules/Vectors/VectorAddition_tests.cu
+  Optimization/ConjugateGradient_tests.cu
   Utilities/DeviceManagement/GetCUDADeviceProperties_tests.cu
   )
 
@@ -24,6 +25,7 @@ ADD_EXECUTABLE(Check
 TARGET_LINK_LIBRARIES(Check
   ALGEBRA
   ALGEBRA_CU
+  OPTIMIZATION_CU
   UTILITIES_CU
   gtest_main)
 

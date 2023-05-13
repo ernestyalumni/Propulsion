@@ -7568,9 +7568,136 @@ Reason for comparing to step \emph{before} last seems essentially heuristic: by 
 
 \section{Conjugate Gradient Methods}
 
+See \href{https://en.wikipedia.org/wiki/Conjugate_gradient_method}{wikipedia, Conjugate Gradient method}.
+
+\subsection{Problem: Conjugate Gradient Method}
+
+Suppose we want $\mathbf{x}$, given $A \mathbf{x} = \mathbf{b}$, where $N\times N$ matrix $A$ is symmetric and positive definite (i.e. $x^T A x> 0$, \, $\forall \, x \neq 0$.
+
 \subsection{Derivation of Conjugate Gradient Method as Direct Method}
 
+\textbf{Conjugate vectors}. 2 non-zero vectors $u, v$ are conjugate with respect to $A$ if $u^T Av = 0$ i.e. $u_i A_{ij} v_j =0$. \\
 
+Since $A$ is symmetric and positive-definite, the left hand side defines inner product.
+
+\begin{equation}
+\langle \mathbf{u}, \mathbf{v} \rangle_A \equiv \langle A\mathbf{u}, \mathbf{v} \rangle = (Au)^T v = u^T A^T v = u^T A v = \langle u, Av \rangle
+\end{equation}
+
+Suppose $P = \lbrace p_1 \dots p_n \rbrace$ s.t. $p_i^T A p_j = 0 = \langle p_i , p_j \rangle_A$ if $i\neq j$; then mutually conjugate vectors $\lbrace p_i \rbrace$ form a basis for $\mathbb{R}^n$, and so let $x= x_*$ s.t. $Ax_* =b$. \\
+
+\[
+\begin{gathered}
+	x_* = \sum_{i=1}^n \alpha_i p_i \Longrightarrow Ax_* = \sum_{i=1}^n \alpha_i A p_i = b \\
+	\Longrightarrow p_k^T b = p_k^T Ax_* = \sum_{i=1}^n \alpha_i p_k^T A p_i = \sum_{i=1}^n \alpha_i \langle p_k, p_i \rangle_A = \alpha_k \langle p_k , p_k \rangle_A \\
+\text{ or } \alpha_k = \frac{p_k^T b}{ \langle p_k , p_k \rangle_A }
+\end{gathered}
+\]
+
+So since $x_* = \sum_{i=1}^n \alpha_i p_i $, we have a solution: \\
+Find $n$ conjugate directions, $P$, and then compute $\alpha_k$'s. \\
+
+\subsection{Conjugate Gradient as iterative}
+
+Denote initial guess for $x_*$ s.t. $Ax_* =b$ to be $x_0$ (assume $x_0 =0$; otheriwse consider $Az=b-Ax_0$, because if $x_0 \neq 0$, $b':= b-Ax_0$ and so for $A z = b' = 0$, $z=0$ since $A$ positive definite.
+
+Because $A$ is positive definite, consider $Ax=0$ and $x \neq 0$. But then $x^T Ax= 0$, contradicting $A$ positive definite. Then $A$ has a 0-dim. nullspace, $\lbrace 0 \rbrace$.
+
+Consider
+\[
+f(x) = \frac{1}{2} x^T Ax - x^T b = \frac{1}{2} x_i A_{ij} x_j - x_i b_i = x^T (\frac{1}{2} Ax  -b)
+\]
+
+For $x=x_*$, s.t. $Ax_* =b$, then $f(x_*) = -\frac{1}{2} x^T b$.
+
+Consider $\frac{ \partial^2f(x) }{ \partial x^i \partial x^j} = A_{ij}$, since $A$ positive definite and symmetric, then the Hessian matrix of 2nd. derivatives $\frac{\partial^2 f(x) }{ \partial x^i \partial x^j} $ is positive definite, and so $\exists \, $ unique minimizer. (EY: TODO: show) \\
+
+Note that 
+\[
+\nabla f(x) = Ax - b \text{ since } \partial_i f(x) = A_{ij} x_j - b_i
+\]
+
+Take $p_0 = -\nabla f(x) = b-Ax_0$. \\
+
+Since all other $p_j$ basis vectors will be conjugate to $p_0$, the gradient, hence the name conjugate gradient method. \\
+
+Taking $p_0 = b - Ax_0$, we take the direction directly opposite the gradient. \\
+
+Let residual $r_k = b- Ax_k$ of the $k$th step. \\
+
+Now $r_k = -\nabla f(x_k)$, but we want direction $p_k$ to be conjugate to all prior directions. Thus, negative of gradient, the direction we want to go for the minimum.
+
+Use Gram-Schmidt orthonormalization
+\begin{equation}
+p_k = r_k - \sum_{i <k } \frac{p_i^T A r_k }{ p_i^T A p_i} p_i = r_k - \sum_{i < k} \frac{ \langle p_i , r_k \rangle_A }{ \langle p_i, p_i \rangle_A } p_i
+\end{equation}
+
+So
+\[
+\begin{gathered}
+\langle p_j, p_k \rangle = \langle p_j, r_k \rangle - \sum_{i < k} \frac{ \langle p_i, r_k \rangle_A}{ \langle p_i, p_i \rangle_A } \langle p_i , p_j \rangle = \langle p_j, r_k \rangle - \frac{ \langle p_j, r_k \rangle_A }{ \langle p_j, p_j \rangle } = 0 \text{ if } j \neq k \\
+\langle p_k , p_k \rangle = \langle p_k, r_k \rangle - 0 = \langle p_k , r_k \rangle
+\end{gathered}
+\]
+
+Following this direction $p_k$
+\begin{align}
+& x_{k+1} = x_k + \alpha_k p_k \\ 
+& \alpha_k = \frac{p_k^T (b-Ax_k) }{ p_k^T Ap_k } = \frac{p_k^T r_k }{\langle p_k, p_k \rangle}
+\end{align}
+
+This is found by considering the following:
+\[
+\begin{gathered}
+f(x_{k+1}) = f(x_k + \alpha_k p_k) =: g(\alpha_k) \\
+\begin{aligned}
+& g(\alpha_k) = \frac{1}{2} ( x_k^T + \alpha_kp_k^T) A(x_k + \alpha_kp_k) - (x_k^T + \alpha_k p_k^T) b \\
+& \begin{gathered}
+g'(\alpha_k) =0 \text{ if } g'(\alpha_k) = \frac{1}{2} p_k^T A(x_k + \alpha_k p_k) + \frac{1}{2} (x_k^T + \alpha_k p_k^T) Ap_k - p_k^T b =  \\
+= \frac{1}{2} p_k^T Ax_k + \frac{\alpha_k}{2} p_k^T A p_k + \frac{1}{2} x_k^T A p_k + \frac{1}{2} \alpha_k p_k^T A p_k - p_k^T b = \\
+= \alpha_kp_k^T Ap_k + \frac{1}{2} \langle p_k, x_k \rangle + \frac{1}{2} \langle x_k , p_k \rangle - p_k^T b = 0 \text{ or } \\
+\end{gathered}
+\end{aligned} \\
+\alpha_k \langle p_k , p_k \rangle = p_k^T (b-Ax_k) \text{ or } \alpha_k = \frac{ p_k^T(b-Ax_k) }{ \langle p_k , p_k \rangle }
+\end{gathered}
+\]
+
+Thus, by considering when $g'(\alpha_k) =0$, we obtain then to follow this direction $p_k$:
+
+\[
+x_{k+1} = x_k + \alpha_k p_k, \quad \, \alpha_k = \frac{ p_k^T r_k}{ \langle p_k , p_k \rangle }
+\]
+
+TODO: EY (20230513) consider what this means:
+
+\[
+\begin{gathered}
+r_i^T r_j = (b-Ax_i)^T(b-Ax_j) = (b_k - A_{kl} x_{i,l} ) (b_k - A_{km} x_{jm} ) = \\
+b_k b_k - b_k A_{km} x_{jm} - b_k A_{kl} x_{i,l} + A_{kl} x_{i,l} A_{km} x_{j,m} = b^2 - 2b^T A x + (Ax)^T Ax = b^2 - 2(b-\frac{1}{2} Ax)^T Ax
+\end{gathered}
+\]
+
+
+\subsubsection{Algorithm for Conjugate Gradient}
+
+$r_0 := b- Ax_0$ \\
+
+If $r_0$ sufficiently small, then return $x_0$ as result.
+\[
+\begin{aligned}
+& p_0 := r_0 \\
+& k := 0
+\end{aligned}
+\]
+Repeat
+\[
+\begin{aligned}
+& \alpha_k := \frac{r_k^T r_k}{ p_k^T A p_k } \\
+& x_{k+1} := x_k + \alpha_k p_k \\
+& r_{k+1} = r_k -\alpha_k Ap_k = r_k 
+\end{aligned}
+\]
+If $r_{k+1}$ sufficiently small, then exit loop.
 
 \part{Cantera}
 

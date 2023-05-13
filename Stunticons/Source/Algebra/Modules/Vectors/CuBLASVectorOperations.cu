@@ -122,6 +122,28 @@ bool CuBLASVectorOperations::scalar_multiply_and_add_vector(
   return handle_vector_operations.is_cuBLAS_success();
 }
 
+bool CuBLASVectorOperations::scalar_multiply_and_add_vector(
+  const float input_alpha,
+  const Array& x,
+  DenseVector& y)
+{
+  HandleUnsuccessfulCuBLASCall handle_vector_operations {
+    "Failed to scalar multiple and add in cuBLAS"};
+
+  const float alpha {input_alpha};
+
+  handle_vector_operations(cublasSaxpy(
+    cublas_handle_,
+    x.number_of_elements_,
+    &alpha,
+    x.values_,
+    1,
+    y.d_values_,
+    1));
+
+  return handle_vector_operations.is_cuBLAS_success();
+}
+
 bool CuBLASVectorOperations::scalar_multiply(
   const float scalar,
   DenseVector& x,
@@ -216,6 +238,21 @@ optional<float> CuBLASVectorOperations::dot_product(
 
   return handle_dot_product.is_cuBLAS_success() ? make_optional(result) :
     nullopt;
+}
+
+bool CuBLASVectorOperations::copy(const Array& x, DenseVector& y)
+{
+  HandleUnsuccessfulCuBLASCall handle_copy {"Failed copy in cuBLAS"};
+
+  handle_copy(cublasScopy(
+    cublas_handle_,
+    x.number_of_elements_,
+    x.values_,
+    1,
+    y.d_values_,
+    1));
+
+  return handle_copy.is_cuBLAS_success();
 }
 
 } // namespace Vectors

@@ -51,6 +51,11 @@ class CuBLASVectorOperations
       const Array& x,
       Array& y);
 
+    bool scalar_multiply_and_add_vector(
+      const float alpha,
+      const Array& x,
+      DenseVector& y);
+
     bool scalar_multiply(
       const float scalar,
       DenseVector& x,
@@ -69,6 +74,8 @@ class CuBLASVectorOperations
     std::optional<float> dot_product(
       const DenseVector& r1,
       const DenseVector& r2);
+
+    bool copy(const Array& x, DenseVector& y);
 
   private:
 

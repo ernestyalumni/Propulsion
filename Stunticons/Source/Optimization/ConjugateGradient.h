@@ -1,5 +1,5 @@
-#ifndef ALGEBRA_MODULES_OPTIMIZATION_CONJUGATE_GRADIENT_H
-#define ALGEBRA_MODULES_OPTIMIZATION_CONJUGATE_GRADIENT_H
+#ifndef OPTIMIZATION_CONJUGATE_GRADIENT_H
+#define OPTIMIZATION_CONJUGATE_GRADIENT_H
 
 #include "Algebra/Modules/Matrices/CompressedSparseRow.h"
 #include "Algebra/Modules/Morphisms/SparseMatrixMorphism.h"
@@ -9,10 +9,6 @@
 #include <cstddef>
 #include <optional>
 
-namespace Algebra
-{
-namespace Modules
-{
 namespace Optimization
 {
 
@@ -40,13 +36,29 @@ class ConjugateGradient
 
     ~ConjugateGradient() = default;
 
-    std::optional<float> initial_guess(
+    // Initial guess for x_* such that Ax_* = b is x_* = 0. Otherwise, consider
+    // Az = b - Ax and so since A is positive definite, z is guessed to be 0.
+    static bool create_default_initial_guess(DenseVector& x);
+
+    static std::optional<float> initial_step(
       SparseMatrixMorphismOnDenseVector& morphism,
       CuBLASVectorOperations& vector_operations,
       CompressedSparseRowMatrix& A,
       DenseVector& x,
       DenseVector& Ax,
       Array& r_0);
+
+    static std::optional<std::tuple<float, float>> step(
+      const std::size_t k,
+      const float r0,
+      const float r1,
+      DenseVector& p,
+      Array& r,
+      SparseMatrixMorphismOnDenseVector& morphism,
+      CuBLASVectorOperations& vector_operations,
+      CompressedSparseRowMatrix& A,
+      DenseVector& Ax,
+      DenseVector& x);
 
   private:
 
@@ -55,7 +67,5 @@ class ConjugateGradient
 };
 
 } // namespace Optimization
-} // namespace Modules
-} // namespace Algebra
 
-#endif // ALGEBRA_MODULES_OPTIMIZATION_CONJUGATE_GRADIENT_H
+#endif // OPTIMIZATION_CONJUGATE_GRADIENT_H

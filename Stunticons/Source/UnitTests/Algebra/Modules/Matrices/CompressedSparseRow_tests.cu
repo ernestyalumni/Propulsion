@@ -25,8 +25,8 @@ namespace Matrices
 namespace CompressedSparseRow
 {
 
-constexpr size_t M {1048576};
-constexpr size_t N {1048576 + 1};
+static constexpr size_t M {1048576};
+static constexpr size_t N {1048576 + 1};
 
 } // namespace CompressedSparseRow
 
