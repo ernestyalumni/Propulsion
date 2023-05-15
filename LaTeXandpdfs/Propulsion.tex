@@ -7197,7 +7197,7 @@ J_k = j_k, \quad \, k = 0, \dots, |A| - 1
 Let $I \equiv $ row indices, $|I| = M + 1$. \\
 \phantom{Let } It encodes the index in $V,J$, where the given row starts; i.e. \\
 \phantom{Let It } $I[j]$ encodes total number of nonzero elements above row $j$. \\
-\phantom{Let It } $I[M} \equiv I_M = |A| \equiv $ total number of nonzero entries.  \\
+\phantom{Let It } $I[M] \equiv I_M = |A| \equiv $ total number of nonzero entries.  \\
 
 So $I_l \in \lbrace 0, 1 , \dots |A| \rbrace$. \\
 
@@ -7680,6 +7680,8 @@ b_k b_k - b_k A_{km} x_{jm} - b_k A_{kl} x_{i,l} + A_{kl} x_{i,l} A_{km} x_{j,m}
 
 \subsubsection{Algorithm for Conjugate Gradient}
 
+Start with a guess for $\mathbf{x}$ for $A \mathbf{x} = \mathbf{b}$ Without loss of generality, pick $\mathbf{x}_0 = 0 \in \mathbb{R}^N$. \\
+
 $r_0 := b- Ax_0$ \\
 
 If $r_0$ sufficiently small, then return $x_0$ as result.
@@ -7697,7 +7699,18 @@ Repeat
 & r_{k+1} = r_k -\alpha_k Ap_k = r_k 
 \end{aligned}
 \]
-If $r_{k+1}$ sufficiently small, then exit loop.
+If $r_{k+1}$ sufficiently small, then exit loop. \\
+
+\[
+\begin{aligned}
+& \beta_k := \frac{r^T_{k+1} r_{k+1} }{ r_k^T r_k } \\
+ & p_{k+1} := r_{k+1} + \beta_k p_k \\
+ & k := k + 1
+\end{aligned}
+\]
+End repeat.
+
+Return $\mathbf{x}_{k+1}$ as the result.
 
 \part{Cantera}
 
