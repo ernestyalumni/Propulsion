@@ -41,6 +41,9 @@ class CuBLASVectorOperations
       const DenseVector& x,
       Array& y);
 
+    //--------------------------------------------------------------------------
+    /// \details y := \alpha * x + y
+    //--------------------------------------------------------------------------
     bool scalar_multiply_and_add_vector(
       const float alpha,
       const DenseVector& x,

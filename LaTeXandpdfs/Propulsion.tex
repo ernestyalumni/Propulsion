@@ -7211,6 +7211,31 @@ For $I_l$, $l=0,1, \dots M$, find $l$ s.t. $k\geq I_l $ and $I_{l+1} < k$. \\
 
 Thus $A_{ij} = V_k$ with $j=j_k$ and $i = l$ s.t. $k\geq I_l$ and $I_{l+1} < k$.
 
+In summary,
+
+\begin{definition}[Compressed Sparse Row (CSR)]
+	For $M\times N $ matrix $A$, $|A| = $ total number of nonzero entries in $M$, \\
+	Let $V = \lbrace A_{ij} | A_{ij} \neq 0 \rbrace$, $|V| = |A|$, \\
+	$J \equiv $ column indices, $|J| = |A|$, \\
+	$I \equiv $ row offsets, $|I| = M + 1$, \\
+	$I[l] =$ total number of nonzero elements in rows $0,1, \dots l - 1$, \quad \, $I[M] = |V|$ \\
+	
+	For $k=0,1, \dots |A|-1$, \\
+	$A_{i_k j_k} = V_k$ , $j_k = J[k]$ and $i_k = l$ s.t. $I [ l + 1] > k$ and $I[l] \leq k$ \\
+	
+	Given $i,j$, $I[i] \leq k < I[i+1]$ \\
+	Then for $k = I[i], \dots I[i+1] - 1$, try $J[k] = j$. Once $k$ found $A_{ij} = V_k$.
+\end{definition}
+
+\subsubsection{Matrix multiplication with Compressed Sparse Row matrices}
+
+Consider $A_{ij} x_j = y_i$. Consider $k=I[i] , \dots I[i+1] -1$, i.e. consider $I[i+1] - I[i]$ nonzero elements in $i$th row. \\
+
+\[
+A_{ij} x_j = \sum_{k= I[i]}^{I[i + 1] - 1} V_k x[J[k]]
+\]
+Since $J[k] = j_k = $ column index of the $k$th element.
+
 \subsubsection{Example: Tridiagonal symmetric matrix}
 
 Consider $M \times N$ matrix $A$, s.t. $ i = 0,1, \dots M-1$, $j = 0,1, \dots N-1$. \\
@@ -7664,9 +7689,9 @@ g'(\alpha_k) =0 \text{ if } g'(\alpha_k) = \frac{1}{2} p_k^T A(x_k + \alpha_k p_
 
 Thus, by considering when $g'(\alpha_k) =0$, we obtain then to follow this direction $p_k$:
 
-\[
+\begin{equation}\label{Eq:ConjugateGradientMethodxIterativeStep}
 x_{k+1} = x_k + \alpha_k p_k, \quad \, \alpha_k = \frac{ p_k^T r_k}{ \langle p_k , p_k \rangle }
-\]
+\end{equation}
 
 TODO: EY (20230513) consider what this means:
 
@@ -7677,6 +7702,99 @@ b_k b_k - b_k A_{km} x_{jm} - b_k A_{kl} x_{i,l} + A_{kl} x_{i,l} A_{km} x_{j,m}
 \end{gathered}
 \]
 
+Let's derive the iterative step for the residuals, $\mathbf{r}_k$. Consider
+\[
+\begin{gathered}
+	r_{k+1} = b-Ax_{k+1} = b- A(x_k + \alpha_{k+1} p_{k+1}) = (b-Ax_k) - \alpha_{k+1} A p_{k+1} = r_k - \alpha_{k+1} A p_{k+1}
+\end{gathered}
+\]
+where we used the definition of a residual being the difference between $b$ and $Ax$, and the iterative step for $x_{k+1}$.
+
+So
+\begin{equation}
+	r_{k+1} = r_k - \alpha_{k+1} A p_{k+1} \text{ if we had defined } x_{k+1} = x_k + \alpha_{k+1} p_{k+1}
+\end{equation}
+
+But if we have $x_{k+1}$ to be derived as in Eq. \ref{Eq:ConjugateGradientMethodxIterativeStep}, then
+\begin{equation}
+	r_{k+1} = r_k - \alpha_k A p_k
+\end{equation}
+
+We will now show the following the facts. This was obtained from slides 15-16 of \href{https://web.stanford.edu/class/ee364b/lectures/conj_grad_slides.pdf}{EE364b, Stanford University}.
+
+\begin{theorem}
+	$p_j^T r_k =0$ $\forall\, j < k$ and $r_j^T r_k =0 \, \forall \, j < k$
+\end{theorem}
+
+\begin{proof}
+Recall that for $x_0 = 0$ as an initial guess without loss of generality, then
+\[
+\begin{gathered}
+	p_0 = b = r_0 \\
+	\alpha_0 = \frac{p_0^T r_0 }{ \langle p_0, p_0 \rangle }
+\end{gathered}
+\]
+
+Let's then show the base case:
+\[
+\begin{gathered}
+p_0^T r_1 = p_0^T (r_0 - \alpha_0 A p_0) = p_0^T (b-Ax_0 - \alpha_0 A p_0 ) = p_0^T (b- \alpha_0 A p_0 ) = b^2 -\alpha_0 \langle p_0, p_0 \rangle = 0 	
+\end{gathered}
+\]
+
+Suppose $p_j^T r_k = 0 \, \forall \, j < k$.
+
+Consider the $k+1$ case.
+
+\[
+\begin{gathered}
+	p_j^T r_{k+1} = p_j^T (r_k - \alpha_k Ap_k) = p_j^T r_k - \alpha_k \langle p_j, p_k \rangle = 0
+\end{gathered}
+\]
+since $p_j^T r_k = 0$ by induction base and $\langle p_j , p_k \rangle =0$ by definition of conjugacy.
+
+Likewise, consider this base case:
+
+\[
+\begin{gathered}
+	r_0^T r_1 = r_0^T (r_0 - \alpha_0 Ap_0) = b^2 - \alpha_0 \langle p_0 , p_0 \rangle = 0
+\end{gathered}
+\]
+
+Assume $r_j^T r_k = 0\, \forall \, j < k$.
+
+Consider now the $k+1$ case:
+\[
+r_j^T r_{k+1} = r_j^T (r_k - \alpha_k A p_k) = r_j^T r_k - \alpha_k \langle r_j, p_k \rangle 
+\]
+
+Using Gram-Schmidty orthonormality, $p_j = r_j - \sum_{l=0}^{j-1} \frac{ \langle p_l , r_j \rangle }{ \langle p_l , p_l \rangle } p_l$ so 
+\[
+\langle r_j , p_k \rangle = \langle p_j + \sum_{l=0}^{ j -1} \frac{ \langle p_l , r_j \rangle }{ \langle p_l , p_l \rangle } p_l , p_k \rangle = 0 
+\]
+Since $j, l < k$ and $\langle p_l, p_k \rangle = 0$ by conjugacy of $p_j$'s.
+
+Thus, $r_j^T r_{k+1} =0$. Then by induction, we've shown $r_j^T r_k = 0$ \, $\forall \, j < k$
+
+\end{proof}
+
+Thus, using $p_j^T r_k = 0$ and $r_j^T r_k \, \forall\, j < k$, and $r_{k+1} = r_k - \alpha_k A p_k$,
+\[
+\begin{gathered}
+p_k = r_k - \sum_{i=0}^{k-1} \frac{ \langle p_i, r_k \rangle }{ \langle p_i, p_i \rangle } p_i = r_k - \sum_{i=0}^{k-1} \frac{ r_k^T \frac{ (r_i - r_{i + 1} ) }{ \alpha_i } }{ p_i^T \frac{ (r_i - r_{i+1}) }{ \alpha_i} } p_i = r_k - \frac{ \frac{ -r_k^2 }{ \alpha_{k-1} } p_{k-1} }{ \frac{  p^T_{k-1} r_{k-1} }{ \alpha_{k-1}  } } = r_k + \frac{ r_k^2 }{ r^T_{k-1} p_{k-1} } p_{k-1}
+\end{gathered}
+\]
+
+Also, 
+\[
+r_k^T p_k = r_k^T \left( r_k + \frac{ r_k^2 p_{k-1} }{ r_{k-1}^T p_{k-1} } \right) = r_k^2 
+\]
+Since $r_k^T p_{k-1} = p_{k-1}^T r_k = 0$.
+
+Thus,
+\begin{equation}
+\boxed{ p_k = r_k + \beta_k p_{k-1} \text{ where } \beta_k = \frac{r_k^2 }{r_{k-1}^2} }
+\end{equation}
 
 \subsubsection{Algorithm for Conjugate Gradient}
 
@@ -7696,7 +7814,7 @@ Repeat
 \begin{aligned}
 & \alpha_k := \frac{r_k^T r_k}{ p_k^T A p_k } \\
 & x_{k+1} := x_k + \alpha_k p_k \\
-& r_{k+1} = r_k -\alpha_k Ap_k = r_k 
+& r_{k+1} = r_k -\alpha_k Ap_k 
 \end{aligned}
 \]
 If $r_{k+1}$ sufficiently small, then exit loop. \\

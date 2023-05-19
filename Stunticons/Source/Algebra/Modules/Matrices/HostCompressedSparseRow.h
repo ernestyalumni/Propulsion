@@ -49,7 +49,45 @@ class HostCompressedSparseRowMatrix
 
     ~HostCompressedSparseRowMatrix();
 
-    auto copy_values(const std::vector<float>& input_values);
+    /*
+    template <typename T>
+    T operator*(const T& x)
+    {
+      T y {};
+
+      for (std::size_t i {0}; i < M_; ++i)
+      {
+        float y_i {0.0f};
+
+        for (int k {I_[i]}; k < I_[i + 1]; ++k)
+        {
+          y_i += values_[k] * x[J_[k]];
+        }
+
+        y[i] = y_i;
+      }
+
+      return y;
+    }
+    */
+
+    template <typename T>
+    void multiply(const T& x, T& y)
+    {
+      for (std::size_t i {0}; i < M_; ++i)
+      {
+        float y_i {0.0f};
+
+        for (int k {I_[i]}; k < I_[i + 1]; ++k)
+        {
+          y_i += values_[k] * x[J_[k]];
+        }
+
+        y[i] = y_i;
+      }
+    }
+
+    const float* copy_values(const std::vector<float>& input_values);
 
     template <std::size_t NNZ>
     auto copy_values(const std::array<float, NNZ>& input_values)
@@ -65,7 +103,7 @@ class HostCompressedSparseRowMatrix
       return std::copy(row_offsets.begin(), row_offsets.end(), I_);
     }
 
-    auto copy_column_indices(const std::vector<int>& column_indices);
+    const int* copy_column_indices(const std::vector<int>& column_indices);
 
     template <std::size_t NNZ>
     auto copy_column_indices(const std::array<int, NNZ>& column_indices)

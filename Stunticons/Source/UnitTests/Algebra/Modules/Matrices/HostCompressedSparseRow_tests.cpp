@@ -8,6 +8,7 @@
 using Algebra::Modules::Matrices::SparseMatrices::HostCompressedSparseRowMatrix;
 using std::array;
 using std::size_t;
+using std::vector;
 
 namespace GoogleUnitTests
 {
@@ -66,7 +67,7 @@ TEST(HostCompressedSparseRowTests, CopiesRowOffsetsWithVectors)
 {
   HostCompressedSparseRowMatrix X {4, 4, 9};
 
-  const std::vector<int> row_offsets {0, 3, 4, 7, 9};
+  const vector<int> row_offsets {0, 3, 4, 7, 9};
 
   const auto result = X.copy_row_offsets(row_offsets);
 
@@ -85,7 +86,7 @@ TEST(HostCompressedSparseRowTests, CopiesColumnIndicesWithArrays)
 {
   HostCompressedSparseRowMatrix X {4, 4, 9};
 
-  const std::array<int, 9> column_indices {0, 2, 3, 1, 0, 2, 3, 1, 3};
+  const array<int, 9> column_indices {0, 2, 3, 1, 0, 2, 3, 1, 3};
 
   const auto result = X.copy_column_indices(column_indices);
 
@@ -100,6 +101,29 @@ TEST(HostCompressedSparseRowTests, CopiesColumnIndicesWithArrays)
   EXPECT_EQ(X.J_[6], 3);
   EXPECT_EQ(X.J_[7], 1);
   EXPECT_EQ(X.J_[8], 3);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(HostCompressedSparseRowTests, MultipliesOnStdVectorReturnStdVector)
+{
+  HostCompressedSparseRowMatrix X {3, 3, 9};
+  const vector<float> values {5, 1, 3, 1, 1, 1, 1, 2, 1};
+  X.copy_values(values);
+  const vector<int> row_offsets {0, 3, 6, 9};
+  X.copy_row_offsets(row_offsets);
+  const vector<int> column_indices {0, 1, 2, 0, 1, 2, 0, 1, 2};
+  X.copy_column_indices(column_indices);
+
+  const vector<float> x {1, 2, 3};
+  vector<float> y {0, 0, 0};
+
+  // See https://stackoverflow.com/questions/21562986/numpy-matrix-vector-multiplication
+  X.multiply(x, y);
+
+  EXPECT_FLOAT_EQ(y.at(0), 16);
+  EXPECT_FLOAT_EQ(y.at(1), 6);
+  EXPECT_FLOAT_EQ(y.at(2), 8);
 }
 
 } // namespace SparseMatrices

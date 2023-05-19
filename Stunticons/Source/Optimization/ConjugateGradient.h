@@ -48,10 +48,23 @@ class ConjugateGradient
       DenseVector& Ax,
       Array& r_0);
 
+    //--------------------------------------------------------------------------
+    /// \return If has_value(), returns r0, r1.
+    //--------------------------------------------------------------------------
+
     static std::optional<std::tuple<float, float>> step(
       const std::size_t k,
       const float r0,
       const float r1,
+      DenseVector& p,
+      Array& r,
+      SparseMatrixMorphismOnDenseVector& morphism,
+      CuBLASVectorOperations& vector_operations,
+      CompressedSparseRowMatrix& A,
+      DenseVector& Ax,
+      DenseVector& x);
+
+    bool solve(
       DenseVector& p,
       Array& r,
       SparseMatrixMorphismOnDenseVector& morphism,
