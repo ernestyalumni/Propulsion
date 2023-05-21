@@ -20,6 +20,7 @@ using Algebra::Modules::Morphisms::SparseMatrixMorphismOnDenseVector;
 using Algebra::Modules::Vectors::Array;
 using Algebra::Modules::Vectors::CuBLASVectorOperations;
 using Optimization::ConjugateGradient;
+using Optimization::SampleConjugateGradient;
 using std::size_t;
 using std::vector;
 
@@ -28,7 +29,7 @@ namespace GoogleUnitTests
 namespace Optimization
 {
 
-struct SetupConjugateGradientTests
+struct SetupSampleConjugateGradientTests
 {
   static constexpr size_t M_ {1048576};
   static constexpr size_t number_of_nonzero_elements {
@@ -39,11 +40,14 @@ struct SetupConjugateGradientTests
   DenseVector x_;
   DenseVector Ax_;
   SparseMatrixMorphismOnDenseVector morphism_;
-  ConjugateGradient cg_;
+  SampleConjugateGradient cg_;
   Array r_;
   CuBLASVectorOperations operations_;
 
-  SetupConjugateGradientTests(const float alpha=1.0f, const float beta=0.0f):
+  SetupSampleConjugateGradientTests(
+    const float alpha=1.0f,
+    const float beta=0.0f
+    ):
     h_csr_{M_, M_, number_of_nonzero_elements},
     A_{M_, M_, number_of_nonzero_elements},
     x_{M_},
@@ -64,20 +68,59 @@ struct SetupConjugateGradientTests
   }
 };
 
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-TEST(ConjugateGradientTests, ConstructibleWithDefaultValues)
+struct SetupConjugateGradientTests
 {
-  ConjugateGradient cg {};
+  static constexpr size_t M_ {1048576};
+  static constexpr size_t number_of_nonzero_elements {
+    (M_ - 2) * 3 + 4};
+
+  HostCompressedSparseRowMatrix h_csr_;
+  CompressedSparseRowMatrix A_;
+  DenseVector b_;
+  DenseVector x_;
+  DenseVector Ax_;
+  SparseMatrixMorphismOnDenseVector morphism_;
+  Array r_;
+  CuBLASVectorOperations operations_;
+
+  SetupConjugateGradientTests(
+    const float alpha=1.0f,
+    const float beta=0.0f
+    ):
+    h_csr_{M_, M_, number_of_nonzero_elements},
+    A_{M_, M_, number_of_nonzero_elements},
+    b_{M_},
+    x_{M_},
+    Ax_{M_},
+    morphism_{alpha, beta},
+    r_{M_},
+    operations_{}
+  {
+    generate_tridiagonal_matrix(h_csr_);
+    A_.copy_host_input_to_device(h_csr_);
+
+    morphism_.buffer_size(A_, x_, Ax_);
+
+    std::vector<float> h_r (M_, 1.0f);
+    r_.copy_host_input_to_device(h_r);
+    b_.copy_host_input_to_device(h_r);
+  }
+};
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(SampleConjugateGradientTests, ConstructibleWithDefaultValues)
+{
+  SampleConjugateGradient cg {};
 
   SUCCEED();
 }
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-TEST(ConjugateGradientTests, CreateDefaultInitialGuessCreates0)
+TEST(SampleConjugateGradientTests, CreateDefaultInitialGuessCreates0)
 {
-  ConjugateGradient cg {};
+  SampleConjugateGradient cg {};
 
   DenseVector x {69};
 
@@ -95,9 +138,9 @@ TEST(ConjugateGradientTests, CreateDefaultInitialGuessCreates0)
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-TEST(ConjugateGradientTests, InitialStepWorks)
+TEST(SampleConjugateGradientTests, InitialStepWorks)
 {
-  SetupConjugateGradientTests setup {};
+  SetupSampleConjugateGradientTests setup {};
   const auto result = setup.cg_.initial_step(
     setup.morphism_,
     setup.operations_,
@@ -112,9 +155,9 @@ TEST(ConjugateGradientTests, InitialStepWorks)
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-TEST(ConjugateGradientTests, StepWorksAfterInitialStep)
+TEST(SampleConjugateGradientTests, StepWorksAfterInitialStep)
 {
-  SetupConjugateGradientTests setup {};
+  SetupSampleConjugateGradientTests setup {};
   const auto r_0_sqrt = setup.cg_.initial_step(
     setup.morphism_,
     setup.operations_,
@@ -149,9 +192,9 @@ TEST(ConjugateGradientTests, StepWorksAfterInitialStep)
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-TEST(ConjugateGradientTests, StepWorksAfterFirstStep)
+TEST(SampleConjugateGradientTests, StepWorksAfterFirstStep)
 {
-  SetupConjugateGradientTests setup {};
+  SetupSampleConjugateGradientTests setup {};
   const auto r_0_sqrt = setup.cg_.initial_step(
     setup.morphism_,
     setup.operations_,
@@ -182,7 +225,7 @@ TEST(ConjugateGradientTests, StepWorksAfterFirstStep)
   r_1 = std::get<1>(*r_0_r_1_0);
 
   const auto r_0_r_1_1 = setup.cg_.step(
-    1,
+    2,
     r_0,
     r_1,
     p,
@@ -195,14 +238,14 @@ TEST(ConjugateGradientTests, StepWorksAfterFirstStep)
 
   EXPECT_TRUE(r_0_r_1_1.has_value());
   EXPECT_FLOAT_EQ(std::get<0>(*r_0_r_1_1), 1981.6189);
-  EXPECT_FLOAT_EQ(std::get<1>(*r_0_r_1_1), 14.725352);
+  EXPECT_FLOAT_EQ(std::get<1>(*r_0_r_1_1), 10.547638);
 }
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-TEST(ConjugateGradientTests, SolveWorks)
+TEST(SampleConjugateGradientTests, SolveWorks)
 {
-  SetupConjugateGradientTests setup {};
+  SetupSampleConjugateGradientTests setup {};
   DenseVector p {setup.M_};
 
   EXPECT_TRUE(setup.cg_.solve(
@@ -213,6 +256,155 @@ TEST(ConjugateGradientTests, SolveWorks)
     setup.A_,
     setup.Ax_,
     setup.x_));  
+
+  vector<float> h_x_output (setup.M_, 0.0f);
+  vector<float> y (setup.M_, 0.0f);
+
+  setup.x_.copy_device_output_to_host(h_x_output);
+
+  setup.h_csr_.multiply(h_x_output, y);
+
+  for (std::size_t i {0}; i < setup.M_; ++i)
+  {
+    EXPECT_TRUE(std::abs(y.at(i) - 1.0f) < 1e-6f);
+  }
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(ConjugateGradientTests, Constructible)
+{
+  SetupConjugateGradientTests setup {};
+
+  ConjugateGradient cg {setup.A_, setup.b_, setup.morphism_, setup.operations_};
+
+  SUCCEED();
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(ConjugateGradientTests, CreateDefaultInitialGuessCreates0)
+{
+  SetupConjugateGradientTests setup {};
+
+  ConjugateGradient cg {setup.A_, setup.b_, setup.morphism_, setup.operations_};
+
+  DenseVector x {69};
+
+  cg.create_default_initial_guess(x);
+
+  std::array<float, 69> h_output {};
+
+  x.copy_device_output_to_host(h_output);
+
+  for (size_t i {0}; i < 69; ++i)
+  {
+    EXPECT_FLOAT_EQ(h_output.at(i), 0.0f);
+  }
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(ConjugateGradientTests, InitialStepWorks)
+{
+  SetupConjugateGradientTests setup {};
+
+  ConjugateGradient cg {setup.A_, setup.b_, setup.morphism_, setup.operations_};
+
+  cg.create_default_initial_guess(setup.x_);
+
+  const auto result = cg.initial_step(setup.x_, setup.Ax_, setup.r_);
+
+  EXPECT_TRUE(result.has_value());
+  EXPECT_FLOAT_EQ(*result, 1048576.0f);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(ConjugateGradientTests, StepWorksAfterInitialStep)
+{
+  SetupConjugateGradientTests setup {};
+
+  ConjugateGradient cg {setup.A_, setup.b_, setup.morphism_, setup.operations_};
+
+  cg.create_default_initial_guess(setup.x_);
+
+  const auto r_0_sqrt = cg.initial_step(setup.x_, setup.Ax_, setup.r_);
+
+  ASSERT_TRUE(r_0_sqrt.has_value());
+
+  float r_1 {*r_0_sqrt};
+  float r_0 {0.0f};
+
+  DenseVector p {setup.M_};
+
+  const auto result = cg.step(
+    0,
+    r_0,
+    r_1,
+    setup.x_,
+    setup.r_,
+    p,
+    setup.Ax_);
+
+  EXPECT_TRUE(result.has_value());
+  EXPECT_FLOAT_EQ(std::get<0>(*result), 1048576);
+  EXPECT_FLOAT_EQ(std::get<1>(*result), 1979.2708);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(ConjugateGradientTests, StepWorksAfterFirstStep)
+{
+  SetupConjugateGradientTests setup {};
+  ConjugateGradient cg {setup.A_, setup.b_, setup.morphism_, setup.operations_};
+  cg.create_default_initial_guess(setup.x_);
+
+  const auto r_0_sqrt = cg.initial_step(setup.x_, setup.Ax_, setup.r_);
+
+  float r_1 {*r_0_sqrt};
+  float r_0 {0.0f};
+
+  DenseVector p {setup.M_};
+
+  const auto r_0_r_1_0 = cg.step(
+    0,
+    r_0,
+    r_1,
+    setup.x_,
+    setup.r_,
+    p,
+    setup.Ax_);
+
+  EXPECT_TRUE(r_0_r_1_0.has_value());
+  r_0 = std::get<0>(*r_0_r_1_0);
+  r_1 = std::get<1>(*r_0_r_1_0);
+
+  const auto r_0_r_1_1 = cg.step(
+    1,
+    r_0,
+    r_1,
+    setup.x_,
+    setup.r_,
+    p,
+    setup.Ax_);
+
+  EXPECT_TRUE(r_0_r_1_1.has_value());
+  EXPECT_FLOAT_EQ(std::get<0>(*r_0_r_1_1), 1982.2006);
+  EXPECT_FLOAT_EQ(std::get<1>(*r_0_r_1_1), 10.574238);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(ConjugateGradientTests, SolveWorks)
+{
+  SetupConjugateGradientTests setup {};
+  ConjugateGradient cg {setup.A_, setup.b_, setup.morphism_, setup.operations_};
+  cg.create_default_initial_guess(setup.x_);
+
+  DenseVector p {setup.M_};
+
+  EXPECT_TRUE(cg.solve(setup.x_, setup.Ax_, setup.r_, p));
 
   vector<float> h_x_output (setup.M_, 0.0f);
   vector<float> y (setup.M_, 0.0f);

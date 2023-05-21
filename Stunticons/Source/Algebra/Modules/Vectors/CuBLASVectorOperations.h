@@ -79,6 +79,8 @@ class CuBLASVectorOperations
       const DenseVector& r2);
 
     bool copy(const Array& x, DenseVector& y);
+    bool copy(const DenseVector& x, DenseVector& y);
+    bool copy(const DenseVector& x, Array& y);
 
   private:
 

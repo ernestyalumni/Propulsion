@@ -7830,6 +7830,47 @@ End repeat.
 
 Return $\mathbf{x}_{k+1}$ as the result.
 
+This is implemented also in the following manner, in \url{https://optimization.cbe.cornell.edu/index.php?title=Conjugate_gradient_methods} for Algorithm 3, "Simplified version from Alg 2", and \href{https://github.com/NVIDIA/cuda-samples/tree/master/Samples/4_CUDA_Libraries/conjugateGradient}{conjugateGradient cuda sample}: \\
+
+Given initial guess $x_0 \in \mathbb{R}^N$
+\[
+r_0 = b - Ax_0
+\]
+
+Consider $|r_0|^2$. If $|r_0|^2$ small enough, return $x_0$ as a result. \\
+
+\[
+\begin{gathered}
+	p_0 := r_0 \\
+	\begin{aligned}
+		& \alpha_0 := \frac{r_0^2}{ \langle p_0, p_0 \rangle_A} \\
+		& x_1 := x_0 + \alpha_0 p_0 \\
+		& r_1 := r_0 - \alpha_0 A p_0
+	\end{aligned}
+\end{gathered}
+\]
+In step $k=1$,
+\[
+\begin{aligned}
+	& \beta_0 := \frac{r_1^2}{r_0^2} \\
+	& p_1 := r_1 + \beta_0 p_0 \\
+	& \alpha_1 := \frac{r_1^2 }{ \langle p_1 , p_1 \rangle_A} \\
+	& x_2 := x_1 + \alpha_1 p_1 \\
+	& r_2 := r_1 - \alpha_1 Ap_1
+\end{aligned}
+\]
+And so for $k > 0$,
+\[
+\begin{aligned}
+	& \beta_{k-1} := \frac{r_k^2}{r_{k-1}^2} \\
+	& p_k := r_k + \beta_{k-1} p_{k-1} \\
+	& \alpha_k := \frac{r_k^2 }{ \langle p_k , p_k \rangle_A} \\
+	& x_{k+1} := x_k + \alpha_k p_k \\
+	& r_{k+1} := r_k - \alpha_k Ap_k
+\end{aligned}
+\]
+Repeat until $r_k^2$ small enough or when $k> K$, $K \equiv$ maximum number of iterations.
+
 \part{Cantera}
 
 \section{Professor David Goodwin, 1957-2012}

@@ -255,6 +255,36 @@ bool CuBLASVectorOperations::copy(const Array& x, DenseVector& y)
   return handle_copy.is_cuBLAS_success();
 }
 
+bool CuBLASVectorOperations::copy(const DenseVector& x, DenseVector& y)
+{
+  HandleUnsuccessfulCuBLASCall handle_copy {"Failed copy in cuBLAS"};
+
+  handle_copy(cublasScopy(
+    cublas_handle_,
+    x.number_of_elements_,
+    x.d_values_,
+    1,
+    y.d_values_,
+    1));
+
+  return handle_copy.is_cuBLAS_success();
+}
+
+bool CuBLASVectorOperations::copy(const DenseVector& x, Array& y)
+{
+  HandleUnsuccessfulCuBLASCall handle_copy {"Failed copy in cuBLAS"};
+
+  handle_copy(cublasScopy(
+    cublas_handle_,
+    x.number_of_elements_,
+    x.d_values_,
+    1,
+    y.values_,
+    1));
+
+  return handle_copy.is_cuBLAS_success();
+}
+
 } // namespace Vectors
 } // namespace Modules
 } // namespace Algebra

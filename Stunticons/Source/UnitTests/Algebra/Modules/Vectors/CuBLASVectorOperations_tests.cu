@@ -141,6 +141,72 @@ TEST(CuBLASVectorOperationsTests, ScalarMultipliesWithDenseVector)
   EXPECT_FLOAT_EQ(result.at(3), 8.8);
 }
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(CuBLASVectorOperationsTests, CopyCopiesDenseVectorToDenseVector)
+{
+  const vector<float> h_a {69.0, 42.0, 888.0, 420.0};
+  DenseVector a {h_a.size()};
+
+  const vector<float> h_b {1.0, 2.0, 3.0, 4.0};
+  DenseVector b {h_b.size()};
+
+  a.copy_host_input_to_device(h_a);
+  b.copy_host_input_to_device(h_b);
+
+  vector<float> result (4, 0.0f);
+  b.copy_device_output_to_host(result);
+
+  EXPECT_FLOAT_EQ(result.at(0), 1.0);
+  EXPECT_FLOAT_EQ(result.at(1), 2.0);
+  EXPECT_FLOAT_EQ(result.at(2), 3.0);
+  EXPECT_FLOAT_EQ(result.at(3), 4.0);
+
+  CuBLASVectorOperations operations {};
+
+  EXPECT_TRUE(operations.copy(a, b));
+
+  b.copy_device_output_to_host(result);
+
+  EXPECT_FLOAT_EQ(result.at(0), 69.0);
+  EXPECT_FLOAT_EQ(result.at(1), 42.0);
+  EXPECT_FLOAT_EQ(result.at(2), 888.0);
+  EXPECT_FLOAT_EQ(result.at(3), 420.0);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(CuBLASVectorOperationsTests, CopyCopiesDenseVectorToArray)
+{
+  const vector<float> h_a {69.0, 42.0, 888.0, 420.0};
+  DenseVector a {h_a.size()};
+
+  const vector<float> h_b {1.0, 2.0, 3.0, 4.0};
+  Array b {h_b.size()};
+
+  a.copy_host_input_to_device(h_a);
+  b.copy_host_input_to_device(h_b);
+
+  vector<float> result (4, 0.0f);
+  b.copy_device_output_to_host(result);
+
+  EXPECT_FLOAT_EQ(result.at(0), 1.0);
+  EXPECT_FLOAT_EQ(result.at(1), 2.0);
+  EXPECT_FLOAT_EQ(result.at(2), 3.0);
+  EXPECT_FLOAT_EQ(result.at(3), 4.0);
+
+  CuBLASVectorOperations operations {};
+
+  EXPECT_TRUE(operations.copy(a, b));
+
+  b.copy_device_output_to_host(result);
+
+  EXPECT_FLOAT_EQ(result.at(0), 69.0);
+  EXPECT_FLOAT_EQ(result.at(1), 42.0);
+  EXPECT_FLOAT_EQ(result.at(2), 888.0);
+  EXPECT_FLOAT_EQ(result.at(3), 420.0);
+}
+
 } // namespace Vectors
 } // namespace Modules
 } // namespace Algebra
