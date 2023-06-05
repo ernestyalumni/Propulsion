@@ -1,5 +1,5 @@
-#ifndef OPTIMIZATION_CONJUGATE_GRADIENT_H
-#define OPTIMIZATION_CONJUGATE_GRADIENT_H
+#ifndef ALGEBRA_SOLVERS_CONJUGATE_GRADIENT_H
+#define ALGEBRA_SOLVERS_CONJUGATE_GRADIENT_H
 
 #include "Algebra/Modules/Matrices/CompressedSparseRow.h"
 #include "Algebra/Modules/Morphisms/SparseMatrixMorphism.h"
@@ -9,7 +9,9 @@
 #include <cstddef>
 #include <optional>
 
-namespace Optimization
+namespace Algebra
+{
+namespace Solvers
 {
 
 class ConjugateGradient
@@ -53,6 +55,12 @@ class ConjugateGradient
     /// \return If has_value(), returns r0, r1.
     //--------------------------------------------------------------------------
 
+    //--------------------------------------------------------------------------
+    /// \param Ap - you need to provide a DenseVector to store the result of
+    /// doing multiplication of matrix A on a vector, x.
+    /// \param r - residuals.
+    /// \param p - orthonormal direction vectors.
+    //--------------------------------------------------------------------------
     std::optional<std::tuple<float, float>> step(
       const std::size_t k,
       const float r0,
@@ -62,7 +70,11 @@ class ConjugateGradient
       DenseVector& p,
       DenseVector& Ap);
 
-    bool solve(
+    //--------------------------------------------------------------------------
+    /// \returns Is error free and number of iterations done. All inputs x, Ax,
+    /// r, p will be mutated.
+    //--------------------------------------------------------------------------
+    std::tuple<bool, std::size_t> solve(
       DenseVector& x,
       DenseVector& Ax,
       Array& r,
@@ -83,6 +95,13 @@ class ConjugateGradient
     float tolerance_;
 };
 
+//------------------------------------------------------------------------------
+/// \details This class is prefixed with "Sample" because it follows the sample
+/// found in cuda-samples from NVIDIA. In developing a conjugate gradient
+/// method, the code provided by NVIDIA was used in this class as a sort of
+/// baseline. It is not meant to be the "final product" for a conjugate gradient
+/// method solver.
+//------------------------------------------------------------------------------
 class SampleConjugateGradient
 {
   public:
@@ -150,6 +169,7 @@ class SampleConjugateGradient
     float tolerance_;
 };
 
-} // namespace Optimization
+} // namespace Solvers
+} // namespace Algebra
 
-#endif // OPTIMIZATION_CONJUGATE_GRADIENT_H
+#endif // ALGEBRA_SOLVERS_CONJUGATE_GRADIENT_H

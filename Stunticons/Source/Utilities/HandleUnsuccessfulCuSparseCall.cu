@@ -24,6 +24,8 @@ void HandleUnsuccessfulCuSparseCall::operator()(
   if (!is_cusparse_success())
   {
     cerr << error_message_ << " (error code " <<
+      // ref. https://docs.nvidia.com/cuda/cusparse/index.html#cusparsegeterrorstring
+      // const char* cusparseGetErrorSTring(cusparseStatus_t status).
       cusparseGetErrorString(cusparse_status_) << ")!\n";
   }
 }

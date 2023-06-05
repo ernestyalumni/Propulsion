@@ -6,8 +6,11 @@
 #include <vector>
 
 using Algebra::Modules::Matrices::SparseMatrices::DenseVector;
+using Algebra::Modules::Matrices::SparseMatrices::DoubleDenseVector;
 using Algebra::Modules::Vectors::Array;
 using Algebra::Modules::Vectors::CuBLASVectorOperations;
+using Algebra::Modules::Vectors::DoubleArray;
+using Algebra::Modules::Vectors::DoubleCuBLASVectorOperations;
 using std::vector;
 
 namespace GoogleUnitTests
@@ -205,6 +208,124 @@ TEST(CuBLASVectorOperationsTests, CopyCopiesDenseVectorToArray)
   EXPECT_FLOAT_EQ(result.at(1), 42.0);
   EXPECT_FLOAT_EQ(result.at(2), 888.0);
   EXPECT_FLOAT_EQ(result.at(3), 420.0);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(CuBLASVectorOperationsTests, GetNormGetsNormForArray)
+{
+  const vector<float> h_a {10.0, 10.0, 3.0, 4.0};
+  Array X {h_a.size()};
+
+  X.copy_host_input_to_device(h_a);
+
+  CuBLASVectorOperations operations {};
+
+  const auto result = operations.get_norm(X);
+
+  EXPECT_TRUE(result.has_value());
+
+  EXPECT_FLOAT_EQ(*result, 15.0);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(CuBLASVectorOperationsTests, GetNormGetsNormForDenseArray)
+{
+  const vector<float> h_a {69.0, 42.0, 888.0, 420.0};
+  DenseVector X {h_a.size()};
+
+  X.copy_host_input_to_device(h_a);
+
+  CuBLASVectorOperations operations {};
+
+  const auto result = operations.get_norm(X);
+
+  EXPECT_TRUE(result.has_value());
+
+  EXPECT_FLOAT_EQ(*result, 985.6312697961647);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(DoubleCuBLASVectorOperationsTests, TakesDotProductsOfDoubleArrays)
+{
+  const vector<double> h_a {1.0, 2.0, 3.0, 4.0};
+  const vector<double> h_b {5.0, 6.0, 7.0, 8.0};
+
+  DoubleArray X {h_a.size()};
+  DoubleArray Y {h_b.size()};
+
+  X.copy_host_input_to_device(h_a);
+  Y.copy_host_input_to_device(h_b);
+
+  DoubleCuBLASVectorOperations operations {};
+
+  // This should be a blocking (synchronous) call.
+  const auto result = operations.dot_product(X, Y);
+
+  EXPECT_TRUE(result.has_value());
+  EXPECT_DOUBLE_EQ(*result, 70.0);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(
+  DoubleCuBLASVectorOperationsTests,
+  TakesDotProductOfDoubleDenseArrayAndDoubleArray)
+{
+  const vector<double> h_a {1.0, 2.0, 3.0, 4.0};
+  const vector<double> h_b {5.0, 6.0, 7.0, 8.0};
+
+  DoubleDenseVector X {h_a.size()};
+  DoubleArray Y {h_b.size()};
+
+  X.copy_host_input_to_device(h_a);
+  Y.copy_host_input_to_device(h_b);
+
+  DoubleCuBLASVectorOperations operations {};
+
+  // This should be a blocking (synchronous) call.
+  const auto result = operations.dot_product(X, Y);
+
+  EXPECT_TRUE(result.has_value());
+  EXPECT_DOUBLE_EQ(*result, 70.0);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(DoubleCuBLASVectorOperationsTests, GetNormGetsNormForDoubleArray)
+{
+  const vector<double> h_a {10.0, 10.0, 3.0, 4.0};
+  DoubleArray X {h_a.size()};
+
+  X.copy_host_input_to_device(h_a);
+
+  DoubleCuBLASVectorOperations operations {};
+
+  const auto result = operations.get_norm(X);
+
+  EXPECT_TRUE(result.has_value());
+
+  EXPECT_DOUBLE_EQ(*result, 15.0);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(DoubleCuBLASVectorOperationsTests, GetNormGetsNormForDoubleDenseVector)
+{
+  const vector<double> h_a {10.0, 10.0, 3.0, 4.0};
+  DoubleDenseVector X {h_a.size()};
+
+  X.copy_host_input_to_device(h_a);
+
+  DoubleCuBLASVectorOperations operations {};
+
+  const auto result = operations.get_norm(X);
+
+  EXPECT_TRUE(result.has_value());
+
+  EXPECT_DOUBLE_EQ(*result, 15.0);
 }
 
 } // namespace Vectors

@@ -154,6 +154,5 @@ ENDIF()
 FetchContent_MakeAvailable(googletest)
 
 ADD_SUBDIRECTORY(Algebra)
-ADD_SUBDIRECTORY(Optimization)
 ADD_SUBDIRECTORY(UnitTests)
 ADD_SUBDIRECTORY(Utilities)

@@ -5,6 +5,8 @@ SET(ALGEBRA_CU_SOURCES
   Modules/Vectors/CuBLASVectorOperations.cu
   Modules/Vectors/DeviceVectorAdditionArrays.cu
   Modules/Vectors/VectorAddition.cu
+  Solvers/BiconjugateGradientStabilized.cu
+  Solvers/ConjugateGradient.cu
   )
 
 # TODO: This line doesn't seem to be needed.

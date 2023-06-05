@@ -4,12 +4,16 @@
 #include <cassert>
 #include <cstddef>
 #include <optional>
-#include <tuple>
+#include <tuple> // std::get
+#include <vector>
 
+using std::get;
 using std::nullopt;
 using std::optional;
 
-namespace Optimization
+namespace Algebra
+{
+namespace Solvers
 {
 
 ConjugateGradient::ConjugateGradient(
@@ -32,7 +36,7 @@ ConjugateGradient::ConjugateGradient(
 
 bool ConjugateGradient::create_default_initial_guess(DenseVector& x)
 {
-  std::vector h_x (x.number_of_elements_, 0.0f);
+  std::vector<float> h_x (x.number_of_elements_, 0.0f);
   return x.copy_host_input_to_device(h_x);
 }
 
@@ -122,7 +126,7 @@ optional<std::tuple<float, float>> ConjugateGradient::step(
   return std::make_optional(std::make_tuple(new_r0, *r1_squared));
 }
 
-bool ConjugateGradient::solve(
+std::tuple<bool, std::size_t> ConjugateGradient::solve(
   DenseVector& x,
   DenseVector& Ax,
   Array& r,
@@ -132,7 +136,7 @@ bool ConjugateGradient::solve(
 
   if (!r_0_sqrt.has_value())
   {
-    return false;
+    return std::make_tuple(false, 0);
   }
 
   std::size_t k {0};
@@ -146,16 +150,16 @@ bool ConjugateGradient::solve(
 
     if (!step_results.has_value())
     {
-      return false;
+      return std::make_tuple(false, k);
     }
 
-    r_0 = std::get<0>(*step_results);
-    r_1 = std::get<1>(*step_results);
+    r_0 = get<0>(*step_results);
+    r_1 = get<1>(*step_results);
 
     ++k;
   }
 
-  return true;
+  return std::make_tuple(true, k);
 }
 
 SampleConjugateGradient::SampleConjugateGradient(
@@ -295,8 +299,8 @@ bool SampleConjugateGradient::solve(
       return false;
     }
 
-    r_0 = std::get<0>(*step_results);
-    r_1 = std::get<1>(*step_results);
+    r_0 = get<0>(*step_results);
+    r_1 = get<1>(*step_results);
 
     ++k;
   }
@@ -304,4 +308,5 @@ bool SampleConjugateGradient::solve(
   return true;
 }
 
-} // namespace Optimization
+} // namespace Solvers
+} // namespace Algebra

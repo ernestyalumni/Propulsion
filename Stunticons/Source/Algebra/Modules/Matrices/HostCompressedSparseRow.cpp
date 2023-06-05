@@ -75,6 +75,44 @@ const int* HostCompressedSparseRowMatrix::copy_column_indices(
   return copy(column_indices.begin(), column_indices.end(), J_);
 }
 
+DoubleHostCompressedSparseRowMatrix::DoubleHostCompressedSparseRowMatrix(
+  const std::size_t M,
+  const std::size_t N,
+  const std::size_t number_of_elements
+  ):
+  values_{new double[number_of_elements]},
+  J_{new int[number_of_elements]},
+  I_{new int[M + 1]},
+  M_{M},
+  N_{N},
+  number_of_elements_{number_of_elements}
+{}
+
+DoubleHostCompressedSparseRowMatrix::~DoubleHostCompressedSparseRowMatrix()
+{
+  delete [] values_;
+  delete [] J_;
+  delete [] I_;
+}
+
+const double* DoubleHostCompressedSparseRowMatrix::copy_values(
+  const vector<double>& input_values)
+{
+  return copy(input_values.begin(), input_values.end(), values_);
+}
+
+const int* DoubleHostCompressedSparseRowMatrix::copy_row_offsets(
+  const vector<int>& row_offsets)
+{
+  return copy(row_offsets.begin(), row_offsets.end(), I_);
+}
+
+const int* DoubleHostCompressedSparseRowMatrix::copy_column_indices(
+  const vector<int>& column_indices)
+{
+  return copy(column_indices.begin(), column_indices.end(), J_);
+}
+
 } // namespace SparseMatrices
 } // namespace Matrices
 } // namespace Modules

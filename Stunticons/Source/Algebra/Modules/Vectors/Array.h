@@ -52,6 +52,32 @@ struct Array
     cudaStream_t stream = 0);
 };
 
+struct DoubleArray
+{
+  double* values_;
+  const std::size_t number_of_elements_;
+
+  DoubleArray(const std::size_t input_size = 50000);
+
+  ~DoubleArray();
+
+  bool copy_host_input_to_device(const DoubleHostArray& h_a);
+
+  bool copy_device_output_to_host(DoubleHostArray& h_a);
+
+  bool copy_host_input_to_device(const std::vector<double>& h_a);
+
+  bool copy_device_output_to_host(std::vector<double>& h_a);
+
+  bool asynchronous_copy_host_input_to_device(
+    const DoubleHostArray& h_a,
+    cudaStream_t stream = 0);
+
+  bool asynchronous_copy_device_output_to_host(
+    DoubleHostArray& h_a,
+    cudaStream_t stream = 0);
+};
+
 } // namespace Vectors
 } // namespace Modules
 } // namespace Algebra

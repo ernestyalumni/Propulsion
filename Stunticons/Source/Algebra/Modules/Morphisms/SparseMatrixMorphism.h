@@ -79,6 +79,64 @@ class SparseMatrixMorphismOnDenseVector
     std::size_t buffer_size_;
 };
 
+//------------------------------------------------------------------------------
+/// \details Compute operations with sparse matrix, but with double floating
+/// point type.
+//------------------------------------------------------------------------------
+class DoubleSparseMatrixMorphismOnDenseVector
+{
+  public:
+
+    using CompressedSparseRowMatrix =
+      Algebra::Modules::Matrices::SparseMatrices::
+        DoubleCompressedSparseRowMatrix;
+    using DenseVector =
+      Algebra::Modules::Matrices::SparseMatrices::DoubleDenseVector;
+
+    DoubleSparseMatrixMorphismOnDenseVector(
+      const double alpha = 1.0,
+      const double beta = 0.0);
+
+    ~DoubleSparseMatrixMorphismOnDenseVector();
+
+    double get_alpha() const
+    {
+      return alpha_;
+    }
+
+    double get_beta() const
+    {
+      return beta_;
+    }
+
+    std::size_t get_buffer_size() const
+    {
+      return buffer_size_;
+    }
+
+    bool linear_transform(
+      CompressedSparseRowMatrix& A,
+      DenseVector& x,
+      DenseVector& b);
+
+    //--------------------------------------------------------------------------
+    /// \returns True if successful, false, if not.
+    //--------------------------------------------------------------------------
+    bool buffer_size(
+      CompressedSparseRowMatrix& A,
+      DenseVector& x,
+      DenseVector& b);
+
+    double alpha_;
+    double beta_;
+
+  private:
+
+    void* buffer_;
+    cusparseHandle_t cusparse_handle_;
+    std::size_t buffer_size_;
+};
+
 } // namespace Morphisms
 } // namespace Modules
 } // namespace Algebra

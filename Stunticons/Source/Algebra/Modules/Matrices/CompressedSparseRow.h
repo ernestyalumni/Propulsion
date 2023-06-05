@@ -47,6 +47,39 @@ class CompressedSparseRowMatrix
     cusparseSpMatDescr_t matrix_descriptor_;
 };
 
+//------------------------------------------------------------------------------
+/// \brief Compressed Sparse Row (CSR) matrix for CUDA C++, but using double
+/// floating points.
+//------------------------------------------------------------------------------
+class DoubleCompressedSparseRowMatrix
+{
+  public:
+
+    DoubleCompressedSparseRowMatrix() = delete;
+
+    explicit DoubleCompressedSparseRowMatrix(
+      const std::size_t M,
+      const std::size_t N,
+      const std::size_t number_of_elements);
+
+    ~DoubleCompressedSparseRowMatrix();
+
+    void copy_host_input_to_device(
+      const DoubleHostCompressedSparseRowMatrix& h_a);
+
+    void copy_device_output_to_host(DoubleHostCompressedSparseRowMatrix& h_a);
+
+    double* d_values_;
+    int* d_columns_;
+    int* d_rows_;
+
+    const std::size_t M_;
+    const std::size_t N_;
+    const std::size_t number_of_elements_;    
+
+    cusparseSpMatDescr_t matrix_descriptor_;
+};
+
 class DenseVector
 {
   public:
@@ -91,6 +124,57 @@ class DenseVector
     }
 
     float* d_values_;
+
+    const std::size_t number_of_elements_;
+
+    cusparseDnVecDescr_t vector_descriptor_;
+};
+
+class DoubleDenseVector
+{
+  public:
+
+    DoubleDenseVector() = delete;
+
+    explicit DoubleDenseVector(const std::size_t N);
+
+    ~DoubleDenseVector();
+
+    bool copy_host_input_to_device(
+      const Algebra::Modules::Vectors::DoubleHostArray& h_a);
+
+    bool copy_device_output_to_host(
+      Algebra::Modules::Vectors::DoubleHostArray& h_a);
+
+    bool copy_host_input_to_device(const std::vector<double>& h_a);
+
+    template <std::size_t N>
+    bool copy_host_input_to_device(const std::array<double, N>& h_a)
+    {
+      const auto result = cudaMemcpy(
+        d_values_,
+        h_a.data(),
+        h_a.size() * sizeof(float),
+        cudaMemcpyHostToDevice);
+
+      return result == cudaSuccess;
+    }
+
+    bool copy_device_output_to_host(std::vector<double>& h_a);
+
+    template <std::size_t N>
+    bool copy_device_output_to_host(std::array<double, N>& h_a)
+    {
+      const auto result = cudaMemcpy(
+        d_values_,
+        h_a.data(),
+        h_a.size() * sizeof(float),
+        cudaMemcpyHostToDevice);
+
+      return result == cudaSuccess;
+    }
+
+    double* d_values_;
 
     const std::size_t number_of_elements_;
 

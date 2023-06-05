@@ -45,6 +45,18 @@ HostArray::~HostArray()
   delete [] values_;
 }
 
+DoubleHostArray::DoubleHostArray(
+  const std::size_t input_size
+  ):
+  values_{new double[input_size]},
+  number_of_elements_{input_size}
+{}
+
+DoubleHostArray::~DoubleHostArray()
+{
+  delete [] values_;
+}
+
 } // namespace Vectors
 } // namespace Modules
 } // namespace Algebra

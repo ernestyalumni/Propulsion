@@ -35,6 +35,16 @@ struct HostArray
   ~HostArray();
 };
 
+struct DoubleHostArray
+{
+  double* values_;
+  const std::size_t number_of_elements_;
+
+  DoubleHostArray(const std::size_t input_size = 50000);
+
+  ~DoubleHostArray();
+};
+
 } // namespace Vectors
 } // namespace Modules
 } // namespace Algebra

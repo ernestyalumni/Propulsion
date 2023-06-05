@@ -7768,7 +7768,7 @@ Consider now the $k+1$ case:
 r_j^T r_{k+1} = r_j^T (r_k - \alpha_k A p_k) = r_j^T r_k - \alpha_k \langle r_j, p_k \rangle 
 \]
 
-Using Gram-Schmidty orthonormality, $p_j = r_j - \sum_{l=0}^{j-1} \frac{ \langle p_l , r_j \rangle }{ \langle p_l , p_l \rangle } p_l$ so 
+Using Gram-Schmidt orthonormality, $p_j = r_j - \sum_{l=0}^{j-1} \frac{ \langle p_l , r_j \rangle }{ \langle p_l , p_l \rangle } p_l$ so 
 \[
 \langle r_j , p_k \rangle = \langle p_j + \sum_{l=0}^{ j -1} \frac{ \langle p_l , r_j \rangle }{ \langle p_l , p_l \rangle } p_l , p_k \rangle = 0 
 \]
@@ -7839,7 +7839,7 @@ r_0 = b - Ax_0
 
 Consider $|r_0|^2$. If $|r_0|^2$ small enough, return $x_0$ as a result. \\
 
-\[
+\begin{equation}\label{Eq:ConjugateGradientAlgorithmInitialStep}
 \begin{gathered}
 	p_0 := r_0 \\
 	\begin{aligned}
@@ -7848,9 +7848,11 @@ Consider $|r_0|^2$. If $|r_0|^2$ small enough, return $x_0$ as a result. \\
 		& r_1 := r_0 - \alpha_0 A p_0
 	\end{aligned}
 \end{gathered}
-\]
+\end{equation}
+
 In step $k=1$,
-\[
+
+\begin{equation}\label{Eq:ConjugateGradientAlgorithmFirstStep}
 \begin{aligned}
 	& \beta_0 := \frac{r_1^2}{r_0^2} \\
 	& p_1 := r_1 + \beta_0 p_0 \\
@@ -7858,9 +7860,11 @@ In step $k=1$,
 	& x_2 := x_1 + \alpha_1 p_1 \\
 	& r_2 := r_1 - \alpha_1 Ap_1
 \end{aligned}
-\]
+\end{equation}
+
 And so for $k > 0$,
-\[
+
+\begin{equation}\label{Eq:ConjugateGradientAlgorithmkStep}
 \begin{aligned}
 	& \beta_{k-1} := \frac{r_k^2}{r_{k-1}^2} \\
 	& p_k := r_k + \beta_{k-1} p_{k-1} \\
@@ -7868,8 +7872,152 @@ And so for $k > 0$,
 	& x_{k+1} := x_k + \alpha_k p_k \\
 	& r_{k+1} := r_k - \alpha_k Ap_k
 \end{aligned}
-\]
+\end{equation}
+
 Repeat until $r_k^2$ small enough or when $k> K$, $K \equiv$ maximum number of iterations.
+
+\subsection{Biconjugate gradient method; Biconjugate gradient stabilized method}
+
+See \href{https://utminers.utep.edu/xzeng/2017spring_math5330/MATH_5330_Computational_Methods_of_Linear_Algebra.html}{Math 5330 Computational Methods of Linear Algebra, Spring 2017}.
+
+In \href{https://utminers.utep.edu/xzeng/2017spring_math5330/MATH_5330_Computational_Methods_of_Linear_Algebra_files/ln06.pdf}{Lecture Note 6, 02/09 Lecture} of Math 5330, in considering a transpose free version of the BCG (biconjugate algorithm), notice $\exists \, $ polynomials of degree $j$, $\phi_j$, $\pi_j$ s.t. $\phi_j(0) = 1$ and
+
+\begin{equation}\label{Eq:BiconjugateGradientPolynomialForm}
+\begin{aligned}
+	& \mathbf{r}_j = \phi_j(A) \mathbf{r}_0 \quad \, & \mathbf{p}_j = \pi_j(A) \mathbf{r}_0 \\ 
+	& \mathbf{r}_j' = \phi_j(A^T) \mathbf{r}_0 \quad \, & \mathbf{p}_j' = \pi_j(A^T) \mathbf{r}_0
+\end{aligned}
+\end{equation}
+
+Eq. \ref{Eq:BiconjugateGradientPolynomialForm} is a reasonable generalization. Recall Eq. \ref{Eq:ConjugateGradientAlgorithmInitialStep}, \ref{Eq:ConjugateGradientAlgorithmFirstStep}, \ref{Eq:ConjugateGradientAlgorithmkStep}: 
+
+\[
+\begin{aligned}
+& \mathbf{p}_0 := \mathbf{r}_0 \\
+& \mathbf{r}_1 := \mathbf{r}_0 - \alpha_0 A \mathbf{p}_0 = (1-\alpha_0 A) \mathbf{r}_0 \\
+& \mathbf{p}_1 := \mathbf{r}_1 + \beta_0 \mathbf{p}_0 = ((1-\alpha_0 A) + \beta_0)\mathbf{p}_0 \\	
+& \mathbf{p}_k := \mathbf{r}_k + \beta_{k-1} \mathbf{p}_{k-1}  \\
+& \mathbf{r}_{k+1} := \mathbf{r}_k - \alpha_{k} A \mathbf{p}_{k}  
+\end{aligned}
+\]
+So by induction
+\[
+\begin{aligned}
+& \mathbf{r}_{k+1} = \phi_k(A) \mathbf{r}_0 - \alpha_k A \pi_k(A) \mathbf{r}_0 = (\phi_k(A) - \alpha_k A \pi_k(A)) \mathbf{r}_0 =: \phi_{k+1}(A) \mathbf{r}_0 \\
+& \mathbf{p}_{k} = \phi_k(A) \mathbf{r}_0 + \beta_{k-1}  \pi_{k-1}(A) \mathbf{r}_0 = (\phi_k(A) + \beta_{k-1}  \pi_{k-1}(A)) \mathbf{r}_0 =: \phi_{k}(A) \mathbf{r}_0 
+\end{aligned}
+\]
+
+So we get
+\begin{equation}\label{Eq:BiconjugateGradientMethodPolynomialRecursion}
+	\begin{aligned}
+		& \phi_{j+1}(A) = \phi_j(A) - \alpha_j A \pi_j(A) \\
+		& \pi_j(A) = \phi_j(A) + \beta_{j-1} \pi_{j-1}(A)
+	\end{aligned}
+\end{equation}
+
+\href{https://en.wikipedia.org/wiki/Biconjugate_gradient_stabilized_method}{Wikipedia} defines $\mathbf{r}_i = P_i(A) \mathbf{r}_0$ and $\mathbf{p}_{i+1} = T_i(A) \mathbf{r}_0$, and so $\phi_j \equiv P_j$, and $\pi_i \equiv T_i$. We'll use Wikipedia's notation from here.
+
+We wish to have a recurrence relationship as such:
+
+\[
+\begin{aligned}
+	& \mathbf{r}_j = Q_j(A) P_j(A) \mathbf{r}_0 \\
+	& \mathbf{p}_j = Q_j(A) T_j(A) \mathbf{r}_0 	
+\end{aligned}
+\]
+$Q_j(A)$ is a called a "rest polynomial" by Xianyi Zeng in \href{https://utminers.utep.edu/xzeng/2017spring_math5330/MATH_5330_Computational_Methods_of_Linear_Algebra_files/ln07.pdf}{Lecture Note 7, Math 5330, UTEP}. Wikipedia says the hope or wish is that $Q_i(A)$ will enable faster and smoother convergence in $\mathbf{r}_i$. Consider $Q_j(A)$ to be an "ansatz" or guess. We already know that $Q_j(A) = 1$ gives us back the "original" conjugate gradient method.
+
+
+From $Q_{j+1}(A) = (1- \omega_j A) Q_j(A)$, Eq. \ref{Eq:BiconjugateGradientMethodPolynomialRecursion}, 
+\[
+\begin{gathered}
+	\mathbf{r}_{j+1} = Q_{j+1}(A) P_{j+1}(A)\mathbf{r}_0 = (1- \omega_j A) Q_j(A) P_{j+1}(A) \mathbf{r}_0 = \sum_{k=0}^{j + 1} a^{j+1}_k A^{j + 1-k} P_{j+1}(A) \mathbf{r}_0 = (1 - \omega_j A) \sum_{k=0}^j a_k^j A^{j-k} P_{j+1}(A) \mathbf{r}_0 
+\end{gathered}
+\]
+\begin{equation}
+	\xrightarrow{ \mathbf{r}_0^T } a_0^{j+1} = -\omega_j a_0^j
+\end{equation}
+
+We'll compare a number of implementations of the algorithm for the biconjugate gradient stabilizied (BCGST).
+
+Consider this implementation from Zeng, pp.5 Algorithm 2.3, in \href{https://utminers.utep.edu/xzeng/2017spring_math5330/MATH_5330_Computational_Methods_of_Linear_Algebra_files/ln07.pdf}{Lecture Note 7, Math 5330, UTEP}.
+
+\begin{equation}
+\begin{gathered}
+	\begin{aligned}
+	& \text{ Compute } \mathbf{r}_0 = \mathbf{b} - A \mathbf{x}_0, \text{ choose } \mathbf{r}_0' \text{ s.t. } \mathbf{r}_0 \cdot \mathbf{r}'_0 \neq 0, \text{ e.g. } \mathbf{r}_0' = \mathbf{r}_0 \\
+	& \text{ Set } \mathbf{p_0} = \mathbf{r_0}
+\end{aligned} \\
+\begin{gathered}
+	\forall \, j = 0, 1, \dots \\
+	\begin{aligned}
+		& \alpha_j = \frac{ (\mathbf{r}_0' \cdot \mathbf{r}_j) }{ \mathbf{r}_0' \cdot A \mathbf{p}_j } \\
+		& \mathbf{s}_j = \mathbf{r}_j - \alpha_j A \mathbf{p}_j \\
+		& \omega_j = \frac{ \mathbf{s}_j \cdot (A \mathbf{s}_j) }{ (A\mathbf{s}_j)\cdot (A\mathbf{s}_j) } \\
+		& \mathbf{x}_{j+1} = \mathbf{x}_j + \alpha_j \mathbf{p}_j + \omega_j \mathbf{s}_j \\
+		& \mathbf{r}_{j+1} = \mathbf{s}_j - \omega_j A\mathbf{s}_j \\
+		& \text{ if } \| \mathbf{r}_{j+1} \| < \epsilon_0 \text{ then break. } \\
+		& \beta_j = \frac{ \alpha_j }{ \omega_j } \frac{ (\mathbf{r}_0' \cdot \mathbf{r}_{j+1} ) }{ (\mathbf{r}_0' \cdot \mathbf{r}_j )} \\
+		& \mathbf{p}_{j+1} = \mathbf{r}_{j+1} + \beta_j (\mathbf{p}_j - \omega_j A \mathbf{p}_j)
+	\end{aligned} 
+\end{gathered}	\\
+\text{ Set } \mathbf{x} = \mathbf{x}_{j+1}
+\end{gathered}
+\end{equation}
+
+Unfortunately, this algorithm, Algorithm 2.3, will fail and yield NaN values especially during floating point division. Use this instead, Algorithm 2.4 of Zeng:
+
+\begin{equation}
+	\begin{gathered}
+		\begin{aligned}
+			& \text{ Compute } \mathbf{r}_0 = \mathbf{b} - A \mathbf{x}_0, \text{ choose } \mathbf{r}_0' \text{ s.t. } \mathbf{r}_0 \cdot \mathbf{r}'_0 \neq 0, \text{ e.g. } \mathbf{r}_0' = \mathbf{r}_0 \\
+			& \text{ Set } \mathbf{p_0} = \mathbf{r_0}
+		\end{aligned} \\
+		\begin{gathered}
+			\forall \, j = 0, 1, \dots \\
+			\begin{aligned}
+				& \alpha_j = \frac{ (\mathbf{r}_0' \cdot \mathbf{r}_j) }{ \mathbf{r}_0' \cdot A \mathbf{p}_j } \\
+				& \mathbf{s}_j = \mathbf{r}_j - \alpha_j A \mathbf{p}_j \\
+				& \text{ if } \| \mathbf{s}_j \| < \epsilon_0 \text{ , then } \\
+				& \quad \quad \, \begin{aligned}
+					& \mathbf{x}_{j+1} = \mathbf{x}_j + \alpha_j \mathbf{p}_j \\
+					& \text{ break } \\
+				\end{aligned}  \\
+				& \omega_j = \frac{ \mathbf{s}_j \cdot (A \mathbf{s}_j) }{ (A\mathbf{s}_j)\cdot (A\mathbf{s}_j) } \\
+				& \mathbf{x}_{j+1} = \mathbf{x}_j + \alpha_j \mathbf{p}_j + \omega_j \mathbf{s}_j \\
+				& \mathbf{r}_{j+1} = \mathbf{s}_j - \omega_j A\mathbf{s}_j \\
+				& \text{ if } \| \mathbf{r}_{j+1} \| < \epsilon_0 \text{ then break. } \\
+				& \beta_j = \frac{ \alpha_j }{ \omega_j } \frac{ (\mathbf{r}_0' \cdot \mathbf{r}_{j+1} ) }{ (\mathbf{r}_0' \cdot \mathbf{r}_j )} \\
+				& \mathbf{p}_{j+1} = \mathbf{r}_{j+1} + \beta_j (\mathbf{p}_j - \omega_j A \mathbf{p}_j) \\
+				& \text{ if } | \mathbf{r}_{j+1} \cdot \mathbf{r}_0' | < 10^{-6} \text{ then } \\
+				& \quad \quad \, \begin{aligned}
+					& \mathbf{r}_0' = \mathbf{r}_{j+1} \\
+					& \mathbf{p}_{j+1} = \mathbf{r}_{j+1}
+				\end{aligned} \\
+			\end{aligned} 
+		\end{gathered}	\\
+		\text{ Set } \mathbf{x} = \mathbf{x}_{j+1}
+	\end{gathered}
+\end{equation}
+
+We will use this algorithm for the biconjugate gradient stabilizied (BCGST)
+
+\begin{equation}
+\begin{gathered}
+	\begin{aligned}
+		& \text{ Compute } \mathbf{r}_0 = \mathbf{b} - A \mathbf{x}_0, \text{ choose } \mathbf{r}_0' \text{ s.t. } \mathbf{r}_0 \cdot \mathbf{r}'_0 \neq 0, \text{ e.g. } \mathbf{r}_0' = \mathbf{r}_0 \\
+		& \text{ Set } \mathbf{p_0} = \mathbf{r_0}
+	\end{aligned} \\
+\begin{gathered}
+	\forall \, j = 0, 1, \dots \\
+	\begin{aligned}
+		& \alpha_j = \frac{ (\mathbf{r}_0' \cdot \mathbf{r}_j) }{ \mathbf{r}_0 \cdot A \mathbf{p}_j } \\
+		& \mathbf{s}_j = \mathbf{r}_j - \alpha_j A \mathbf{p}_j
+	\end{aligned}
+\end{gathered}
+\end{gathered}
+\end{equation}
 
 \part{Cantera}
 
