@@ -9,6 +9,11 @@ ADD_LIBRARY(UTILITIES_CU
   ${UTILITIES_CU_SOURCES}
   )
 
+ADD_LIBRARY(UTILITIES
+  FileIO/FilePath.cpp
+  FileIO/ReadMatrixMarketFile.cpp
+  )
+
 ADD_EXECUTABLE(GetCUDADeviceProperties
   DeviceManagement/GetCUDADeviceProperties_main.cu
   )
