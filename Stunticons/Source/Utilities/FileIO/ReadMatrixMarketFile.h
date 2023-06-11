@@ -5,6 +5,7 @@
 
 #include <cstddef> // std::size_t
 #include <fstream>
+#include <map>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -31,13 +32,70 @@ class ReadMatrixMarketFile
 
     std::vector<MatrixMarketEntry> read_file();
 
-    std::ifstream file_;
+    //--------------------------------------------------------------------------
+    /// \returns Tuple of row offsets, column indices, and non-zero values.
+    //--------------------------------------------------------------------------
+    std::tuple<std::vector<int>, std::vector<int>, std::vector<double>>
+      read_file_as_compressed_sparse_row();
 
     std::vector<std::string> comments_;
 
     std::size_t number_of_rows_;
     std::size_t number_of_columns_;
     std::size_t number_of_nonzero_entries_;
+
+  protected:
+
+    static std::vector<std::map<int, double>> convert_entries_into_rows(
+      const std::size_t number_of_rows,
+      const std::size_t number_of_nonzero_entries,
+      std::vector<MatrixMarketEntry>& matrix_entries);
+
+    static void sort_by_row(std::vector<MatrixMarketEntry>& matrix_rows);
+
+    //--------------------------------------------------------------------------
+    /// \returns Tuple of row offsets, column indices, and non-zero values.
+    //--------------------------------------------------------------------------
+    static std::tuple<std::vector<int>, std::vector<int>, std::vector<double>>
+      convert_entries_into_compressed_sparse_row(
+      const std::size_t number_of_rows,
+      const std::size_t number_of_nonzero_entries,
+      std::vector<MatrixMarketEntry>& matrix_entries);
+
+    //--------------------------------------------------------------------------
+    /// \returns Tuple of row offsets, column indices, and non-zero values.
+    //--------------------------------------------------------------------------
+    static std::tuple<std::vector<int>, std::vector<int>, std::vector<double>>
+      convert_rows_into_compressed_sparse_row(
+      const std::size_t number_of_rows,
+      const std::size_t number_of_nonzero_entries,
+      std::vector<std::map<int, double>>& matrix_rows);
+
+  private:
+
+    std::ifstream file_;
+
+    bool is_matrix_size_read_;
+};
+
+class ReadColumnVectorMarketFile
+{
+  public:
+
+    ReadColumnVectorMarketFile(const FilePath& file_path);
+
+    ~ReadColumnVectorMarketFile();
+
+    std::vector<double> read_file();
+
+    std::vector<std::string> comments_;
+
+    std::size_t number_of_rows_;
+    std::size_t number_of_columns_;
+
+  private:
+
+    std::ifstream file_;
 
     bool is_matrix_size_read_;
 };

@@ -122,6 +122,10 @@ class HostCompressedSparseRowMatrix
 //------------------------------------------------------------------------------
 /// \brief Compressed Sparse Row (CSR) Matrix meant to reside on the host CPU,
 /// but using double floating point values.
+/// \details Requirements:
+/// values_ is made of size number_of_elements.
+/// J_, the column indicies, is made of size number_of_elements.
+/// I_, the row offsets, is made of size M + 1.
 //------------------------------------------------------------------------------
 class DoubleHostCompressedSparseRowMatrix
 {
