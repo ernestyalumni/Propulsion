@@ -144,6 +144,85 @@ TEST(
     read_mtx.number_of_rows_,
     read_mtx.number_of_columns_,
     read_mtx.number_of_nonzero_entries_};
+
+  csr.copy_values(get<2>(matrix_result));
+
+  csr.copy_row_offsets(get<0>(matrix_result));
+
+  csr.copy_column_indices(get<1>(matrix_result));
+
+  EXPECT_EQ(csr.I_[0], 0);
+  EXPECT_EQ(csr.I_[1], 1);
+  EXPECT_EQ(csr.I_[2168], 8487);
+  EXPECT_EQ(csr.I_[2169], 8657);
+
+  EXPECT_EQ(csr.J_[0], 0);
+  EXPECT_EQ(csr.J_[1], 1);
+  EXPECT_EQ(csr.J_[8655], 1267);
+  EXPECT_EQ(csr.J_[8656], 2168);
+
+  EXPECT_DOUBLE_EQ(csr.values_[0], 3.7515151744965491);
+  EXPECT_DOUBLE_EQ(csr.values_[1], 3.7477497575623362);
+  EXPECT_DOUBLE_EQ(csr.values_[8655], 1);
+  EXPECT_DOUBLE_EQ(csr.values_[8656], -1e-08);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(
+  ReadMatrixMarketFileTests,
+  ReadIntoCsrCanCreatesDoubleHostCompressedSparseRowMatrix)
+{
+  FilePath fp {FilePath::get_data_directory()};
+  fp.append(relative_sparse_matrix_example_path_1);
+  fp.append("c-18.mtx");
+  ReadMatrixMarketFile read_mtx {fp};
+
+  HostCSR csr {read_mtx.read_into_csr()};
+
+  EXPECT_EQ(csr.I_[0], 0);
+  EXPECT_EQ(csr.I_[1], 1);
+  EXPECT_EQ(csr.I_[2168], 8487);
+  EXPECT_EQ(csr.I_[2169], 8657);
+
+  EXPECT_EQ(csr.J_[0], 0);
+  EXPECT_EQ(csr.J_[1], 1);
+  EXPECT_EQ(csr.J_[8655], 1267);
+  EXPECT_EQ(csr.J_[8656], 2168);
+
+  EXPECT_DOUBLE_EQ(csr.values_[0], 3.7515151744965491);
+  EXPECT_DOUBLE_EQ(csr.values_[1], 3.7477497575623362);
+  EXPECT_DOUBLE_EQ(csr.values_[8655], 1);
+  EXPECT_DOUBLE_EQ(csr.values_[8656], -1e-08);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(
+  ReadMatrixMarketFileTests,
+  ReadIntoFloatCsrCanCreatesHostCompressedSparseRowMatrix)
+{
+  FilePath fp {FilePath::get_data_directory()};
+  fp.append(relative_sparse_matrix_example_path_1);
+  fp.append("c-18.mtx");
+  ReadMatrixMarketFile read_mtx {fp};
+
+  const auto csr = read_mtx.read_into_float_csr();
+
+  EXPECT_EQ(csr.I_[0], 0);
+  EXPECT_EQ(csr.I_[1], 1);
+  EXPECT_EQ(csr.I_[2168], 8487);
+  EXPECT_EQ(csr.I_[2169], 8657);
+
+  EXPECT_EQ(csr.J_[0], 0);
+  EXPECT_EQ(csr.J_[1], 1);
+  EXPECT_EQ(csr.J_[8655], 1267);
+  EXPECT_EQ(csr.J_[8656], 2168);
+
+  EXPECT_FLOAT_EQ(csr.values_[0], 3.7515151744965491);
+  EXPECT_FLOAT_EQ(csr.values_[1], 3.7477497575623362);
+  EXPECT_FLOAT_EQ(csr.values_[8655], 1);
+  EXPECT_FLOAT_EQ(csr.values_[8656], -1e-08);
 }
 
 //------------------------------------------------------------------------------
@@ -318,6 +397,29 @@ TEST(ReadColumnVectorMarketFileTests, ReadFileReadsFile)
   EXPECT_DOUBLE_EQ(matrix_result.at(1), 0.0001182290988454583);
 
   EXPECT_DOUBLE_EQ(matrix_result.at(2168), 0.0);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(ReadColumnVectorMarketFileTests, ReadFileAsFloatReadsFile)
+{
+  FilePath fp {FilePath::get_data_directory()};
+  fp.append(relative_sparse_matrix_example_path_1);
+  fp.append("c-18_b.mtx");
+  ReadColumnVectorMarketFile read_mtx {fp};
+
+  const auto matrix_result = read_mtx.read_file_as_float();
+
+  EXPECT_EQ(read_mtx.number_of_rows_, 2169);
+  EXPECT_EQ(read_mtx.number_of_columns_, 1);
+
+  EXPECT_EQ(matrix_result.size(), 2169);
+
+  EXPECT_FLOAT_EQ(matrix_result.at(0), 7.8035053216857428e-05);
+
+  EXPECT_FLOAT_EQ(matrix_result.at(1), 0.0001182290988454583);
+
+  EXPECT_FLOAT_EQ(matrix_result.at(2168), 0.0);
 }
 
 } // namespace FileIO

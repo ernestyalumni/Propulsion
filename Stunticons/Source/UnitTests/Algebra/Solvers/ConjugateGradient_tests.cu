@@ -2,6 +2,7 @@
 #include "Algebra/Modules/Matrices/GenerateCompressedSparseRowMatrix.h"
 #include "Algebra/Modules/Matrices/HostCompressedSparseRow.h"
 #include "Algebra/Modules/Morphisms/SparseMatrixMorphism.h"
+#include "Algebra/Modules/Vectors/Array.h"
 #include "Algebra/Modules/Vectors/CuBLASVectorOperations.h"
 #include "Algebra/Solvers/ConjugateGradient.h"
 #include "gtest/gtest.h"

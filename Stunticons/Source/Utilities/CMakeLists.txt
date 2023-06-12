@@ -14,6 +14,10 @@ ADD_LIBRARY(UTILITIES
   FileIO/ReadMatrixMarketFile.cpp
   )
 
+TARGET_LINK_LIBRARIES(UTILITIES
+  ALGEBRA
+  )
+
 ADD_EXECUTABLE(GetCUDADeviceProperties
   DeviceManagement/GetCUDADeviceProperties_main.cu
   )

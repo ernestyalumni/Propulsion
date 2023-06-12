@@ -29,6 +29,11 @@ class FilePath
       file_path_.append(path);
     }
 
+    inline void remove_filename()
+    {
+      file_path_.remove_filename();
+    }
+
     inline bool exists()
     {
       return std::filesystem::exists(file_path_);

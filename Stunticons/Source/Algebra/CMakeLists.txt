@@ -7,6 +7,8 @@ SET(ALGEBRA_CU_SOURCES
   Modules/Vectors/VectorAddition.cu
   Solvers/BiconjugateGradientStabilized.cu
   Solvers/ConjugateGradient.cu
+  Solvers/SetupBiconjugateGradientStabilized.cu
+  Solvers/SetupConjugateGradient.cu
   )
 
 # TODO: This line doesn't seem to be needed.

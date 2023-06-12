@@ -9,6 +9,7 @@ SET(TEST_CU_SOURCES
   Algebra/Modules/Vectors/VectorAddition_tests.cu
   Algebra/Solvers/BiconjugateGradientStabilized_tests.cu
   Algebra/Solvers/ConjugateGradient_tests.cu
+  Algebra/Solvers/SetupBiconjugateGradientStabilized_tests.cu
   Utilities/DeviceManagement/GetCUDADeviceProperties_tests.cu
   )
 

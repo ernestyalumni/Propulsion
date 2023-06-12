@@ -1,6 +1,8 @@
 #ifndef UTILITIES_FILEIO_READ_MATRIX_MARKET_FILE_H
 #define UTILITIES_FILEIO_READ_MATRIX_MARKET_FILE_H
 
+#include "Algebra/Modules/Matrices/HostCompressedSparseRow.h"
+
 #include "FilePath.h"
 
 #include <cstddef> // std::size_t
@@ -37,6 +39,17 @@ class ReadMatrixMarketFile
     //--------------------------------------------------------------------------
     std::tuple<std::vector<int>, std::vector<int>, std::vector<double>>
       read_file_as_compressed_sparse_row();
+
+    inline bool is_file_open() const
+    {
+      return static_cast<bool>(file_);
+    }
+
+    Algebra::Modules::Matrices::SparseMatrices::
+      DoubleHostCompressedSparseRowMatrix read_into_csr();
+
+    Algebra::Modules::Matrices::SparseMatrices::HostCompressedSparseRowMatrix
+      read_into_float_csr();
 
     std::vector<std::string> comments_;
 
@@ -87,6 +100,8 @@ class ReadColumnVectorMarketFile
     ~ReadColumnVectorMarketFile();
 
     std::vector<double> read_file();
+
+    std::vector<float> read_file_as_float();
 
     std::vector<std::string> comments_;
 

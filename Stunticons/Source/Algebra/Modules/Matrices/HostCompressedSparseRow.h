@@ -72,7 +72,7 @@ class HostCompressedSparseRowMatrix
     */
 
     template <typename T>
-    void multiply(const T& x, T& y)
+    void multiply(const T& x, T& y) const
     {
       for (std::size_t i {0}; i < M_; ++i)
       {
@@ -141,11 +141,11 @@ class DoubleHostCompressedSparseRowMatrix
     ~DoubleHostCompressedSparseRowMatrix();
 
     template <typename T>
-    void multiply(const T& x, T& y)
+    void multiply(const T& x, T& y) const
     {
       for (std::size_t i {0}; i < M_; ++i)
       {
-        float y_i {0.0f};
+        double y_i {0.0};
 
         for (int k {I_[i]}; k < I_[i + 1]; ++k)
         {

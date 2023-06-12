@@ -1,3 +1,4 @@
+#include "Algebra/Modules/Matrices/HostCompressedSparseRow.h"
 #include "FilePath.h"
 #include "ReadMatrixMarketFile.h"
 
@@ -8,9 +9,10 @@
 #include <map>
 #include <sstream> // std::istringstream
 #include <string> // std::getline
-#include <tuple>
+#include <tuple> // std::get
 #include <vector>
 
+using std::get;
 using std::getline;
 using std::istringstream;
 using std::size_t;
@@ -41,6 +43,46 @@ ReadMatrixMarketFile::ReadMatrixMarketFile(const FilePath& file_path):
 ReadMatrixMarketFile::~ReadMatrixMarketFile()
 {
   file_.close();
+}
+
+Algebra::Modules::Matrices::SparseMatrices::DoubleHostCompressedSparseRowMatrix
+  ReadMatrixMarketFile::read_into_csr()
+{
+  const auto read_result = read_file_as_compressed_sparse_row();
+
+  Algebra::Modules::Matrices::SparseMatrices::
+    DoubleHostCompressedSparseRowMatrix csr {
+      number_of_rows_,
+      number_of_columns_,
+      number_of_nonzero_entries_};
+
+  csr.copy_row_offsets(get<0>(read_result));
+  csr.copy_column_indices(get<1>(read_result));
+  csr.copy_values(get<2>(read_result));
+
+  return csr;
+}
+
+Algebra::Modules::Matrices::SparseMatrices::HostCompressedSparseRowMatrix
+  ReadMatrixMarketFile::read_into_float_csr()
+{
+  const auto read_result = read_file_as_compressed_sparse_row();
+
+  Algebra::Modules::Matrices::SparseMatrices::HostCompressedSparseRowMatrix
+    csr {
+      number_of_rows_,
+      number_of_columns_,
+      number_of_nonzero_entries_};
+
+  const vector<float> values_as_floats {
+    get<2>(read_result).begin(),
+    get<2>(read_result).end()}; 
+
+  csr.copy_row_offsets(get<0>(read_result));
+  csr.copy_column_indices(get<1>(read_result));
+  csr.copy_values(values_as_floats);
+
+  return csr;
 }
 
 vector<ReadMatrixMarketFile::MatrixMarketEntry>
@@ -306,6 +348,62 @@ vector<double> ReadColumnVectorMarketFile::read_file()
     istringstream entry_stream {line};
 
     double value;
+
+    entry_stream >> value;
+
+    matrix_entries.emplace_back(value);
+  }
+
+  return matrix_entries;
+}
+
+vector<float> ReadColumnVectorMarketFile::read_file_as_float()
+{
+  string line {};
+
+  getline(file_, line);
+
+  // Read the first line.
+  if (line != "%%MatrixMarket matrix array real general")
+  {
+    std::cerr << "Invalid MatrixMarket file format: " << std::endl;
+  }
+
+  while (!is_matrix_size_read_ && getline(file_, line))
+  {
+    if (line.empty())
+    {
+      continue;
+    }
+    // It's a comment.
+    else if (line[0] == '%')
+    {
+      comments_.emplace_back(line);
+    }
+    // Read matrix size from the first, "non-comment" line.
+    else
+    {
+      istringstream size_stream {line};
+      size_stream >> number_of_rows_>> number_of_columns_;
+
+      is_matrix_size_read_ = true;
+    }
+  }
+
+  vector<float> matrix_entries {};
+  matrix_entries.reserve(number_of_rows_);
+
+  while (getline(file_, line))
+  {
+    if (line.empty() || line[0] == '%')
+    {
+      // Skip empty lines and comment lines
+      continue;
+    }
+
+    istringstream entry_stream {line};
+
+    float value;
 
     entry_stream >> value;
 

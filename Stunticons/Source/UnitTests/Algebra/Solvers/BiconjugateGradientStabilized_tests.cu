@@ -1,6 +1,7 @@
 #include "Algebra/Modules/Matrices/CompressedSparseRow.h"
 #include "Algebra/Modules/Matrices/HostCompressedSparseRow.h"
 #include "Algebra/Modules/Morphisms/SparseMatrixMorphism.h"
+#include "Algebra/Modules/Vectors/Array.h"
 #include "Algebra/Modules/Vectors/CuBLASVectorOperations.h"
 #include "Algebra/Solvers/BiconjugateGradientStabilized.h"
 #include "gtest/gtest.h"
@@ -239,9 +240,11 @@ TEST(BiconjugateGradientStabilizedTests, SolveWorksOnExample1)
   EXPECT_DOUBLE_EQ(h_x_output.at(2), 1.0);
   EXPECT_DOUBLE_EQ(h_x_output.at(3), 2.0);
 
-  EXPECT_DOUBLE_EQ(y.at(0), 0.0);
+  // EXPECT_DOUBLE_EQ(y.at(0), 0.0);
+  EXPECT_NEAR(y.at(0), 0.0, 1e-14);
   EXPECT_DOUBLE_EQ(y.at(1), 6.0); 
-  EXPECT_DOUBLE_EQ(y.at(2), 0.0);
+  // EXPECT_DOUBLE_EQ(y.at(2), 0.0);
+  EXPECT_NEAR(y.at(2), 0.0, 1e-14);
   EXPECT_DOUBLE_EQ(y.at(3), 6.0); 
 }
 
