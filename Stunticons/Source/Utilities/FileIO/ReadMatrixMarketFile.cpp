@@ -8,6 +8,7 @@
 #include <iostream> // std::cerr
 #include <map>
 #include <sstream> // std::istringstream
+#include <stdexcept>
 #include <string> // std::getline
 #include <tuple> // std::get
 #include <vector>
