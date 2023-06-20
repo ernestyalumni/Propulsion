@@ -154,6 +154,7 @@ ENDIF()
 FetchContent_MakeAvailable(googletest)
 
 ADD_SUBDIRECTORY(Algebra)
+ADD_SUBDIRECTORY(FiberBundles)
 ADD_SUBDIRECTORY(Manifolds)
 ADD_SUBDIRECTORY(PerformanceTests)
 ADD_SUBDIRECTORY(UnitTests)

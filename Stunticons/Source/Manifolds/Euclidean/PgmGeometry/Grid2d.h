@@ -24,6 +24,10 @@ class Grid2d
 
     Grid2d() = delete;
 
+    //--------------------------------------------------------------------------
+    /// \details This creates an array of (M + 2) * (N + 2) elements, which can
+    /// be accessed in a "2-dimensional grid way."
+    //--------------------------------------------------------------------------
     Grid2d(const std::size_t M, const std::size_t N);
 
     ~Grid2d() = default;
@@ -57,6 +61,12 @@ class Grid2d
     {
       return N_;
     }
+
+    //--------------------------------------------------------------------------
+    /// \brief Refine the geometry by powers of 2, effectively enlarging the
+    /// grid, filling it with values from the original, smaller grid.
+    //--------------------------------------------------------------------------
+    static Grid2d refine(const Grid2d& grid, const int refine);
 
   private:
 

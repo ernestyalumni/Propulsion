@@ -22,6 +22,7 @@ ADD_EXECUTABLE(Check
   Algebra/Modules/Matrices/HostCompressedSparseRow_tests.cpp
   Algebra/Modules/Vectors/HostArrays_tests.cpp
   Algebra/Modules/Vectors/HostVectorAdditionArrays_tests.cpp
+  Arithmetic/IntegerPower_tests.cpp
   Manifolds/Euclidean/PgmGeometry/Grid2d_tests.cpp
   Manifolds/Euclidean/PgmGeometry/initialize_lid_driven_cavity_tests.cpp
   Utilities/FileIO/FilePath_tests.cpp
@@ -33,6 +34,7 @@ ADD_EXECUTABLE(Check
 TARGET_LINK_LIBRARIES(Check
   ALGEBRA
   ALGEBRA_CU
+  FIBERBUNDLES
   MANIFOLDS
   UTILITIES
   UTILITIES_CU
