@@ -1,3 +1,3 @@
 ADD_LIBRARY(FIBERBUNDLES
-  Cell.cpp
+  PgmGeometry/Cell.cpp
   )

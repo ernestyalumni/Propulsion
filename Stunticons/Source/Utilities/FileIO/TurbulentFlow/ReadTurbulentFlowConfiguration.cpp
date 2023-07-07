@@ -1,6 +1,6 @@
-#include "FilePath.h"
 #include "ReadTurbulentFlowConfiguration.h"
 #include "TurbulentFlowConfiguration.h"
+#include "Utilities/FileIO/FilePath.h"
 
 #include <regex>
 #include <stdexcept>
@@ -97,6 +97,54 @@ ReadTurbulentFlowConfiguration::Output
       if (double_type_map.find(tokens.at(0)) != double_type_map.end())
       {
         *double_type_map.at(tokens.at(0)) = std::stod(tokens.at(1));
+      }
+
+      // Compare returns 0 if both character sequences compare equivalently.
+      // The default value for count in basic_string substr(size_type pos = 0,
+      // size_type count = npos) is npos and so the returned substr is from pos
+      // to total size of string.
+      // https://en.cppreference.com/w/cpp/string/basic_string/substr
+
+      if (tokens.at(0).compare(0, 9, "wall_temp_") == 0)
+      {
+        output.unordered_map_type_parameters_.wall_temperatures_.insert(
+          {std::stoul(tokens.at(0).substr(9)), std::stod(tokens.at(1))});
+      }
+
+      if (tokens.at(0).compare(0, 9, "wall_vel_") == 0)
+      {
+        output.unordered_map_type_parameters_.wall_velocities_.insert(
+          {std::stoul(tokens.at(0).substr(9)), std::stod(tokens.at(1))});
+      }
+
+      if (tokens.at(0).compare(0, 4, "UIN_") == 0)
+      {
+        output.unordered_map_type_parameters_.inlet_Us_.insert(
+          {std::stoul(tokens.at(0).substr(4)), std::stod(tokens.at(1))});
+      }
+
+      if (tokens.at(0).compare(0, 4, "VIN_") == 0)
+      {
+        output.unordered_map_type_parameters_.inlet_Vs_.insert(
+          {std::stoul(tokens.at(0).substr(4)), std::stod(tokens.at(1))});
+      }
+
+      if (tokens.at(0).compare(0, 4, "TIN_") == 0)
+      {
+        output.unordered_map_type_parameters_.inlet_Ts_.insert(
+          {std::stoul(tokens.at(0).substr(4)), std::stod(tokens.at(1))});
+      }
+
+      if (tokens.at(0).compare(0, 4, "KIN_") == 0)
+      {
+        output.unordered_map_type_parameters_.inlet_Ks_.insert(
+          {std::stoul(tokens.at(0).substr(4)), std::stod(tokens.at(1))});
+      }
+
+      if (tokens.at(0).compare(0, 6, "EPSIN_") == 0)
+      {
+        output.unordered_map_type_parameters_.inlet_eps_.insert(
+          {std::stoul(tokens.at(0).substr(6)), std::stod(tokens.at(1))});
       }
     }
   }

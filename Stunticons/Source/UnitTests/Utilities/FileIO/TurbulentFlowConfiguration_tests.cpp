@@ -1,6 +1,6 @@
 #include "Utilities/FileIO/FilePath.h"
-#include "Utilities/FileIO/ReadTurbulentFlowConfiguration.h"
-#include "Utilities/FileIO/TurbulentFlowConfiguration.h"
+#include "Utilities/FileIO/TurbulentFlow/ReadTurbulentFlowConfiguration.h"
+#include "Utilities/FileIO/TurbulentFlow/TurbulentFlowConfiguration.h"
 #include "gtest/gtest.h"
 
 #include <optional>
@@ -78,8 +78,8 @@ TEST(StdSizeTParametersTests, CreateStdSizeTParametersMapCreatesMapThatMutates)
   EXPECT_EQ(*parameters.imax_, 42);
   EXPECT_EQ(*parameters.jmax_, 69);
   EXPECT_EQ(*parameters.itermax_, 420);
-  EXPECT_EQ(*parameters.iproc_, 777);
-  EXPECT_EQ(parameters.jproc_, nullopt);
+  EXPECT_EQ(*parameters.i_processes_, 777);
+  EXPECT_EQ(parameters.j_processes_, nullopt);
 }
 
 //------------------------------------------------------------------------------

@@ -27,6 +27,7 @@ class Grid2d
     //--------------------------------------------------------------------------
     /// \details This creates an array of (M + 2) * (N + 2) elements, which can
     /// be accessed in a "2-dimensional grid way."
+    /// Indicies ranges are as follows: i = 0, 1, ... M + 1, j = 0, 1, ... N + 1
     //--------------------------------------------------------------------------
     Grid2d(const std::size_t M, const std::size_t N);
 

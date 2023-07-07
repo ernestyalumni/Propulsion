@@ -32,8 +32,8 @@ struct StdSizeTParameters
   //------------------------------------------------------------------------
   /// Number of processes in x and y direction
   //------------------------------------------------------------------------
-  std::optional<std::size_t> iproc_;
-  std::optional<std::size_t> jproc_;
+  std::optional<std::size_t> i_processes_;
+  std::optional<std::size_t> j_processes_;
 
   StdSizeTParameters();
 
@@ -160,6 +160,31 @@ struct DoubleTypeParameters
 
 std::unordered_map<std::string, std::optional<double>*>
   create_double_type_parameters_map(DoubleTypeParameters& parameters);
+
+struct UnorderedMapTypeParameters
+{
+  std::unordered_map<std::size_t, double> wall_temperatures_;
+
+  std::unordered_map<std::size_t, double> wall_velocities_;
+
+  // Velocities U, V in x- and y- directions, respectively for the inlet.
+
+  std::unordered_map<std::size_t, double> inlet_Us_;
+  std::unordered_map<std::size_t, double> inlet_Vs_;
+
+  std::unordered_map<std::size_t, double> inlet_Ts_;
+
+  // Inlet turbulent kinetic energy (k)
+  std::unordered_map<std::size_t, double> inlet_Ks_;
+
+  // Inlet rate of dissipation of turbulence kinetic energy (\epsilon) due to
+  // viscosity.
+  std::unordered_map<std::size_t, double> inlet_eps_;
+
+  UnorderedMapTypeParameters() = default;
+
+  ~UnorderedMapTypeParameters() = default;
+};
 
 } // namespace TurbulentFlowConfiguration
 } // namespace FileIO

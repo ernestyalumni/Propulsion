@@ -23,11 +23,14 @@ ADD_EXECUTABLE(Check
   Algebra/Modules/Vectors/HostArrays_tests.cpp
   Algebra/Modules/Vectors/HostVectorAdditionArrays_tests.cpp
   Arithmetic/IntegerPower_tests.cpp
+  FiberBundles/PgmGeometry/CellGrid_tests.cpp
+  FiberBundles/PgmGeometry/Cell_tests.cpp
   Manifolds/Euclidean/PgmGeometry/Grid2d_tests.cpp
   Manifolds/Euclidean/PgmGeometry/initialize_lid_driven_cavity_tests.cpp
   Utilities/FileIO/FilePath_tests.cpp
   Utilities/FileIO/ReadMatrixMarketFile_tests.cpp
-  Utilities/FileIO/ReadTurbulentFlowConfiguration_tests.cpp
+  Utilities/FileIO/TurbulentFlow/ParseGeometryFile_tests.cpp
+  Utilities/FileIO/TurbulentFlow/ReadTurbulentFlowConfiguration_tests.cpp
   Utilities/FileIO/TurbulentFlowConfiguration_tests.cpp
   )
 

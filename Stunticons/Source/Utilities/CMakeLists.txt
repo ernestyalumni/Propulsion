@@ -12,8 +12,9 @@ ADD_LIBRARY(UTILITIES_CU
 ADD_LIBRARY(UTILITIES
   FileIO/FilePath.cpp
   FileIO/ReadMatrixMarketFile.cpp
-  FileIO/ReadTurbulentFlowConfiguration.cpp
-  FileIO/TurbulentFlowConfiguration.cpp
+  FileIO/TurbulentFlow/ParseGeometryFile.cpp
+  FileIO/TurbulentFlow/ReadTurbulentFlowConfiguration.cpp
+  FileIO/TurbulentFlow/TurbulentFlowConfiguration.cpp
   )
 
 TARGET_LINK_LIBRARIES(UTILITIES

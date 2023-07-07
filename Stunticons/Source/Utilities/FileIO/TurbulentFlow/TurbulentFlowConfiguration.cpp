@@ -22,8 +22,8 @@ StdSizeTParameters::StdSizeTParameters():
   imax_{nullopt},
   jmax_{nullopt},
   itermax_{nullopt},
-  iproc_{nullopt},
-  jproc_{nullopt}
+  i_processes_{nullopt},
+  j_processes_{nullopt}
 {}
 
 unordered_map<string, optional<std::size_t>*> create_std_size_t_parameters_map(
@@ -33,8 +33,8 @@ unordered_map<string, optional<std::size_t>*> create_std_size_t_parameters_map(
     {"imax", &parameters.imax_},
     {"jmax", &parameters.jmax_},
     {"itermax", &parameters.itermax_},
-    {"iproc", &parameters.iproc_},
-    {"jproc", &parameters.jproc_}
+    {"iproc", &parameters.i_processes_},
+    {"jproc", &parameters.j_processes_}
   };
 }
 

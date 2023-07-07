@@ -1,11 +1,12 @@
-#ifndef UTILITIES_FILEIO_READ_TURBULENT_FLOW_CONFIGURATION_H
-#define UTILITIES_FILEIO_READ_TURBULENT_FLOW_CONFIGURATION_H
+#ifndef UTILITIES_FILEIO_TURBULENT_FLOW_READ_TURBULENT_FLOW_CONFIGURATION_H
+#define UTILITIES_FILEIO_TURBULENT_FLOW_READ_TURBULENT_FLOW_CONFIGURATION_H
 
-#include "FilePath.h"
 #include "TurbulentFlowConfiguration.h"
+#include "Utilities/FileIO/FilePath.h"
 
 #include <fstream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace Utilities
@@ -22,6 +23,8 @@ class ReadTurbulentFlowConfiguration
       TurbulentFlowConfiguration::StdSizeTParameters std_size_t_parameters_;
       TurbulentFlowConfiguration::IntTypeParameters int_type_parameters_;
       TurbulentFlowConfiguration::DoubleTypeParameters double_type_parameters_;
+      TurbulentFlowConfiguration::UnorderedMapTypeParameters
+        unordered_map_type_parameters_;
     };
 
     ReadTurbulentFlowConfiguration(const FilePath& file_path);
@@ -48,4 +51,4 @@ class ReadTurbulentFlowConfiguration
 } // namespace FileIO
 } // namespace Utilities
 
-#endif // UTILITIES_FILEIO_READ_TURBULENT_FLOW_CONFIGURATION_H
+#endif // UTILITIES_FILEIO_TURBULENT_FLOW_READ_TURBULENT_FLOW_CONFIGURATION_H

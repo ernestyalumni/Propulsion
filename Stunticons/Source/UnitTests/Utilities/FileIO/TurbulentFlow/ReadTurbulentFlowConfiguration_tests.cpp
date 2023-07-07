@@ -1,5 +1,5 @@
-#include "Utilities/FileIO/ReadTurbulentFlowConfiguration.h"
 #include "Utilities/FileIO/FilePath.h"
+#include "Utilities/FileIO/TurbulentFlow/ReadTurbulentFlowConfiguration.h"
 #include "gtest/gtest.h"
 
 #include <optional>
@@ -19,6 +19,9 @@ static const std::string relative_turbulent_flow_configuration_path {
 
 static const std::string relative_lid_driven_cavity_path {
   "LidDrivenCavity"};
+
+static const std::string relative_step_flow_turb_path {
+  "StepFlowTurb"};
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -63,8 +66,8 @@ TEST(ReadTurbulentFlowConfigurationTests, ReadFileReadsIntoStruct)
   EXPECT_EQ(*configuration.std_size_t_parameters_.imax_, 100);
   EXPECT_EQ(*configuration.std_size_t_parameters_.jmax_, 100);
   EXPECT_EQ(*configuration.std_size_t_parameters_.itermax_, 10000);
-  EXPECT_EQ(*configuration.std_size_t_parameters_.iproc_, 1);
-  EXPECT_EQ(*configuration.std_size_t_parameters_.jproc_, 1);
+  EXPECT_EQ(*configuration.std_size_t_parameters_.i_processes_, 1);
+  EXPECT_EQ(*configuration.std_size_t_parameters_.j_processes_, 1);
 
   EXPECT_EQ(*configuration.int_type_parameters_.solver_, 1);
   EXPECT_EQ(*configuration.int_type_parameters_.model_, 0);
@@ -90,6 +93,67 @@ TEST(ReadTurbulentFlowConfigurationTests, ReadFileReadsIntoStruct)
   EXPECT_EQ(configuration.double_type_parameters_.nu_, std::nullopt);
   EXPECT_EQ(configuration.double_type_parameters_.pr_, std::nullopt);
   EXPECT_EQ(configuration.double_type_parameters_.beta_, std::nullopt);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(ReadTurbulentFlowConfigurationTests, UnorderedMapsRemainEmpty)
+{
+  FilePath fp {FilePath::get_data_directory()};
+  fp.append(relative_turbulent_flow_configuration_path);
+  fp.append(relative_lid_driven_cavity_path);
+  fp.append("LidDrivenCavity.dat");
+  ReadTurbulentFlowConfiguration read_tf {fp};
+
+  const auto configuration = read_tf.read_file();
+
+  EXPECT_TRUE(
+    configuration.unordered_map_type_parameters_.wall_temperatures_.empty());
+  EXPECT_TRUE(
+    configuration.unordered_map_type_parameters_.wall_velocities_.empty());
+  EXPECT_TRUE(configuration.unordered_map_type_parameters_.inlet_Us_.empty());
+  EXPECT_TRUE(configuration.unordered_map_type_parameters_.inlet_Vs_.empty());
+  EXPECT_TRUE(configuration.unordered_map_type_parameters_.inlet_Ts_.empty());
+  EXPECT_TRUE(configuration.unordered_map_type_parameters_.inlet_Ks_.empty());
+  EXPECT_TRUE(configuration.unordered_map_type_parameters_.inlet_eps_.empty());
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TEST(ReadTurbulentFlowConfigurationTests, ReadFileReadsIntoUnorderedMaps)
+{
+  FilePath fp {FilePath::get_data_directory()};
+  fp.append(relative_turbulent_flow_configuration_path);
+  fp.append(relative_step_flow_turb_path);
+  fp.append("StepFlowTurb.dat");
+  ReadTurbulentFlowConfiguration read_tf {fp};
+
+  const auto configuration = read_tf.read_file();
+
+  EXPECT_TRUE(
+    configuration.unordered_map_type_parameters_.wall_temperatures_.empty());
+  EXPECT_TRUE(
+    configuration.unordered_map_type_parameters_.wall_velocities_.empty());
+  EXPECT_FALSE(configuration.unordered_map_type_parameters_.inlet_Us_.empty());
+  EXPECT_FALSE(configuration.unordered_map_type_parameters_.inlet_Vs_.empty());
+  EXPECT_TRUE(configuration.unordered_map_type_parameters_.inlet_Ts_.empty());
+  EXPECT_FALSE(configuration.unordered_map_type_parameters_.inlet_Ks_.empty());
+  EXPECT_FALSE(configuration.unordered_map_type_parameters_.inlet_eps_.empty());
+
+  EXPECT_EQ(configuration.unordered_map_type_parameters_.inlet_Us_.size(), 1);
+  EXPECT_EQ(configuration.unordered_map_type_parameters_.inlet_Vs_.size(), 1);
+  EXPECT_EQ(configuration.unordered_map_type_parameters_.inlet_Ks_.size(), 1);
+  EXPECT_EQ(configuration.unordered_map_type_parameters_.inlet_eps_.size(), 1);
+
+  EXPECT_DOUBLE_EQ(
+    configuration.unordered_map_type_parameters_.inlet_Us_.at(2), 1.0);
+  EXPECT_DOUBLE_EQ(
+    configuration.unordered_map_type_parameters_.inlet_Vs_.at(2), 0.0);
+
+  EXPECT_DOUBLE_EQ(
+    configuration.unordered_map_type_parameters_.inlet_Ks_.at(2), 0.003);
+  EXPECT_DOUBLE_EQ(
+    configuration.unordered_map_type_parameters_.inlet_eps_.at(2), 0.0005);
 }
 
 } // namespace FileIO
