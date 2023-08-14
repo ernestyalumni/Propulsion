@@ -1,15 +1,15 @@
 #include "Utilities/FileIO/FilePath.h"
-#include "Utilities/FileIO/TurbulentFlow/ReadTurbulentFlowConfiguration.h"
-#include "Utilities/FileIO/TurbulentFlow/TurbulentFlowConfiguration.h"
+#include "Utilities/FileIO/TurbulentFlow/Configuration.h"
+#include "Utilities/FileIO/TurbulentFlow/ReadConfiguration.h"
 #include "gtest/gtest.h"
 
 #include <optional>
 
 using Utilities::FileIO::FilePath;
-using Utilities::FileIO::ReadTurbulentFlowConfiguration;
-using Utilities::FileIO::TurbulentFlowConfiguration::StdSizeTParameters;
-using Utilities::FileIO::TurbulentFlowConfiguration::
+using Utilities::FileIO::TurbulentFlow::Configuration::StdSizeTParameters;
+using Utilities::FileIO::TurbulentFlow::Configuration::
   create_std_size_t_parameters_map;
+using Utilities::FileIO::TurbulentFlow::ReadConfiguration;
 using std::nullopt;
 
 namespace GoogleUnitTests
@@ -18,7 +18,9 @@ namespace Utilities
 {
 namespace FileIO
 {
-namespace TurbulentFlowConfiguration
+namespace TurbulentFlow
+{
+namespace Configuration
 {
 
 static const std::string relative_turbulent_flow_configuration_path {
@@ -90,7 +92,7 @@ TEST(DoubleTypeParametersTests, InitializeMutates)
   fp.append(relative_turbulent_flow_configuration_path);
   fp.append(relative_lid_driven_cavity_path);
   fp.append("LidDrivenCavity.dat");
-  ReadTurbulentFlowConfiguration read_tf {fp};
+  ReadConfiguration read_tf {fp};
 
   auto configuration = read_tf.read_file();
 
@@ -108,7 +110,8 @@ TEST(DoubleTypeParametersTests, InitializeMutates)
   EXPECT_DOUBLE_EQ(*configuration.double_type_parameters_.beta_, 0.0);
 }
 
-} // namespace TurbulentFlowConfiguration
+} // namespace Configuration
+} // namespace TurbulentFlow
 } // namespace FileIO
 } // namespace Utilities
 } // namespace GoogleUnitTests

@@ -10,8 +10,9 @@ namespace Utilities
 {
 namespace FileIO
 {
-
-namespace TurbulentFlowConfiguration
+namespace TurbulentFlow
+{
+namespace Configuration
 {
 
 struct StdSizeTParameters
@@ -186,7 +187,8 @@ struct UnorderedMapTypeParameters
   ~UnorderedMapTypeParameters() = default;
 };
 
-} // namespace TurbulentFlowConfiguration
+} // namespace Configuration
+} // namespace TurbulentFlow
 } // namespace FileIO
 } // namespace Utilities
 

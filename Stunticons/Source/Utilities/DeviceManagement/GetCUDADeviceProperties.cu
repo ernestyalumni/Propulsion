@@ -1,4 +1,5 @@
 #include "GetCUDADeviceProperties.h"
+#include "Utilities/HandleUnsuccessfulCudaCall.h"
 
 #include <cuda_runtime.h>
 #include <iostream> // std::cerr
@@ -36,15 +37,13 @@ GetCUDADeviceProperties::GetCUDADeviceProperties():
   for (int i {0}; i < device_count_; ++i)
   {
     cudaDeviceProp device_properties {};
-    const cudaError_t properties_error {
-      cudaGetDeviceProperties(&device_properties, i)};
 
-    if (properties_error != cudaSuccess)
-    {
-      cerr << "Failed to get CUDA device properties (error code " <<
-        cudaGetErrorString(properties_error) << ")!\n";
-    }
-    else
+    Utilities::HandleUnsuccessfulCUDACall properties_error {
+      "Failed to get CUDA device properties"};
+
+    properties_error(cudaGetDeviceProperties(&device_properties, i));
+
+    if (properties_error.is_cuda_success())
     {
       cuda_device_properties_.emplace_back(device_properties);
       abridged_properties_.emplace_back(

@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <vector>
 
 namespace FiberBundles
 {
@@ -42,7 +43,7 @@ class Cell
       const CellType cell_type,
       const std::optional<int> id = std::nullopt);
 
-    ~Cell();
+    ~Cell() = default;
 
     inline std::shared_ptr<Cell> get_neighbor(
       const BorderPosition border_position)
@@ -55,6 +56,18 @@ class Cell
       const BorderPosition border_position)
     {
       neighbors_[static_cast<uint8_t>(border_position)] = cell_ptr;
+    }
+
+    inline const std::vector<BorderPosition>& get_borders() const
+    {
+      return borders_;
+    }
+
+    void add_border(const BorderPosition border_position);
+
+    inline bool is_border(const BorderPosition position) const
+    {
+      return is_border_position_[static_cast<uint8_t>(position)];
     }
 
     inline std::size_t i() const
@@ -77,7 +90,12 @@ class Cell
       return id_;
     }
 
+    std::optional<double> closest_distance_;
+    std::optional<std::size_t> closest_wall_index_;
+
   private:
+
+    std::vector<BorderPosition> borders_;
 
     // Pointers to neighbors: TOP - BOTTOM - LEFT - RIGHT - NORTHWEST -
     // SOUTHEAST

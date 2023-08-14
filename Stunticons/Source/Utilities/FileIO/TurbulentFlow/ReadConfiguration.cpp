@@ -1,12 +1,17 @@
-#include "ReadTurbulentFlowConfiguration.h"
-#include "TurbulentFlowConfiguration.h"
+#include "Arithmetic/IntegerPower.h"
+#include "Configuration.h"
+#include "Manifolds/Euclidean/PgmGeometry/Grid2dMetricData.h"
+#include "ReadConfiguration.h"
 #include "Utilities/FileIO/FilePath.h"
 
+#include <cstdint>
 #include <regex>
 #include <stdexcept>
 #include <string> // std::getline, std::stoull
 #include <vector>
 
+using Arithmetic::integer_power;
+using Manifolds::Euclidean::PgmGeometry::Grid2dMetricData;
 using std::getline;
 using std::istringstream;
 using std::string;
@@ -16,8 +21,10 @@ namespace Utilities
 {
 namespace FileIO
 {
+namespace TurbulentFlow
+{
 
-ReadTurbulentFlowConfiguration::ReadTurbulentFlowConfiguration(
+ReadConfiguration::ReadConfiguration(
   const FilePath& file_path
   ):
   file_{file_path.file_path_},
@@ -30,25 +37,25 @@ ReadTurbulentFlowConfiguration::ReadTurbulentFlowConfiguration(
   }
 }
 
-ReadTurbulentFlowConfiguration::~ReadTurbulentFlowConfiguration()
+ReadConfiguration::~ReadConfiguration()
 {
   file_.close();
 }
 
-ReadTurbulentFlowConfiguration::Output
-  ReadTurbulentFlowConfiguration::read_file()
+ReadConfiguration::Output
+  ReadConfiguration::read_file()
 {
   Output output {};
   auto std_size_t_map =
-    TurbulentFlowConfiguration::create_std_size_t_parameters_map(
+    TurbulentFlow::Configuration::create_std_size_t_parameters_map(
       output.std_size_t_parameters_);
 
   auto int_type_map =
-    TurbulentFlowConfiguration::create_int_type_parameters_map(
+    TurbulentFlow::Configuration::create_int_type_parameters_map(
       output.int_type_parameters_);
 
   auto double_type_map =
-    TurbulentFlowConfiguration::create_double_type_parameters_map(
+    TurbulentFlow::Configuration::create_double_type_parameters_map(
       output.double_type_parameters_);
 
   string line {};
@@ -152,5 +159,61 @@ ReadTurbulentFlowConfiguration::Output
   return output;
 }
 
+Grid2dMetricData ReadConfiguration::parse_grid2d_metric_data(
+  const Output& read_output)
+{
+  Grid2dMetricData data {};
+
+  if (read_output.std_size_t_parameters_.imax_.has_value())
+  {
+    data.M_ = *(read_output.std_size_t_parameters_.imax_);
+  }
+
+  if (read_output.std_size_t_parameters_.jmax_.has_value())
+  {
+    data.N_ = *(read_output.std_size_t_parameters_.jmax_);
+  }
+
+  if (read_output.int_type_parameters_.refine_.has_value() &&
+    *(read_output.int_type_parameters_.refine_) > 0)
+  {
+    const uint64_t refinement_factor {
+      integer_power(
+        2,
+        static_cast<uint64_t>(*(read_output.int_type_parameters_.refine_)))};
+
+    data.M_ = data.M_ * refinement_factor;
+    data.N_ = data.N_ * refinement_factor;
+  }
+
+  data.maximum_i_ = data.M_ + 2;
+  data.maximum_j_ = data.N_ + 2;
+
+  data.total_number_of_cells_ = data.maximum_i_ * data.maximum_j_;
+
+  if (read_output.double_type_parameters_.xlength_.has_value())
+  {
+    data.x_length_ = *(read_output.double_type_parameters_.xlength_);
+
+    if (data.M_ != 0)
+    {
+      data.dx_ = data.x_length_ / (static_cast<double>(data.M_));
+    }
+  }
+
+  if (read_output.double_type_parameters_.ylength_.has_value())
+  {
+    data.y_length_ = *(read_output.double_type_parameters_.ylength_);
+
+    if (data.N_ != 0)
+    {
+      data.dy_ = data.y_length_ / (static_cast<double>(data.N_));
+    }
+  }
+
+  return data;
+}
+
+} // namespace TurbulentFlow
 } // namespace FileIO
 } // namespace Utilities

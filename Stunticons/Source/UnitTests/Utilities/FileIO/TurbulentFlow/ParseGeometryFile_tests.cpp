@@ -112,6 +112,64 @@ TEST(ParseGeometryFileTests, ParsesPgmFileIntoGrid2d)
       EXPECT_EQ(grid.at(i, 0), 10);
     }
   }
+  {
+    FilePath fp {FilePath::get_data_directory()};
+    fp.append(relative_turbulent_flow_configuration_path);
+    fp.append(relative_step_flow_turb_path);
+    fp.append("StepFlow.pgm");
+    ParseGeometryFile read_pgm {fp};
+
+    const auto grid = read_pgm.parse_geometry_file();
+
+    EXPECT_EQ(read_pgm.comments_.size(), 1);
+    EXPECT_EQ(
+      read_pgm.comments_.at(0),
+      "# Geometry for flow over a step");
+    EXPECT_EQ(read_pgm.depth_, 10);
+
+    EXPECT_EQ(grid.get_M(), 122-2);
+    EXPECT_EQ(grid.get_N(), 62-2);
+
+    for (size_t i {0}; i < grid.get_M() + 2; ++i)
+    {
+      EXPECT_EQ(grid.at(i, 0), 10);
+      EXPECT_EQ(grid.at(i, grid.get_N() + 1), 10);
+
+      for (size_t j {1}; j < grid.get_N() + 1; ++j)
+      {
+        if (j <= 30)
+        {
+          if (i < 21)
+          {
+            EXPECT_EQ(grid.at(i, j), 10);
+          }
+          else if (i == grid.get_M() + 1)
+          {
+            EXPECT_EQ(grid.at(i, j), 1);
+          }
+          else
+          {
+            EXPECT_EQ(grid.at(i, j), 0);
+          }
+        }
+        else
+        {
+          if (i == 0)
+          {
+            EXPECT_EQ(grid.at(i, j), 2);
+          }
+          else if (i == grid.get_M() + 1)
+          {
+            EXPECT_EQ(grid.at(i, j), 1);
+          }
+          else
+          {
+            EXPECT_EQ(grid.at(i, j), 0);
+          }
+        }
+      }
+    }
+  }
 }
 
 } // namespace TurbulentFlow

@@ -5,12 +5,12 @@
 Create a directory for a virtual environment:
 
 ```
-/HrdwCCppCUDA/Voltron$ python3 -m venv ./venv/
+/Propulsion/T1000$ python3 -m venv ./venv/
 ```
 
 Activate it:
 ```
-/HrdwCCppCUDA/Voltron$ source ./venv/bin/activate
+/Propulsion/T1000$ source ./venv/bin/activate
 ```
 You should see the prompt have a prefix `(venv)`.
 

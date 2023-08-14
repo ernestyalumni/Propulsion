@@ -1,4 +1,4 @@
-#include "TurbulentFlowConfiguration.h"
+#include "Configuration.h"
 
 #include <cmath>
 #include <limits>
@@ -15,7 +15,9 @@ namespace Utilities
 {
 namespace FileIO
 {
-namespace TurbulentFlowConfiguration
+namespace TurbulentFlow
+{
+namespace Configuration
 {
 
 StdSizeTParameters::StdSizeTParameters():
@@ -128,6 +130,7 @@ unordered_map<string, optional<double>*> create_double_type_parameters_map(
   };
 }
 
-} // namespace TurbulentFlowConfiguration
+} // namespace Configuration
+} // namespace TurbulentFlow
 } // namespace FileIO
 } // namespace Utilities

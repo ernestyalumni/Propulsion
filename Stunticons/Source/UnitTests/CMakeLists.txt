@@ -29,9 +29,9 @@ ADD_EXECUTABLE(Check
   Manifolds/Euclidean/PgmGeometry/initialize_lid_driven_cavity_tests.cpp
   Utilities/FileIO/FilePath_tests.cpp
   Utilities/FileIO/ReadMatrixMarketFile_tests.cpp
+  Utilities/FileIO/TurbulentFlow/Configuration_tests.cpp
   Utilities/FileIO/TurbulentFlow/ParseGeometryFile_tests.cpp
-  Utilities/FileIO/TurbulentFlow/ReadTurbulentFlowConfiguration_tests.cpp
-  Utilities/FileIO/TurbulentFlowConfiguration_tests.cpp
+  Utilities/FileIO/TurbulentFlow/ReadConfiguration_tests.cpp
   )
 
 TARGET_LINK_LIBRARIES(Check

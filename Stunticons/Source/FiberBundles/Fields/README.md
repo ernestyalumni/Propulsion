@@ -1,0 +1,1 @@
+Fields, from the physicist's perspective, are sections of a fiber bundle to the mathematician. Also to the mathematician, a field is a functor from a smooth manifold into another space, for example into the category of vector spaces.
