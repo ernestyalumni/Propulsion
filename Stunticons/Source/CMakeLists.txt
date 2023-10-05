@@ -128,6 +128,10 @@ IF(CCACHE_FOUND)
   SET(CMAKE_CXX_COMPILER_LAUNCHER ccache)
 ENDIF()
 
+################################################################################
+## Google Unit Test Suite
+################################################################################
+
 # Declare dependency on GoogleTest which is downloaded from GitHub.
 # cf. https://google.github.io/googletest/quickstart-cmake.html
 INCLUDE(FetchContent)
@@ -153,9 +157,23 @@ ENDIF()
 
 FetchContent_MakeAvailable(googletest)
 
+################################################################################
+## OpenGL
+################################################################################
+
+FIND_PACKAGE(OpenGL)
+
+IF (OpenGL_FOUND)
+  MESSAGE(STATUS "OpenGL was found.")
+ELSE()
+  MESSAGE(STATUS "OpenGL was not found.")
+ENDIF()
+
 ADD_SUBDIRECTORY(Algebra)
 ADD_SUBDIRECTORY(FiberBundles)
+ADD_SUBDIRECTORY(IntegrationTests)
 ADD_SUBDIRECTORY(Manifolds)
 ADD_SUBDIRECTORY(PerformanceTests)
 ADD_SUBDIRECTORY(UnitTests)
 ADD_SUBDIRECTORY(Utilities)
+ADD_SUBDIRECTORY(Visualization)
