@@ -35,6 +35,7 @@ ADD_EXECUTABLE(Check
   Visualization/OpenGLInterface/CreateOpenGLBufferObjectData_tests.cpp
   Visualization/OpenGLInterface/HandleGLError_tests.cpp
   Visualization/OpenGLInterface/OpenGLBufferObjectNames_tests.cpp
+  Visualization/OpenGLInterface/OpenGLBufferObjectParameters_tests.cpp
   )
 
 TARGET_LINK_LIBRARIES(Check

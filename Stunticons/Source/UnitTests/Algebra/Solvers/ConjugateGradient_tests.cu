@@ -317,7 +317,10 @@ TEST(SampleConjugateGradientTests, StepWorksAfterInitialStep)
 
   EXPECT_TRUE(result.has_value());
   EXPECT_FLOAT_EQ(std::get<0>(*result), 1048576);
-  EXPECT_FLOAT_EQ(std::get<1>(*result), 1985.8337);
+  // Obtained 1985.8337 on one platform, 1985.8344 on another.
+  // TODO: determine indeterminacy of this computation:
+  // EXPECT_FLOAT_EQ(std::get<1>(*result), 1985.8337);
+  EXPECT_NEAR(std::get<1>(*result), 1985.83, 0.01);
 }
 
 //------------------------------------------------------------------------------

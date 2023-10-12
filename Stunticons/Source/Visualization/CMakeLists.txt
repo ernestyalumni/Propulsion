@@ -1,6 +1,8 @@
 SET(VISUALIZATION_SOURCES
+  OpenGLInterface/CreateOpenGLBuffer.cpp
   OpenGLInterface/HandleGLError.cpp
   OpenGLInterface/OpenGLBufferObjectNames.cpp
+  OpenGLInterface/OpenGLBufferObjectParameters.cpp
   )
 
 ADD_LIBRARY(Visualization

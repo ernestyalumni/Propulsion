@@ -4,6 +4,8 @@ ADD_EXECUTABLE(SimpleGLExample
 
 TARGET_LINK_LIBRARIES(SimpleGLExample
   UTILITIES_CU
+  Visualization
+  ${OPENGL_LIBRARIES}
   )
 
 SET_TARGET_PROPERTIES(SimpleGLExample

@@ -1,0 +1,9 @@
+#ifndef VISUALIZATION_CUDA_GRAPHICS_RESOURCE_H
+#define VISUALIZATION_CUDA_GRAPHICS_RESOURCE_H
+
+namespace Visualization
+{
+
+} // namespace Visualization
+
+#endif VISUALIZATION_CUDA_GRAPHICS_RESOURCE_H

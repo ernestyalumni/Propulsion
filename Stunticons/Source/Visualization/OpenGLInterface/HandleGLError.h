@@ -13,9 +13,15 @@ class HandleGLError
 {
   public:
 
+    //--------------------------------------------------------------------------
+    /// \ref helper_gl.h in cuda-samples, Common/
+    /// \ref https://www.khronos.org/opengl/wiki/OpenGL_Error
+    //--------------------------------------------------------------------------
+    static std::string_view gl_error_to_string(const GLenum error);
+
     HandleGLError();
 
-    ~HandleGLError();
+    ~HandleGLError() = default;
 
     std::string_view operator()();
 
