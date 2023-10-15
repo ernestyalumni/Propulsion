@@ -34,8 +34,10 @@ struct OpenGLBufferObjectParameters
 
   // TODO: Continue to document all possible valid enum values with links to
   // documentation for OpenGL.
-  static std::array<GLenum, 6> valid_targets_;
-  static std::array<GLenum, 4> valid_usage_;
+  // See https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindBuffer.xhtml
+  static std::array<GLenum, 9> valid_targets_;
+  // See https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBufferData.xml
+  static std::array<GLenum, 10> valid_usage_;
 
   //--------------------------------------------------------------------------
   /// \href https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenBuffers.xhtml
@@ -51,6 +53,7 @@ struct OpenGLBufferObjectParameters
   /// table:
   /// Buffer Binding Target, Purpose
   /// GL_ARRAY_BUFFER - Vertex attributes
+  /// GL_ELEMENT_ARRAY_BUFFER - Vertex array indices
   /// GL_PIXEL_PACK_BUFFER - Pixel read target
   /// GL_PIXEL_UNPACK_BUFFER - Texture data source
   /// GL_TEXTURE_BUFFER - Texture data buffer

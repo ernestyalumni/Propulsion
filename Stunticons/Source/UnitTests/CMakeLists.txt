@@ -10,6 +10,7 @@ SET(TEST_CU_SOURCES
   Algebra/Solvers/BiconjugateGradientStabilized_tests.cu
   Algebra/Solvers/ConjugateGradient_tests.cu
   Algebra/Solvers/SetupBiconjugateGradientStabilized_tests.cu
+  CUDA/Runtime_tests.cu
   Utilities/DeviceManagement/GetCUDADeviceProperties_tests.cu
   )
 
@@ -32,6 +33,8 @@ ADD_EXECUTABLE(Check
   Utilities/FileIO/TurbulentFlow/Configuration_tests.cpp
   Utilities/FileIO/TurbulentFlow/ParseGeometryFile_tests.cpp
   Utilities/FileIO/TurbulentFlow/ReadConfiguration_tests.cpp
+  Visualization/CUDAGraphicsResource_tests.cu
+  Visualization/GLUTInterface/GLUTWindow_tests.cpp
   Visualization/OpenGLInterface/CreateOpenGLBufferObjectData_tests.cpp
   Visualization/OpenGLInterface/HandleGLError_tests.cpp
   Visualization/OpenGLInterface/OpenGLBufferObjectNames_tests.cpp
@@ -44,7 +47,7 @@ TARGET_LINK_LIBRARIES(Check
   FIBERBUNDLES
   MANIFOLDS
   UTILITIES
-  UTILITIES_CU
+  Utilities_CU
   Visualization
   gtest_main
   ${OPENGL_LIBRARIES}

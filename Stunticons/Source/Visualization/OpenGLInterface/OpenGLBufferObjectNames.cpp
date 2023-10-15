@@ -76,5 +76,14 @@ bool OpenGLBufferObjectNames::initialize()
   return (gl_err() == "GL_NO_ERROR");
 }
 
+bool OpenGLBufferObjectNames::unbind_and_restore(const Parameters& parameters)
+{
+  HandleGLError gl_err {};
+
+  glBindBuffer(parameters.binding_target_, 0);
+
+  return (gl_err() == "GL_NO_ERROR");
+}
+
 } // namespace OpenGLInterface
 } // namespace Visualization

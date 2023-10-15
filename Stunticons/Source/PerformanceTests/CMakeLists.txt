@@ -45,7 +45,7 @@ TARGET_LINK_LIBRARIES(CheckConjugateGradientMethodsPerformance
   ALGEBRA
   ALGEBRA_CU
   UTILITIES
-  UTILITIES_CU
+  Utilities_CU
   )
 
 SET_TARGET_PROPERTIES(CheckConjugateGradientMethodsPerformance

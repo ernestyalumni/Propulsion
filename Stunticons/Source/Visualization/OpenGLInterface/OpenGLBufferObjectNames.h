@@ -25,6 +25,23 @@ struct OpenGLBufferObjectNames
   //----------------------------------------------------------------------------
   bool initialize();
 
+  //----------------------------------------------------------------------------
+  /// \details Unbind buffer object and restore client memory usage for the
+  /// binding target data member in the parameters.
+  //----------------------------------------------------------------------------
+  static bool unbind_and_restore(const Parameters& parameters);
+
+  //----------------------------------------------------------------------------
+  /// \ref https://docs.gl/gl4/glBindBuffer
+  /// void glBindBuffer(GLenum target, GLuint buffer);
+  /// buffer set to zero effectively unbinds any buffer object previously bound
+  /// and restores client memory usage for that buffer object target.
+  //----------------------------------------------------------------------------
+  inline bool unbind_and_restore()
+  {
+    return unbind_and_restore(parameters_);
+  }
+
   const Parameters parameters_;
 
   // Exclusively for use as a single buffer object name.

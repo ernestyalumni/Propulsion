@@ -5,7 +5,7 @@ SET(UTILITIES_CU_SOURCES
   HandleUnsuccessfulCudaCall.cu
   )
 
-ADD_LIBRARY(UTILITIES_CU
+ADD_LIBRARY(Utilities_CU
   ${UTILITIES_CU_SOURCES}
   )
 
@@ -26,7 +26,7 @@ ADD_EXECUTABLE(GetCUDADeviceProperties
   )
 
 TARGET_LINK_LIBRARIES(GetCUDADeviceProperties
-  UTILITIES_CU
+  Utilities_CU
   )
 
 SET_TARGET_PROPERTIES(GetCUDADeviceProperties

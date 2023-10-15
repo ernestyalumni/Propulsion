@@ -64,6 +64,53 @@ TEST(
   CreateOpenGLBuffer create_buffer {};
 
   EXPECT_TRUE(create_buffer.create_buffer_object_data(parameters));
+  EXPECT_EQ(gl_err(), "GL_NO_ERROR");
+}
+
+//------------------------------------------------------------------------------
+/// \url https://docs.gl/gl4/glBindBuffer
+/// \details From Examples: Load a vertex buffer into OpenGL for later
+/// rendering.
+//------------------------------------------------------------------------------
+TEST(CreateOpenGLBufferObjectDataTests, LoadVertexBuffer)
+{
+  HandleGLError gl_err {};
+
+  Parameters parameters {};
+  parameters.usage_ = GL_STATIC_DRAW;
+
+  OpenGLBufferObjectNames buffer_object {parameters};
+  ASSERT_TRUE(buffer_object.initialize());
+
+  CreateOpenGLBuffer create_buffer {};
+
+  EXPECT_TRUE(create_buffer.create_buffer_object_data(parameters));
+  EXPECT_EQ(gl_err(), "GL_NO_ERROR");
+  EXPECT_TRUE(gl_err.is_no_gl_error());
+}
+
+//------------------------------------------------------------------------------
+/// \url https://docs.gl/gl4/glBindBuffer
+/// \details From Examples: Load an index buffer into OpenGL for later
+/// rendering.
+//------------------------------------------------------------------------------
+TEST(CreateOpenGLBufferObjectDataTests, LoadIndexBuffer)
+{
+  HandleGLError gl_err {};
+
+  Parameters parameters {};
+  parameters.binding_target_ = GL_ELEMENT_ARRAY_BUFFER;
+  parameters.usage_ = GL_STATIC_DRAW;
+
+  OpenGLBufferObjectNames buffer_object {parameters};
+
+  ASSERT_TRUE(buffer_object.initialize());
+
+  CreateOpenGLBuffer create_buffer {};
+
+  EXPECT_TRUE(create_buffer.create_buffer_object_data(parameters));
+  EXPECT_EQ(gl_err(), "GL_NO_ERROR");
+  EXPECT_TRUE(gl_err.is_no_gl_error());
 }
 
 } // namespace OpenGLInterface

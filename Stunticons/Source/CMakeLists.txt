@@ -169,6 +169,14 @@ ELSE()
   MESSAGE(STATUS "OpenGL was not found.")
 ENDIF()
 
+FIND_PACKAGE(GLUT)
+
+IF (GLUT_FOUND)
+  MESSAGE(STATUS "GLUT was found.")
+ELSE()
+  MESSAGE(STATUS "GLUT was not found.")
+ENDIF()
+
 ADD_SUBDIRECTORY(Algebra)
 ADD_SUBDIRECTORY(FiberBundles)
 ADD_SUBDIRECTORY(IntegrationTests)

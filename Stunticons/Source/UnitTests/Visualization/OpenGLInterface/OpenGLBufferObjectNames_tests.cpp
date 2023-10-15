@@ -96,6 +96,50 @@ TEST(OpenGLBufferObjectNamesTests, InitializeInitializesWithDefaultParameters)
   EXPECT_TRUE(gl_err.is_no_gl_error());
 }
 
+//------------------------------------------------------------------------------
+/// \url https://docs.gl/gl4/glBindBuffer
+/// \details From Examples: Load an index buffer into OpenGL for later
+/// rendering.
+//------------------------------------------------------------------------------
+TEST(OpenGLBufferObjectNamesTests, LoadIndexBuffer)
+{
+  HandleGLError gl_err {};
+
+  Parameters parameters {};
+  parameters.binding_target_ = GL_ELEMENT_ARRAY_BUFFER;
+
+  OpenGLBufferObjectNames buffer_object {parameters};
+
+  EXPECT_TRUE(buffer_object.initialize());
+
+  EXPECT_EQ(gl_err(), "GL_NO_ERROR");
+  EXPECT_TRUE(gl_err.is_no_gl_error());
+}
+
+//------------------------------------------------------------------------------
+/// \url https://docs.gl/gl4/glBindBuffer
+/// \details From Examples: Render an indexed buffer object using texture UV and
+/// normal vertex attributes.
+//------------------------------------------------------------------------------
+TEST(OpenGLBufferObjectNamesTests, VertexAndTextureUV)
+{
+  HandleGLError gl_err {};
+
+  Parameters parameters {};
+
+  OpenGLBufferObjectNames vertex_buffer_object {parameters};
+
+  parameters.binding_target_ = GL_ELEMENT_ARRAY_BUFFER;
+
+  OpenGLBufferObjectNames index_buffer_object {parameters};
+
+  EXPECT_TRUE(vertex_buffer_object.initialize());
+  EXPECT_TRUE(index_buffer_object.initialize());
+
+  EXPECT_EQ(gl_err(), "GL_NO_ERROR");
+  EXPECT_TRUE(gl_err.is_no_gl_error());
+}
+
 } // namespace OpenGLInterface
 } // namespace Visualization
 } // namespace GoogleUnitTests

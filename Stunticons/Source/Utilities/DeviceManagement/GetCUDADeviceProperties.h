@@ -2,7 +2,7 @@
 #define UTILITIES_DEVICE_MANAGEMENT_GET_CUDA_DEVICE_PROPERTIES_H
 
 #include <cstddef>
-#include <cuda_runtime.h>
+#include <cuda_runtime.h> //cudaDeviceProp
 #include <vector>
 
 namespace Utilities
