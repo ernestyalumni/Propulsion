@@ -1,6 +1,7 @@
 #ifndef VISUALIZATION_GLUT_INTERFACE_GLUT_WINDOW_H
 #define VISUALIZATION_GLUT_INTERFACE_GLUT_WINDOW_H
 
+#include <GL/gl.h>
 #include <array>
 #include <cstddef>
 #include <initializer_list>
@@ -94,6 +95,30 @@ class GLUTWindow
       int* argcp,
       char** argv,
       const Parameters& parameters);
+
+    inline static void clear_color_buffers(
+      const GLfloat red,
+      const GLfloat green,
+      const GLfloat blue,
+      const GLfloat alpha)
+    {
+      glClearColor(red, green, blue, alpha);
+    }
+
+    inline static void clear_color_buffers(
+      const uint8_t red,
+      const uint8_t green,
+      const uint8_t blue,
+      const uint8_t alpha)
+    {
+      static constexpr float upper_bound {255.0f};
+
+      glClearColor(
+        static_cast<float>(red) / upper_bound,
+        static_cast<float>(green) / upper_bound,
+        static_cast<float>(blue) / upper_bound,
+        static_cast<float>(alpha) / upper_bound);
+    }
 
     inline static int get_window_identifier()
     {
