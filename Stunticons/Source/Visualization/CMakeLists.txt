@@ -1,9 +1,10 @@
 SET(VISUALIZATION_SOURCES
   GLUTInterface/GLUTWindow.cpp
+  OpenGLInterface/BufferObjectNames.cpp
+  OpenGLInterface/BufferObjectParameters.cpp
   OpenGLInterface/CreateOpenGLBuffer.cpp
+  OpenGLInterface/DrawPixels.cpp
   OpenGLInterface/HandleGLError.cpp
-  OpenGLInterface/OpenGLBufferObjectNames.cpp
-  OpenGLInterface/OpenGLBufferObjectParameters.cpp
   )
 
 SET(VISUALIZATION_SOURCES_CU

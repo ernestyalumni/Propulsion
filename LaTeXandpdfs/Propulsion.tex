@@ -9806,11 +9806,11 @@ Consider that $\dot{\mathbf{r}} \times \mathbf{l} = \mathbf{v} \times \mathbf{l}
 where we had used angular momentum conservation from Eq. \ref{Eq:SpecificAngularMomentumConservation}: $\frac{d\mathbf{l}}{dt} = 0$.
 
 So then
-\[
+\begin{equation}\label{Eq:IntegrateConservedVector}
 \begin{gathered}
 	\frac{d}{dt} ( \mathbf{v} \times \mathbf{l}) = \mu \frac{d}{dt} \left( \frac{\mathbf{r}}{r} \right) \xrightarrow{ \int } \mathbf{v} \times \mathbf{l} = \mu \frac{\mathbf{r}}{r} + \mathbf{B} \xrightarrow{ \cdot \mathbf{r} } \mathbf{r} \cdot (\mathbf{v} \times \mathbf{l} ) = \mu r + \mathbf{B} \cdot \mathbf{r}
 \end{gathered}
-\]
+\end{equation}
 where $\mathbf{B}$ is an integration constant.
 
 Now $\mathbf{a} \cdot (\mathbf{b} \times \mathbf{c}) = (\mathbf{a} \times \mathbf{b}) \cdot \mathbf{c}$ since $a_i \epsilon_{ijk} b_j c_k = (\epsilon_{ijk} a_i b_j) c_k$, so then
@@ -9890,6 +9890,9 @@ $p = l^2 / \mu$ and $a = - \frac{\mu}{2E}$. Then
 	e = \sqrt{ 1 + \frac{2 \mathcal{E} l^2 }{\mu^2} }
 \end{equation}
 cf. Eq (1.6-4) of Bate, Mueller, and White (1971) \cite{BMW1971}.
+
+Tewari (2007) \cite{Tewa2007}
+
 
 \section{Orbit Determination from Observations; Coordinate Systems}
 
@@ -10333,6 +10336,9 @@ Eric Sonnendr\"{u}cker.  \emph{Advanced Finite Element Methods}.  Lecture notes.
 \bibitem{BMW1971}
 Roger R. Bate, Donald D. Mueller, Jerry E. White. \textbf{Fundamentals of Astrodynamics} (Dover Books on Aeronautical Engineering) Revised ed. Edition. Dover Publications; Revised ed. edition (June 1, 1971). ISBN-10: 0486600610
 
+\bibitem{Tewa2007}
+Ashish Tewari. \textbf{Atmospheric and Space Flight Dynamics: Modeling and Simulation with MATLAB and Simulink}. Birkh\"{a}user. 2007.
+
 \bibitem{PTVF2007}
 William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P. Flannery. \textbf{Numerical Recipes: The Art of Scientific Computing}. 3rd Edition.  Cambridge University Press.  ISBN-10: 0521880688
 
@@ -10376,16 +10382,11 @@ Katsuhiko Ogata. \textbf{Modern Control Engineering}. Pearson; 5th edition (Augu
 \bibitem{BAS2007}
 Daniel J. Block, Karl J. \"{A}str\"{o}m, Mark W. Spong. \textbf{The Reaction Wheel Pendulum}. Springer Cham. 2007.
 
-
 \bibitem{Lamp1978}
 Leslie Lamport. \emph{Time, Clocks and the Ordering of Events in a Distributed System}. \textbf{Communications of the ACM 21}, 7   (July 1978), 558-565. \url{https://lamport.azurewebsites.net/pubs/time-clocks.pdf} 
-
-
   
 \end{thebibliography}
 There's an 8th edition of Biblarz and Sutton \cite{GSuttonOBiblarz2001} for 2010 that I would like to have.  If you find any of this material useful or if you'd like to help, email me or visit my Open/Tilt page \url{ernestyalumni.tilt.com} and donate to the crowdfunding campaign or click on the PayPal donate button.  
-
-
 
 \clearpage
 \onecolumn

@@ -1,4 +1,4 @@
-#include "OpenGLBufferObjectParameters.h"
+#include "BufferObjectParameters.h"
 
 #include <GL/gl.h>
 #include <algorithm>
@@ -13,7 +13,7 @@ namespace Visualization
 namespace OpenGLInterface
 {
 
-std::array<GLenum, 9> OpenGLBufferObjectParameters::valid_targets_ {
+std::array<GLenum, 9> BufferObjectParameters::valid_targets_ {
   GL_ARRAY_BUFFER,
   GL_ATOMIC_COUNTER_BUFFER,
   GL_COPY_READ_BUFFER,
@@ -25,7 +25,7 @@ std::array<GLenum, 9> OpenGLBufferObjectParameters::valid_targets_ {
   GL_PIXEL_UNPACK_BUFFER_ARB
 };
 
-std::array<GLenum, 10> OpenGLBufferObjectParameters::valid_usage_ {
+std::array<GLenum, 10> BufferObjectParameters::valid_usage_ {
   GL_STREAM_DRAW,
   GL_STREAM_READ,
   GL_STREAM_COPY,
@@ -38,7 +38,7 @@ std::array<GLenum, 10> OpenGLBufferObjectParameters::valid_usage_ {
   GL_DYNAMIC_DRAW_ARB
 };
 
-OpenGLBufferObjectParameters::OpenGLBufferObjectParameters(
+BufferObjectParameters::BufferObjectParameters(
   const size_t number_of_buffer_object_names,
   const GLenum binding_target,
   const GLenum usage,
@@ -58,9 +58,9 @@ OpenGLBufferObjectParameters::OpenGLBufferObjectParameters(
   }
 }
 
-OpenGLBufferObjectParameters::OpenGLBufferObjectParameters():
+BufferObjectParameters::BufferObjectParameters():
   // Choice of width and height as default values was arbitrary.
-  OpenGLBufferObjectParameters{1, GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, 512, 512}
+  BufferObjectParameters{1, GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, 512, 512}
 {}
 
 } // namespace OpenGLInterface

@@ -35,10 +35,10 @@ ADD_EXECUTABLE(Check
   Utilities/FileIO/TurbulentFlow/ReadConfiguration_tests.cpp
   Visualization/CUDAGraphicsResource_tests.cu
   Visualization/GLUTInterface/GLUTWindow_tests.cpp
+  Visualization/OpenGLInterface/BufferObjectNames_tests.cpp
+  Visualization/OpenGLInterface/BufferObjectParameters_tests.cpp
   Visualization/OpenGLInterface/CreateOpenGLBufferObjectData_tests.cpp
   Visualization/OpenGLInterface/HandleGLError_tests.cpp
-  Visualization/OpenGLInterface/OpenGLBufferObjectNames_tests.cpp
-  Visualization/OpenGLInterface/OpenGLBufferObjectParameters_tests.cpp
   )
 
 TARGET_LINK_LIBRARIES(Check

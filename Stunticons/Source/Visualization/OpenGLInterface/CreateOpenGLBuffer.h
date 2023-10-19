@@ -1,7 +1,7 @@
 #ifndef VISUALIZATION_OPENGL_INTERFACE_CREATE_OPENGL_BUFFER_H
 #define VISUALIZATION_OPENGL_INTERFACE_CREATE_OPENGL_BUFFER_H
 
-#include "Visualization/OpenGLInterface/OpenGLBufferObjectParameters.h"
+#include "Visualization/OpenGLInterface/BufferObjectParameters.h"
 
 #include <GL/gl.h>
 #include <cstddef>
@@ -16,7 +16,7 @@ class CreateOpenGLBuffer
   public:
 
     using Parameters =
-      Visualization::OpenGLInterface::OpenGLBufferObjectParameters;
+      Visualization::OpenGLInterface::BufferObjectParameters;
 
     //--------------------------------------------------------------------------
     /// \details If no data is to be copied, then the pointer to data that'll be
@@ -40,4 +40,4 @@ class CreateOpenGLBuffer
 } // namespace OpenGLInterface
 } // namespace Visualization
 
-#endif // VISUALIZATION_OPEN_GL_INTERFACE_OPEN_GL_BUFFER_OBJECT_H
+#endif // VISUALIZATION_OPEN_GL_INTERFACE_CREATE_OPENGL_BUFFER_OBJECT_H

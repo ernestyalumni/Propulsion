@@ -1,7 +1,7 @@
-#ifndef VISUALIZATION_OPENGL_INTERFACE_OPENGL_BUFFER_OBJECT_NAMES_H
-#define VISUALIZATION_OPENGL_INTERFACE_OPENGL_BUFFER_OBJECT_NAMES_H
+#ifndef VISUALIZATION_OPENGL_INTERFACE_BUFFER_OBJECT_NAMES_H
+#define VISUALIZATION_OPENGL_INTERFACE_BUFFER_OBJECT_NAMES_H
 
-#include "Visualization/OpenGLInterface/OpenGLBufferObjectParameters.h"
+#include "Visualization/OpenGLInterface/BufferObjectParameters.h"
 
 #include <GL/gl.h> // GLuint
 #include <cstddef> // std::size_t
@@ -11,14 +11,14 @@ namespace Visualization
 namespace OpenGLInterface
 {
 
-struct OpenGLBufferObjectNames
+struct BufferObjectNames
 {
   using Parameters =
-    Visualization::OpenGLInterface::OpenGLBufferObjectParameters;
+    Visualization::OpenGLInterface::BufferObjectParameters;
 
-  OpenGLBufferObjectNames(const Parameters& parameters);
+  BufferObjectNames(const Parameters& parameters);
 
-  virtual ~OpenGLBufferObjectNames();
+  virtual ~BufferObjectNames();
 
   //----------------------------------------------------------------------------
   /// \return True if no glError, return false if there was a glError.
@@ -54,4 +54,4 @@ struct OpenGLBufferObjectNames
 } // namespace OpenGLInterface
 } // namespace Visualization
 
-#endif // VISUALIZATION_OPENGL_INTERFACE_OPENGL_BUFFER_OBJECT_NAMES_H
+#endif // VISUALIZATION_OPENGL_INTERFACE_BUFFER_OBJECT_NAMES_H

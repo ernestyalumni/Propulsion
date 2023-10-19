@@ -4,10 +4,10 @@
 #include "Utilities/HandleUnsuccessfulCudaCall.h"
 #include "Visualization/CUDAGraphicsResource.h"
 #include "Visualization/GLUTInterface/GLUTWindow.h"
+#include "Visualization/OpenGLInterface/BufferObjectNames.h"
+#include "Visualization/OpenGLInterface/BufferObjectParameters.h"
 #include "Visualization/OpenGLInterface/CreateOpenGLBuffer.h"
 #include "Visualization/OpenGLInterface/HandleGLError.h"
-#include "Visualization/OpenGLInterface/OpenGLBufferObjectNames.h"
-#include "Visualization/OpenGLInterface/OpenGLBufferObjectParameters.h"
 
 // cudaGraphicsGLRegisterBuffer, cudaGraphicsMapFlagNone
 #include <cuda_gl_interop.h> 
@@ -17,12 +17,12 @@
 
 #include <iostream>
 
-using Parameters = Visualization::OpenGLInterface::OpenGLBufferObjectParameters;
+using Parameters = Visualization::OpenGLInterface::BufferObjectParameters;
 using Utilities::HandleUnsuccessfulCUDACall;
 using Visualization::CUDAGraphicsResource;
 using Visualization::OpenGLInterface::CreateOpenGLBuffer;
 using Visualization::OpenGLInterface::HandleGLError;
-using Visualization::OpenGLInterface::OpenGLBufferObjectNames;
+using Visualization::OpenGLInterface::BufferObjectNames;
 using std::cout;
 
 int main(int argc, char **argv)
@@ -67,7 +67,7 @@ int main(int argc, char **argv)
     parameters.usage_ = GL_DYNAMIC_DRAW_ARB;
   }
 
-  OpenGLBufferObjectNames buffer_object {parameters};
+  BufferObjectNames buffer_object {parameters};
 
   cout << (parameters.number_of_buffer_object_names_ == 1) << "\n";
   cout << (buffer_object.buffer_objects_ == nullptr) << "\n";

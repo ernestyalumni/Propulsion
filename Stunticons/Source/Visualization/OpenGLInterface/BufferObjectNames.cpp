@@ -1,14 +1,14 @@
 // needed for identifier glGenBuffer, glBindBuffer, glBufferData, glDeleteBuffers
 #define GL_GLEXT_PROTOTYPES 
 
-#include "OpenGLBufferObjectNames.h"
+#include "BufferObjectNames.h"
+#include "Visualization/OpenGLInterface/BufferObjectParameters.h"
 #include "Visualization/OpenGLInterface/HandleGLError.h"
-#include "Visualization/OpenGLInterface/OpenGLBufferObjectParameters.h"
 
 #include <GL/gl.h> // GLuint
 #include <cstddef>
 
-using Parameters = Visualization::OpenGLInterface::OpenGLBufferObjectParameters;
+using Parameters = Visualization::OpenGLInterface::BufferObjectParameters;
 using Visualization::OpenGLInterface::HandleGLError;
 using std::size_t;
 
@@ -17,7 +17,7 @@ namespace Visualization
 namespace OpenGLInterface
 {
 
-OpenGLBufferObjectNames::OpenGLBufferObjectNames(const Parameters& parameters):
+BufferObjectNames::BufferObjectNames(const Parameters& parameters):
   parameters_{parameters},
   buffer_object_{},
   buffer_objects_{nullptr}
@@ -28,7 +28,7 @@ OpenGLBufferObjectNames::OpenGLBufferObjectNames(const Parameters& parameters):
   }
 }
 
-OpenGLBufferObjectNames::~OpenGLBufferObjectNames()
+BufferObjectNames::~BufferObjectNames()
 {
   if ((parameters_.number_of_buffer_object_names_ > 1) &&
     buffer_objects_ != nullptr)
@@ -47,7 +47,7 @@ OpenGLBufferObjectNames::~OpenGLBufferObjectNames()
   }
 }
 
-bool OpenGLBufferObjectNames::initialize()
+bool BufferObjectNames::initialize()
 {
   if ((parameters_.number_of_buffer_object_names_ > 1) &&
     buffer_objects_ != nullptr)
@@ -76,7 +76,7 @@ bool OpenGLBufferObjectNames::initialize()
   return (gl_err() == "GL_NO_ERROR");
 }
 
-bool OpenGLBufferObjectNames::unbind_and_restore(const Parameters& parameters)
+bool BufferObjectNames::unbind_and_restore(const Parameters& parameters)
 {
   HandleGLError gl_err {};
 

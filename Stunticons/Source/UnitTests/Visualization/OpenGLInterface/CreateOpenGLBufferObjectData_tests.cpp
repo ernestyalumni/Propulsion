@@ -1,13 +1,13 @@
 #include "Visualization/OpenGLInterface/CreateOpenGLBuffer.h"
 #include "Visualization/OpenGLInterface/HandleGLError.h"
-#include "Visualization/OpenGLInterface/OpenGLBufferObjectNames.h"
+#include "Visualization/OpenGLInterface/BufferObjectNames.h"
 #include "gtest/gtest.h"
 
 using Parameters =
-  Visualization::OpenGLInterface::OpenGLBufferObjectNames::Parameters;
+  Visualization::OpenGLInterface::BufferObjectNames::Parameters;
 using Visualization::OpenGLInterface::CreateOpenGLBuffer;
 using Visualization::OpenGLInterface::HandleGLError;
-using Visualization::OpenGLInterface::OpenGLBufferObjectNames;
+using Visualization::OpenGLInterface::BufferObjectNames;
 
 namespace GoogleUnitTests
 {
@@ -24,7 +24,7 @@ TEST(CreateOpenGLBufferObjectDataTests, DefaultConstructs)
 
   Parameters parameters {};
 
-  OpenGLBufferObjectNames buffer_object {parameters};
+  BufferObjectNames buffer_object {parameters};
 
   CreateOpenGLBuffer create_buffer {};
 
@@ -40,7 +40,7 @@ TEST(CreateOpenGLBufferObjectDataTests, ConstructsWithParameters)
 
   Parameters parameters {};
 
-  OpenGLBufferObjectNames buffer_object {parameters};
+  BufferObjectNames buffer_object {parameters};
 
   CreateOpenGLBuffer create_buffer {parameters};
 
@@ -58,7 +58,7 @@ TEST(
 
   Parameters parameters {};
 
-  OpenGLBufferObjectNames buffer_object {parameters};
+  BufferObjectNames buffer_object {parameters};
   ASSERT_TRUE(buffer_object.initialize());
 
   CreateOpenGLBuffer create_buffer {};
@@ -79,7 +79,7 @@ TEST(CreateOpenGLBufferObjectDataTests, LoadVertexBuffer)
   Parameters parameters {};
   parameters.usage_ = GL_STATIC_DRAW;
 
-  OpenGLBufferObjectNames buffer_object {parameters};
+  BufferObjectNames buffer_object {parameters};
   ASSERT_TRUE(buffer_object.initialize());
 
   CreateOpenGLBuffer create_buffer {};
@@ -102,7 +102,7 @@ TEST(CreateOpenGLBufferObjectDataTests, LoadIndexBuffer)
   parameters.binding_target_ = GL_ELEMENT_ARRAY_BUFFER;
   parameters.usage_ = GL_STATIC_DRAW;
 
-  OpenGLBufferObjectNames buffer_object {parameters};
+  BufferObjectNames buffer_object {parameters};
 
   ASSERT_TRUE(buffer_object.initialize());
 

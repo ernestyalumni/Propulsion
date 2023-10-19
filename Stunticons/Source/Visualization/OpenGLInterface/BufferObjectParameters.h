@@ -1,5 +1,5 @@
-#ifndef VISUALIZATION_OPENGL_INTERFACE_OPENGL_BUFFER_OBJECT_PARAMETERS_H
-#define VISUALIZATION_OPENGL_INTERFACE_OPENGL_BUFFER_OBJECT_PARAMETERS_H
+#ifndef VISUALIZATION_OPENGL_INTERFACE_BUFFER_OBJECT_PARAMETERS_H
+#define VISUALIZATION_OPENGL_INTERFACE_BUFFER_OBJECT_PARAMETERS_H
 
 #include <GL/gl.h> // GLuint
 #include <array>
@@ -10,16 +10,16 @@ namespace Visualization
 namespace OpenGLInterface
 {
 
-struct OpenGLBufferObjectParameters
+struct BufferObjectParameters
 {
-  OpenGLBufferObjectParameters(
+  BufferObjectParameters(
     const std::size_t number_of_buffer_object_names,
     const GLenum binding_target,
     const GLenum usage,
     const std::size_t width,
     const std::size_t height);
 
-  OpenGLBufferObjectParameters();
+  BufferObjectParameters();
 
   //------------------------------------------------------------------------
   /// \ref https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferData.xhtml
@@ -95,4 +95,4 @@ struct OpenGLBufferObjectParameters
 } // namespace OpenGLInterface
 } // namespace Visualization
 
-#endif // VISUALIZATION_OPENGL_INTERFACE_OPENGL_BUFFER_OBJECT_PARAMETERS_H
+#endif // VISUALIZATION_OPENGL_INTERFACE_BUFFER_OBJECT_PARAMETERS_H

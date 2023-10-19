@@ -105,6 +105,8 @@ class GLUTWindow
       glClearColor(red, green, blue, alpha);
     }
 
+    // error: more than one instance of overloaded function
+    /*
     inline static void clear_color_buffers(
       const uint8_t red,
       const uint8_t green,
@@ -119,6 +121,7 @@ class GLUTWindow
         static_cast<float>(blue) / upper_bound,
         static_cast<float>(alpha) / upper_bound);
     }
+    */
 
     inline static int get_window_identifier()
     {

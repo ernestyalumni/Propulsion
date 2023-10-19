@@ -1,9 +1,9 @@
-#include "Visualization/OpenGLInterface/OpenGLBufferObjectParameters.h"
+#include "Visualization/OpenGLInterface/BufferObjectParameters.h"
 #include "gtest/gtest.h"
 
 #include <GL/glext.h>
 
-using Parameters = Visualization::OpenGLInterface::OpenGLBufferObjectParameters;
+using Parameters = Visualization::OpenGLInterface::BufferObjectParameters;
 
 namespace GoogleUnitTests
 {
@@ -14,7 +14,7 @@ namespace OpenGLInterface
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-TEST(OpenGLBufferObjectParametersTests, DefaultConstructs)
+TEST(BufferObjectParametersTests, DefaultConstructs)
 {
   Parameters parameters {};
 
@@ -25,7 +25,7 @@ TEST(OpenGLBufferObjectParametersTests, DefaultConstructs)
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-TEST(OpenGLBufferObjectParametersTests, Constructs)
+TEST(BufferObjectParametersTests, Constructs)
 {
   Parameters parameters {
     2,

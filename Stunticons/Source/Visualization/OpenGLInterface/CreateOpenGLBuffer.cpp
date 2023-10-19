@@ -3,9 +3,9 @@
 
 #include "CreateOpenGLBuffer.h"
 #include "Visualization/OpenGLInterface/HandleGLError.h"
-#include "Visualization/OpenGLInterface/OpenGLBufferObjectParameters.h"
+#include "Visualization/OpenGLInterface/BufferObjectParameters.h"
 
-using Parameters = Visualization::OpenGLInterface::OpenGLBufferObjectParameters;
+using Parameters = Visualization::OpenGLInterface::BufferObjectParameters;
 using Visualization::OpenGLInterface::HandleGLError;
 
 namespace Visualization

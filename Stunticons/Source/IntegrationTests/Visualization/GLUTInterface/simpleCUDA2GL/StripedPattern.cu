@@ -41,12 +41,40 @@ const GLUTWindowParameters
 
 void StripedPattern::run(int* argcp, char** argv)
 {
+  // Start of "initGL"
+
   ::Visualization::GLUTInterface::GLUTWindow::instance().initialize_glut(
     argcp,
     argv,
     default_glut_window_parameters_);
 
+  ::Visualization::GLUTInterface::GLUTWindow::clear_color_buffers(
+    0.5,
+    0.5,
+    0.5,
+    1.0);
+
+  // viewport
+  glViewport(0, 0, 512, 512);
+
+  // projection
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluPerspective(60.0, (GLfloat)512 / (GLfloat)512, 0.1f,
+                 10.0f);
+
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+  glEnable(GL_LIGHT0);
+  float red[] = {1.0f, 0.1f, 0.1f, 1.0f};
+  float white[] = {1.0f, 1.0f, 1.0f, 1.0f};
+  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, red);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, white);
+  glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 60.0f);
+
   HandleGLError gl_err {};
+
+  // End of "initGL"
 
 }
 

@@ -1,13 +1,13 @@
 #include "CUDAGraphicsResource.h"
 #include "Utilities/HandleUnsuccessfulCudaCall.h"
-#include "Visualization/OpenGLInterface/OpenGLBufferObjectNames.h"
+#include "Visualization/OpenGLInterface/BufferObjectNames.h"
 
 #include <array>
 // cudaGraphicsGLRegisterBuffer, cudaGraphicsMapFlagNone
 #include <cuda_gl_interop.h> 
 
 using Utilities::HandleUnsuccessfulCUDACall;
-using Visualization::OpenGLInterface::OpenGLBufferObjectNames;
+using Visualization::OpenGLInterface::BufferObjectNames;
 
 namespace Visualization
 {
@@ -63,7 +63,7 @@ CUDAGraphicsResource::~CUDAGraphicsResource()
 HandleUnsuccessfulCUDACall
   CUDAGraphicsResource::register_buffer_object(
     const Parameters& parameters,
-    OpenGLBufferObjectNames& name)
+    BufferObjectNames& name)
 {
   HandleUnsuccessfulCUDACall handle_register {
     "Failed to register OpenGL buffer object"};

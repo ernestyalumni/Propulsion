@@ -2,7 +2,7 @@
 #define VISUALIZATION_CUDA_GRAPHICS_RESOURCE_H
 
 #include "Utilities/HandleUnsuccessfulCudaCall.h"
-#include "Visualization/OpenGLInterface/OpenGLBufferObjectNames.h"
+#include "Visualization/OpenGLInterface/BufferObjectNames.h"
 
 #include <array>
 
@@ -53,7 +53,7 @@ class CUDAGraphicsResource
     //------------------------------------------------------------------------
     HandleUnsuccessfulCUDACall register_buffer_object(
       const Parameters& parameters,
-      Visualization::OpenGLInterface::OpenGLBufferObjectNames& name);
+      Visualization::OpenGLInterface::BufferObjectNames& name);
 
     bool is_registered() const
     {
@@ -94,9 +94,9 @@ class CUDAGraphicsResource
     friend HandleUnsuccessfulCUDACall get_mapped_device_pointer(
       CUDAGraphicsResource& cuda_graphics_resource);
 
-  private:
-
     cudaGraphicsResource* cuda_graphics_resource_;
+
+  private:
 
     Parameters parameters_;
 

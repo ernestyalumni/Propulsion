@@ -1,11 +1,11 @@
 #include "Visualization/OpenGLInterface/HandleGLError.h"
-#include "Visualization/OpenGLInterface/OpenGLBufferObjectNames.h"
+#include "Visualization/OpenGLInterface/BufferObjectNames.h"
 #include "gtest/gtest.h"
 
 using Parameters =
-  Visualization::OpenGLInterface::OpenGLBufferObjectNames::Parameters;
+  Visualization::OpenGLInterface::BufferObjectNames::Parameters;
+using Visualization::OpenGLInterface::BufferObjectNames;
 using Visualization::OpenGLInterface::HandleGLError;
-using Visualization::OpenGLInterface::OpenGLBufferObjectNames;
 
 namespace GoogleUnitTests
 {
@@ -16,13 +16,13 @@ namespace OpenGLInterface
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-TEST(OpenGLBufferObjectNamesTests, ConstructibleWithDefaultParameters)
+TEST(BufferObjectNamesTests, ConstructibleWithDefaultParameters)
 {
   HandleGLError gl_err {};
 
   Parameters parameters {};
 
-  OpenGLBufferObjectNames buffer_object {parameters};
+  BufferObjectNames buffer_object {parameters};
 
   EXPECT_EQ(gl_err(), "GL_NO_ERROR");
   EXPECT_TRUE(gl_err.is_no_gl_error());
@@ -30,14 +30,14 @@ TEST(OpenGLBufferObjectNamesTests, ConstructibleWithDefaultParameters)
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-TEST(OpenGLBufferObjectNamesTests, DestructsWithOneBufferObject)
+TEST(BufferObjectNamesTests, DestructsWithOneBufferObject)
 {
   HandleGLError gl_err {};
 
   Parameters parameters {};
 
   {
-    OpenGLBufferObjectNames buffer_object {parameters};
+    BufferObjectNames buffer_object {parameters};
   }
 
   EXPECT_EQ(gl_err(), "GL_NO_ERROR");
@@ -46,7 +46,7 @@ TEST(OpenGLBufferObjectNamesTests, DestructsWithOneBufferObject)
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-TEST(OpenGLBufferObjectNamesTests, ConstructibleWithTwoObjects)
+TEST(BufferObjectNamesTests, ConstructibleWithTwoObjects)
 {
   HandleGLError gl_err {};
 
@@ -54,7 +54,7 @@ TEST(OpenGLBufferObjectNamesTests, ConstructibleWithTwoObjects)
 
   parameters.number_of_buffer_object_names_ = 2;
 
-  OpenGLBufferObjectNames buffer_object {parameters};
+  BufferObjectNames buffer_object {parameters};
 
   EXPECT_EQ(gl_err(), "GL_NO_ERROR");
   EXPECT_TRUE(gl_err.is_no_gl_error());
@@ -62,7 +62,7 @@ TEST(OpenGLBufferObjectNamesTests, ConstructibleWithTwoObjects)
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-TEST(OpenGLBufferObjectNamesTests, DestructibleWithTwoObjects)
+TEST(BufferObjectNamesTests, DestructibleWithTwoObjects)
 {
   HandleGLError gl_err {};
 
@@ -71,7 +71,7 @@ TEST(OpenGLBufferObjectNamesTests, DestructibleWithTwoObjects)
   parameters.number_of_buffer_object_names_ = 2;
 
   {
-    OpenGLBufferObjectNames buffer_object {parameters};
+    BufferObjectNames buffer_object {parameters};
   }
 
   EXPECT_EQ(gl_err(), "GL_NO_ERROR");
@@ -80,13 +80,13 @@ TEST(OpenGLBufferObjectNamesTests, DestructibleWithTwoObjects)
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-TEST(OpenGLBufferObjectNamesTests, InitializeInitializesWithDefaultParameters)
+TEST(BufferObjectNamesTests, InitializeInitializesWithDefaultParameters)
 {
   HandleGLError gl_err {};
 
   Parameters parameters {};
 
-  OpenGLBufferObjectNames buffer_object {parameters};
+  BufferObjectNames buffer_object {parameters};
 
   // Segmentation Fault if we had defined the type to be GLuint* instead of
   // GLuint for the data member.
@@ -101,14 +101,14 @@ TEST(OpenGLBufferObjectNamesTests, InitializeInitializesWithDefaultParameters)
 /// \details From Examples: Load an index buffer into OpenGL for later
 /// rendering.
 //------------------------------------------------------------------------------
-TEST(OpenGLBufferObjectNamesTests, LoadIndexBuffer)
+TEST(BufferObjectNamesTests, LoadIndexBuffer)
 {
   HandleGLError gl_err {};
 
   Parameters parameters {};
   parameters.binding_target_ = GL_ELEMENT_ARRAY_BUFFER;
 
-  OpenGLBufferObjectNames buffer_object {parameters};
+  BufferObjectNames buffer_object {parameters};
 
   EXPECT_TRUE(buffer_object.initialize());
 
@@ -121,17 +121,17 @@ TEST(OpenGLBufferObjectNamesTests, LoadIndexBuffer)
 /// \details From Examples: Render an indexed buffer object using texture UV and
 /// normal vertex attributes.
 //------------------------------------------------------------------------------
-TEST(OpenGLBufferObjectNamesTests, VertexAndTextureUV)
+TEST(BufferObjectNamesTests, VertexAndTextureUV)
 {
   HandleGLError gl_err {};
 
   Parameters parameters {};
 
-  OpenGLBufferObjectNames vertex_buffer_object {parameters};
+  BufferObjectNames vertex_buffer_object {parameters};
 
   parameters.binding_target_ = GL_ELEMENT_ARRAY_BUFFER;
 
-  OpenGLBufferObjectNames index_buffer_object {parameters};
+  BufferObjectNames index_buffer_object {parameters};
 
   EXPECT_TRUE(vertex_buffer_object.initialize());
   EXPECT_TRUE(index_buffer_object.initialize());
