@@ -1,3 +1,21 @@
+# GLFWInterface
+
+## SampleCode
+
+ADD_EXECUTABLE(SampleCode
+  GLFWInterface/SampleCode/SampleCode.cu
+  GLFWInterface/SampleCode/fill_RGB.cu
+  GLFWInterface/SampleCode/main.cu
+  )
+
+TARGET_LINK_LIBRARIES(SampleCode
+  Visualization
+  )
+
+SET_TARGET_PROPERTIES(SampleCode
+  PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Visualization/GLFWInterface")
+
 # GLUTInterface
 
 ## Julia Set
@@ -15,7 +33,7 @@ TARGET_LINK_LIBRARIES(JuliaSet
 
 SET_TARGET_PROPERTIES(JuliaSet
   PROPERTIES
-  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Visualization")
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Visualization/GLUTInterface")
 
 ## StripedPattern
 

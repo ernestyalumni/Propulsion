@@ -68,8 +68,6 @@ HandleUnsuccessfulCUDACall
   HandleUnsuccessfulCUDACall handle_register {
     "Failed to register OpenGL buffer object"};
 
-  is_registered_ = false;
-
   HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(
     handle_register,
     cudaGraphicsGLRegisterBuffer(
@@ -83,6 +81,23 @@ HandleUnsuccessfulCUDACall
   }
 
   return handle_register;
+}
+
+HandleUnsuccessfulCUDACall CUDAGraphicsResource::unregister_buffer_object()
+{
+  HandleUnsuccessfulCUDACall handle_unregister {
+    "Failed to unregister OpenGL buffer object"};
+
+  HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(
+    handle_unregister,
+    cudaGraphicsUnregisterResource(cuda_graphics_resource_));
+
+  if (handle_unregister.is_cuda_success())
+  {
+    is_registered_ = false;
+  }
+
+  return handle_unregister;
 }
 
 HandleUnsuccessfulCUDACall CUDAGraphicsResource::map_resource()

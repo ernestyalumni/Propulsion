@@ -40,13 +40,13 @@ inline __device__ DeviceComplexNumber operator+(
 }
 
 inline __device__ DeviceComplexNumber operator*(
-    const DeviceComplexNumber& a,
-    const DeviceComplexNumber& b)
-  {
-    return DeviceComplexNumber{
-      a.r_ * b.r_ - a.i_ * b.i_,
-      a.i_ * b.r_ + a.r_ * b.i_};
-  }
+  const DeviceComplexNumber& a,
+  const DeviceComplexNumber& b)
+{
+  return DeviceComplexNumber{
+    a.r_ * b.r_ - a.i_ * b.i_,
+    a.i_ * b.r_ + a.r_ * b.i_};
+}
 
 } // namespace GLUTInterface
 } // namespace Visualization

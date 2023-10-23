@@ -20,7 +20,8 @@ namespace OpenGLInterface
 BufferObjectNames::BufferObjectNames(const Parameters& parameters):
   parameters_{parameters},
   buffer_object_{},
-  buffer_objects_{nullptr}
+  buffer_objects_{nullptr},
+  is_buffer_objects_deleted_{false}
 {
   if (parameters.number_of_buffer_object_names_ > 1)
   {
@@ -30,20 +31,9 @@ BufferObjectNames::BufferObjectNames(const Parameters& parameters):
 
 BufferObjectNames::~BufferObjectNames()
 {
-  if ((parameters_.number_of_buffer_object_names_ > 1) &&
-    buffer_objects_ != nullptr)
+  if (!is_buffer_objects_deleted_)
   {
-    glDeleteBuffers(
-      parameters_.number_of_buffer_object_names_,
-      buffer_objects_);
-
-    delete[] buffer_objects_;
-  }
-  else
-  {
-    glDeleteBuffers(
-      parameters_.number_of_buffer_object_names_,
-      &buffer_object_);
+    delete_buffer_objects();
   }
 }
 
@@ -83,6 +73,34 @@ bool BufferObjectNames::unbind_and_restore(const Parameters& parameters)
   glBindBuffer(parameters.binding_target_, 0);
 
   return (gl_err() == "GL_NO_ERROR");
+}
+
+bool BufferObjectNames::delete_buffer_objects()
+{
+  HandleGLError gl_err {};
+
+  if ((parameters_.number_of_buffer_object_names_ > 1) &&
+    buffer_objects_ != nullptr)
+  {
+    glDeleteBuffers(
+      parameters_.number_of_buffer_object_names_,
+      buffer_objects_);
+
+    delete[] buffer_objects_;
+  }
+  else
+  {
+    glDeleteBuffers(
+      parameters_.number_of_buffer_object_names_,
+      &buffer_object_);
+  }  
+
+  if (gl_err() == "GL_NO_ERROR")
+  {
+    is_buffer_objects_deleted_ = true;
+  }
+
+  return is_buffer_objects_deleted_;
 }
 
 } // namespace OpenGLInterface

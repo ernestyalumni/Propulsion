@@ -55,6 +55,8 @@ class CUDAGraphicsResource
       const Parameters& parameters,
       Visualization::OpenGLInterface::BufferObjectNames& name);
 
+    HandleUnsuccessfulCUDACall unregister_buffer_object();
+
     bool is_registered() const
     {
       return is_registered_;

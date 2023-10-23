@@ -42,6 +42,8 @@ struct BufferObjectNames
     return unbind_and_restore(parameters_);
   }
 
+  bool delete_buffer_objects();
+
   const Parameters parameters_;
 
   // Exclusively for use as a single buffer object name.
@@ -49,6 +51,8 @@ struct BufferObjectNames
 
   // Exclusively for use as multiple (more than 1) buffer object names.
   GLuint* buffer_objects_;
+
+  bool is_buffer_objects_deleted_;
 };
 
 } // namespace OpenGLInterface

@@ -158,7 +158,7 @@ ENDIF()
 FetchContent_MakeAvailable(googletest)
 
 ################################################################################
-## OpenGL
+## OpenGL, GLUT, GLFW
 ################################################################################
 
 FIND_PACKAGE(OpenGL)
@@ -175,6 +175,14 @@ IF (GLUT_FOUND)
   MESSAGE(STATUS "GLUT was found.")
 ELSE()
   MESSAGE(STATUS "GLUT was not found.")
+ENDIF()
+
+FIND_PACKAGE(glfw3)
+
+IF (GLFW_FOUND)
+  MESSAGE(STATUS "GLFW was found.")
+ELSE()
+  MESSAGE(STATUS "GLFW was not found.")
 ENDIF()
 
 ADD_SUBDIRECTORY(Algebra)

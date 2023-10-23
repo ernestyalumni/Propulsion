@@ -1,8 +1,6 @@
 #ifndef INTEGRATION_TESTS_VISUALIZATION_GLUT_INTERFACE_JULIA_SET_PARAMETERS_H
 #define INTEGRATION_TESTS_VISUALIZATION_GLUT_INTERFACE_JULIA_SET_PARAMETERS_H
 
-#include <cstddef>
-
 namespace IntegrationTests
 {
 namespace Visualization
@@ -14,8 +12,11 @@ namespace JuliaSet
 
 struct Parameters
 {
-  std::size_t width_dimension_;
-  std::size_t height_dimension_;
+  // Use int because the width, and height are involved in calculations with
+  // ints.
+  int width_dimension_;
+  int height_dimension_;
+
   float c_real_;
   float c_imaginary_;
   // Originally 200; this parameter tests what points go to infinity. Higher
@@ -26,8 +27,8 @@ struct Parameters
 };
 
 inline Parameters get_default_julia_parameters(
-  const std::size_t width_dimension,
-  const std::size_t height_dimension)
+  const int width_dimension,
+  const int height_dimension)
 {
   return Parameters{
     width_dimension,

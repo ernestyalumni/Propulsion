@@ -3,8 +3,6 @@
 
 #include "IntegrationTests/Visualization/GLUTInterface/JuliaSet/Parameters.h"
 
-#include <cstddef>
-
 namespace IntegrationTests
 {
 namespace Visualization
@@ -19,8 +17,8 @@ class IsInJuliaSet
   public:
 
     __device__ IsInJuliaSet(
-      const std::size_t width_dimension,
-      const std::size_t height_dimension,
+      const int width_dimension,
+      const int height_dimension,
       const float c_real,
       const float c_imaginary,
       const int maximum_iterations,
@@ -34,7 +32,7 @@ class IsInJuliaSet
       magnitude_threshold_{magnitude_threshold}
     {}
 
-    __device__ IsInJuliaSet(const Parameters& parameters):
+    __device__ IsInJuliaSet(const Parameters parameters):
       IsInJuliaSet{
         parameters.width_dimension_,
         parameters.height_dimension_,
@@ -46,8 +44,20 @@ class IsInJuliaSet
 
     __device__ int is_in_julia_set(const int x, const int y, const float scale);
 
-    const std::size_t width_dimension_;
-    const std::size_t height_dimension_;
+    __device__ inline std::size_t get_width_dimension() const
+    {
+      return width_dimension_;
+    }
+
+    __device__ inline std::size_t get_height_dimension() const
+    {
+      return height_dimension_;
+    }
+
+  private:
+
+    const int width_dimension_;
+    const int height_dimension_;
     const float c_real_;
     const float c_imaginary_;
     const int maximum_iterations_;
@@ -57,7 +67,7 @@ class IsInJuliaSet
 __global__ void is_in_julia_set(
   uchar4* ptr,
   const float scale,
-  const Parameters& parameters);
+  const Parameters parameters);
 
 } // namespace JuliaSet
 } // namespace GLUTInterface

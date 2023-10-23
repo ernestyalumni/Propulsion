@@ -1,4 +1,5 @@
 SET(VISUALIZATION_SOURCES
+  GLFWInterface/GLFWWindow.cpp
   GLUTInterface/GLUTWindow.cpp
   OpenGLInterface/BufferObjectNames.cpp
   OpenGLInterface/BufferObjectParameters.cpp
@@ -21,4 +22,5 @@ TARGET_LINK_LIBRARIES(Visualization
   UTILITIES
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
+  glfw
   )
