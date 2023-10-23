@@ -1,5 +1,9 @@
 #include "simpleCUDA2GL.h"
 
+#include <cstddef>
+
+using std::size_t;
+
 namespace IntegrationTests
 {
 namespace Visualization
@@ -41,12 +45,12 @@ __device__ int rgb_to_int(float r, float g, float b)
 
 __global__ void make_striped_pattern(unsigned int* data, const int image_width)
 {
-  const int tx {threadIdx.x};
-  const int ty {threadIdx.y};
-  const int bw {blockIdx.x};
-  const int bh {blockIdx.y};
-  const int x {blockIdx.x * bw + tx};
-  const int y {blockIdx.y * bh + ty};
+  const size_t tx {threadIdx.x};
+  const size_t ty {threadIdx.y};
+  const size_t bw {blockIdx.x};
+  const size_t bh {blockIdx.y};
+  const size_t x {blockIdx.x * bw + tx};
+  const size_t y {blockIdx.y * bh + ty};
 
   uchar4 c4 {make_uchar4((x & 0x20) ? 100 : 0, 0, (y & 0x20) ? 100 : 0, 0)};
 

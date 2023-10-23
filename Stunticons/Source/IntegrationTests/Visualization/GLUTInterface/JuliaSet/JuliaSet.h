@@ -1,6 +1,7 @@
 #ifndef INTEGRATION_TESTS_VISUALIZATION_GLUT_INTERFACE_JULIA_SET_JULIA_SET_H
 #define INTEGRATION_TESTS_VISUALIZATION_GLUT_INTERFACE_JULIA_SET_JULIA_SET_H
 
+#include "Visualization/CUDAGraphicsResource.h"
 #include "Visualization/GLUTInterface/GLUTWindow.h"
 
 #include <cuda_runtime.h>
@@ -10,6 +11,8 @@ namespace IntegrationTests
 namespace Visualization
 {
 namespace GLUTInterface
+{
+namespace JuliaSet
 {
 
 class JuliaSet
@@ -42,15 +45,19 @@ class JuliaSet
       parameters_{parameters}
     {}
 
-    void draw_function();
-
     bool run(int* argcp, char** argv);
 
   private:
 
+    static void draw_function();
+
+    void display_and_exit(
+      ::Visualization::CUDAGraphicsResource& cuda_graphics_resource);
+
     Parameters parameters_;
 };
 
+} // namespace JuliaSet
 } // namespace GLUTInterface
 } // namespace Visualization
 } // namespace IntegrationTests

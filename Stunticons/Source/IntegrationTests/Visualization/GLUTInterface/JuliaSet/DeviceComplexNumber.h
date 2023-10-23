@@ -22,9 +22,9 @@ struct DeviceComplexNumber
     return r_ * r_ + i_ * i_;
   }
 
-  __device__ DeviceComplexNumber& operator+(const DeviceComplexNumber& a);
+  //__device__ DeviceComplexNumber& operator+(const DeviceComplexNumber& a);
 
-  __device__ DeviceComplexNumber& operator*(const DeviceComplexNumber& b);
+  //__device__ DeviceComplexNumber& operator*(const DeviceComplexNumber& b);
 
   // Real number part.
   float r_;

@@ -1,13 +1,19 @@
 #include "IntegrationTests/Visualization/GLUTInterface/JuliaSet/IsInJuliaSet.h"
 
-#include "DeviceComplexNumber.h"
+#include "IntegrationTests/Visualization/GLUTInterface/JuliaSet/DeviceComplexNumber.h"
 #include "IntegrationTests/Visualization/GLUTInterface/JuliaSet/Parameters.h"
+
+#include <cstddef>
+
+using std::size_t;
 
 namespace IntegrationTests
 {
 namespace Visualization
 {
 namespace GLUTInterface
+{
+namespace JuliaSet
 {
 
 __device__ int IsInJuliaSet::is_in_julia_set(
@@ -26,7 +32,7 @@ __device__ int IsInJuliaSet::is_in_julia_set(
   DeviceComplexNumber c {c_real_, c_imaginary_};
   DeviceComplexNumber a {jx, jy};
 
-  for (int i {0}; i < maximum_iteration_; ++i)
+  for (int i {0}; i < maximum_iterations_; ++i)
   {
     a = a * a + c;
     if (a.magnitude_squared() > magnitude_threshold_)
@@ -44,15 +50,15 @@ __global__ void is_in_julia_set(
   const float scale,
   const Parameters& parameters)
 {
-  int x {blockIdx.x};
-  int y {blockIdx.y};
+  size_t x {blockIdx.x};
+  size_t y {blockIdx.y};
 
-  int offset {x + y * gridDim.x};
+  size_t offset {x + y * gridDim.x};
 
   IsInJuliaSet is_in_julia_set {parameters};
 
   // Now calculate the value at that position
-  int julia_value {is_in_julia_set(x, y, scale)}
+  int julia_value {is_in_julia_set.is_in_julia_set(x, y, scale)};
 
   // Red if is_in_julia_set() returns 1, black if pt. not in set.
   ptr[offset].x = 255 * julia_value;
@@ -61,6 +67,7 @@ __global__ void is_in_julia_set(
   ptr[offset].w = 255;
 }
 
+} // namespace JuliaSet
 } // namespace GLUTInterface
 } // namespace Visualization
 } // namespace IntegrationTests

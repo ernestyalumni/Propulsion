@@ -11,35 +11,37 @@ namespace Visualization
 {
 namespace GLUTInterface
 {
+namespace JuliaSet
+{
 
 class IsInJuliaSet
 {
   public:
 
-    IsInJuliaSet(
+    __device__ IsInJuliaSet(
       const std::size_t width_dimension,
       const std::size_t height_dimension,
       const float c_real,
       const float c_imaginary,
       const int maximum_iterations,
-      const float maximum_threshold
+      const float magnitude_threshold
       ):
       width_dimension_{width_dimension},
       height_dimension_{height_dimension},
       c_real_{c_real},
       c_imaginary_{c_imaginary},
       maximum_iterations_{maximum_iterations},
-      maximum_threshold_{maximum_threshold}
+      magnitude_threshold_{magnitude_threshold}
     {}
 
-    IsInJuliaSet(const Parameters& parameters):
+    __device__ IsInJuliaSet(const Parameters& parameters):
       IsInJuliaSet{
         parameters.width_dimension_,
         parameters.height_dimension_,
         parameters.c_real_,
         parameters.c_imaginary_,
         parameters.maximum_iterations_,
-        parameters.maximum_threshold_}
+        parameters.magnitude_threshold_}
     {}
 
     __device__ int is_in_julia_set(const int x, const int y, const float scale);
@@ -49,7 +51,7 @@ class IsInJuliaSet
     const float c_real_;
     const float c_imaginary_;
     const int maximum_iterations_;
-    const float maximum_threshold_;
+    const float magnitude_threshold_;
 };
 
 __global__ void is_in_julia_set(
@@ -57,6 +59,7 @@ __global__ void is_in_julia_set(
   const float scale,
   const Parameters& parameters);
 
+} // namespace JuliaSet
 } // namespace GLUTInterface
 } // namespace Visualization
 } // namespace IntegrationTests

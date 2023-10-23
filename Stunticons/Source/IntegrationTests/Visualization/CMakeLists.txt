@@ -3,7 +3,8 @@
 ## Julia Set
 
 ADD_EXECUTABLE(JuliaSet
-  GLUTInterface/JuliaSet/DeviceComplexNumber.cu
+  #GLUTInterface/JuliaSet/DeviceComplexNumber.cu
+  GLUTInterface/JuliaSet/IsInJuliaSet.cu
   GLUTInterface/JuliaSet/JuliaSet.cu
   GLUTInterface/JuliaSet/main.cu
   )

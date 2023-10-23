@@ -1,6 +1,10 @@
-#include "JuliaSet.h"
+#include "IntegrationTests/Visualization/GLUTInterface/JuliaSet/JuliaSet.h"
 
-int main(int argc, char** argv)
+using IntegrationTests::Visualization::GLUTInterface::JuliaSet::JuliaSet;
+
+int main(int argc, char* argv[])
 {
+  JuliaSet julia_set {};
 
+  julia_set.run(&argc, argv);
 }

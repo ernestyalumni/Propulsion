@@ -9,6 +9,7 @@ namespace Visualization
 namespace GLUTInterface
 {
 
+/*
 __device__ DeviceComplexNumber& DeviceComplexNumber::operator+(
   const DeviceComplexNumber& a)
 {
@@ -26,6 +27,7 @@ __device__ DeviceComplexNumber& DeviceComplexNumber::operator*(
 
   return *this;
 }
+*/
 
 } // namespace GLUTInterface
 } // namespace Visualization
