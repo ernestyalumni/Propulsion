@@ -54,6 +54,8 @@ class SampleCode
     /// \details This sample is not to demonstrate best practices for
     /// production at all as the cudaMemcpy calls are expensive, but as a test
     /// of GLFW and CUDA. 
+    /// https://forums.developer.nvidia.com/t/using-glfw-library-in-a-cuda-program/248434
+    /// "Using GLFW library in a CUDA program"
     //--------------------------------------------------------------------------
     bool run_sample_code(int* argcp, char** argv);
 

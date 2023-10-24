@@ -1,23 +1,25 @@
-#include "DataStructures/Array.h"
+//#include "DataStructures/Array.h"
 #include "IntegrationTests/Visualization/GLFWInterface/SampleCode/SampleCode.h"
-#include "IntegrationTests/Visualization/GLFWInterface/SampleCode/fill_RGB.h"
-#include "Visualization/GLFWInterface/GLFWWindow.h"
+//#include "IntegrationTests/Visualization/GLFWInterface/SampleCode/fill_RGB.h"
+//#include "Visualization/GLFWInterface/GLFWWindow.h"
 
+/*
 #include <GLFW/glfw3.h>
 #include <cstddef>
 #include <cstdio>
 #include <cuda_runtime.h>
+*/
 
 /*
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 */
 
-using DataStructures::Array;
+//using DataStructures::Array;
 using IntegrationTests::Visualization::GLFWInterface::SampleCode::SampleCode;
-using IntegrationTests::Visualization::GLFWInterface::SampleCode::fill_RGB;
-using Visualization::GLFWInterface::GLFWWindow;
-using std::size_t;
+//using IntegrationTests::Visualization::GLFWInterface::SampleCode::fill_RGB;
+//using Visualization::GLFWInterface::GLFWWindow;
+//using std::size_t;
 
 // Original code
 // CUDA kernel to fill the RGB buffer with values
@@ -82,9 +84,11 @@ int main(int argc, char* argv[])
   cudaMalloc((void**)&dev_rgb, SampleCode::width_ * SampleCode::height_ * 3 * sizeof(unsigned char));
   */
 
+  /*
   // Fill RGB buffer with values using kernel
   const size_t threadsPerBlock {256};
   const size_t blocksPerGrid {(SampleCode::width_ * SampleCode::height_ + threadsPerBlock - 1) / threadsPerBlock};
+  */
   //fill_RGB<<<blocksPerGrid, threadsPerBlock>>>(dev_rgb);
 
   /*

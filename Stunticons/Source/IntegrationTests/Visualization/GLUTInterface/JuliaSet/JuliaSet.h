@@ -47,6 +47,8 @@ class JuliaSet
 
     bool run(int* argcp, char** argv);
 
+    bool run_with_GLFW(int* argcp, char** argv);
+
   private:
 
     static void draw_function();

@@ -21,6 +21,8 @@ using BufferObjectParameters =
 
 using DataStructures::Array;
 using IntegrationTests::Visualization::GLFWInterface::SampleCode::fill_RGB;
+using IntegrationTests::Visualization::GLFWInterface::SampleCode::
+  render_simple_image;
 using Visualization::CUDAGraphicsResource;
 using Visualization::GLFWInterface::GLFWWindow;
 using Visualization::MappedDevicePointer;
@@ -63,6 +65,28 @@ const GLFWWindowParameters
     SampleCode::width_,
     SampleCode::height_};
 
+void render(CUDAGraphicsResource& cuda_graphics_resource)
+{
+  cuda_graphics_resource.map_resource();
+
+  MappedDevicePointer<uchar4> mapped_device_pointer {};
+  mapped_device_pointer.get_mapped_device_pointer(cuda_graphics_resource);
+
+  const dim3 threads_per_block {16, 16};
+  const dim3 blocks_per_grid {
+    static_cast<unsigned int>(
+      (SampleCode::width_ + threads_per_block.x - 1) / threads_per_block.x),
+    static_cast<unsigned int>(
+      (SampleCode::height_ + threads_per_block.y - 1) / threads_per_block.y)};
+
+  render_simple_image<<<blocks_per_grid, threads_per_block>>>(
+    mapped_device_pointer.device_pointer_,
+    SampleCode::width_,
+    SampleCode::height_);
+
+  cuda_graphics_resource.unmap_resource();
+}
+
 bool SampleCode::run(int* argcp, char** argv)
 {
   bool no_errors {true};
@@ -76,8 +100,8 @@ bool SampleCode::run(int* argcp, char** argv)
   BufferObjectParameters buffer_parameters {};
   buffer_parameters.binding_target_ = GL_PIXEL_UNPACK_BUFFER_ARB;
   buffer_parameters.usage_ = GL_DYNAMIC_DRAW_ARB;
-  buffer_parameters.width_ = 800;
-  buffer_parameters.height_ = 600;
+  buffer_parameters.width_ = width_;
+  buffer_parameters.height_ = height_;
 
   BufferObjectNames buffer_object {buffer_parameters};
   buffer_object.initialize();
@@ -90,6 +114,21 @@ bool SampleCode::run(int* argcp, char** argv)
   cuda_graphics_resource.register_buffer_object(
     cuda_parameters,
     buffer_object);
+
+  while (!glfwWindowShouldClose(glfw_window.created_window_handle_))
+  {
+    render(cuda_graphics_resource);
+
+    DrawPixels::draw_pixels_to_frame_buffer(
+      DrawPixels::Parameters {
+        SampleCode::width_,
+        SampleCode::height_,
+        GL_RGBA,
+        GL_UNSIGNED_BYTE});
+
+    glfwSwapBuffers(glfw_window.created_window_handle_);
+    glfwPollEvents();
+  }
 
   return no_errors;
 }
@@ -109,28 +148,15 @@ bool SampleCode::run_sample_code(int* argcp, char** argv)
       SampleCode::default_glfw_window_parameters_.height_ *
       3};
 
-  //fill_RGB<<<parameters_.blocks_per_grid_, parameters_.threads_per_block_>>>(
-  //  array.elements_);
+  fill_RGB<<<parameters_.blocks_per_grid_, parameters_.threads_per_block_>>>(
+    array.elements_);
 
-  const size_t threads_per_block {256};
-  const size_t blocks_per_grid {
-    (width_ * height_ + threads_per_block - 1) / threads_per_block};
-  fill_RGB<<<blocks_per_grid, threads_per_block>>>(array.elements_);
-
-  // Allocate memory for RGB buffer on host
-  unsigned char* host_rgb {new unsigned char[width_ * height_ * 3]};
-
-  array.copy_device_output_to_host(host_rgb);
-
-  // TODO: See if this can be fixed.
-  /*
   std::vector<unsigned char> host_vec_rgb (
     SampleCode::default_glfw_window_parameters_.width_ *
       SampleCode::default_glfw_window_parameters_.height_ *
         3);
 
   array.copy_device_output_to_host(host_vec_rgb);
-  */
 
   // Loop until the user closes the window.
   while (!glfwWindowShouldClose(glfw_window.created_window_handle_))
@@ -138,23 +164,19 @@ bool SampleCode::run_sample_code(int* argcp, char** argv)
     // Render RGB Buffer to window
     glClear(GL_COLOR_BUFFER_BIT);
 
-    /*
     DrawPixels::draw_pixels_to_frame_buffer(
       DrawPixels::Parameters {
         SampleCode::width_,
         SampleCode::height_,
-        GL_RGBA,
+        GL_RGB,
         GL_UNSIGNED_BYTE
       },
-      host_rgb);
-    */
-    glDrawPixels(width_, height_, GL_RGB, GL_UNSIGNED_BYTE, host_rgb);
-
+      host_vec_rgb.data());
+    
     glfwSwapBuffers(glfw_window.created_window_handle_);
     glfwPollEvents();
   }
 
-  delete[] host_rgb;
   return no_errors;
 }
 

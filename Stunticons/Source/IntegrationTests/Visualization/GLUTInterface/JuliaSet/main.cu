@@ -61,6 +61,9 @@ int main(int argc, char* argv[])
 {
   float scale {1.5};
 
+  //----------------------------------------------------------------------------
+  /// TODO: This errors out.
+  //----------------------------------------------------------------------------
   // Previous sanity check.
   /*
   GPUBitmap bitmap {JuliaSet::dimensions_, JuliaSet::dimensions_};
@@ -77,6 +80,7 @@ int main(int argc, char* argv[])
   bitmap.display_and_exit();
   */
 
+  /*
   // TODO: fix Failed to unregister CUDA resource (error code driver shutting down)!
   ::Visualization::GLUTInterface::GLUTWindow::instance().initialize_glut(
     &argc,
@@ -123,10 +127,14 @@ int main(int argc, char* argv[])
   glutKeyboardFunc(keyboard_callback);
 
   glutMainLoop();
+  */
 
   // Not ready yet.
   /*
   JuliaSet julia_set {};
   julia_set.run(&argc, argv);
   */
+
+  JuliaSet julia_set {};
+  julia_set.run_with_GLFW(&argc, argv);
 }

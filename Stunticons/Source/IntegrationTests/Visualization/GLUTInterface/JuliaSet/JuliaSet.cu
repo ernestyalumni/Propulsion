@@ -3,6 +3,7 @@
 #include "IntegrationTests/Visualization/GLUTInterface/JuliaSet/IsInJuliaSet.h"
 #include "IntegrationTests/Visualization/GLUTInterface/JuliaSet/Parameters.h"
 #include "Visualization/CUDAGraphicsResource.h"
+#include "Visualization/GLFWInterface/GLFWWindow.h"
 #include "Visualization/GLUTInterface/GLUTWindow.h"
 #include "Visualization/MappedDevicePointer.h"
 #include "Visualization/OpenGLInterface/BufferObjectNames.h"
@@ -14,6 +15,9 @@
 #include <cuda_runtime.h>
 #include <functional>
 
+using GLFWWindowParameters =
+  Visualization::GLFWInterface::GLFWWindow::Parameters;
+
 using IntegrationTests::Visualization::GLUTInterface::JuliaSet::
   get_default_julia_parameters;
 
@@ -22,6 +26,7 @@ using GLUTWindowParameters =
 using BufferObjectParameters =
   Visualization::OpenGLInterface::BufferObjectNames::Parameters;
 using Visualization::CUDAGraphicsResource;
+using Visualization::GLFWInterface::GLFWWindow;
 using Visualization::MappedDevicePointer;
 using Visualization::OpenGLInterface::BufferObjectNames;
 using Visualization::OpenGLInterface::CreateOpenGLBuffer;
@@ -119,6 +124,67 @@ bool JuliaSet::run(int* argcp, char** argv)
     get_default_julia_parameters(dimensions_, dimensions_));
 
   return no_error;
+}
+
+bool JuliaSet::run_with_GLFW(int* argcp, char** argv)
+{
+  bool no_errors {true};
+
+  float scale {1.5};
+
+  GLFWWindow glfw_window {};
+  glfw_window.initialize();
+
+  no_errors |= glfw_window.create_window(
+    GLFWWindowParameters{
+      "Julia Sets bit map on GPU ",
+      JuliaSet::dimensions_,
+      JuliaSet::dimensions_});
+
+  BufferObjectParameters buffer_parameters {};
+  buffer_parameters.binding_target_ = GL_PIXEL_UNPACK_BUFFER_ARB;
+  buffer_parameters.usage_ = GL_DYNAMIC_DRAW_ARB;
+  buffer_parameters.width_ = dimensions_;
+  buffer_parameters.height_ = dimensions_;
+
+  BufferObjectNames buffer_object {buffer_parameters};
+  buffer_object.initialize();
+  
+  CreateOpenGLBuffer create_buffer {};
+  no_errors &= create_buffer.create_buffer_object_data(buffer_parameters);
+
+  CUDAGraphicsResource cuda_graphics_resource {};
+  const CUDAGraphicsResource::Parameters cuda_parameters {};
+  cuda_graphics_resource.register_buffer_object(
+    cuda_parameters,
+    buffer_object);
+
+  cuda_graphics_resource.map_resource();
+
+  MappedDevicePointer<uchar4> mapped_device_pointer {};
+  mapped_device_pointer.get_mapped_device_pointer(cuda_graphics_resource);
+
+  is_in_julia_set<<<parameters_.threads_, parameters_.blocks_>>>(
+    mapped_device_pointer.device_pointer_,
+    scale,
+    get_default_julia_parameters(dimensions_, dimensions_));
+
+  cuda_graphics_resource.unmap_resource();
+
+  while (!glfwWindowShouldClose(glfw_window.created_window_handle_))
+  {
+    DrawPixels::draw_pixels_to_frame_buffer(
+      DrawPixels::Parameters {
+        JuliaSet::dimensions_,
+        JuliaSet::dimensions_,
+        GL_RGBA,
+        GL_UNSIGNED_BYTE});
+
+    glfwSwapBuffers(glfw_window.created_window_handle_);
+    glfwPollEvents();        
+  }
+
+  return no_errors;
 }
 
 void JuliaSet::display_and_exit(CUDAGraphicsResource& cuda_graphics_resource)
