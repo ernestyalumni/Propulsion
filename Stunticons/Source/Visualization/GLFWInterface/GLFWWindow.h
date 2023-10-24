@@ -28,6 +28,24 @@ class GLFWWindow
       is_initialized_{false}
     {}
 
+    ~GLFWWindow();
+
+    bool initialize();
+
+    void terminate();
+
+    bool create_window(const Parameters& parameters);
+
+    inline bool is_window_created()
+    {
+      return created_window_handle_ != nullptr;
+    }
+
+    GLFWwindow* share_;
+    GLFWwindow* created_window_handle_;
+
+    // Use following public functions for testing only.
+
     //--------------------------------------------------------------------------
     /// https://www.glfw.org/docs/3.3/group__init.html#ga317aac130a235ab08c6db0834907d85e
     //--------------------------------------------------------------------------
@@ -45,16 +63,6 @@ class GLFWWindow
     {
       glfwTerminate();
     }
-
-    bool create_window(const Parameters& parameters);
-
-    inline bool is_window_created()
-    {
-      return created_window_handle_ != nullptr;
-    }
-
-    GLFWwindow* share_;
-    GLFWwindow* created_window_handle_;
 
   private:
 

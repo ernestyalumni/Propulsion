@@ -11,6 +11,7 @@ SET(TEST_CU_SOURCES
   Algebra/Solvers/ConjugateGradient_tests.cu
   Algebra/Solvers/SetupBiconjugateGradientStabilized_tests.cu
   CUDA/Runtime_tests.cu
+  DataStructures/Array_tests.cu
   Utilities/DeviceManagement/GetCUDADeviceProperties_tests.cu
   )
 

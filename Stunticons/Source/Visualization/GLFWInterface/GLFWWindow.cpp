@@ -7,6 +7,26 @@ namespace Visualization
 namespace GLFWInterface
 {
 
+GLFWWindow::~GLFWWindow()
+{
+  terminate();
+}
+
+bool GLFWWindow::initialize()
+{
+  is_initialized_ = initialize_library();
+
+  return is_initialized_;
+}
+
+void GLFWWindow::terminate()
+{
+  if (is_initialized_)
+  {
+    terminate_library();
+  }
+}
+
 bool GLFWWindow::create_window(const Parameters& parameters)
 {
   created_window_handle_ = glfwCreateWindow(

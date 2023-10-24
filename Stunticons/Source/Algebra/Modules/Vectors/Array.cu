@@ -26,15 +26,16 @@ Array::Array(
   number_of_elements_{input_size}
 {
   const size_t size_in_bytes {input_size * sizeof(float)};
-  const std::string malloc_error {"Failed to allocate device array"};
 
-  HandleUnsuccessfulCUDACall handle_malloc {malloc_error};
+  HandleUnsuccessfulCUDACall handle_malloc {"Failed to allocate device array"};
 
-  handle_malloc(cudaMalloc(reinterpret_cast<void**>(&values_), size_in_bytes));
+  HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(
+    handle_malloc,
+    cudaMalloc(reinterpret_cast<void**>(&values_), size_in_bytes));
 
   if (!handle_malloc.is_cuda_success())
   {
-    throw std::runtime_error(malloc_error);
+    throw std::runtime_error(std::string{handle_malloc.get_error_message()});
   }
 }
 
@@ -42,7 +43,9 @@ Array::~Array()
 {
   HandleUnsuccessfulCUDACall handle_free {"Failed to free device array"};
 
-  handle_free(cudaFree(values_));
+  HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(
+    handle_free,
+    cudaFree(values_));
 }
 
 bool Array::copy_host_input_to_device(const HostArray& h_a)
@@ -50,11 +53,13 @@ bool Array::copy_host_input_to_device(const HostArray& h_a)
   HandleUnsuccessfulCUDACall handle_values {
     "Failed to copy values from host to device"};
 
-  handle_values(cudaMemcpy(
-    values_,
-    h_a.values_,
-    h_a.number_of_elements_ * sizeof(float),
-    cudaMemcpyHostToDevice));
+  HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(
+    handle_values,
+    cudaMemcpy(
+      values_,
+      h_a.values_,
+      h_a.number_of_elements_ * sizeof(float),
+      cudaMemcpyHostToDevice));
 
   return handle_values.is_cuda_success();
 }
@@ -64,11 +69,13 @@ bool Array::copy_device_output_to_host(HostArray& h_a)
   HandleUnsuccessfulCUDACall handle_values {
     "Failed to copy values from device to host"};
 
-  handle_values(cudaMemcpy(
-    h_a.values_,
-    values_,
-    number_of_elements_ * sizeof(float),
-    cudaMemcpyDeviceToHost));
+  HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(
+    handle_values,
+    cudaMemcpy(
+      h_a.values_,
+      values_,
+      number_of_elements_ * sizeof(float),
+      cudaMemcpyDeviceToHost));
 
   return handle_values.is_cuda_success();
 }
@@ -78,11 +85,13 @@ bool Array::copy_host_input_to_device(const vector<float>& h_a)
   HandleUnsuccessfulCUDACall handle_values {
     "Failed to copy values from host to device"};
 
-  handle_values(cudaMemcpy(
-    values_,
-    h_a.data(),
-    h_a.size() * sizeof(float),
-    cudaMemcpyHostToDevice));
+  HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(
+    handle_values,
+    cudaMemcpy(
+      values_,
+      h_a.data(),
+      h_a.size() * sizeof(float),
+      cudaMemcpyHostToDevice));
 
   return handle_values.is_cuda_success();
 }
@@ -92,11 +101,13 @@ bool Array::copy_device_output_to_host(vector<float>& h_a)
   HandleUnsuccessfulCUDACall handle_values {
     "Failed to copy values from device to host"};
 
-  handle_values(cudaMemcpy(
-    h_a.data(),
-    values_,
-    number_of_elements_ * sizeof(float),
-    cudaMemcpyDeviceToHost));
+  HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(
+    handle_values,
+    cudaMemcpy(
+      h_a.data(),
+      values_,
+      number_of_elements_ * sizeof(float),
+      cudaMemcpyDeviceToHost));
 
   return handle_values.is_cuda_success();
 }
@@ -108,12 +119,14 @@ bool Array::asynchronous_copy_host_input_to_device(
   HandleUnsuccessfulCUDACall handle_values {
     "Failed to asynchronously copy values from host to device"};
 
-  handle_values(cudaMemcpyAsync(
-    values_,
-    h_a.values_,
-    h_a.number_of_elements_ * sizeof(float),
-    cudaMemcpyDefault,
-    stream));
+  HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(
+    handle_values,
+    cudaMemcpyAsync(
+      values_,
+      h_a.values_,
+      h_a.number_of_elements_ * sizeof(float),
+      cudaMemcpyDefault,
+      stream));
 
   return handle_values.is_cuda_success();
 }
@@ -125,12 +138,14 @@ bool Array::asynchronous_copy_device_output_to_host(
   HandleUnsuccessfulCUDACall handle_values {
     "Failed to asynchronously copy values from device to host"};
 
-  handle_values(cudaMemcpyAsync(
-    h_a.values_,
-    values_,
-    number_of_elements_ * sizeof(float),
-    cudaMemcpyDefault,
-    stream));
+  HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(
+    handle_values,
+    cudaMemcpyAsync(
+      h_a.values_,
+      values_,
+      number_of_elements_ * sizeof(float),
+      cudaMemcpyDefault,
+      stream));
 
   return handle_values.is_cuda_success();
 }
@@ -142,15 +157,16 @@ DoubleArray::DoubleArray(
   number_of_elements_{input_size}
 {
   const size_t size_in_bytes {input_size * sizeof(double)};
-  const std::string malloc_error {"Failed to allocate device array"};
 
-  HandleUnsuccessfulCUDACall handle_malloc {malloc_error};
+  HandleUnsuccessfulCUDACall handle_malloc {"Failed to allocate device array"};
 
-  handle_malloc(cudaMalloc(reinterpret_cast<void**>(&values_), size_in_bytes));
+  HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(
+    handle_malloc,
+    cudaMalloc(reinterpret_cast<void**>(&values_), size_in_bytes));
 
   if (!handle_malloc.is_cuda_success())
   {
-    throw std::runtime_error(malloc_error);
+    throw std::runtime_error(std::string{handle_malloc.get_error_message()});
   }
 }
 
@@ -158,7 +174,9 @@ DoubleArray::~DoubleArray()
 {
   HandleUnsuccessfulCUDACall handle_free {"Failed to free device array"};
 
-  handle_free(cudaFree(values_));
+  HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(
+    handle_free,
+    cudaFree(values_));
 }
 
 bool DoubleArray::copy_host_input_to_device(const DoubleHostArray& h_a)

@@ -72,5 +72,23 @@ HandleGLError DrawPixels::draw_pixels_to_frame_buffer(
   return gl_error;
 }
 
+HandleGLError DrawPixels::draw_pixels_to_frame_buffer(
+  const Parameters& parameters,
+  const void* data)
+{
+  HandleGLError gl_error {};
+
+  glDrawPixels(
+    parameters.width_,
+    parameters.height_,
+    parameters.format_,
+    parameters.type_,
+    data);
+
+  gl_error();
+
+  return gl_error;
+}
+
 } // namespace OpenGLInterface
 } // namespace Visualization

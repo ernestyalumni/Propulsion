@@ -61,8 +61,13 @@ class DrawPixels
     /// target while block of pixels is specified, data is treated as byte
     /// offset into buffer object's data store.
     //--------------------------------------------------------------------------
+
     static HandleGLError draw_pixels_to_frame_buffer(
       const Parameters& parameters);
+
+    static HandleGLError draw_pixels_to_frame_buffer(
+      const Parameters& parameters,
+      const void* data);
 
     //--------------------------------------------------------------------------
     /// \brief Swaps the buffers of the current window if double buffered.

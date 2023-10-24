@@ -2,10 +2,24 @@
 
 ## SampleCode
 
-ADD_EXECUTABLE(SampleCode
+ADD_EXECUTABLE(SampleRenderCode
   GLFWInterface/SampleCode/SampleCode.cu
   GLFWInterface/SampleCode/fill_RGB.cu
   GLFWInterface/SampleCode/main.cu
+  )
+
+TARGET_LINK_LIBRARIES(SampleRenderCode
+  Visualization
+  )
+
+SET_TARGET_PROPERTIES(SampleRenderCode
+  PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Visualization/GLFWInterface")
+
+ADD_EXECUTABLE(SampleCode
+  GLFWInterface/SampleCode/SampleCode.cu
+  GLFWInterface/SampleCode/fill_RGB.cu
+  GLFWInterface/SampleCode/main_for_test_sample_code.cu
   )
 
 TARGET_LINK_LIBRARIES(SampleCode
