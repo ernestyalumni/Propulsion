@@ -1,3 +1,19 @@
+# Building Unit tests and Executables using CMake
+
+First, create a build subdirectory. I strongly suggest making the build subdirectory in the `Stunticons` folder and while the build directory can be named anything, I usually name it `Build` or `BuildGcc` or `BuildClang`, attaching the choice of compiler or build type at the end of the name.
+
+```
+# From `Propulsion/Stunticons`
+mkdir Build
+```
+Then
+
+```
+cd Build
+cmake ../Source
+make
+```
+
 # Setting up CUDA and OpenGL Interoperability
 
 If you are having difficulty when running, for instance, the [CUDA samples](https://github.com/NVIDIA/cuda-samples) that uses OpenGL graphics, such as the following error:

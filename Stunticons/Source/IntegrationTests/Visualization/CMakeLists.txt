@@ -1,5 +1,22 @@
 # GLFWInterface
 
+## Ripple
+
+ADD_EXECUTABLE(Ripple
+  GLFWInterface/Ripple/Ripple.cu
+  GLFWInterface/Ripple/calculate_ripple_value.cu
+  GLFWInterface/Ripple/main.cu
+  )
+
+TARGET_LINK_LIBRARIES(Ripple
+  Visualization
+  )
+
+SET_TARGET_PROPERTIES(Ripple
+  PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY
+    "${CMAKE_BINARY_DIR}/Executables/Visualization/GLFWInterface")
+
 ## SampleCode
 
 ADD_EXECUTABLE(SampleRenderCode
