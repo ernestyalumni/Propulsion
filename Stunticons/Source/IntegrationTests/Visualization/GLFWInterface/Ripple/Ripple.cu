@@ -104,7 +104,10 @@ void Ripple::run(int* argcp, char** argv)
     /// https://registry.khronos.org/OpenGL-Refpages/gl4/html/glClearColor.xhtml
     /// glClearColor - specify clear values for color buffers.
     /// Specify red, green, blue, alpha values when color buffers are cleared.
-    /// Initial values are all 0.
+    /// Initial values are all 0. glClearColor are clamped to range [0, 1].
+    ///
+    /// https://registry.khronos.org/OpenGL-Refpages/gl4/html/glClear.xhtml
+    /// glClear - clear buffers to preset values
     //--------------------------------------------------------------------------
     /*
     glClearColor(0.0, 0.0, 0.0, 1.0);

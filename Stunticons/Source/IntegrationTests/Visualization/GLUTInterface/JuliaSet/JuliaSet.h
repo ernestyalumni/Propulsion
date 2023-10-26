@@ -45,6 +45,9 @@ class JuliaSet
       parameters_{parameters}
     {}
 
+    //--------------------------------------------------------------------------
+    /// TODO: GLUT is not working properly.
+    //--------------------------------------------------------------------------
     bool run(int* argcp, char** argv);
 
     bool run_with_GLFW(int* argcp, char** argv);

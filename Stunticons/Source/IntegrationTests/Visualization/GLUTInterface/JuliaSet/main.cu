@@ -59,7 +59,7 @@ void keyboard_callback(const unsigned char key, int, int)
 
 int main(int argc, char* argv[])
 {
-  float scale {1.5};
+  //float scale {1.5};
 
   //----------------------------------------------------------------------------
   /// TODO: This errors out.

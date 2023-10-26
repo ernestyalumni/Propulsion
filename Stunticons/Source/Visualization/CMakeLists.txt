@@ -1,6 +1,7 @@
 SET(VISUALIZATION_SOURCES
   GLFWInterface/GLFWWindow.cpp
   GLUTInterface/GLUTWindow.cpp
+  GLFWInterface/MakeBitMap.cu
   OpenGLInterface/BufferObjectNames.cpp
   OpenGLInterface/BufferObjectParameters.cpp
   OpenGLInterface/CreateOpenGLBuffer.cpp

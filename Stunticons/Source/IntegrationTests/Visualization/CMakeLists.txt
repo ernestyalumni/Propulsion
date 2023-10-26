@@ -1,5 +1,21 @@
 # GLFWInterface
 
+## GraphicsInterOp
+
+ADD_EXECUTABLE(GraphicsInterOp
+  GLFWInterface/GraphicsInterOp/CalculatePixelValues.cu
+  GLFWInterface/GraphicsInterOp/main.cu
+  )
+
+TARGET_LINK_LIBRARIES(GraphicsInterOp
+  Visualization
+  )
+
+SET_TARGET_PROPERTIES(GraphicsInterOp
+  PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY
+    "${CMAKE_BINARY_DIR}/IntegrationTests/Visualization/GLFWInterface")
+
 ## Ripple
 
 ADD_EXECUTABLE(Ripple
@@ -15,7 +31,7 @@ TARGET_LINK_LIBRARIES(Ripple
 SET_TARGET_PROPERTIES(Ripple
   PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY
-    "${CMAKE_BINARY_DIR}/Executables/Visualization/GLFWInterface")
+    "${CMAKE_BINARY_DIR}/IntegrationTests/Visualization/GLFWInterface")
 
 ## SampleCode
 
@@ -31,7 +47,8 @@ TARGET_LINK_LIBRARIES(SampleRenderCode
 
 SET_TARGET_PROPERTIES(SampleRenderCode
   PROPERTIES
-  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Visualization/GLFWInterface")
+  RUNTIME_OUTPUT_DIRECTORY
+    "${CMAKE_BINARY_DIR}/IntegrationTests/Visualization/GLFWInterface")
 
 ADD_EXECUTABLE(SampleCode
   GLFWInterface/SampleCode/SampleCode.cu
@@ -45,7 +62,8 @@ TARGET_LINK_LIBRARIES(SampleCode
 
 SET_TARGET_PROPERTIES(SampleCode
   PROPERTIES
-  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Visualization/GLFWInterface")
+  RUNTIME_OUTPUT_DIRECTORY
+    "${CMAKE_BINARY_DIR}/IntegrationTests/Visualization/GLFWInterface")
 
 # GLUTInterface
 
@@ -64,7 +82,8 @@ TARGET_LINK_LIBRARIES(JuliaSet
 
 SET_TARGET_PROPERTIES(JuliaSet
   PROPERTIES
-  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Visualization/GLUTInterface")
+  RUNTIME_OUTPUT_DIRECTORY
+    "${CMAKE_BINARY_DIR}/IntegrationTests/Visualization/GLUTInterface")
 
 ## StripedPattern
 
@@ -84,5 +103,6 @@ TARGET_LINK_LIBRARIES(StripedPattern
 
 SET_TARGET_PROPERTIES(StripedPattern
   PROPERTIES
-  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Visualization")
+  RUNTIME_OUTPUT_DIRECTORY
+    "${CMAKE_BINARY_DIR}/IntegrationTests/Visualization")
 
