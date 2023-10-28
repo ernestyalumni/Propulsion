@@ -18,10 +18,12 @@ struct Array
 
   T* elements_;
   const std::size_t number_of_elements_;
+  bool is_cuda_freed_;
 
   Array(const std::size_t number_of_elements = 50000):
     elements_{nullptr},
-    number_of_elements_{number_of_elements}
+    number_of_elements_{number_of_elements},
+    is_cuda_freed_{false}
   {
     const size_t size_in_bytes {number_of_elements * sizeof(T)};
     HandleUnsuccessfulCUDACall handle_malloc {
@@ -39,16 +41,7 @@ struct Array
 
   ~Array()
   {
-    HandleUnsuccessfulCUDACall handle_free {"Failed to free device array"};
-
-    HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(
-      handle_free,
-      cudaFree(elements_));
-
-    if (!handle_free.is_cuda_success())
-    {
-      std::cerr << handle_free.get_error_message() << "\n";
-    }
+    free_resources();
   }
 
   bool copy_host_input_to_device(const std::vector<T>& h_a)
@@ -97,6 +90,31 @@ struct Array
         cudaMemcpyDeviceToHost));
 
     return handle_values.is_cuda_success();
+  }
+
+  bool free_resources()
+  {
+    if ((elements_ != nullptr) && (is_cuda_freed_ == false))
+    {
+      HandleUnsuccessfulCUDACall handle_free {"Failed to free device array"};
+
+      HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(
+        handle_free,
+        cudaFree(elements_));
+
+      if (!handle_free.is_cuda_success())
+      {
+        std::cerr << handle_free.get_error_message() << "\n";
+      }
+      else
+      {
+        is_cuda_freed_ = true;
+      }
+
+      return handle_free.is_cuda_success();
+    }
+
+    return false;
   }
 };
 

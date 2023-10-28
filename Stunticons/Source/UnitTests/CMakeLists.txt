@@ -13,6 +13,7 @@ SET(TEST_CU_SOURCES
   CUDA/Runtime_tests.cu
   DataStructures/Array_tests.cu
   Utilities/DeviceManagement/GetCUDADeviceProperties_tests.cu
+  Visualization/float_to_color_tests.cu
   )
 
 # TODO: This line doesn't seem to be needed.
@@ -41,6 +42,10 @@ ADD_EXECUTABLE(Check
   Visualization/OpenGLInterface/CreateOpenGLBufferObjectData_tests.cpp
   Visualization/OpenGLInterface/HandleGLError_tests.cpp
   )
+
+TARGET_COMPILE_OPTIONS(Check PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
+  --expt-extended-lambda
+  >)
 
 TARGET_LINK_LIBRARIES(Check
   ALGEBRA

@@ -1,11 +1,14 @@
 #include "DataStructures/Array.h"
 #include "gtest/gtest.h"
 
+#include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <vector>
 
 using DataStructures::Array;
 using std::size_t;
+using std::vector;
 
 namespace GoogleUnitTests
 {
@@ -42,6 +45,43 @@ TEST(ArrayTests, Constructible)
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+TEST(ArrayTests, CopiesFromHostToDevice)
+{
+  const size_t N {8};
+
+  Array<float> array {N};
+
+  vector<float> source {};
+  source.reserve(N);
+  std::generate_n(
+    std::back_inserter(source),
+    N,
+    [exponent = 0]() mutable
+    {
+      return std::pow(2.f, exponent++);
+    });
+
+  for (size_t i {0}; i < N; ++i)
+  {
+    EXPECT_EQ(source.at(i), std::pow(2.f, i));    
+  }
+
+  ASSERT_EQ(source.size(), N);
+
+  EXPECT_TRUE(array.copy_host_input_to_device(source));
+
+  vector<float> result (N);
+  std::fill(result.begin(), result.end(), 1.f);
+  array.copy_device_output_to_host(result);
+
+  for (size_t i {0}; i < N; ++i)
+  {
+    EXPECT_EQ(result.at(i), std::pow(2.f, i));
+  }
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TEST(ArrayTests, CUDAKernelFunctionCanMutateArray)
 {
   Array<unsigned char> array {example_width * example_height * 3};
@@ -52,7 +92,7 @@ TEST(ArrayTests, CUDAKernelFunctionCanMutateArray)
 
   fill_RGB<<<blocks_per_grid, threads_per_block>>>(array.elements_);
 
-  std::vector<unsigned char> host_vec_rgb (
+  vector<unsigned char> host_vec_rgb (
     example_width * example_height * 3);
 
   EXPECT_TRUE(array.copy_device_output_to_host(host_vec_rgb));
