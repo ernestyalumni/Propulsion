@@ -11,6 +11,7 @@ SET(VISUALIZATION_SOURCES
 
 SET(VISUALIZATION_SOURCES_CU
   CUDAGraphicsResource.cu
+  float_to_color.cu
   )
 
 ADD_LIBRARY(Visualization
