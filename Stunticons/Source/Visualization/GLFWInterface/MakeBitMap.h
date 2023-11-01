@@ -64,6 +64,17 @@ class MakeBitMap
       draw_pixels_parameters_{draw_pixels_parameters}
     {}
 
+    //--------------------------------------------------------------------------
+    /// \brief Pass this function through for a callback to match expected
+    /// function signature.
+    //--------------------------------------------------------------------------
+    static void keyboard_callback(
+      GLFWwindow* window_handle,
+      int key,
+      int scancode,
+      int action,
+      int mods);
+
     template <typename F>
     bool run(F render_object)
     {
@@ -74,6 +85,9 @@ class MakeBitMap
       glfw_window.initialize();
 
       no_errors &= glfw_window.create_window(glfw_window_parameters_);      
+
+      // Set Keyboard Callback here with the newly created window handle.
+      glfwSetKeyCallback(glfw_window.created_window_handle_, keyboard_callback);
 
       BufferObjectNames buffer_object {buffer_parameters_};
       buffer_object.initialize();

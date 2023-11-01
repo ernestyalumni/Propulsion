@@ -10,6 +10,7 @@ SET(VISUALIZATION_SOURCES
 
 SET(VISUALIZATION_SOURCES_CU
   CUDAGraphicsResource.cu
+  GLFWInterface/MakeAnimatedBitMap.cu
   GLFWInterface/MakeBitMap.cu
   float_to_color.cu
   )
@@ -32,7 +33,7 @@ ADD_LIBRARY(Visualization
 
 TARGET_LINK_LIBRARIES(Visualization
   Utilities_CU
-  UTILITIES
+  Utilities
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   glfw

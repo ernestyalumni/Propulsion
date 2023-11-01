@@ -10,7 +10,7 @@ IF (Eigen3_FOUND)
 
   TARGET_LINK_LIBRARIES(CheckPerformanceTests
     ALGEBRA
-    UTILITIES
+    Utilities
     gtest_main
     )
 
@@ -25,7 +25,7 @@ IF (Eigen3_FOUND)
 
   TARGET_LINK_LIBRARIES(CompareConjugateGradientMethodsCPU
     ALGEBRA
-    UTILITIES
+    Utilities
     gtest_main
     )
 
@@ -44,7 +44,7 @@ ADD_EXECUTABLE(CheckConjugateGradientMethodsPerformance
 TARGET_LINK_LIBRARIES(CheckConjugateGradientMethodsPerformance
   ALGEBRA
   ALGEBRA_CU
-  UTILITIES
+  Utilities
   Utilities_CU
   )
 

@@ -52,7 +52,7 @@ TARGET_LINK_LIBRARIES(Check
   ALGEBRA_CU
   FIBERBUNDLES
   MANIFOLDS
-  UTILITIES
+  Utilities
   Utilities_CU
   Visualization
   gtest_main

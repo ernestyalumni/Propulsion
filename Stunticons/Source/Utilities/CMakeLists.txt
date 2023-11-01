@@ -9,7 +9,7 @@ ADD_LIBRARY(Utilities_CU
   ${UTILITIES_CU_SOURCES}
   )
 
-ADD_LIBRARY(UTILITIES
+ADD_LIBRARY(Utilities
   FileIO/FilePath.cpp
   FileIO/ReadMatrixMarketFile.cpp
   FileIO/TurbulentFlow/Configuration.cpp
@@ -17,7 +17,7 @@ ADD_LIBRARY(UTILITIES
   FileIO/TurbulentFlow/ReadConfiguration.cpp
   )
 
-TARGET_LINK_LIBRARIES(UTILITIES
+TARGET_LINK_LIBRARIES(Utilities
   ALGEBRA
   )
 

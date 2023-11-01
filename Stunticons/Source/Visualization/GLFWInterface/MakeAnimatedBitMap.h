@@ -64,6 +64,13 @@ class MakeAnimatedBitMap
       draw_pixels_parameters_{draw_pixels_parameters}
     {}
 
+    static void keyboard_callback(
+      GLFWwindow* window_handle,
+      int key,
+      int scancode,
+      int action,
+      int mods);
+
     template <typename F>
     bool run(F& render_object)
     {
@@ -74,6 +81,9 @@ class MakeAnimatedBitMap
       glfw_window.initialize();
 
       no_errors &= glfw_window.create_window(glfw_window_parameters_);      
+
+      // Set Keyboard Callback here with the newly created window handle.
+      glfwSetKeyCallback(glfw_window.created_window_handle_, keyboard_callback);
 
       BufferObjectNames buffer_object {buffer_parameters_};
       buffer_object.initialize();
@@ -114,6 +124,11 @@ class MakeAnimatedBitMap
       return no_errors;
     }
 
+    inline std::size_t calculate_image_size() const
+    {
+      return buffer_parameters_.width_ * buffer_parameters_.height_ * 4;
+    }
+
   private:
 
     GLFWWindowParameters glfw_window_parameters_;
@@ -122,9 +137,10 @@ class MakeAnimatedBitMap
     DrawPixels::Parameters draw_pixels_parameters_;
 };
 
-MakeBitMap create_make_animated_bit_map(
+MakeAnimatedBitMap create_make_animated_bit_map(
   const std::size_t width,
-  const std::size_t height);
+  const std::size_t height,
+  const std::string window_title);
 
 } // namespace GLFWInterface
 } // namespace Visualization

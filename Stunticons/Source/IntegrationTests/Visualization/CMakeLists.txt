@@ -65,6 +65,36 @@ SET_TARGET_PROPERTIES(SampleCode
   RUNTIME_OUTPUT_DIRECTORY
     "${CMAKE_BINARY_DIR}/IntegrationTests/Visualization/GLFWInterface")
 
+## SimpleHeat
+
+ADD_EXECUTABLE(SimpleHeat
+  GLFWInterface/SimpleHeat/Benchmarking.cu
+  GLFWInterface/SimpleHeat/SimpleHeat.cu
+  GLFWInterface/SimpleHeat/calculate_temperature.cu
+  GLFWInterface/SimpleHeat/main.cu
+  )
+
+TARGET_LINK_LIBRARIES(SimpleHeat
+  Utilities
+  Visualization
+  )
+
+# https://cmake.org/cmake/help/latest/prop_tgt/CUDA_SEPARABLE_COMPILATION.html
+# CUDA_SEPARABLE_COMPILATION enables separate compilation for all CUDA files
+# for the given target.
+# It should allow us to compile multiple CUDA source files into separate device
+# object files and then link them together into a single executable or library.
+# It should be necessary when using device code linking (e.g. __device__ or
+# __global__ functions in different translation units).
+# This is necessary in this particular case for using extern __constant__.
+SET_TARGET_PROPERTIES(SimpleHeat
+  PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+
+SET_TARGET_PROPERTIES(SimpleHeat
+  PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY
+    "${CMAKE_BINARY_DIR}/IntegrationTests/Visualization/GLFWInterface")
+
 # GLUTInterface
 
 ## Julia Set

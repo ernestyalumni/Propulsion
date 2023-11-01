@@ -1,11 +1,9 @@
 #ifndef INTEGRATION_TESTS_VISUALIZATION_GLFW_INTERFACE_RIPPLE_RIPPLE_H
 #define INTEGRATION_TESTS_VISUALIZATION_GLFW_INTERFACE_RIPPLE_RIPPLE_H
 
-#include "Visualization/CUDAGraphicsResource.h"
 #include "Visualization/GLFWInterface/GLFWWindow.h"
 
 #include <cstddef>
-#include <cuda_runtime.h>
 
 namespace IntegrationTests
 {

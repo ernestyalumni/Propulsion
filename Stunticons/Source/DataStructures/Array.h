@@ -60,6 +60,22 @@ struct Array
     return handle_values.is_cuda_success();
   }
 
+  bool copy_host_input_to_device(const T* h_a, const std::size_t size_in_bytes)
+  {
+    HandleUnsuccessfulCUDACall handle_values {
+      "Failed to copy values from host to device"};
+
+    HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(
+      handle_values,
+      cudaMemcpy(
+        elements_,
+        h_a,
+        size_in_bytes,
+        cudaMemcpyHostToDevice));
+
+    return handle_values.is_cuda_success();
+  }
+
   bool copy_device_output_to_host(std::vector<T>& h_a)
   {
     HandleUnsuccessfulCUDACall handle_values {
