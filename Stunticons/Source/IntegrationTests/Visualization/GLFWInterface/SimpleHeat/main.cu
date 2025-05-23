@@ -1,6 +1,6 @@
 #include "IntegrationTests/Visualization/GLFWInterface/SimpleHeat/GeneralizedSimpleHeat.h"
 #include "IntegrationTests/Visualization/GLFWInterface/SimpleHeat/SimpleHeat.h"
-#include "Utilities/HandleUnsuccessfulCudaCall.h"
+#include "Utilities/HandleUnsuccessfulCUDACall.h"
 #include "Visualization/GLFWInterface/MakeAnimatedBitMap.h"
 
 using IntegrationTests::Visualization::GLFWInterface::SimpleHeat::

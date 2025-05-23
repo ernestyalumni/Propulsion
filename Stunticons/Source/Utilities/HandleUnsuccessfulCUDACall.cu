@@ -1,4 +1,4 @@
-#include "HandleUnsuccessfulCudaCall.h"
+#include "HandleUnsuccessfulCUDACall.h"
 
 #include <cuda_runtime.h>
 #include <iostream> // std::cerr

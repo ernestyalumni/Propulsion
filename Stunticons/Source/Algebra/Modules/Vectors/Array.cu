@@ -1,6 +1,6 @@
 #include "Array.h"
 #include "HostArrays.h"
-#include "Utilities/HandleUnsuccessfulCudaCall.h"
+#include "Utilities/HandleUnsuccessfulCUDACall.h"
 
 #include <cstddef> // std::size_t
 #include <cuda_runtime.h> // cudaFree, cudaMalloc, cudaMemcpyAsync

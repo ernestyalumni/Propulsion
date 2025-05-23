@@ -1,5 +1,5 @@
 #include "CUDAGraphicsResource.h"
-#include "Utilities/HandleUnsuccessfulCudaCall.h"
+#include "Utilities/HandleUnsuccessfulCUDACall.h"
 #include "Visualization/OpenGLInterface/BufferObjectNames.h"
 
 #include <array>

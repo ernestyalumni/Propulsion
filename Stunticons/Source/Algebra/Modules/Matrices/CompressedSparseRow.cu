@@ -3,7 +3,7 @@
 #include "Algebra/Modules/Vectors/HostArrays.h"
 #include "HostCompressedSparseRow.h"
 #include "Utilities/HandleUnsuccessfulCuSparseCall.h"
-#include "Utilities/HandleUnsuccessfulCudaCall.h"
+#include "Utilities/HandleUnsuccessfulCUDACall.h"
 
 #include <cstddef> // std::size_t
 #include <cuda_runtime.h> // cudaFree, cudaMalloc

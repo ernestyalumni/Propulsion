@@ -1,7 +1,7 @@
 #include "IntegrationTests/Visualization/GLFWInterface/SimpleHeat/SimpleHeat.h"
 
 #include "IntegrationTests/Visualization/GLFWInterface/SimpleHeat/calculate_temperature.h"
-#include "Utilities/HandleUnsuccessfulCudaCall.h"
+#include "Utilities/HandleUnsuccessfulCUDACall.h"
 #include "Visualization/float_to_color.h"
 
 #include <cstddef>

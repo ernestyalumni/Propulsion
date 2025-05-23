@@ -1,7 +1,7 @@
 #ifndef VISUALIZATION_MAPPED_DEVICE_POINTER_H
 #define VISUALIZATION_MAPPED_DEVICE_POINTER_H
 
-#include "Utilities/HandleUnsuccessfulCudaCall.h"
+#include "Utilities/HandleUnsuccessfulCUDACall.h"
 #include "Visualization/CUDAGraphicsResource.h"
 
 #include <cstddef> // std::size_t

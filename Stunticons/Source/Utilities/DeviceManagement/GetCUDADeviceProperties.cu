@@ -1,5 +1,5 @@
 #include "GetCUDADeviceProperties.h"
-#include "Utilities/HandleUnsuccessfulCudaCall.h"
+#include "Utilities/HandleUnsuccessfulCUDACall.h"
 
 #include <cuda_runtime.h>
 #include <iostream> // std::cerr

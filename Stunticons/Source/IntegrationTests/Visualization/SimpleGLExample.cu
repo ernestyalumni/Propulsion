@@ -1,7 +1,7 @@
 // needed for identifier glGenBuffer, glBindBuffer, glBufferData, glDeleteBuffers
 #define GL_GLEXT_PROTOTYPES 
 
-#include "Utilities/HandleUnsuccessfulCudaCall.h"
+#include "Utilities/HandleUnsuccessfulCUDACall.h"
 #include "Visualization/CUDAGraphicsResource.h"
 #include "Visualization/GLUTInterface/GLUTWindow.h"
 #include "Visualization/OpenGLInterface/BufferObjectNames.h"

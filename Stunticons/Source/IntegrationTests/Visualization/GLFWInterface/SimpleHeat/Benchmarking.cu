@@ -1,5 +1,5 @@
 #include "IntegrationTests/Visualization/GLFWInterface/SimpleHeat/Benchmarking.h"
-#include "Utilities/HandleUnsuccessfulCudaCall.h"
+#include "Utilities/HandleUnsuccessfulCUDACall.h"
 
 #include <cuda_runtime.h>
 

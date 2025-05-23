@@ -2,7 +2,7 @@
 
 #include "Algebra/Modules/Matrices/CompressedSparseRow.h"
 #include "Utilities/HandleUnsuccessfulCuSparseCall.h"
-#include "Utilities/HandleUnsuccessfulCudaCall.h"
+#include "Utilities/HandleUnsuccessfulCUDACall.h"
 
 #include <cusparse.h> // cusparseSpMatDescr_t
 

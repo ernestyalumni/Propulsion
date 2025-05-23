@@ -1,7 +1,7 @@
 #ifndef DATA_STRUCTURES_ARRAY_H
 #define DATA_STRUCTURES_ARRAY_H
 
-#include "Utilities/HandleUnsuccessfulCudaCall.h"
+#include "Utilities/HandleUnsuccessfulCUDACall.h"
 
 #include <cstddef>
 #include <iostream>

@@ -1,7 +1,7 @@
 #ifndef VISUALIZATION_CUDA_GRAPHICS_RESOURCE_H
 #define VISUALIZATION_CUDA_GRAPHICS_RESOURCE_H
 
-#include "Utilities/HandleUnsuccessfulCudaCall.h"
+#include "Utilities/HandleUnsuccessfulCUDACall.h"
 #include "Visualization/OpenGLInterface/BufferObjectNames.h"
 
 #include <array>

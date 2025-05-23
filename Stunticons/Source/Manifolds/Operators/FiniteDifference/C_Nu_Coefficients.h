@@ -4,7 +4,7 @@
 // TODO: Check if this include has size_t instead of std::size_t
 #include <cuda_runtime.h> 
 
-#include "Utilities/HandleUnsuccessfulCudaCall.h"
+#include "Utilities/HandleUnsuccessfulCUDACall.h"
 
 namespace Manifolds
 {
@@ -48,7 +48,7 @@ void auxiliary_set_first_order_coefficients(
     c_nus[nu].y = unscaled_c_nus[nu] * (static_cast<FPT>(1.0) / hd_i[1]);
   }
 
-  Utilities::HandleUnsuccessfulCudaCall handle_memcpy_to_symbol {
+  Utilities::HandleUnsuccessfulCUDACall handle_memcpy_to_symbol {
     "Failed to copy c_nus to symbol on device"};
 
   HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(

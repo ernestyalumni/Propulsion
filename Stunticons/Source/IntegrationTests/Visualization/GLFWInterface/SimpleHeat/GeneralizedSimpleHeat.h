@@ -4,7 +4,7 @@
 #include "DataStructures/Array.h"
 #include "IntegrationTests/Visualization/GLFWInterface/SimpleHeat/Benchmarking.h"
 #include "IntegrationTests/Visualization/GLFWInterface/SimpleHeat/calculate_temperature.h"
-#include "Utilities/HandleUnsuccessfulCudaCall.h"
+#include "Utilities/HandleUnsuccessfulCUDACall.h"
 #include "Visualization/float_to_color.h"
 
 #include <cstddef>

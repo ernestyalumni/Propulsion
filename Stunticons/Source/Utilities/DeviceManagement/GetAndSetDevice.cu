@@ -1,11 +1,11 @@
 #include "GetAndSetDevice.h"
-#include "Utilities/HandleUnsuccessfulCudaCall.h"
+#include "Utilities/HandleUnsuccessfulCUDACall.h"
 
 #include <cuda_runtime.h>
 #include <stdexcept>
 #include <string>
 
-using Utilities::HandleUnsuccessfulCudaCall;
+using Utilities::HandleUnsuccessfulCUDACall;
 
 namespace Utilities
 {

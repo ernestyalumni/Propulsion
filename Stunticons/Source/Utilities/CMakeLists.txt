@@ -3,7 +3,7 @@ SET(UTILITIES_CU_SOURCES
   DeviceManagement/GetAndSetDevice.cu
   HandleUnsuccessfulCuBLASCall.cu
   HandleUnsuccessfulCuSparseCall.cu
-  HandleUnsuccessfulCudaCall.cu
+  HandleUnsuccessfulCUDACall.cu
   )
 
 ADD_LIBRARY(Utilities_CU
