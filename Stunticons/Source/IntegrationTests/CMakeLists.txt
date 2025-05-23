@@ -1,6 +1,7 @@
 ENABLE_TESTING()
 
 SET(TEST_CU_SOURCES
+  Utilities/DeviceManagement/GetAndSetDevice_tests.cu
   Visualization/CUDAGraphicsResource_tests.cu
   )
 
@@ -9,6 +10,7 @@ ADD_EXECUTABLE(IntegrationCheck
   )
 
 TARGET_LINK_LIBRARIES(IntegrationCheck
+  Utilities_CU
   Visualization
   gtest_main
   )

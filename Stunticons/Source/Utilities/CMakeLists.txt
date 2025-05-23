@@ -1,5 +1,6 @@
 SET(UTILITIES_CU_SOURCES
   DeviceManagement/GetCUDADeviceProperties.cu
+  DeviceManagement/GetAndSetDevice.cu
   HandleUnsuccessfulCuBLASCall.cu
   HandleUnsuccessfulCuSparseCall.cu
   HandleUnsuccessfulCudaCall.cu
