@@ -30,8 +30,8 @@ namespace Operators
 namespace FiniteDifference
 {
 
-//constexpr int device_to_use {1};
-constexpr int device_to_use {0};
+constexpr int device_to_use {1};
+//constexpr int device_to_use {0};
 
 Utilities::HandleUnsuccessfulCUDACall handle_memcpy_from_symbol {
 "Failed to copy c_nus from symbol on device"};
