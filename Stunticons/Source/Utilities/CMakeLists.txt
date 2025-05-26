@@ -4,6 +4,8 @@ SET(UTILITIES_CU_SOURCES
   HandleUnsuccessfulCuBLASCall.cu
   HandleUnsuccessfulCuSparseCall.cu
   HandleUnsuccessfulCUDACall.cu
+  Testing/Manifolds/Operators/FiniteDifference/Stencil.cu
+  Testing/Manifolds/Operators/FiniteDifference/DirectionalDerivativesKernel.cu
   )
 
 ADD_LIBRARY(Utilities_CU
@@ -20,6 +22,7 @@ ADD_LIBRARY(Utilities
 
 TARGET_LINK_LIBRARIES(Utilities
   ALGEBRA
+  MANIFOLDS
   )
 
 ADD_EXECUTABLE(GetCUDADeviceProperties

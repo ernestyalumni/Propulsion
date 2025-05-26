@@ -13,7 +13,9 @@ SET(TEST_CU_SOURCES
   CUDA/Runtime_tests.cu
   DataStructures/Array_tests.cu
   Manifolds/Operators/FiniteDifference/C_Nu_Coefficients_tests.cu
+  Manifolds/Operators/FiniteDifference/DirectionalDerivatives_tests.cu
   Utilities/DeviceManagement/GetCUDADeviceProperties_tests.cu
+  Utilities/Testing/Manifolds/Operators/FiniteDifference/Stencil_tests.cu
   Visualization/float_to_color_tests.cu
   )
 

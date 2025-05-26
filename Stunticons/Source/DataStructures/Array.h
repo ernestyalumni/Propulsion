@@ -3,7 +3,7 @@
 
 #include "Utilities/HandleUnsuccessfulCUDACall.h"
 
-#include <cstddef>
+#include <cuda_runtime.h>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -17,10 +17,10 @@ struct Array
   using HandleUnsuccessfulCUDACall = Utilities::HandleUnsuccessfulCUDACall;
 
   T* elements_;
-  const std::size_t number_of_elements_;
+  const size_t number_of_elements_;
   bool is_cuda_freed_;
 
-  Array(const std::size_t number_of_elements = 50000):
+  Array(const size_t number_of_elements = 50000):
     elements_{nullptr},
     number_of_elements_{number_of_elements},
     is_cuda_freed_{false}
@@ -60,7 +60,7 @@ struct Array
     return handle_values.is_cuda_success();
   }
 
-  bool copy_host_input_to_device(const T* h_a, const std::size_t size_in_bytes)
+  bool copy_host_input_to_device(const T* h_a, const size_t size_in_bytes)
   {
     HandleUnsuccessfulCUDACall handle_values {
       "Failed to copy values from host to device"};
