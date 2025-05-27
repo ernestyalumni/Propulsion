@@ -1,16 +1,22 @@
 #include "gtest/gtest.h"
 
 #include "Utilities/DeviceManagement/GetAndSetDevice.h"
-#include "Utilities/Testing/Manifolds/Operators/FiniteDifference/Stencil.h"
+#include "Testing/Manifolds/Operators/FiniteDifference/2D/Stencil.h"
 
 using Utilities::DeviceManagement::GetAndSetDevice;
-using Utilities::Testing::Manifolds::Operators::FiniteDifference::Stencil;
+using Testing::Manifolds::Operators::FiniteDifference::TwoDimensional::Stencil;
 
 namespace GoogleUnitTests
 {
-namespace Utilities
-{
 namespace Testing
+{
+namespace Manifolds
+{
+namespace Operators
+{
+namespace FiniteDifference
+{
+namespace TwoDimensional
 {
 
 //constexpr int device_to_use {1};
@@ -72,6 +78,9 @@ TEST(StencilTests, CopiesToDevice)
   EXPECT_FLOAT_EQ(device_stencil_2[1][1], 0.25f);
 }
 
+} // namespace TwoDimensional
+} // namespace FiniteDifference
+} // namespace Operators
+} // namespace Manifolds
 } // namespace Testing
-} // namespace Utilities
 } // namespace GoogleUnitTests

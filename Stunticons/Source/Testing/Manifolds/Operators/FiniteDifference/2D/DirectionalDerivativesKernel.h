@@ -1,15 +1,13 @@
-#ifndef UTILITIES_TESTING_MANIFOLDS_OPERATORS_FINITE_DIFFERENCE_DIRECTIONAL_DERIVATIVES_KERNEL_H
-#define UTILITIES_TESTING_MANIFOLDS_OPERATORS_FINITE_DIFFERENCE_DIRECTIONAL_DERIVATIVES_KERNEL_H
+#ifndef TESTING_MANIFOLDS_OPERATORS_FINITE_DIFFERENCE_2D_DIRECTIONAL_DERIVATIVES_KERNEL_H
+#define TESTING_MANIFOLDS_OPERATORS_FINITE_DIFFERENCE_2D_DIRECTIONAL_DERIVATIVES_KERNEL_H
 
 #include "Manifolds/Operators/FiniteDifference/C_Nu_Coefficients.h"
-#include "Manifolds/Operators/FiniteDifference/DirectionalDerivatives.h"
+#include "Manifolds/Operators/FiniteDifference/2D/DirectionalDerivatives.h"
 #include "Utilities/HandleUnsuccessfulCUDACall.h"
 
 #include <cuda_runtime.h>
 #include <stdexcept>
 
-namespace Utilities
-{
 namespace Testing
 {
 namespace Manifolds
@@ -17,6 +15,8 @@ namespace Manifolds
 namespace Operators
 {
 namespace FiniteDifference
+{
+namespace TwoDimensional
 {
 
 template <typename FPT, typename CompoundFPT, int NU>
@@ -33,7 +33,7 @@ __global__ void directional_derivatives_kernel(
     cnu_coefficients_first_order<CompoundFPT>[3].x
   };
 
-  *result = ::Manifolds::Operators::FiniteDifference::directional_derivative<FPT, NU>(
+  *result = ::Manifolds::Operators::FiniteDifference::TwoDimensional::directional_derivative<FPT, NU>(
     stencil,
     c_nus_x);
 }
@@ -44,7 +44,7 @@ FPT test_directional_derivatives(
 {
   FPT* result {};
   FPT result_host {};
-  HandleUnsuccessfulCUDACall handle_malloc {
+  Utilities::HandleUnsuccessfulCUDACall handle_malloc {
     "Failed to allocate memory for result"};
 
   HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(
@@ -60,7 +60,7 @@ FPT test_directional_derivatives(
     result,
     stencil);
 
-  HandleUnsuccessfulCUDACall handle_memcpy {
+  Utilities::HandleUnsuccessfulCUDACall handle_memcpy {
     "Failed to copy result from device to host"};
 
   HANDLE_UNSUCCESSFUL_CUDA_CALL_WITH_LOCATION(
@@ -77,10 +77,10 @@ FPT test_directional_derivatives(
   return result_host;
 }
 
+} // namespace TwoDimensional
 } // namespace FiniteDifference
 } // namespace Operators
 } // namespace Manifolds
 } // namespace Testing
-} // namespace Utilities
 
-#endif // UTILITIES_TESTING_MANIFOLDS_OPERATORS_FINITE_DIFFERENCE_DIRECTIONAL_DERIVATIVES_KERNEL_H
+#endif // TESTING_MANIFOLDS_OPERATORS_FINITE_DIFFERENCE_2D_DIRECTIONAL_DERIVATIVES_KERNEL_H

@@ -1,11 +1,13 @@
-#ifndef MANIFOLDS_OPERATORS_FINITE_DIFFERENCE_DIRECTIONAL_DERIVATIVES_H
-#define MANIFOLDS_OPERATORS_FINITE_DIFFERENCE_DIRECTIONAL_DERIVATIVES_H
+#ifndef MANIFOLDS_OPERATORS_FINITE_DIFFERENCE_2D_DIRECTIONAL_DERIVATIVES_H
+#define MANIFOLDS_OPERATORS_FINITE_DIFFERENCE_2D_DIRECTIONAL_DERIVATIVES_H
 
 namespace Manifolds
 {
 namespace Operators
 {
 namespace FiniteDifference
+{
+namespace TwoDimensional
 {
 
 //------------------------------------------------------------------------------
@@ -25,8 +27,9 @@ __device__ FPT directional_derivative(FPT stencil[NU][2], FPT c_nus[4])
   return return_value;
 }
 
+} // namespace TwoDimensional
 } // namespace FiniteDifference
 } // namespace Operators
 } // namespace Manifolds
 
-#endif // MANIFOLDS_OPERATORS_FINITE_DIFFERENCE_DIRECTIONAL_DERIVATIVES_H
+#endif // MANIFOLDS_OPERATORS_FINITE_DIFFERENCE_2D_DIRECTIONAL_DERIVATIVES_H

@@ -1,10 +1,9 @@
 #include "gtest/gtest.h"
 
-#include "Manifolds/Operators/FiniteDifference/DirectionalDerivatives.h"
 #include "Utilities/DeviceManagement/GetAndSetDevice.h"
 #include "Utilities/HandleUnsuccessfulCUDACall.h"
-#include "Utilities/Testing/Manifolds/Operators/FiniteDifference/DirectionalDerivativesKernel.h"
-#include "Utilities/Testing/Manifolds/Operators/FiniteDifference/Stencil.h"
+#include "Testing/Manifolds/Operators/FiniteDifference/2D/DirectionalDerivativesKernel.h"
+#include "Testing/Manifolds/Operators/FiniteDifference/2D/Stencil.h"
 
 #include <cuda_runtime.h>
 
@@ -21,8 +20,8 @@ using Manifolds::Operators::FiniteDifference::set_first_order_coefficients_for_p
 using Manifolds::Operators::FiniteDifference::set_first_order_coefficients_for_p2;
 using Utilities::DeviceManagement::GetAndSetDevice;
 using Utilities::HandleUnsuccessfulCUDACall;
-using Utilities::Testing::Manifolds::Operators::FiniteDifference::Stencil;
-using Utilities::Testing::Manifolds::Operators::FiniteDifference::test_directional_derivatives;
+using Testing::Manifolds::Operators::FiniteDifference::TwoDimensional::Stencil;
+using Testing::Manifolds::Operators::FiniteDifference::TwoDimensional::test_directional_derivatives;
 
 namespace GoogleUnitTests
 {

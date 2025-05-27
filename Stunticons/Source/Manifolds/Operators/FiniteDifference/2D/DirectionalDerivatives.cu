@@ -8,6 +8,8 @@ namespace Operators
 {
 namespace FiniteDifference
 {
+namespace TwoDimensional
+{
 
 template __device__ float directional_derivative<float, 1>(
     float stencil[1][2],
@@ -57,6 +59,7 @@ template __device__ __half directional_derivative<__half, 4>(
     __half stencil[4][2],
     __half c_nus[4]);
 
+} // namespace TwoDimensional
 } // namespace FiniteDifference
 } // namespace Operators
 } // namespace Manifolds

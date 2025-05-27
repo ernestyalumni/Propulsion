@@ -2,8 +2,6 @@
 
 #include <cuda_fp16.h> // __half
 
-namespace Utilities
-{
 namespace Testing
 {
 namespace Manifolds
@@ -11,6 +9,8 @@ namespace Manifolds
 namespace Operators
 {
 namespace FiniteDifference
+{
+namespace TwoDimensional
 {
 
 template __global__ void directional_derivatives_kernel<float, float2, 1>(
@@ -97,9 +97,9 @@ __half test_directional_derivatives<__half, __half2, 3>(__half (*stencil)[2]);
 template <>
 __half test_directional_derivatives<__half, __half2, 4>(__half (*stencil)[2]);
 
+} // namespace TwoDimensional
 } // namespace FiniteDifference
 } // namespace Operators
 } // namespace Manifolds
 } // namespace Testing
-} // namespace Utilities
 

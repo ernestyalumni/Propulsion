@@ -1,5 +1,5 @@
-#ifndef UTILITIES_TESTING_STENCIL_H
-#define UTILITIES_TESTING_STENCIL_H
+#ifndef TESTING_MANIFOLDS_OPERATORS_FINITE_DIFFERENCE_2D_STENCIL_H
+#define TESTING_MANIFOLDS_OPERATORS_FINITE_DIFFERENCE_2D_STENCIL_H
 
 #include "Utilities/HandleUnsuccessfulCUDACall.h"
 
@@ -8,8 +8,6 @@
 #include <iostream> // std::cerr
 #include <stdexcept>
 
-namespace Utilities
-{
 namespace Testing
 {
 namespace Manifolds
@@ -17,6 +15,8 @@ namespace Manifolds
 namespace Operators
 {
 namespace FiniteDifference
+{
+namespace TwoDimensional
 {
 
 template <typename FPT, int NU>
@@ -125,10 +125,10 @@ extern template struct Stencil<__half, 2>;
 extern template struct Stencil<__half, 3>;
 extern template struct Stencil<__half, 4>;
 
+} // namespace TwoDimensional
 } // namespace FiniteDifference
 } // namespace Operators
 } // namespace Manifolds
 } // namespace Testing
-} // namespace Utilities
 
-#endif // UTILITIES_TESTING_STENCIL_H
+#endif // TESTING_MANIFOLDS_OPERATORS_FINITE_DIFFERENCE_2D_STENCIL_H
