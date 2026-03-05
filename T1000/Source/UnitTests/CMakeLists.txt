@@ -37,3 +37,9 @@ TARGET_LINK_LIBRARIES(HelloWorldCoolProp
 SET_TARGET_PROPERTIES(HelloWorldCoolProp
   PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/")
+
+# ODE solver tests (header-only, no CoolProp dependency)
+ADD_SUBDIRECTORY(ODE)
+
+# Orbital mechanics tests (header-only, no CoolProp dependency)
+ADD_SUBDIRECTORY(OrbitalMechanics)

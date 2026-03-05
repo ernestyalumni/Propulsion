@@ -1,3 +1,7 @@
+# CMake build directories
+T1000/BuildGcc/
+T1000/BuildInDocker/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.pyc
