@@ -50,7 +50,30 @@ INCLUDE_DIRECTORIES(BOOST_INCLUDES ${Boost_INCLUDE_DIRS})
 
 SET(COOLPROP_STATIC_LIBRARY true)
 
-ADD_SUBDIRECTORY("${CMAKE_CURRENT_SOURCE_DIR}/../../../CoolProp" CoolProp)
+# CoolProp: use pre-built static library (e.g. from
+# ThirdParty/CoolProp/BuildGcc)
+set(COOLPROP_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../ThirdParty/CoolProp" CACHE PATH "CoolProp root")
+
+# Check CoolProp root and library; inform or warn
+if(EXISTS "${COOLPROP_ROOT}")
+  message(STATUS "CoolProp root found: ${COOLPROP_ROOT}")
+else()
+  message(WARNING "CoolProp root not found: ${COOLPROP_ROOT}")
+endif()
+
+set(COOLPROP_LIB "${COOLPROP_ROOT}/BuildGcc/libCoolProp.a")
+set(COOLPROP_INCLUDE "${COOLPROP_ROOT}/include")
+set(COOLPROP_FMT_INCLUDE "${COOLPROP_ROOT}/externals/fmtlib/include")
+if(NOT EXISTS "${COOLPROP_LIB}")
+  message(FATAL_ERROR "CoolProp library not found: ${COOLPROP_LIB}")
+endif()
+add_library(CoolProp STATIC IMPORTED GLOBAL)
+set_target_properties(CoolProp PROPERTIES
+  IMPORTED_LOCATION "${COOLPROP_LIB}"
+  INTERFACE_INCLUDE_DIRECTORIES "${COOLPROP_INCLUDE};${COOLPROP_FMT_INCLUDE}"
+)
+
+#ADD_SUBDIRECTORY("${CMAKE_CURRENT_SOURCE_DIR}/../../../ThirdParty/CoolProp" CoolProp)
 
 # Add_subdirectory call makes use of libraries.
 # Add_subdirectory adds the source CMakeLists.txt and code files in the
