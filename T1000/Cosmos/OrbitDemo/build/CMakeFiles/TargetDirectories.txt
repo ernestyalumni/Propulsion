@@ -1,0 +1,7 @@
+/home/propdev/.openclaw/workspace/workspace2/repos/Propulsion/T1000/Cosmos/OrbitDemo/build/CMakeFiles/OrbitDemo.dir
+/home/propdev/.openclaw/workspace/workspace2/repos/Propulsion/T1000/Cosmos/OrbitDemo/build/CMakeFiles/edit_cache.dir
+/home/propdev/.openclaw/workspace/workspace2/repos/Propulsion/T1000/Cosmos/OrbitDemo/build/CMakeFiles/rebuild_cache.dir
+/home/propdev/.openclaw/workspace/workspace2/repos/Propulsion/T1000/Cosmos/OrbitDemo/build/CMakeFiles/list_install_components.dir
+/home/propdev/.openclaw/workspace/workspace2/repos/Propulsion/T1000/Cosmos/OrbitDemo/build/CMakeFiles/install.dir
+/home/propdev/.openclaw/workspace/workspace2/repos/Propulsion/T1000/Cosmos/OrbitDemo/build/CMakeFiles/install/local.dir
+/home/propdev/.openclaw/workspace/workspace2/repos/Propulsion/T1000/Cosmos/OrbitDemo/build/CMakeFiles/install/strip.dir
