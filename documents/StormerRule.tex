@@ -576,6 +576,64 @@ $\sigma(\zeta) = 1$.  The same stencil on the left-hand side, but a richer
 choice of $\sigma$, can reach $\OO(h^6)$ --- i.e.\ order 4 --- with \emph{no
 extra history}.
 
+\subsection{Notation Bridge: HNW Polynomials vs NR3/Our Variables}
+\label{ssec:notation-bridge}
+
+The analysis in \S\ref{sec:order} introduced Hairer--N{\o}rsett--Wanner
+(HNW) notation.  Here is a translation table bridging their polynomial
+formalism with the discrete variables used earlier in this document and in
+NR3:
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Where it appears} \\
+\midrule
+$\varrho(\zeta)$ & First characteristic polynomial & HNW Eq.~10.20, p.~467 \\
+                & $\sum_{i=0}^k \alpha_i \zeta^i$ & (stability) \\
+$\sigma(\zeta)$ & Second characteristic polynomial & HNW Eq.~10.20, p.~467 \\
+                & $\sum_{i=0}^k \beta_i \zeta^i$ & (accuracy) \\
+$\zeta$         & Formal variable; $E = \zeta$ is the & HNW \S III.1 \\
+                & shift operator: $E y_n = y_{n+1}$ & \\
+$\alpha_i$      & Coefficients of LHS stencil & Eq.~\eqref{eq:general-multistep} \\
+                & (position weights) & \\
+$\beta_i$       & Coefficients of RHS quadrature & Eq.~\eqref{eq:general-multistep} \\
+                & (force weights) & \\
+$k$             & Step number (history length $k$) & HNW \S III.10 \\
+                & Method uses $y_{n},\dots,y_{n+k}$ & \\
+$h$             & Step size & Same throughout \\
+$H$             & Total interval (macro-step) & \S\ref{sec:stormer-alg} \\
+$y_n$           & Exact solution at $x_n = x_0 + nh$ & Continuous $y(x_n)$ \\
+$\theta_n$      & \textbf{Computed} approximation to $y_n$ & \S\ref{sec:stormer-alg} \\
+$f_n$           & Force $f(x_n, y_n)$ or $f(x_n, \theta_n)$ & \S\ref{sec:stormer-alg} \\
+$\delta_n$      & Position increment $\theta_{n+1}-\theta_n$ & Eq.~\eqref{eq:delta-recurrence} \\
+$v_{1/2}$       & Half-integer velocity (leapfrog) & Eq.~\eqref{eq:lf-halfkick} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Connection to our earlier notation.}
+In \S\ref{sec:stormer-3pt}--\ref{sec:stormer-alg} we wrote the method as
+\[
+  \theta_{m+1} - 2\theta_m + \theta_{m-1} = h^2 f_m.
+\]
+In HNW polynomial form this is
+\[
+  \varrho(\zeta) = \zeta^2 - 2\zeta + 1 = (\zeta-1)^2,
+  \qquad
+  \sigma(\zeta) = 1.
+\]
+The coefficients are $(\alpha_0,\alpha_1,\alpha_2) = (1,-2,1)$ and
+$(\beta_0,\beta_1,\beta_2) = (0,1,0)$.  The shift operator $E$ acts as
+$E\theta_m = \theta_{m+1}$, so the compact operator form is
+$\varrho(E)\theta_m = h^2 \sigma(E) f_m$.
+
+\paragraph{NR3 notation.}
+NR3 uses `nstep` for the number of sub-steps $M$, `h` for $H/M$, `h2`
+for $2h$, and `nstp2` for $M/2$.  Their `ytemp[n+i]` stores the
+half-integer velocity $v_{m+1/2}$ scaled by 2 (see
+\S\ref{sec:nr3-analysis}).
+
 \subsection{Derivation via the Order Condition}
 
 Keep $\varrho(\zeta) = \zeta^2 - 2\zeta + 1$ and seek $\sigma(\zeta) =
