@@ -1,0 +1,430 @@
+% StormerRule.tex
+% Mathematical derivation of Störmer's modified midpoint rule for
+% second-order ODEs of the form y'' = f(x, y).
+% Reference: NR3 §17.4; Gragg (1965); Hairer, Nørsett, Wanner Vol. I.
+
+\documentclass[11pt]{article}
+
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{booktabs}
+
+\geometry{margin=1.2in}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+
+\DeclareMathOperator{\OO}{\mathcal{O}}
+
+\title{\textbf{Störmer's Rule}\\
+       \large Mathematical Derivation from First Principles}
+\author{Cosmos GNC Library --- Propulsion Repository}
+\date{2026}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\bigskip
+
+% ---------------------------------------------------------------------------
+\section{Problem Statement}
+% ---------------------------------------------------------------------------
+
+We consider a second-order ordinary differential equation of the form
+\begin{equation}
+  \label{eq:stormer-ode}
+  y'' = f(x,\, y),
+  \qquad y(x_0) = y_0,\quad y'(x_0) = v_0,
+\end{equation}
+where $y : \mathbb{R} \to \mathbb{R}^n$, $f : \mathbb{R} \times \mathbb{R}^n \to
+\mathbb{R}^n$, and crucially \emph{$f$ does not depend on $y'$}.
+
+\begin{remark}[Physical motivation]
+  Equation~\eqref{eq:stormer-ode} describes any purely position-dependent force:
+  gravitational $n$-body, Keplerian orbits, conservative mechanical systems, and
+  the Störmer problem (charged particle in a magnetic field) that originally
+  motivated the method.  For the two-body orbital problem:
+  $f(\mathbf{r}) = -\mu\,\mathbf{r}/|\mathbf{r}|^3$.
+\end{remark}
+
+\paragraph{Goal.}
+Advance the solution from $x_0$ to $x_0 + H$ by subdividing $H$ into $M$ equal
+sub-steps of size $h = H/M$, in a way that:
+\begin{enumerate}
+  \item exploits the absence of $y'$ in $f$,
+  \item produces an \emph{even} error series in $h$ (enabling Bulirsch-Stoer
+        Richardson extrapolation), and
+  \item requires only $M/2$ new evaluations of $f$ per column (half the cost of
+        applying the standard modified midpoint rule to the equivalent first-order
+        system).
+\end{enumerate}
+
+% ---------------------------------------------------------------------------
+\section{The Störmer Three-Point Recurrence}
+% ---------------------------------------------------------------------------
+
+\subsection{Derivation from Taylor's Theorem}
+
+Write the Taylor expansions of $y$ centered at $x_m = x_0 + mh$:
+\begin{align}
+  y(x_m + h) &= y_m + h y'_m + \tfrac{h^2}{2} y''_m
+                + \tfrac{h^3}{6} y'''_m
+                + \tfrac{h^4}{24} y^{(4)}_m + \OO(h^5), \label{eq:taylor-fwd}\\
+  y(x_m - h) &= y_m - h y'_m + \tfrac{h^2}{2} y''_m
+                - \tfrac{h^3}{6} y'''_m
+                + \tfrac{h^4}{24} y^{(4)}_m + \OO(h^5). \label{eq:taylor-bwd}
+\end{align}
+Adding \eqref{eq:taylor-fwd} and \eqref{eq:taylor-bwd} cancels all odd powers:
+\begin{equation}
+  y(x_m + h) + y(x_m - h) = 2y_m + h^2 y''_m + \tfrac{h^4}{12} y^{(4)}_m + \OO(h^6).
+\end{equation}
+Substituting $y''_m = f(x_m, y_m)$ and rearranging:
+\begin{equation}
+  \label{eq:stormer-3pt}
+  \boxed{y_{m+1} = 2y_m - y_{m-1} + h^2 f(x_m,\, y_m) + \OO(h^4).}
+\end{equation}
+This is the \textbf{Störmer three-point formula}: given two successive solution
+values $y_{m-1}$ and $y_m$, the next value $y_{m+1}$ requires a single evaluation
+of $f$ and is accurate to $\OO(h^4)$ locally.
+
+\begin{remark}[No velocity in the recurrence]
+  Equation~\eqref{eq:stormer-3pt} uses $y_{m-1}$, $y_m$, and $f(x_m, y_m)$ only.
+  The velocity $y'$ has been eliminated algebraically.  The price is the need for
+  two starting values.
+\end{remark}
+
+\subsection{The \texorpdfstring{$\delta$}{delta}-Increment Formulation}
+
+Define the position increment $\delta_m \coloneqq \theta_{m+1} - \theta_m$, the change in the numerical solution over one sub-step.  From
+\eqref{eq:stormer-3pt}:
+\begin{align}
+  \delta_m &= y_{m+1} - y_m \notag \\
+           &= (2y_m - y_{m-1} + h^2 f_m) - y_m \notag \\
+           &= (y_m - y_{m-1}) + h^2 f_m \notag \\
+           &= \delta_{m-1} + h^2 f_m. \label{eq:delta-recurrence}
+\end{align}
+This telescoping relation propagates $\delta$ forward with only $h^2 f_m$ added at
+each step.  The velocity information is encoded in the initial $\delta_0$.
+
+\paragraph{Starting value from Taylor:}
+The value $y_1 = y(x_0 + h)$ from \eqref{eq:taylor-fwd} with $m=0$:
+\begin{equation}
+  \label{eq:y1}
+  y_1 = y_0 + h v_0 + \tfrac{h^2}{2} f_0 + \OO(h^3),
+\end{equation}
+so
+\begin{equation}
+  \label{eq:delta0}
+  \boxed{\delta_0 = h\, v_0 + \tfrac{h^2}{2}\, f_0.}
+\end{equation}
+
+% ---------------------------------------------------------------------------
+\section{Störmer's Modified Midpoint Algorithm}
+% ---------------------------------------------------------------------------
+
+\paragraph{Notation.} We introduce $\theta_m$ to denote the \textbf{numerical approximation} to the true solution $y(x_m)$ at sub-step $m$, where $x_m = x_0 + mh$. The exact solution is $y(x_m)$; its approximation is $\theta_m$. The algorithm computes a sequence of approximations:
+\[
+\theta_0 \approx y(x_0),\quad \theta_1 \approx y(x_1),\quad \ldots,\quad \theta_M \approx y(x_0 + H).
+\]
+The velocity approximation at the final point is denoted $z_M \approx y'(x_0 + H)$.
+
+\paragraph{Why $\theta$ instead of $y$?} In numerical analysis, it is standard to distinguish the \emph{exact} solution $y(x)$ (unknown, continuous) from the \emph{computed} approximation $\theta_m$ (known, discrete). The error at step $m$ is $y(x_m) - \theta_m$. This distinction becomes crucial when analyzing convergence and error propagation.
+
+\bigskip\noindent
+The complete algorithm for $M$ sub-steps of size $h = H/M$ is:
+
+\begin{enumerate}
+  \item \textbf{Initialize.}
+    \begin{align}
+      \theta_0 &= y_0, \label{eq:alg-init-pos} \\
+      \delta_0 &= h\, v_0 + \tfrac{h^2}{2}\, f(x_0,\, \theta_0). \label{eq:alg-init-delta}
+    \end{align}
+    Set $\theta_1 = \theta_0 + \delta_0$.
+
+  \item \textbf{Sub-step loop} for $m = 1, \ldots, M-1$:
+    \begin{align}
+      f_m        &= f(x_0 + m h,\; \theta_m), \label{eq:alg-force} \\
+      \delta_m   &= \delta_{m-1} + h^2\, f_m, \label{eq:alg-delta} \\
+      \theta_{m+1} &= \theta_m + \delta_m. \label{eq:alg-pos}
+    \end{align}
+
+  \item \textbf{Final derivative} (velocity estimate at $x_0 + H$):
+    \begin{equation}
+      \label{eq:alg-vel}
+      z_M = \frac{\delta_{M-1}}{h} + \frac{h}{2}\, f(x_0 + H,\; \theta_M).
+    \end{equation}
+\end{enumerate}
+
+The output is $(\theta_M,\; z_M) \approx (y(x_0+H),\; y'(x_0+H))$,
+the numerical approximations to the true position and velocity at $x_0 + H$,
+with local truncation error $\OO(h^2)$.
+
+Total function evaluations of $f$: one per sub-step $m = 0, \ldots, M$, i.e.\
+$M+1$ total, but $f_0$ is supplied from the previous step, so \emph{$M$ new
+evaluations}.
+
+% ---------------------------------------------------------------------------
+\section{Equivalence to Störmer-Verlet / Leapfrog}
+% ---------------------------------------------------------------------------
+
+Define the half-integer velocity $v_{m+1/2} \coloneqq \delta_m / h$.  Rewriting the
+algorithm in terms of $v$:
+
+\begin{align}
+  v_{1/2}       &= \frac{\delta_0}{h} = v_0 + \frac{h}{2}\, f_0
+                   && \text{(half-kick)}, \label{eq:lf-halfkick} \\[4pt]
+  \theta_{m+1}  &= \theta_m + h\, v_{m+1/2}
+                   && \text{(drift)}, \label{eq:lf-drift} \\[4pt]
+  v_{m+3/2}     &= v_{m+1/2} + h\, f_{m+1}
+                   && \text{(full kick, } m = 0, \ldots, M-2\text{)}, \label{eq:lf-kick}
+\end{align}
+and the final velocity:
+\begin{equation}
+  \label{eq:lf-finalvel}
+  z_M = v_{M-1/2} + \frac{h}{2}\, f_M.
+\end{equation}
+Equation~\eqref{eq:lf-finalvel} can be read as: take the half-integer velocity
+$v_{M-1/2}$, and kick it forward by a half step to return to integer time $M$.
+Equivalently:
+\begin{equation}
+  z_M = \frac{v_{M-1/2} + v_{M+1/2}}{2},
+  \qquad \text{where } v_{M+1/2} = v_{M-1/2} + h\, f_M.
+\end{equation}
+So $z_M$ is the arithmetic mean of the bracketing half-integer velocities, a
+second-order approximation to $y'(x_0 + H)$.
+
+\begin{remark}[Symplecticity]
+  The drift–kick–drift structure \eqref{eq:lf-halfkick}--\eqref{eq:lf-kick} is
+  the \emph{Störmer-Verlet} integrator, which is \emph{symplectic} for Hamiltonian
+  systems $H = \tfrac12 |v|^2 + V(y)$ with $f = -\nabla V$.  It preserves a
+  modified Hamiltonian exactly to all orders.  Importantly, it does NOT suffer from
+  secular energy drift.
+\end{remark}
+
+% ---------------------------------------------------------------------------
+\section{Even Error Series: Gragg's Theorem}
+% ---------------------------------------------------------------------------
+
+\begin{theorem}[Gragg 1965]
+  \label{thm:gragg}
+  Let $y(x)$ be sufficiently smooth.  For Störmer's modified midpoint rule applied
+  to $y'' = f(x, y)$ with $M$ sub-steps of $h = H/M$ and the starting/ending
+  conventions \eqref{eq:delta0}--\eqref{eq:alg-vel}, the global errors admit
+  expansions in \emph{even powers} of $h$ only:
+  \begin{align}
+    y(x_0 + H) - \theta_M &= a_2(H)\, h^2 + a_4(H)\, h^4 + a_6(H)\, h^6 + \cdots,
+    \label{eq:even-pos} \\
+    y'(x_0 + H) - z_M    &= b_2(H)\, h^2 + b_4(H)\, h^4 + b_6(H)\, h^6 + \cdots,
+    \label{eq:even-vel}
+  \end{align}
+  where the coefficients $a_{2k}(H)$, $b_{2k}(H)$ are independent of $M$.
+\end{theorem}
+
+\paragraph{Sketch of proof (time-reversibility argument).}
+The Störmer recurrence \eqref{eq:alg-init-pos}--\eqref{eq:alg-vel} is
+\emph{time-reversible}: reversing $h \to -h$ and the sequence of $\theta_m$
+recovers the original sequence.  A time-reversible method cannot accumulate odd
+powers of $h$ in its global error, because odd-power terms change sign under
+$h \to -h$ while the exact solution does not.  More formally, one expands
+$\theta_m(h)$ as a power series in $h$ and shows that all odd-power terms cancel
+identically (see Hairer, Nørsett \& Wanner, Vol.~I, §II.8 for the complete
+argument).
+
+\begin{corollary}[Richardson extrapolation efficiency]
+  Because the error series \eqref{eq:even-pos} contains only $h^2$, $h^4$, \ldots,
+  a single Richardson extrapolation step using results at $h$ and $h/2$ eliminates
+  the $h^2$ term and yields $\OO(h^4)$ accuracy.  In general, $k$ extrapolation
+  steps yield $\OO(h^{2k+2})$ accuracy from $\OO(h^2)$ base integrations.  This
+  is the foundation of the Bulirsch-Stoer method.
+\end{corollary}
+
+% ---------------------------------------------------------------------------
+\section{Richardson Extrapolation Setup (Bulirsch-Stoer)}
+% ---------------------------------------------------------------------------
+
+Evaluate the modified midpoint rule with sub-step counts $M_1 < M_2 < M_3 < \cdots$
+(the Bulirsch-Stoer sequence: $\{2, 4, 6, 8, 12, 16, \ldots\}$), giving
+approximations $T_{j,0} \coloneqq \theta_{M_j}(H)$.
+
+Define the extrapolation table recursively:
+\begin{equation}
+  T_{j,k} = T_{j,k-1} + \frac{T_{j,k-1} - T_{j-1,k-1}}
+                              {\bigl(M_j / M_{j-k}\bigr)^2 - 1},
+  \qquad k = 1, 2, \ldots, j.
+\end{equation}
+Each extrapolation step eliminates the next order in $h^2$.  The diagonal $T_{k,k}$
+converges to $y(x_0 + H)$ as $k$ increases.
+
+\begin{remark}[Computational cost vs.\ accuracy]
+  For the first-order system $[y', f(x,y)]^T$ of dimension $2n$, the modified
+  midpoint rule needs $M$ evaluations of $f$ per column.  Störmer's rule needs only
+  $M/2$ evaluations per column (the NR3 code uses $n_\text{eff} = M/2$ leapfrog
+  steps of $h_\text{eff} = 2h = 2H/M$, as shown below) for the same total interval
+  $H$.  Since $f$ can be expensive (e.g., gravitational force with many bodies),
+  this factor of two is significant.
+\end{remark}
+
+% ---------------------------------------------------------------------------
+\section{Analysis of the NR3 Implementation}
+% ---------------------------------------------------------------------------
+
+\subsection{Parameterization}
+
+NR3's \texttt{StepperStoerm::dy()} uses:
+\begin{itemize}
+  \item \texttt{nstep} $= M$ (from Bulirsch-Stoer sequence $\{2,4,6,8,\ldots\}$).
+  \item \texttt{h} $= H/M$ (unit sub-step).
+  \item \texttt{h2} $= 2h = 2H/M$ (actual loop step, double the unit sub-step).
+  \item \texttt{nstp2} $= M/2$ (number of loop iterations).
+\end{itemize}
+
+\subsection{Algorithm in NR3 variables}
+
+\textbf{Initialization:}
+\begin{align*}
+  \text{ytemp}[i]   &\leftarrow y[i]                && \theta_0 = y_0, \\
+  \text{ytemp}[n+i] &\leftarrow y'[i] + h\cdot f_0  && v^* = v_0 + h\,f_0
+                                                       = v_{1/2} \cdot
+                                                       \underbrace{2}_{h_\text{eff}/h}.
+\end{align*}
+\noindent In other words, the stored ``velocity'' \texttt{ytemp}[$n+i$] is the
+half-integer velocity $v_{1/2} = v_0 + (h/2)\,f_0$ \emph{scaled by 2}:
+\texttt{ytemp}[$n+i$] $= 2\,v_{1/2}$.  Then the drift step below with factor
+$h_\text{eff} = 2h$ is:
+\[
+  \theta_1 = \theta_0 + h_\text{eff} \cdot \text{ytemp}[n+i]/2
+           = \theta_0 + h_\text{eff}\,v_{1/2}
+           = \theta_0 + 2h\left(v_0 + \tfrac{h}{2}\,f_0\right)
+           = \theta_0 + 2h\,v_0 + h^2\,f_0.
+\]
+Alternatively, viewing the NR3 scheme directly as Störmer-Verlet with step
+$h_\text{eff} = 2h$:
+
+\begin{equation}
+  \label{eq:nr3-leapfrog}
+  \text{Loop } m = 1, \ldots, n_\text{eff}:\quad
+  \begin{cases}
+    \theta_m = \theta_{m-1} + h_\text{eff}\,v_{m-1/2}, \\
+    v_{m+1/2} = v_{m-1/2} + h_\text{eff}\,f(x_0 + m\,h_\text{eff},\;\theta_m),
+      & m < n_\text{eff}.
+  \end{cases}
+\end{equation}
+
+\noindent Final velocity:
+$z = v_{n_\text{eff}-1/2} + (h_\text{eff}/2)\,f(x_0 + H, \theta_{n_\text{eff}})$.
+
+\subsection{Cost comparison}
+
+\begin{center}
+\begin{tabular}{@{}lccc@{}}
+  \toprule
+  Method & State dimension & Evals of $f$ per column & Error order \\
+  \midrule
+  Midpoint (first-order 2n-system) & $2n$ & $M$   & $\OO(h^2)$ \\
+  Störmer (NR3)                    & $n$  & $M/2$ & $\OO(h_\text{eff}^2)$ \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+Both methods embed in a Bulirsch-Stoer extrapolation with an even-power error
+series and converge to the same accuracy.  Störmer uses half the evaluations of $f$
+at the cost of doubling the effective sub-step size, which the extrapolation corrects.
+
+% ---------------------------------------------------------------------------
+\section{Is Inheritance Necessary?}
+% ---------------------------------------------------------------------------
+
+NR3's design uses \texttt{struct StepperStoerm : StepperBS<D>} \emph{solely} for
+code reuse of the Bulirsch-Stoer extrapolation machinery (\texttt{odeint} driver,
+column sequence, Richardson table, stepsize control).  The method \texttt{dy()} is
+entirely independent of the base class algorithms; it overrides only the
+\emph{sub-step integration} while reusing everything else.
+
+\paragraph{From first principles, the minimal reusable components are:}
+\begin{enumerate}
+  \item \textbf{\texttt{StormerStep}}: executes $n_\text{eff}$ leapfrog sub-steps
+        over a given interval $H$.  No base class required.  Template on
+        \texttt{DerivativeType} and \texttt{ContainerT}.
+  \item \textbf{Error estimation}: step-doubling (compare $n_\text{eff}$ steps vs.\
+        $2\,n_\text{eff}$ steps) or Richardson extrapolation as a separate,
+        composable component.
+  \item \textbf{Step-size control}: compose with the existing
+        \texttt{ComputePIStepSize} / \texttt{PIStepSizeControl} classes already
+        present in the library.
+\end{enumerate}
+
+Composition over inheritance, exactly consistent with how
+\texttt{CalculateNewYAndError} and \texttt{IntegrateWithPIControl} were designed.
+
+% ---------------------------------------------------------------------------
+\section{Harmonic Oscillator Test Case}
+% ---------------------------------------------------------------------------
+
+The standard test for Störmer's rule is the harmonic oscillator:
+\begin{equation}
+  y'' = -\omega^2 y, \qquad y(0) = 1,\quad y'(0) = 0,\quad \omega = 1.
+\end{equation}
+Exact solution: $y(t) = \cos t$, $y'(t) = -\sin t$, with conserved energy:
+\begin{equation}
+  E(t) = \tfrac{1}{2}\bigl(y'(t)\bigr)^2 + \tfrac{1}{2}\bigl(y(t)\bigr)^2 = \tfrac12.
+\end{equation}
+
+Störmer-Verlet (symplectic) conserves a modified energy exactly, so the
+energy error remains bounded for all time (no secular drift), unlike non-symplectic
+methods.
+
+\paragraph{Expected convergence.}
+For a single step of size $H = 0.5$ with $n_\text{eff}$ leapfrog sub-steps of
+$h_\text{eff} = H/n_\text{eff}$:
+\begin{align*}
+  |y(H) - \theta_M| &\approx \tfrac{H^3}{24}\,|y'''(0)|\cdot h_\text{eff}^2
+                             = \tfrac{H^3 \omega^3}{24}\cdot h_\text{eff}^2
+                             = \OO(h_\text{eff}^2).
+\end{align*}
+Doubling $n_\text{eff}$ (halving $h_\text{eff}$) should reduce the error by a
+factor of 4.  This is the convergence test in the unit tests.
+
+% ---------------------------------------------------------------------------
+\section{Summary}
+% ---------------------------------------------------------------------------
+
+\begin{enumerate}
+  \item Störmer's rule exploits $y'' = f(x, y)$ (no $y'$ in $f$) via the
+        three-point recurrence $y_{m+1} = 2y_m - y_{m-1} + h^2 f_m$.
+
+  \item In $\delta$-form: $\delta_m = \delta_{m-1} + h^2 f_m$, with starting value
+        $\delta_0 = hv_0 + \tfrac{h^2}{2}f_0$.
+
+  \item The algorithm is equivalent to Störmer-Verlet (leapfrog), which is
+        symplectic for Hamiltonian systems.
+
+  \item Gragg's theorem guarantees an even-power error series in $h$, enabling
+        efficient Bulirsch-Stoer Richardson extrapolation.
+
+  \item NR3's \texttt{StepperStoerm} inherits from \texttt{StepperBS<D>} for code
+        reuse only.  The core algorithm (\texttt{dy()}) is independent and should
+        be implemented as a standalone class.
+
+  \item For $M$ Bulirsch-Stoer sub-steps, Störmer uses $M/2$ evaluations of $f$
+        vs.\ $M$ for the first-order midpoint rule applied to the $2n$-dimensional
+        system --- a factor-of-two saving.
+\end{enumerate}
+
+\bigskip\noindent
+\textbf{References.}
+\begin{itemize}
+  \item W. B. Gragg, ``On extrapolation algorithms for ordinary initial value
+        problems,'' \textit{SIAM J.\ Numer.\ Anal.}\ \textbf{2} (1965) 384--403.
+  \item E. Hairer, S. P. N\o rsett, G. Wanner, \textit{Solving Ordinary
+        Differential Equations~I: Nonstiff Problems}, 2nd ed.\ (Springer, 1993),
+        Ch.~II.9.
+  \item W. H. Press et al., \textit{Numerical Recipes} 3rd ed.\ (Cambridge, 2007),
+        \S17.4.
+  \item C. Störmer, \textit{Sur les trajectoires des corpuscules électrisés},
+        \textit{Arch.\ Sci.\ Phys.\ Nat.}\ \textbf{24} (1907) 5--18.
+\end{itemize}
+
+\end{document}
