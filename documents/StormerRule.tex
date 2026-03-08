@@ -1,7 +1,7 @@
 % StormerRule.tex
 % Mathematical derivation of Störmer's modified midpoint rule for
 % second-order ODEs of the form y'' = f(x, y).
-% Reference: NR3 §17.4; Gragg (1965); Hairer, Nørsett, Wanner Vol. I.
+% Reference: NR3 §17.4; Gragg (1965); Hairer, Nørsett, Wanner Vol. I §§II.14, III.10.
 
 \documentclass[11pt]{article}
 
@@ -10,6 +10,7 @@
 \usepackage{geometry}
 \usepackage{hyperref}
 \usepackage{booktabs}
+\usepackage{enumitem}
 
 \geometry{margin=1.2in}
 
@@ -120,6 +121,183 @@ so
   \label{eq:delta0}
   \boxed{\delta_0 = h\, v_0 + \tfrac{h^2}{2}\, f_0.}
 \end{equation}
+
+% ---------------------------------------------------------------------------
+\section{Order Analysis: What ``Order $p$'' Means}
+\label{sec:order}
+% ---------------------------------------------------------------------------
+
+The three-point recurrence~\eqref{eq:stormer-3pt} was derived from Taylor's
+theorem.  We now ask precisely: \emph{how fast does the global error shrink as
+$h \to 0$?}  The answer, ``order $p$'', refers entirely to powers of $h$ --- it
+is \textbf{not} the degree of a polynomial fitted to $f$.
+
+\subsection{The HNW Framework}
+
+Following Hairer, N{\o}rsett \& Wanner~\cite{HNW} (henceforth \textbf{HNW}),
+write the general second-order multistep method for $y'' = f(x,y)$ as
+\begin{equation}
+  \label{eq:general-multistep}
+  \sum_{i=0}^{k} \alpha_i\, y_{n+i}
+  \;=\; h^2 \sum_{i=0}^{k} \beta_i\, f(x_{n+i},\, y_{n+i}),
+  \qquad \text{HNW (III.10, Eq.~10.19)}
+\end{equation}
+with scalar sequences $\{\alpha_i\}$ and $\{\beta_i\}$, $\alpha_k \neq 0$.
+Define the two \textbf{characteristic polynomials}
+\begin{equation}
+  \label{eq:char-polys}
+  \varrho(\zeta) = \sum_{i=0}^{k} \alpha_i\,\zeta^i,
+  \qquad
+  \sigma(\zeta) = \sum_{i=0}^{k} \beta_i\,\zeta^i.
+\end{equation}
+These encode the entire method: $\varrho$ governs stability and $\sigma$ governs
+accuracy.
+
+The residual when the \emph{exact} solution is substituted into the method is
+measured by the \textbf{linear difference operator}
+(HNW, Eq.~10.23, p.~467):
+\begin{equation}
+  \label{eq:L-operator}
+  \mathcal{L}[y,\, x,\, h]
+  \;=\; \varrho(E)\,y(x) \;-\; h^2\,\sigma(E)\,y''(x)
+  \;=\; \sum_{i=0}^{k}
+        \Bigl[\alpha_i\, y(x + ih) - h^2\,\beta_i\, y''(x + ih)\Bigr],
+\end{equation}
+where $E$ is the shift operator $E\,y(x) = y(x+h)$.  Along the exact solution
+$y''(x+ih) = f\bigl(x+ih,\, y(x+ih)\bigr)$, so $\mathcal{L}$ is a pure
+function of the smooth exact solution $y$ and the step $h$.
+
+\begin{theorem}[HNW Definition~10.2 and Theorem~10.3, p.~467--468]
+\label{thm:order}
+Method~\eqref{eq:general-multistep} is \textbf{consistent of order $p$} if
+\begin{equation}
+  \label{eq:order-condition}
+  \mathcal{L}[y,\, x,\, h] = \OO(h^{p+2})
+  \quad \text{for every sufficiently smooth } y.
+\end{equation}
+Three equivalent conditions (HNW Theorem~10.3, p.~468) are:
+\begin{enumerate}[label=(\roman*)]
+  \item \emph{Moment form.}
+    $\displaystyle\sum_i \alpha_i = 0$,\;
+    $\displaystyle\sum_i i\,\alpha_i = 0$,\; and for $q = 2, \ldots, p{+}1$:
+    \begin{equation}
+      \label{eq:moment-conditions}
+      \sum_{i=0}^{k} \alpha_i\, i^q
+      \;=\; q(q-1)\sum_{i=0}^{k} \beta_i\, i^{q-2}.
+    \end{equation}
+  \item \emph{Generating-polynomial form.}
+    \begin{equation}
+      \label{eq:gen-poly-order}
+      \varrho(e^h) - h^2\,\sigma(e^h) = \OO(h^{p+2})
+      \quad\text{as } h \to 0.
+    \end{equation}
+  \item \emph{Root form near $\zeta = 1$.}
+    \begin{equation}
+      \frac{\varrho(\zeta)}{(\log\zeta)^2} - \sigma(\zeta)
+      = \OO\!\bigl((\zeta-1)^p\bigr)
+      \quad\text{as } \zeta \to 1.
+    \end{equation}
+\end{enumerate}
+\end{theorem}
+
+\paragraph{Why $h^{p+2}$, not $h^p$?}
+The method equates the $h^2$-scaled forcing $h^2 f$ to the finite-difference
+$\sum \alpha_i y_{n+i}$, so the entire equation is naturally $\OO(h^2)$.  The
+residual $\mathcal{L}$ is therefore already premultiplied by $h^2$; order $p$
+means the \emph{extra} smallness beyond $h^2$ is $h^p$ more --- i.e.,
+$h^{p+2}$ total.  The global error, obtained by accumulating $\OO(h^{p+2})$
+local residuals over $\OO(1/h)$ steps and dividing once by the implicit $h^2$
+factor, is $\OO(h^p)$ --- matching Definition~10.2.  This is confirmed by:
+
+\begin{theorem}[HNW Theorem~10.6, p.~468 --- Global Convergence]
+\label{thm:convergence}
+If method~\eqref{eq:general-multistep} is stable and of order $p$, and the
+starting values satisfy $y(x_j) - y_j = \OO(h^{p+1})$ for $j = 0,\ldots,k-1$,
+then
+\begin{equation}
+  \label{eq:global-error}
+  \bigl|y(x_n) - y_n\bigr| \leq C\,h^p
+  \qquad \text{for all } 0 \leq hn \leq \mathrm{const}.
+\end{equation}
+\end{theorem}
+
+\subsection{Verification for the \texorpdfstring{$k=2$}{k=2} Störmer Method}
+\label{ssec:order-k2}
+
+For the three-point formula~\eqref{eq:stormer-3pt}:
+\begin{equation}
+  \label{eq:k2-coefficients}
+  \alpha_0 = 1,\;\alpha_1 = -2,\;\alpha_2 = 1;
+  \qquad
+  \beta_0 = 0,\;\beta_1 = 1,\;\beta_2 = 0.
+\end{equation}
+Hence $\varrho(\zeta) = \zeta^2 - 2\zeta + 1 = (\zeta-1)^2$ and
+$\sigma(\zeta) = 1$ (the center-point quadrature rule for $f$).
+
+Apply the generating-polynomial test~\eqref{eq:gen-poly-order}.  Expanding
+$\varrho(e^h)$ term by term:
+\begin{equation}
+  \varrho(e^h)
+  = e^{2h} - 2e^h + 1
+  = h^2 + \frac{h^4}{12} + \frac{h^6}{360} + \cdots
+\end{equation}
+(all odd powers cancel because $e^{2h} - 2e^h + 1$ is symmetric under $h
+\mapsto -h$ after recentering).  With $\sigma(\zeta)=1$:
+\begin{equation}
+  \label{eq:k2-residual}
+  \varrho(e^h) - h^2\sigma(e^h)
+  = \underbrace{h^2}_{\text{cancel}} + \frac{h^4}{12} + \frac{h^6}{360} + \cdots
+    - h^2
+  = \frac{h^4}{12} + \frac{h^6}{360} + \cdots
+  = \OO(h^4).
+\end{equation}
+Comparing with condition~\eqref{eq:order-condition}: $h^{p+2} = h^4 \Rightarrow$
+\boxed{p = 2}. The method is \textbf{globally second-order accurate} in $h$.
+
+The leading residual coefficient $\tfrac{1}{12}$ is the \textbf{error constant}
+$C = \sigma_2 = \tfrac{1}{12}$ (HNW Exercise~5, §III.10).  It governs the
+asymptotic error via (HNW Eq.~10.36--10.37, p.~471):
+\begin{equation}
+  \label{eq:error-ode}
+  \kappa''(x) = \frac{\partial f}{\partial y}\bigl(x,\, y(x)\bigr)\,\kappa(x)
+                - \frac{1}{12}\, y^{(4)}(x),
+\end{equation}
+where $\kappa(x)$ satisfies $y_n - y(x_n) = \kappa(x_n)\,h^2 + \OO(h^3)$.
+For orbital mechanics, $y^{(4)}$ is the fourth derivative of the position
+trajectory; a smooth orbit (low eccentricity) keeps $y^{(4)}$ small, making
+the error constant favorable.
+
+\subsection{The Rounding-Error Trap: Why the $\delta$-Form Is Mandatory}
+\label{ssec:double-root}
+
+The polynomial $\varrho(\zeta) = (\zeta-1)^2$ has a \textbf{double root at
+$\zeta = 1$}.  HNW Definition~10.1 (p.~467) allows roots on the unit circle
+with multiplicity at most 2 --- our method sits exactly on this boundary.
+
+What this means in practice (HNW §III.10, pp.~472--473, Fig.~10.3): a
+\emph{direct} implementation that stores $y_0, y_1, \ldots$ and applies the
+recurrence $y_{n+1} = 2y_n - y_{n-1} + h^2 f_n$ accumulates rounding errors
+that grow without bound as $h \to 0$.  The double root causes the companion
+matrix of the difference equation to be no longer power-bounded.
+
+The \textbf{fix} is the $\delta$-increment form (HNW Eq.~10.38$'$, p.~472):
+\begin{equation}
+  \label{eq:delta-stable}
+  \delta_n - \delta_{n-1} = h^2 f_n,
+  \qquad
+  y_{n+1} - y_n = \delta_n.
+\end{equation}
+This splits $\varrho(\zeta)$ as $(\zeta-1)(\zeta-1)$ and introduces $\delta_n =
+y_{n+1} - y_n$ as a new variable.  The resulting companion matrix is
+power-bounded (HNW Eq.~10.30), and rounding errors remain bounded.  This is
+exactly the formulation used in \texttt{StormerStep::step()}.
+
+A second pitfall (HNW p.~473, note~b): when computing \emph{starting values}
+$\delta_0, \delta_1, \ldots$, do \textbf{not} form the differences
+$(y_1 - y_0)/h$, $(y_2 - y_1)/h$ from separately computed RK values --- that
+difference is numerically unstable.  Instead, accumulate the increments
+directly from the sub-steps of the RK starting procedure, just as
+\texttt{StormerStep} does internally.
 
 % ---------------------------------------------------------------------------
 \section{Störmer's Modified Midpoint Algorithm}
@@ -388,6 +566,183 @@ Doubling $n_\text{eff}$ (halving $h_\text{eff}$) should reduce the error by a
 factor of 4.  This is the convergence test in the unit tests.
 
 % ---------------------------------------------------------------------------
+\section{Numerov's Method: The Implicit Upgrade}
+\label{sec:numerov}
+% ---------------------------------------------------------------------------
+
+Section~\ref{sec:order} showed that the three-point stencil~\eqref{eq:stormer-3pt}
+achieves order 2 because $\varrho(e^h) - h^2\sigma(e^h) = \OO(h^4)$ with
+$\sigma(\zeta) = 1$.  The same stencil on the left-hand side, but a richer
+choice of $\sigma$, can reach $\OO(h^6)$ --- i.e.\ order 4 --- with \emph{no
+extra history}.
+
+\subsection{Derivation via the Order Condition}
+
+Keep $\varrho(\zeta) = \zeta^2 - 2\zeta + 1$ and seek $\sigma(\zeta) =
+\beta_0 + \beta_1\zeta + \beta_2\zeta^2$ (symmetric: $\beta_0 = \beta_2$) such
+that $\varrho(e^h) - h^2\sigma(e^h) = \OO(h^6)$.
+
+From~\eqref{eq:k2-residual}, $\varrho(e^h) = h^2 + \tfrac{h^4}{12} +
+\tfrac{h^6}{360} + \cdots$.  We need $h^2\sigma(e^h)$ to match through the
+$h^5$ term.  Expanding with $\beta_0 = \beta_2 \equiv \beta$,
+$\beta_1 \equiv \gamma$:
+\[
+  h^2\sigma(e^h)
+  = h^2\bigl(\beta e^{2h} + \gamma e^h + \beta\bigr)
+  = h^2\bigl[(2\beta + \gamma) + 2h\beta + h^2(2\beta + \tfrac\gamma2) + \cdots\bigr].
+\]
+Matching through $h^5$ against $\varrho(e^h)$ forces $2\beta + \gamma = 1$
+(the $h^2$ term), and solving the system for the $h^4$ match gives
+$\beta = \tfrac{1}{12}$, $\gamma = \tfrac{10}{12}$.  Hence:
+\begin{equation}
+  \label{eq:numerov-sigma}
+  \sigma(\zeta) = \frac{\zeta^2 + 10\zeta + 1}{12}.
+\end{equation}
+The resulting method is (HNW Eq.~10.12, p.~464; B.~Numerov 1924):
+\begin{equation}
+  \label{eq:numerov}
+  \boxed{y_{n+1} - 2y_n + y_{n-1}
+  = \frac{h^2}{12}\Bigl(f_{n+1} + 10\,f_n + f_{n-1}\Bigr),}
+\end{equation}
+called \textbf{Numerov's method}.  The only difference from~\eqref{eq:stormer-3pt}
+is the $f_{n+1}$ term on the right: one additional force evaluation at the new
+position.
+
+\subsection{Order Verification}
+
+Apply the generating-polynomial test~\eqref{eq:gen-poly-order}:
+\begin{align}
+  h^2\sigma(e^h)
+  &= \frac{h^2}{12}\bigl(e^{2h} + 10e^h + 1\bigr) \notag \\
+  &= h^2 + \frac{h^4}{12} + \frac{h^6}{144} + \cdots
+     \label{eq:numerov-sigma-expand}
+\end{align}
+and recall $\varrho(e^h) = h^2 + \tfrac{h^4}{12} + \tfrac{h^6}{360} + \cdots$.
+Subtracting:
+\begin{equation}
+  \label{eq:numerov-residual}
+  \varrho(e^h) - h^2\sigma(e^h)
+  = \Bigl(\frac{1}{360} - \frac{1}{144}\Bigr)h^6 + \OO(h^8)
+  = -\frac{1}{240}\,h^6 + \OO(h^8)
+  = \OO(h^6).
+\end{equation}
+Comparing with~\eqref{eq:order-condition}: $h^{p+2} = h^6 \Rightarrow$
+\boxed{p = 4}.  \textbf{Numerov's method is globally fourth-order accurate.}
+
+The error constant is $C = \sigma^*_3 = 0$ (Table~10.2, HNW p.~464) --- the
+leading error is $-h^6/240 \cdot y^{(6)}$ per step, contributing:
+\begin{equation}
+  \label{eq:numerov-error}
+  \kappa''(x) = \frac{\partial f}{\partial y}\,\kappa - \frac{1}{240}\,y^{(6)}(x)
+  \qquad\bigl(\text{global error: } y_n - y(x_n) = \kappa(x_n)\,h^4 + \OO(h^5)\bigr).
+\end{equation}
+
+\subsection{The Order-Barrier Context}
+
+HNW Theorem~10.4 (p.~468) states that for a stable $k$-step Störmer method:
+\begin{equation}
+  p \leq k + 2 \;\text{ if } k \text{ is even},
+  \qquad
+  p \leq k + 1 \;\text{ if } k \text{ is odd}.
+\end{equation}
+For $k = 2$ (our stencil): $p_\text{max} = 4$.  Numerov saturates this bound ---
+it is the \emph{highest-order stable method} on the three-point stencil.  The
+explicit method (order 2) leaves two orders on the table.
+
+\subsection{PECECE Implementation}
+\label{ssec:pecece}
+
+Numerov's method is implicit: $y_{n+1}$ appears on both sides via $f_{n+1} =
+f(x_{n+1}, y_{n+1})$.  For nonlinear $f$ (e.g.\ gravitational force), we solve
+using \textbf{PECECE} (Predict--Evaluate--Correct--Evaluate--Correct--Evaluate):
+
+\begin{enumerate}
+  \item \textbf{Predict.}  Use the explicit Störmer formula as first guess:
+    \begin{equation}
+      \label{eq:pece-predict}
+      y_{n+1}^{(P)} = 2y_n - y_{n-1} + h^2 f_n.
+    \end{equation}
+  \item \textbf{Evaluate.}  $f_{n+1}^{(P)} = f\!\left(x_{n+1},\, y_{n+1}^{(P)}\right)$.
+  \item \textbf{Correct.}
+    \begin{equation}
+      \label{eq:pece-correct1}
+      y_{n+1}^{(1)} = 2y_n - y_{n-1}
+                    + \frac{h^2}{12}\Bigl(f_{n+1}^{(P)} + 10 f_n + f_{n-1}\Bigr).
+    \end{equation}
+  \item \textbf{Evaluate.}  $f_{n+1}^{(1)} = f\!\left(x_{n+1},\, y_{n+1}^{(1)}\right)$.
+  \item \textbf{Correct again.}
+    \begin{equation}
+      \label{eq:pece-correct2}
+      y_{n+1} = 2y_n - y_{n-1}
+              + \frac{h^2}{12}\Bigl(f_{n+1}^{(1)} + 10 f_n + f_{n-1}\Bigr).
+    \end{equation}
+  \item \textbf{Evaluate.}  $f_{n+1} = f\!\left(x_{n+1},\, y_{n+1}\right)$
+        \quad (stored for next step).
+\end{enumerate}
+
+\paragraph{Velocity.}
+Numerov delivers positions.  Velocity at integer time is recovered via the
+leapfrog formula (order 2 in $h$):
+\begin{equation}
+  \label{eq:numerov-velocity}
+  v_{n+1} = \frac{y_{n+1} - y_n}{h} + \frac{h}{2}\,f_{n+1}.
+\end{equation}
+\emph{Position accuracy is $\OO(h^4)$; velocity accuracy is $\OO(h^2)$.}  For
+applications where velocity precision matters as much as position (e.g.\
+orbit determination), the velocity can be improved via central differences:
+$v_n \approx (y_{n+1} - y_{n-1})/(2h) + \OO(h^2)$ --- same order.
+
+\paragraph{Order of PECECE.}
+With an order-2 predictor and order-4 corrector, PECE alone is order~3: the
+predictor error $\OO(h^2)$ contaminates $f_{n+1}^{(P)}$ by $\OO(h^2)$, adding
+$\tfrac{h^2}{12}\cdot\OO(h^2) = \OO(h^4)$ per step to the corrector residual,
+giving $\OO(h^3)$ global error.  The second correction (PECECE) reduces the
+contamination to $\OO(h^6)$ per step --- below the corrector's own leading
+error of $\OO(h^6)$ --- so the full order-4 accuracy is recovered.
+
+\subsection{Cost Comparison}
+
+\begin{center}
+\begin{tabular}{@{}lcccc@{}}
+  \toprule
+  Method & Order $p$ & $f$ evals/step & Error constant $C$ \\
+  \midrule
+  Explicit Störmer ($k=2$) & 2 & 1 & $\sigma_2 = \tfrac{1}{12}$ \\
+  Numerov PECECE ($k=2$)   & 4 & 3 & $-\tfrac{1}{240}$\\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+Halving $h$ reduces error by $2^2 = 4$ for explicit Störmer vs.\ $2^4 = 16$
+for Numerov --- a 4$\times$ gain per step halving.  The cost of 3 $f$-evals vs.\
+1 is recovered after the first tolerance tightening: to reach the same accuracy,
+Numerov needs $\approx 2.5\times$ fewer steps than explicit Störmer (since
+$4^{1/4} / 2^{1/2} \approx 1.41$ ratio in step size for equal error).
+
+\subsection{Starting Procedure}
+
+Numerov is a two-step method: it needs $y_0$ and $y_1$ to start.  Given initial
+conditions $(y_0, v_0)$, one accurate starting step is required.
+Theorem~\ref{thm:convergence} demands $y(x_1) - y_1 = \OO(h^5)$ for the
+method to retain its full order-4 convergence.  Options:
+
+\begin{itemize}
+  \item \textbf{Taylor expansion:}
+    $y_1 = y_0 + hv_0 + \tfrac{h^2}{2}f_0 + \tfrac{h^3}{6}f_0' + \tfrac{h^4}{24}f_0''$
+    (requires derivative information, gives $\OO(h^5)$, satisfies requirement).
+  \item \textbf{Runge-Kutta-Nyström order~4:} one step of a 4th-order Nyström
+    method (HNW Table~14.2, p.~285) gives $\OO(h^5)$ accuracy, at the cost of 3--4
+    $f$-evaluations for the single startup step.
+  \item \textbf{Two steps of explicit Störmer} (order~2): gives only $\OO(h^3)$,
+    limiting global convergence to $\OO(h^2)$.  Sufficient only for testing.
+\end{itemize}
+
+\texttt{NumerovStep::startup()} uses one step of the leapfrog (Störmer-Verlet)
+with $n_\text{eff}$ sub-steps as a high-accuracy starter: for large
+$n_\text{eff}$, this approximates the exact solution to whatever precision is
+needed.  In production, supply a 4th-order starter.
+
+% ---------------------------------------------------------------------------
 \section{Summary}
 % ---------------------------------------------------------------------------
 
@@ -396,33 +751,44 @@ factor of 4.  This is the convergence test in the unit tests.
         three-point recurrence $y_{m+1} = 2y_m - y_{m-1} + h^2 f_m$.
 
   \item In $\delta$-form: $\delta_m = \delta_{m-1} + h^2 f_m$, with starting value
-        $\delta_0 = hv_0 + \tfrac{h^2}{2}f_0$.
+        $\delta_0 = hv_0 + \tfrac{h^2}{2}f_0$.  This form is mandatory to
+        avoid numerical instability from the double root $\varrho(\zeta) =
+        (\zeta-1)^2$ (Section~\ref{ssec:double-root}).
 
   \item The algorithm is equivalent to Störmer-Verlet (leapfrog), which is
         symplectic for Hamiltonian systems.
 
+  \item ``Order $p$'' means global error $\OO(h^p)$ in step size $h$ (not
+        polynomial degree).  The explicit method is order 2;
+        Numerov's implicit method~\eqref{eq:numerov} saturates the order barrier
+        for the two-step stencil at order 4.
+
   \item Gragg's theorem guarantees an even-power error series in $h$, enabling
         efficient Bulirsch-Stoer Richardson extrapolation.
 
-  \item NR3's \texttt{StepperStoerm} inherits from \texttt{StepperBS<D>} for code
-        reuse only.  The core algorithm (\texttt{dy()}) is independent and should
-        be implemented as a standalone class.
+  \item NR3's \texttt{StepperStoerm} implements the $k=2$ explicit Störmer in
+        one-step extrapolation mode (HNW §II.14, Eq.~14.32) --- the simplest
+        special case of the general multistep family (HNW §III.10).
 
-  \item For $M$ Bulirsch-Stoer sub-steps, Störmer uses $M/2$ evaluations of $f$
-        vs.\ $M$ for the first-order midpoint rule applied to the $2n$-dimensional
-        system --- a factor-of-two saving.
+  \item Numerov PECECE (Section~\ref{sec:numerov}) achieves order~4 on the same
+        three-point stencil at 3 $f$-evaluations/step vs.\ 1 for explicit
+        Störmer.  Implemented as \texttt{NumerovStep}.
 \end{enumerate}
 
 \bigskip\noindent
 \textbf{References.}
 \begin{itemize}
+  \item \label{HNW} E. Hairer, S. P. N{\o}rsett, G. Wanner,
+        \textit{Solving Ordinary Differential Equations~I: Nonstiff Problems},
+        2nd ed.\ (Springer, 1993).
+        Key sections: §II.14 (Nyström methods, extrapolation for $y''=f(x,y)$),
+        §III.10 (multistep Störmer methods, pp.~461--473).
   \item W. B. Gragg, ``On extrapolation algorithms for ordinary initial value
         problems,'' \textit{SIAM J.\ Numer.\ Anal.}\ \textbf{2} (1965) 384--403.
-  \item E. Hairer, S. P. N\o rsett, G. Wanner, \textit{Solving Ordinary
-        Differential Equations~I: Nonstiff Problems}, 2nd ed.\ (Springer, 1993),
-        Ch.~II.9.
+  \item B. Numerov, ``A method of extrapolation of perturbations,''
+        \textit{Mon.\ Not.\ R.\ Astron.\ Soc.}\ \textbf{84} (1924) 592--601.
   \item W. H. Press et al., \textit{Numerical Recipes} 3rd ed.\ (Cambridge, 2007),
-        \S17.4.
+        §17.4 (\texttt{StepperStoerm}: the $k=2$ one-step extrapolation case).
   \item C. Störmer, \textit{Sur les trajectoires des corpuscules électrisés},
         \textit{Arch.\ Sci.\ Phys.\ Nat.}\ \textbf{24} (1907) 5--18.
 \end{itemize}
