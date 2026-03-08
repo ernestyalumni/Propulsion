@@ -803,6 +803,126 @@ $n_\text{eff}$, this approximates the exact solution to whatever precision is
 needed.  In production, supply a 4th-order starter.
 
 % ---------------------------------------------------------------------------
+\section{Astrodynamics Context: Cowell's Method, Encke's Method, and Perturbations}
+\label{sec:astrodynamics}
+% ---------------------------------------------------------------------------
+
+In orbital mechanics, the equations of motion for a satellite under perturbations are:
+\begin{equation}
+\ddot{\mathbf{r}} = -\frac{\mu}{r^3}\mathbf{r} + \mathbf{a}_p
+\end{equation}
+where $\mathbf{a}_p$ is the sum of all perturbing accelerations. Two main approaches exist for numerical integration:
+
+\subsection{Cowell's Method (Direct Integration)}
+\label{ssec:cowell}
+
+Cowell's method \cite{Bate1971,Curtis2005,Hintz2015} directly integrates the total acceleration:
+\begin{align}
+\dot{\mathbf{r}} &= \mathbf{v} \\
+\dot{\mathbf{v}} &= -\frac{\mu}{r^3}\mathbf{r} + \mathbf{a}_p
+\end{align}
+
+\textbf{Advantages:}
+\begin{itemize}
+\item Simplicity of formulation and implementation
+\item Any number of perturbations can be handled simultaneously
+\item Obtains $\mathbf{r}$ and $\mathbf{v}$ directly
+\end{itemize}
+
+\textbf{Disadvantages:}
+\begin{itemize}
+\item Near large attracting bodies, smaller steps are required (affects time and roundoff error)
+\item Approximately 10$\times$ slower than Encke's method \cite{Bate1971}
+\item Roundoff error accumulates rapidly in double-precision for interplanetary flights with small step sizes
+\end{itemize}
+
+\subsection{Encke's Method (Osculating Orbit)}
+\label{ssec:encke}
+
+Encke's method \cite{Bate1971,Hintz2015} integrates the \textit{deviation} from a reference (osculating) two-body orbit rather than the total state. Let $\mathbf{\rho}(t)$ be the osculating orbit position (the path the satellite would follow if perturbations vanished at epoch $t_0$). The deviation $\delta\mathbf{r} = \mathbf{r} - \mathbf{\rho}$ satisfies:
+\begin{equation}
+\delta\ddot{\mathbf{r}} = \mathbf{a}_p + \frac{\mu}{\rho^3}\left[(1 - 2q)^{-3/2}\mathbf{r} - \delta\mathbf{r}\right]
+\end{equation}
+where $q = \delta\mathbf{r} \cdot (2\mathbf{r} - \delta\mathbf{r}) / r^2$.
+
+\textbf{Advantages:}
+\begin{itemize}
+\item Faster than Cowell's method (deviations change slowly)
+\item Better accuracy for small perturbations
+\item Less accumulation of roundoff error
+\end{itemize}
+
+\textbf{Disadvantages:}
+\begin{itemize}
+\item More complex formulation
+\item Requires \textit{rectification} (resetting the osculating orbit) when $\delta r/r$ exceeds a tolerance
+\item The term $(1 - 2q)^{-3/2}$ requires careful numerical handling (difference of nearly equal quantities)
+\end{itemize}
+
+\subsection{Störmer/Numerov vs. Cowell for Orbital Mechanics}
+\label{ssec:stormer-vs-cowell}
+
+Our \texttt{StörmerStep} and \texttt{NumerovStep} implementations are \textbf{integration methods}, while Cowell's and Encke's are \textbf{formulation frameworks}. The relationship:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Formulation} & \textbf{Integration Method} & \textbf{Use Case} \\
+\midrule
+Cowell's & Störmer (order 2) or Numerov (order 4) & Direct integration of $y'' = f(x,y)$ \\
+Cowell's & RK4, Adams-Moulton & General first-order reduction \\
+Encke's & Störmer/Numerov & Deviation from osculating orbit \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Why Numerov outperforms standard Cowell integration:}
+\begin{enumerate}
+\item \textbf{Order 4 accuracy} vs. order 2 for explicit Störmer or standard RK4 on first-order form
+\item \textbf{Same stencil} (3 points) as explicit Störmer, but implicit correction achieves higher order
+\item \textbf{Symplectic-like} energy behavior for near-Keplerian orbits (nearly circular)
+\item \textbf{Fewer function evaluations} than equivalent RK4: 3 $f$-evals/step vs. 4 for RK4
+\end{enumerate}
+
+Bate et al.\ \cite{Bate1971} note that for orbital problems, the \textbf{Gauss-Jackson} (sum-squared, $\Sigma^2$) method is "one of the best, and most used, numerical integration methods for trajectory problems of the Cowell and Encke type." The Gauss-Jackson method is also a multistep predictor-corrector for second-order equations, similar in spirit to Numerov but with higher order and specialized for orbital mechanics.
+
+\subsection{Common Perturbations in Astrodynamics}
+\label{ssec:perturbations}
+
+Based on Curtis \cite{Curtis2005}, Hintz \cite{Hintz2015}, and Bate \cite{Bate1971}, the primary perturbations affecting Earth satellites are:
+
+\begin{enumerate}
+\item \textbf{Earth Oblateness ($J_2$)}: The Earth's equatorial bulge causes secular variations in $\Omega$ (RAAN) and $\omega$ (argument of perigee). The nodal regression rate is:
+\begin{equation}
+\dot{\Omega} = -\frac{3J_2}{2}\sqrt{\frac{\mu}{a^3}}\left(\frac{R_\oplus}{a(1-e^2)}\right)^2\cos i
+\end{equation}
+
+\item \textbf{Atmospheric Drag}: Significant for LEO satellites. The acceleration is:
+\begin{equation}
+\mathbf{a}_d = -\frac{1}{2}\rho v_{rel}^2 \frac{C_D A}{m}\frac{\mathbf{v}_{rel}}{|\mathbf{v}_{rel}|}
+\end{equation}
+where $\rho$ is atmospheric density, $C_D \approx 2.0$--$2.2$ for typical satellites.
+
+\item \textbf{Third-Body Gravity} (Moon, Sun): The lunar perturbation acceleration on an Earth satellite is:
+\begin{equation}
+\mathbf{a}_p = \mu_M\left(\frac{\mathbf{r}_{ms}}{r_{ms}^3} - \frac{\mathbf{r}_{Me}}{r_{Me}^3}\right)
+\end{equation}
+where $\mathbf{r}_{ms}$ is the vector from Moon to satellite, $\mathbf{r}_{Me}$ from Moon to Earth.
+
+\item \textbf{Solar Radiation Pressure}: For spacecraft with large area-to-mass ratio:
+\begin{equation}
+\mathbf{a}_{SRP} = -p_{SR}\frac{A}{m}\cos\theta\,\mathbf{\hat{s}}
+\end{equation}
+where $p_{SR} \approx 4.5 \times 10^{-6}$ N/m$^2$ at 1 AU.
+\end{enumerate}
+
+\textbf{Special vs. General Perturbations:}
+\begin{itemize}
+\item \textbf{Special perturbations}: Direct numerical integration (Cowell, Encke) --- computes specific trajectories for given initial conditions.
+\item \textbf{General perturbations}: Analytic integration of series expansions (variation of parameters, Lagrange planetary equations) --- provides analytical insight but is more complex.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
 \section{Summary}
 % ---------------------------------------------------------------------------
 
@@ -852,5 +972,8 @@ needed.  In production, supply a 4th-order starter.
   \item C. Störmer, \textit{Sur les trajectoires des corpuscules électrisés},
         \textit{Arch.\ Sci.\ Phys.\ Nat.}\ \textbf{24} (1907) 5--18.
 \end{itemize}
-
+\item \label{Bate1971} R. R. Bate, D. D. Mueller, J. E. White, \textit{Fundamentals of Astrodynamics} (Dover, 1971). \S9.2 (Cowell's Method), \S9.3 (Encke's Method), \S9.6 (Numerical Integration Methods including Gauss-Jackson).
+\item \label{Curtis2005} H. D. Curtis, \textit{Orbital Mechanics for Engineering Students}, 2nd ed.\ (Elsevier, 2005). Ch.~10 (Orbital Perturbations): \S10.2 (Cowell), \S10.3 (Encke), \S10.4 (Atmospheric Drag), \S10.5 (Gravitational Perturbations).
+\item \label{Hintz2015} G. R. Hintz, \textit{Orbital Mechanics and Astrodynamics} (Springer, 2015). Ch.~5: \S5.2 (Cowell's Method), \S5.3 (Encke's Method), \S5.5 (Integration Schemes), \S5.7 (Analytic Formulation of Perturbations).
+\end{itemize}
 \end{document}
