@@ -1,5 +1,0 @@
-###### Requirements without Version Specifiers ######
-flask
-Flask-WTF
-sqlalchemy
-WTForms
