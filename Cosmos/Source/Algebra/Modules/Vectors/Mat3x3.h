@@ -47,7 +47,6 @@ class Mat3x3
       return entries_[Mat3x3<Field>::dimension * i + j];
     }
 
-
     template <typename F>
     friend std::ostream& operator<<(std::ostream& os, const Mat3x3<F>& A);
 
