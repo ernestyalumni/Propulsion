@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NUMEROV — Cowell's Method | Störmer-Verlet Demo</title>
 
-  <script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
-  <script src="https://unpkg.com/three@0.158.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://unpkg.com/three@0.158.0/build/three.min.js" async></script>
+  <script src="https://unpkg.com/three@0.158.0/examples/js/controls/OrbitControls.js" async></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -606,12 +606,29 @@ function animate(ts) {
 }
 
 // ── Kick off ───────────────────────────────────────────────────────────────
-requestAnimationFrame(() => {
+// Wait for THREE to be available (CDN scripts load async), then start.
+// Also set a 5s timeout to hide loading screen even if scripts fail.
+function startWhenReady() {
+  if (typeof THREE === 'undefined') {
+    setTimeout(startWhenReady, 100);
+    return;
+  }
   const loading = document.getElementById('loading');
   loading.style.opacity = '0';
   setTimeout(() => { loading.style.display = 'none'; }, 550);
   requestAnimationFrame(animate);
-});
+}
+
+// Timeout fallback: hide loading after 5s regardless
+setTimeout(() => {
+  const loading = document.getElementById('loading');
+  if (loading && loading.style.display !== 'none') {
+    loading.style.opacity = '0';
+    setTimeout(() => { loading.style.display = 'none'; }, 550);
+  }
+}, 5000);
+
+startWhenReady();
 
 // Initialise speed display
 document.getElementById('speedVal').textContent = simSpeed.toLocaleString() + '×';
