@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NUMEROV — Cowell's Method | Störmer-Verlet Demo</title>
+
+  <script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.158.0/examples/js/controls/OrbitControls.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:     #020510;
+      --panel:  rgba(4, 10, 28, 0.90);
+      --border: rgba(40, 80, 160, 0.40);
+      --text:   #c8d8ff;
+      --dim:    #4466aa;
+      --glow:   rgba(50, 170, 255, 0.18);
+      --c1:     #00eeff;   /* Case 1 — pure two-body  */
+      --c2:     #ff8c00;   /* Case 2 — J2 perturbed   */
+      --ff:     'Courier New', Courier, monospace;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--ff);
+      font-size: 13px;
+      overflow: hidden;
+    }
+    canvas { display: block; }
+
+    /* ── Title bar ── */
+    #titlebar {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 50px;
+      background: linear-gradient(180deg, rgba(5,10,30,0.97) 0%, rgba(5,10,30,0.55) 100%);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 18px; gap: 16px; z-index: 100;
+    }
+    #titlebar .logo   { font-size: 18px; letter-spacing: 6px; color: var(--c1);
+                        text-shadow: 0 0 16px var(--c1); }
+    #titlebar .sub    { font-size: 10px; letter-spacing: 1px; color: var(--dim); }
+    #titlebar .badge  {
+      margin-left: auto;
+      background: rgba(50,170,255,0.10); border: 1px solid var(--border);
+      color: var(--text); padding: 4px 10px; border-radius: 4px;
+      font-size: 10px; letter-spacing: 1px;
+    }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      position: absolute; top: 60px; left: 14px;
+      width: 236px;
+      display: flex; flex-direction: column; gap: 8px;
+      z-index: 100;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 13px;
+      backdrop-filter: blur(8px);
+    }
+    .panel.c1 { border-left: 3px solid var(--c1); }
+    .panel.c2 { border-left: 3px solid var(--c2); }
+
+    .panel-title {
+      font-size: 9px; letter-spacing: 2px;
+      color: var(--dim); text-transform: uppercase;
+      margin-bottom: 7px; padding-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-title.c1 { color: var(--c1); }
+    .panel-title.c2 { color: var(--c2); }
+
+    .stat-row {
+      display: flex; justify-content: space-between;
+      margin: 3px 0; font-size: 11.5px;
+    }
+    .stat-label { color: var(--dim); }
+    .stat-value { font-weight: bold; text-align: right; }
+    .stat-value.c1 { color: var(--c1); text-shadow: 0 0 5px rgba(0,238,255,.4); }
+    .stat-value.c2 { color: var(--c2); text-shadow: 0 0 5px rgba(255,140,0,.4); }
+
+    /* controls */
+    .speed-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+    .speed-row label { color: var(--dim); font-size: 10px; white-space: nowrap; }
+    input[type=range] { flex: 1; accent-color: var(--c1); cursor: pointer; }
+    .speed-val { color: var(--c1); font-size: 11px; min-width: 44px; text-align: right; }
+    .btn {
+      width: 100%; margin-top: 7px;
+      background: rgba(30,60,120,0.4); border: 1px solid var(--border);
+      color: var(--text); font-family: var(--ff); font-size: 11px;
+      padding: 7px; border-radius: 4px; cursor: pointer;
+      letter-spacing: 1px; text-align: center;
+      transition: background .15s, border-color .15s;
+    }
+    .btn:hover { background: rgba(50,140,255,0.22); border-color: var(--c1); }
+
+    /* legend dots */
+    .legend { display: flex; gap: 14px; margin-top: 4px; font-size: 10.5px; }
+    .dot { display: inline-block; width: 9px; height: 9px;
+           border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+
+    /* ── Info bar bottom ── */
+    #infobar {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 26px; background: rgba(4,10,28,0.85);
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 14px; gap: 18px; z-index: 100; font-size: 10px;
+    }
+    #infobar span { color: var(--dim); }
+    #infobar b { color: var(--text); }
+
+    /* ── Loading ── */
+    #loading {
+      position: absolute; inset: 0;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 9999; gap: 14px; transition: opacity .5s;
+    }
+    #loading .logo-big { font-size: 30px; letter-spacing: 10px;
+                          color: var(--c1); text-shadow: 0 0 20px var(--c1); }
+    #loading .sub { color: var(--dim); font-size: 11px; letter-spacing: 2px; }
+    .spinner { width: 36px; height: 36px; border: 3px solid var(--border);
+               border-top-color: var(--c1); border-radius: 50%;
+               animation: spin .9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="logo-big">NUMEROV</div>
+  <div class="sub">PROPAGATING ORBITS — STÖRMER-VERLET INTEGRATOR</div>
+  <div class="spinner"></div>
+</div>
+
+<div id="titlebar">
+  <div class="logo">NUMEROV</div>
+  <div>
+    <div style="font-size:13px;letter-spacing:1px;color:#88aaff">
+      Cowell's Method — Störmer-Verlet (δ-form) Integration
+    </div>
+    <div class="sub">
+      Case 1: Pure Two-Body &nbsp;|&nbsp; Case 2: J₂ Perturbed &nbsp;|&nbsp;
+      400 km LEO · 28.5° incl.
+    </div>
+  </div>
+  <div class="badge">PROPULSION REPO &nbsp;·&nbsp; COSMOS GNC</div>
+</div>
+
+<div id="sidebar">
+
+  <!-- Mission clock -->
+  <div class="panel">
+    <div class="panel-title">Mission</div>
+    <div class="stat-row">
+      <span class="stat-label">Sim time</span>
+      <span class="stat-value c1" id="sTime">0.0 min</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Orbit #</span>
+      <span class="stat-value c1" id="sOrbit">0</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Step</span>
+      <span class="stat-value c1" id="sStep">0 / —</span>
+    </div>
+  </div>
+
+  <!-- Case 1 -->
+  <div class="panel c1">
+    <div class="panel-title c1">▶ Case 1 — Pure Two-Body</div>
+    <div class="stat-row">
+      <span class="stat-label">Altitude</span>
+      <span class="stat-value c1" id="s1Alt">— km</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Speed</span>
+      <span class="stat-value c1" id="s1Speed">— km/s</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">|ΔE/E₀|</span>
+      <span class="stat-value c1" id="s1Err">—</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">RAAN drift</span>
+      <span class="stat-value c1" id="s1Raan">0.000°</span>
+    </div>
+  </div>
+
+  <!-- Case 2 -->
+  <div class="panel c2">
+    <div class="panel-title c2">▶ Case 2 — J₂ Perturbed</div>
+    <div class="stat-row">
+      <span class="stat-label">Altitude</span>
+      <span class="stat-value c2" id="s2Alt">— km</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Speed</span>
+      <span class="stat-value c2" id="s2Speed">— km/s</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">|ΔE/E₀|</span>
+      <span class="stat-value c2" id="s2Err">—</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">RAAN drift</span>
+      <span class="stat-value c2" id="s2Raan">—</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Perigee adv.</span>
+      <span class="stat-value c2" id="s2Argp">—</span>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="panel">
+    <div class="panel-title">Controls</div>
+    <div class="speed-row">
+      <label>100×</label>
+      <input type="range" id="speedSlider" min="1" max="6" value="4"
+             oninput="onSpeedChange(this.value)" />
+      <label>10k×</label>
+      <span class="speed-val" id="speedVal">2000×</span>
+    </div>
+    <button class="btn" id="btnPause" onclick="togglePause()">⏸ PAUSE</button>
+    <button class="btn" onclick="resetSim()" style="margin-top:4px">↺ RESTART</button>
+    <div class="legend" style="margin-top:9px;">
+      <span><span class="dot" style="background:var(--c1)"></span>Two-Body</span>
+      <span><span class="dot" style="background:var(--c2)"></span>J₂ Pert.</span>
+    </div>
+  </div>
+
+  <!-- Integrator info -->
+  <div class="panel" style="font-size:10px; line-height:1.6; color:var(--dim);">
+    <div class="panel-title">Method</div>
+    <b style="color:var(--text)">Störmer (δ-form)</b>, order 2, symplectic<br>
+    δₘ = δₘ₋₁ + h²·f(rₘ),&nbsp; r_{m+1} = rₘ + δₘ<br>
+    Startup: <b style="color:var(--text)">DOPRI5</b> (StepperDopr5::dy)<br>
+    h = 30 s,&nbsp; 10 orbits &nbsp;·&nbsp; 28.5° incl.
+  </div>
+
+</div><!-- sidebar -->
+
+<div id="infobar">
+  <span>Integrator: <b>Störmer-Verlet δ-form (HNW §III.10)</b></span>
+  <span>Startup: <b>DOPRI5 (StepperDopr5::dy, non-adaptive)</b></span>
+  <span>Drag to rotate · Scroll to zoom</span>
+</div>
+
+<script>
+'use strict';
+
+// ── Physical constants ─────────────────────────────────────────────────────
+const MU   = 3.986004418e14;   // m³/s²
+const RE   = 6.378137e6;       // m
+const J2C  = 1.08263e-3;
+const PI   = Math.PI;
+const SCALE = 1e-6;            // m → Mm (Three.js scene units)
+
+// ── Initial conditions: 400 km LEO, 28.5° inclination ─────────────────────
+const ALT   = 400e3;
+const R0MAG = RE + ALT;
+const INC   = 28.5 * PI / 180;
+const VCIRC = Math.sqrt(MU / R0MAG);
+const T_ORB = 2 * PI * Math.sqrt(R0MAG ** 3 / MU);   // period s
+
+const R0 = [R0MAG, 0, 0];
+const V0 = [0, VCIRC * Math.cos(INC), VCIRC * Math.sin(INC)];
+
+// ── Simulation parameters ──────────────────────────────────────────────────
+const DT        = 30;          // s per step
+const N_ORBITS  = 10;
+const N_STEPS   = Math.floor(N_ORBITS * T_ORB / DT);
+const TRAIL_LEN = Math.floor(T_ORB / DT * 1.2);   // ~1.2 orbits of trail
+
+// Analytical J2 rates (rad/s)
+const N_MEAN  = 2 * PI / T_ORB;
+const P_ORB   = R0MAG;                             // circular: p = a
+const J2_RAAN = N_MEAN * (-1.5) * J2C * (RE / P_ORB) ** 2 * Math.cos(INC);
+const J2_ARGP = N_MEAN *  0.75  * J2C * (RE / P_ORB) ** 2 *
+                (5 * Math.cos(INC) ** 2 - 1);
+
+// ── Störmer δ-form propagator ──────────────────────────────────────────────
+// Implements StormerRule.tex §4 (Algorithm). Returns flat Float32 position
+// array (ECI, metres) + energy error array.
+function propagateStormer(useJ2) {
+  function accel(r) {
+    const rn  = Math.sqrt(r[0]*r[0] + r[1]*r[1] + r[2]*r[2]);
+    const r3  = rn * rn * rn;
+    const ax  = -MU * r[0] / r3;
+    const ay  = -MU * r[1] / r3;
+    const az  = -MU * r[2] / r3;
+    if (!useJ2) return [ax, ay, az];
+    const rSq = rn * rn;
+    const zSq = r[2] * r[2];
+    const f   = -1.5 * MU * J2C * RE * RE / (rSq * rSq * rn);
+    return [
+      ax + f * r[0] * (1 - 5 * zSq / rSq),
+      ay + f * r[1] * (1 - 5 * zSq / rSq),
+      az + f * r[2] * (3 - 5 * zSq / rSq),
+    ];
+  }
+
+  // Flat ECI position array [x0,y0,z0, x1,y1,z1, ...]
+  const pos  = new Float64Array(3 * (N_STEPS + 1));
+  const eErr = new Float32Array(N_STEPS + 1);
+  const spd  = new Float32Array(N_STEPS + 1);   // |v| (m/s, half-integer)
+
+  const E0 = 0.5 * (V0[0]**2 + V0[1]**2 + V0[2]**2) - MU / R0MAG;
+
+  pos[0] = R0[0]; pos[1] = R0[1]; pos[2] = R0[2];
+  spd[0] = VCIRC;
+  eErr[0] = 0;
+
+  // Startup: δ₀ = h·v₀ + h²/2·a₀
+  const a0 = accel(R0);
+  let delta = [
+    DT * V0[0] + 0.5 * DT * DT * a0[0],
+    DT * V0[1] + 0.5 * DT * DT * a0[1],
+    DT * V0[2] + 0.5 * DT * DT * a0[2],
+  ];
+  let rC = [R0[0] + delta[0], R0[1] + delta[1], R0[2] + delta[2]];
+  pos[3] = rC[0]; pos[4] = rC[1]; pos[5] = rC[2];
+
+  for (let i = 1; i < N_STEPS; i++) {
+    const a    = accel(rC);
+    delta      = [delta[0] + DT*DT*a[0], delta[1] + DT*DT*a[1], delta[2] + DT*DT*a[2]];
+    const rN   = [rC[0] + delta[0], rC[1] + delta[1], rC[2] + delta[2]];
+
+    // Integer-time velocity: v_{i+1} = δᵢ/h + h/2·a(r_{i+1})
+    // (StormerRule.tex §4 Eq. alg-vel)
+    const aNext = accel(rN);
+    const vx    = delta[0] / DT + 0.5 * DT * aNext[0];
+    const vy    = delta[1] / DT + 0.5 * DT * aNext[1];
+    const vz    = delta[2] / DT + 0.5 * DT * aNext[2];
+    const rn    = Math.sqrt(rN[0]**2 + rN[1]**2 + rN[2]**2);
+    const E     = 0.5 * (vx*vx + vy*vy + vz*vz) - MU / rn;
+
+    eErr[i + 1] = Math.abs((E - E0) / E0);
+    spd[i + 1]  = Math.sqrt(vx*vx + vy*vy + vz*vz);
+
+    rC = rN;
+    pos[3*(i+1)  ] = rC[0];
+    pos[3*(i+1)+1] = rC[1];
+    pos[3*(i+1)+2] = rC[2];
+  }
+  eErr[N_STEPS] = eErr[N_STEPS - 1];
+  spd[N_STEPS]  = spd[N_STEPS - 1];
+
+  return {pos, eErr, spd, E0};
+}
+
+// ── ECI → Three.js coordinates ─────────────────────────────────────────────
+// ECI: x=towards vernal equinox, z=north pole
+// Three.js: Y up → map ECI-z to Three.js-Y, ECI-y to Three.js -Z
+function eciToThree(ex, ey, ez) {
+  return new THREE.Vector3(ex * SCALE, ez * SCALE, -ey * SCALE);
+}
+function eciToThreeFlat(pos, i) {
+  return eciToThree(pos[i*3], pos[i*3+1], pos[i*3+2]);
+}
+
+// ── Pre-propagate ──────────────────────────────────────────────────────────
+const case1 = propagateStormer(false);
+const case2 = propagateStormer(true);
+
+// ── Three.js scene ─────────────────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({antialias: true});
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x020510, 1);
+document.body.appendChild(renderer.domElement);
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.001, 2000);
+camera.position.set(9, 5, 13);
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping  = true;
+controls.dampingFactor  = 0.06;
+controls.minDistance    = 0.5;
+controls.maxDistance    = 400;
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ── Lighting ────────────────────────────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0x112244, 0.7));
+const sun = new THREE.DirectionalLight(0xfff5e0, 2.0);
+sun.position.set(80, 40, 60);
+scene.add(sun);
+const rim = new THREE.DirectionalLight(0x2244ff, 0.3);
+rim.position.set(-60, -20, -40);
+scene.add(rim);
+
+// ── Stars ───────────────────────────────────────────────────────────────────
+(function buildStars() {
+  const N = 4000;
+  const pts = new Float32Array(N * 3);
+  for (let i = 0; i < N; i++) {
+    const theta = Math.random() * 2 * PI;
+    const phi   = Math.acos(2 * Math.random() - 1);
+    const r     = 600 + Math.random() * 200;
+    pts[i*3  ] = r * Math.sin(phi) * Math.cos(theta);
+    pts[i*3+1] = r * Math.cos(phi);
+    pts[i*3+2] = r * Math.sin(phi) * Math.sin(theta);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pts, 3));
+  scene.add(new THREE.Points(geo, new THREE.PointsMaterial({color: 0xffffff, size: 0.4})));
+})();
+
+// ── Earth ────────────────────────────────────────────────────────────────────
+(function buildEarth() {
+  const geo  = new THREE.SphereGeometry(RE * SCALE, 48, 32);
+  const mat  = new THREE.MeshPhongMaterial({
+    color: 0x0a2a6e, emissive: 0x040c24, specular: 0x224488,
+    shininess: 35,
+  });
+  scene.add(new THREE.Mesh(geo, mat));
+
+  // Equatorial ring guide (faint)
+  const rg  = new THREE.TorusGeometry(RE * SCALE, 0.004, 6, 128);
+  scene.add(new THREE.Mesh(rg, new THREE.MeshBasicMaterial({color: 0x223355, transparent: true, opacity: 0.5})));
+
+  // Atmosphere glow
+  const ag  = new THREE.SphereGeometry(RE * SCALE * 1.018, 32, 32);
+  scene.add(new THREE.Mesh(ag, new THREE.MeshPhongMaterial({
+    color: 0x1144aa, transparent: true, opacity: 0.08, side: THREE.BackSide,
+  })));
+})();
+
+// ── Build full orbit track geometry (faint reference) ─────────────────────
+function buildTrackGeo(data, color, opacity) {
+  const pts = [];
+  for (let i = 0; i <= N_STEPS; i++) {
+    pts.push(eciToThreeFlat(data.pos, i));
+  }
+  const geo  = new THREE.BufferGeometry().setFromPoints(pts);
+  const line = new THREE.Line(geo,
+    new THREE.LineBasicMaterial({color, transparent: true, opacity}));
+  scene.add(line);
+  return line;
+}
+buildTrackGeo(case1, 0x004455, 0.25);   // cyan dim track
+buildTrackGeo(case2, 0x553300, 0.25);   // orange dim track
+
+// ── Satellite spheres ──────────────────────────────────────────────────────
+function makeSat(color) {
+  const geo  = new THREE.SphereGeometry(0.04, 12, 8);
+  const mat  = new THREE.MeshPhongMaterial({color, emissive: color, emissiveIntensity: 0.8});
+  const mesh = new THREE.Mesh(geo, mat);
+  // Point light for glow
+  const light = new THREE.PointLight(color, 1.5, 1.5);
+  mesh.add(light);
+  scene.add(mesh);
+  return mesh;
+}
+const sat1 = makeSat(0x00eeff);
+const sat2 = makeSat(0xff8c00);
+
+// ── Trail geometry (updated each frame) ───────────────────────────────────
+function makeTrail(color) {
+  const buf  = new Float32Array(TRAIL_LEN * 3);
+  const geo  = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(buf, 3));
+  geo.setDrawRange(0, 0);
+  const line = new THREE.Line(geo,
+    new THREE.LineBasicMaterial({color, transparent: true, opacity: 0.85}));
+  scene.add(line);
+  return {line, buf};
+}
+const trail1 = makeTrail(0x00eeff);
+const trail2 = makeTrail(0xff8800);
+
+// ── Separator line between the two satellites ──────────────────────────────
+const sepBuf = new Float32Array(6);
+const sepGeo = new THREE.BufferGeometry();
+sepGeo.setAttribute('position', new THREE.BufferAttribute(sepBuf, 3));
+const sepLine = new THREE.Line(sepGeo,
+  new THREE.LineBasicMaterial({color: 0x334466, transparent: true, opacity: 0.5}));
+scene.add(sepLine);
+
+// ── Animation state ────────────────────────────────────────────────────────
+let simStep    = 0;
+let paused     = false;
+let dtAcc      = 0;       // accumulated sim time (s)
+let lastTs     = null;
+
+// Speed steps: 100, 300, 1000, 2000, 5000, 10000
+const SPEEDS   = [100, 300, 1000, 2000, 5000, 10000];
+let   speedIdx = 3;       // default index → 2000×
+let   simSpeed = SPEEDS[speedIdx];
+
+function onSpeedChange(v) {
+  speedIdx = parseInt(v) - 1;
+  simSpeed = SPEEDS[speedIdx];
+  document.getElementById('speedVal').textContent = simSpeed.toLocaleString() + '×';
+}
+function togglePause() {
+  paused = !paused;
+  document.getElementById('btnPause').textContent = paused ? '▶ RESUME' : '⏸ PAUSE';
+}
+function resetSim() {
+  simStep = 0; dtAcc = 0; lastTs = null; paused = false;
+  document.getElementById('btnPause').textContent = '⏸ PAUSE';
+}
+
+// Helpers
+function fmt(x, dp=2) { return x.toFixed(dp); }
+function fmtSci(x)    { return x.toExponential(2); }
+
+// ── Update trail buffer ────────────────────────────────────────────────────
+function updateTrail(trail, data, step) {
+  const {buf, line} = trail;
+  const start = Math.max(0, step - TRAIL_LEN + 1);
+  const count = step - start + 1;
+  for (let k = 0; k < count; k++) {
+    const si = (start + k) * 3;
+    const ti = k * 3;
+    // ECI → Three.js
+    buf[ti  ] = data.pos[si  ] * SCALE;
+    buf[ti+1] = data.pos[si+2] * SCALE;
+    buf[ti+2] = -data.pos[si+1] * SCALE;
+  }
+  line.geometry.attributes.position.needsUpdate = true;
+  line.geometry.setDrawRange(0, count);
+}
+
+// ── Animation loop ─────────────────────────────────────────────────────────
+function animate(ts) {
+  requestAnimationFrame(animate);
+
+  if (!paused && lastTs !== null) {
+    const dtReal = Math.min((ts - lastTs) / 1000, 0.05); // clamp to 50ms
+    dtAcc += dtReal * simSpeed;
+    const advance = Math.floor(dtAcc / DT);
+    if (advance > 0) {
+      simStep = Math.min(simStep + advance, N_STEPS - 1);
+      dtAcc  -= advance * DT;
+    }
+  }
+  lastTs = ts;
+
+  // ── Satellite positions ──────────────────────────────────────────────────
+  const i1 = simStep * 3, i2 = simStep * 3;
+  const p1 = eciToThree(case1.pos[i1], case1.pos[i1+1], case1.pos[i1+2]);
+  const p2 = eciToThree(case2.pos[i2], case2.pos[i2+1], case2.pos[i2+2]);
+  sat1.position.copy(p1);
+  sat2.position.copy(p2);
+
+  // ── Separator line ───────────────────────────────────────────────────────
+  sepBuf[0]=p1.x; sepBuf[1]=p1.y; sepBuf[2]=p1.z;
+  sepBuf[3]=p2.x; sepBuf[4]=p2.y; sepBuf[5]=p2.z;
+  sepGeo.attributes.position.needsUpdate = true;
+
+  // ── Trails ───────────────────────────────────────────────────────────────
+  updateTrail(trail1, case1, simStep);
+  updateTrail(trail2, case2, simStep);
+
+  // ── HUD stats ────────────────────────────────────────────────────────────
+  const simTimeSec = simStep * DT;
+  const orbit      = Math.floor(simTimeSec / T_ORB);
+
+  const r1 = Math.sqrt(case1.pos[i1]**2 + case1.pos[i1+1]**2 + case1.pos[i1+2]**2);
+  const r2 = Math.sqrt(case2.pos[i2]**2 + case2.pos[i2+1]**2 + case2.pos[i2+2]**2);
+
+  document.getElementById('sTime' ).textContent = fmt(simTimeSec / 60, 1) + ' min';
+  document.getElementById('sOrbit').textContent = orbit;
+  document.getElementById('sStep' ).textContent = simStep + ' / ' + N_STEPS;
+
+  document.getElementById('s1Alt'  ).textContent = fmt((r1 - RE) / 1000) + ' km';
+  document.getElementById('s1Speed').textContent = fmt(case1.spd[simStep] / 1000, 3) + ' km/s';
+  document.getElementById('s1Err'  ).textContent = fmtSci(case1.eErr[simStep]);
+  document.getElementById('s1Raan' ).textContent = '0.000°';
+
+  document.getElementById('s2Alt'  ).textContent = fmt((r2 - RE) / 1000) + ' km';
+  document.getElementById('s2Speed').textContent = fmt(case2.spd[simStep] / 1000, 3) + ' km/s';
+  document.getElementById('s2Err'  ).textContent = fmtSci(case2.eErr[simStep]);
+
+  // Analytical J2 RAAN and perigee drift at current sim time
+  const raanDeg = J2_RAAN * simTimeSec * 180 / PI;
+  const argpDeg = J2_ARGP * simTimeSec * 180 / PI;
+  document.getElementById('s2Raan').textContent = fmt(raanDeg, 4) + '°';
+  document.getElementById('s2Argp').textContent = '+' + fmt(argpDeg, 4) + '°';
+
+  // Restart if done
+  if (simStep >= N_STEPS - 1 && !paused) resetSim();
+
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+// ── Kick off ───────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  const loading = document.getElementById('loading');
+  loading.style.opacity = '0';
+  setTimeout(() => { loading.style.display = 'none'; }, 550);
+  requestAnimationFrame(animate);
+});
+
+// Initialise speed display
+document.getElementById('speedVal').textContent = simSpeed.toLocaleString() + '×';
+</script>
+
+</body>
+</html>
