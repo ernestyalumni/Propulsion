@@ -606,17 +606,15 @@ function animate(ts) {
 }
 
 // ── Kick off ───────────────────────────────────────────────────────────────
-// Three.js scripts in <head> block parsing, so by the time this inline script
-// runs THREE and OrbitControls are already available.  Use a short rAF delay
-// (rather than window.load) so the loading screen renders before we hide it.
-document.getElementById('speedVal').textContent = simSpeed.toLocaleString() + '×';
-
 requestAnimationFrame(() => {
   const loading = document.getElementById('loading');
   loading.style.opacity = '0';
-  setTimeout(() => { loading.style.display = 'none'; }, 500);
+  setTimeout(() => { loading.style.display = 'none'; }, 550);
   requestAnimationFrame(animate);
 });
+
+// Initialise speed display
+document.getElementById('speedVal').textContent = simSpeed.toLocaleString() + '×';
 </script>
 
 </body>
