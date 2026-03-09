@@ -923,6 +923,53 @@ where $p_{SR} \approx 4.5 \times 10^{-6}$ N/m$^2$ at 1 AU.
 \end{itemize}
 
 % ---------------------------------------------------------------------------
+\subsection{Application: Numerov Orbit Propagation Demo}
+\label{ssec:numerov-demo}
+% ---------------------------------------------------------------------------
+
+The \texttt{NumerovOrbitDemo.cpp} implementation demonstrates two scenarios:
+
+\paragraph{Toy Example: Pure Two-Body LEO (400~km, 28.5° inclination)}
+\begin{itemize}
+\item \textbf{Purpose}: Verify Numerov implementation correctness
+\item \textbf{Physics}: Central gravity only ($\mathbf{a} = -\mu\mathbf{r}/r^3$)
+\item \textbf{Validation}: Energy conservation to $\sim$0.04\% over 10 orbits
+\item \textbf{Expected}: Perfectly periodic orbit with constant energy
+\end{itemize}
+
+\paragraph{Real-World Example: LEO with $J_2$ Perturbation}
+\begin{itemize}
+\item \textbf{Purpose}: Demonstrate dominant LEO perturbation effect
+\item \textbf{Physics}: Two-body + Earth oblateness ($J_2 = 1.08263 \times 10^{-3}$)
+\item \textbf{Perturbation formula} (Curtis \S10.5):
+\begin{equation}
+\mathbf{a}_{J_2} = -\frac{3\mu J_2 R_\oplus^2}{2r^5}
+\begin{bmatrix}
+x(1 - 5z^2/r^2) \\
+y(1 - 5z^2/r^2) \\
+z(3 - 5z^2/r^2)
+\end{bmatrix}
+\end{equation}
+\item \textbf{Observable effects}:
+  \begin{itemize}
+  \item Nodal regression: $-7.08°$/day (Curtis Eq.~4.52)
+  \item Perigee advance: $+11.52°$/day (Curtis Eq.~4.53)
+  \end{itemize}
+\item \textbf{Why nontrivial}: $J_2$ is the dominant LEO perturbation ($\sim$90\% of all perturbation effects)
+\end{itemize}
+
+\noindent
+\textbf{Build and run} (from \texttt{Cosmos/Source}):
+\begin{verbatim}
+mkdir -p build && cd build
+cmake .. && make NumerovOrbitDemo
+./Examples/NumerovOrbitDemo
+\end{verbatim}
+
+\noindent
+\textbf{Output}: \texttt{numerov\_twobody.csv}, \texttt{numerov\_j2.csv} with columns \texttt{t,orbit,r\_x,r\_y,r\_z,energy,error}.
+
+% ---------------------------------------------------------------------------
 \section{Summary}
 % ---------------------------------------------------------------------------
 
@@ -965,13 +1012,6 @@ where $p_{SR} \approx 4.5 \times 10^{-6}$ N/m$^2$ at 1 AU.
         §III.10 (multistep Störmer methods, pp.~461--473).
   \item W. B. Gragg, ``On extrapolation algorithms for ordinary initial value
         problems,'' \textit{SIAM J.\ Numer.\ Anal.}\ \textbf{2} (1965) 384--403.
-  \item B. Numerov, ``A method of extrapolation of perturbations,''
-        \textit{Mon.\ Not.\ R.\ Astron.\ Soc.}\ \textbf{84} (1924) 592--601.
-  \item W. H. Press et al., \textit{Numerical Recipes} 3rd ed.\ (Cambridge, 2007),
-        §17.4 (\texttt{StepperStoerm}: the $k=2$ one-step extrapolation case).
-  \item C. Störmer, \textit{Sur les trajectoires des corpuscules électrisés},
-        \textit{Arch.\ Sci.\ Phys.\ Nat.}\ \textbf{24} (1907) 5--18.
-\end{itemize}
 \item \label{Bate1971} R. R. Bate, D. D. Mueller, J. E. White, \textit{Fundamentals of Astrodynamics} (Dover, 1971). \S9.2 (Cowell's Method), \S9.3 (Encke's Method), \S9.6 (Numerical Integration Methods including Gauss-Jackson).
 \item \label{Curtis2005} H. D. Curtis, \textit{Orbital Mechanics for Engineering Students}, 2nd ed.\ (Elsevier, 2005). Ch.~10 (Orbital Perturbations): \S10.2 (Cowell), \S10.3 (Encke), \S10.4 (Atmospheric Drag), \S10.5 (Gravitational Perturbations).
 \item \label{Hintz2015} G. R. Hintz, \textit{Orbital Mechanics and Astrodynamics} (Springer, 2015). Ch.~5: \S5.2 (Cowell's Method), \S5.3 (Encke's Method), \S5.5 (Integration Schemes), \S5.7 (Analytic Formulation of Perturbations).
