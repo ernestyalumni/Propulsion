@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <cstddef>
 #include <initializer_list>
 #include <iostream>
@@ -86,8 +87,103 @@ class Vector3
       return elements_[i];
     }
 
+    Field x() const noexcept
+    {
+      return elements_[0];
+    }
+
+    Field y() const noexcept
+    {
+      return elements_[1];
+    }
+
+    Field z() const noexcept
+    {
+      return elements_[2];
+    }
+
+    bool operator==(const Vector3& rhs) const
+    {
+      return elements_[0] == rhs.elements_[0] &&
+        elements_[1] == rhs.elements_[1] &&
+        elements_[2] == rhs.elements_[2];
+    }
+
+    bool operator!=(const Vector3& rhs) const
+    {
+      return !(*this == rhs);
+    }
+
     template <typename F>
     friend std::ostream& operator<<(std::ostream& os, const Vector3<F>& a);
+
+    Vector3 operator+(const Vector3& rhs) const
+    {
+      return Vector3{
+        elements_[0] + rhs.elements_[0],
+        elements_[1] + rhs.elements_[1],
+        elements_[2] + rhs.elements_[2]};
+    }
+
+    Vector3 operator-(const Vector3& rhs) const
+    {
+      return Vector3{
+        elements_[0] - rhs.elements_[0],
+        elements_[1] - rhs.elements_[1],
+        elements_[2] - rhs.elements_[2]};
+    }
+
+    Vector3 operator*(const Field scalar_value) const
+    {
+      return Vector3{
+        elements_[0] * scalar_value,
+        elements_[1] * scalar_value,
+        elements_[2] * scalar_value};
+    }
+
+    Vector3 operator/(const Field scalar_value) const
+    {
+      return Vector3{
+        elements_[0] / scalar_value,
+        elements_[1] / scalar_value,
+        elements_[2] / scalar_value};
+    }
+
+    Vector3& operator+=(const Vector3& rhs)
+    {
+      elements_[0] += rhs.elements_[0];
+      elements_[1] += rhs.elements_[1];
+      elements_[2] += rhs.elements_[2];
+      return *this;
+    }
+
+    //--------------------------------------------------------------------------
+    /// A vector space equipped with a norm is a normed vector space.
+    //--------------------------------------------------------------------------
+    Field norm() const
+    {
+      return std::hypot(elements_[0], elements_[1], elements_[2]);
+    }
+
+    Field norm_squared() const
+    {
+      return (
+        elements_[0] * elements_[0] +
+        elements_[1] * elements_[1] +
+        elements_[2] * elements_[2]);
+    }
+
+    //--------------------------------------------------------------------------
+    /// A vector space equipped with a dot product is an inner product space.
+    //--------------------------------------------------------------------------
+
+    Field dot(const Vector3& rhs) const
+    {
+      return (
+        elements_[0] * rhs.elements_[0] +
+        elements_[1] * rhs.elements_[1] +
+        elements_[2] * rhs.elements_[2]);
+    }
 
   private:
 
@@ -98,7 +194,7 @@ template <typename Field>
 std::ostream& operator<<(std::ostream& os, const Vector3<Field>& a)
 {
   for (
-    const auto iter {a.elements_.begin()};
+    auto iter {a.elements_.begin()};
     iter != a.elements_.end();
     ++iter)
   {

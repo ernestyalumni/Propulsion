@@ -3,6 +3,7 @@ ENABLE_TESTING()
 ADD_EXECUTABLE(Check
   Algebra/Modules/Vectors/NVector_tests.cpp
   Algebra/Modules/Vectors/Vector3_tests.cpp
+  Astrodynamics/TwoBodyAcceleration_tests.cpp
   Numerical/ExponentiationBySquaring_tests.cpp
   Numerical/Interpolation/Interpolation_tests.cpp
   Numerical/ODE/ODEIntTestSetup.cpp
