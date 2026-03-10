@@ -20,6 +20,7 @@
       --glow:   rgba(50, 170, 255, 0.18);
       --c1:     #00eeff;   /* Case 1 — pure two-body  */
       --c2:     #ff8c00;   /* Case 2 — J2 perturbed   */
+      --c3:     #00ff66;   /* Case 3 — Numerov PECECE */
       --ff:     'Courier New', Courier, monospace;
     }
 
@@ -69,6 +70,7 @@
     }
     .panel.c1 { border-left: 3px solid var(--c1); }
     .panel.c2 { border-left: 3px solid var(--c2); }
+    .panel.c3 { border-left: 3px solid var(--c3); }
 
     .panel-title {
       font-size: 9px; letter-spacing: 2px;
@@ -78,6 +80,7 @@
     }
     .panel-title.c1 { color: var(--c1); }
     .panel-title.c2 { color: var(--c2); }
+    .panel-title.c3 { color: var(--c3); }
 
     .stat-row {
       display: flex; justify-content: space-between;
@@ -87,6 +90,7 @@
     .stat-value { font-weight: bold; text-align: right; }
     .stat-value.c1 { color: var(--c1); text-shadow: 0 0 5px rgba(0,238,255,.4); }
     .stat-value.c2 { color: var(--c2); text-shadow: 0 0 5px rgba(255,140,0,.4); }
+    .stat-value.c3 { color: var(--c3); text-shadow: 0 0 5px rgba(0,255,102,.4); }
 
     /* controls */
     .speed-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
@@ -151,8 +155,8 @@
       Cowell's Method — Störmer-Verlet (δ-form) Integration
     </div>
     <div class="sub">
-      Case 1: Pure Two-Body &nbsp;|&nbsp; Case 2: J₂ Perturbed &nbsp;|&nbsp;
-      400 km LEO · 28.5° incl.
+      Case 1: Störmer Two-Body &nbsp;|&nbsp; Case 2: Störmer J₂ &nbsp;|&nbsp;
+      Case 3: Numerov PECECE &nbsp;·&nbsp; 400 km LEO · 28.5° incl.
     </div>
   </div>
   <div class="badge">PROPULSION REPO &nbsp;·&nbsp; COSMOS GNC</div>
@@ -223,6 +227,64 @@
     </div>
   </div>
 
+  <!-- Case 3 -->
+  <div class="panel c3">
+    <div class="panel-title c3">▶ Case 3 — Numerov PECECE</div>
+    <div class="stat-row">
+      <span class="stat-label">Altitude</span>
+      <span class="stat-value c3" id="s3Alt">— km</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Speed</span>
+      <span class="stat-value c3" id="s3Speed">— km/s</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">|ΔE/E₀|</span>
+      <span class="stat-value c3" id="s3Err">—</span>
+    </div>
+  </div>
+
+  <!-- COE panel -->
+  <div class="panel c3">
+    <div class="panel-title c3">Classical Orbital Elements</div>
+    <div class="stat-row">
+      <span class="stat-label">a</span>
+      <span class="stat-value c3" id="coeA">— km</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">e</span>
+      <span class="stat-value c3" id="coeE">—</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">i</span>
+      <span class="stat-value c3" id="coeI">—°</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Ω</span>
+      <span class="stat-value c3" id="coeOmega">—°</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">ω</span>
+      <span class="stat-value c3" id="coeArgp">—°</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">ν</span>
+      <span class="stat-value c3" id="coeNu">—°</span>
+    </div>
+  </div>
+
+  <!-- Energy drift chart -->
+  <div class="panel">
+    <div class="panel-title">Energy Drift  log₁₀|ΔE/E₀|</div>
+    <canvas id="eChart" width="210" height="110"
+            style="display:block;width:100%;border:1px solid var(--border);border-radius:3px;"></canvas>
+    <div class="legend" style="margin-top:5px; font-size:9.5px;">
+      <span><span class="dot" style="background:var(--c1)"></span>Two-Body</span>
+      <span><span class="dot" style="background:var(--c2)"></span>J₂</span>
+      <span><span class="dot" style="background:var(--c3)"></span>Numerov</span>
+    </div>
+  </div>
+
   <!-- Controls -->
   <div class="panel">
     <div class="panel-title">Controls</div>
@@ -238,23 +300,25 @@
     <div class="legend" style="margin-top:9px;">
       <span><span class="dot" style="background:var(--c1)"></span>Two-Body</span>
       <span><span class="dot" style="background:var(--c2)"></span>J₂ Pert.</span>
+      <span><span class="dot" style="background:var(--c3)"></span>Numerov</span>
     </div>
   </div>
 
   <!-- Integrator info -->
   <div class="panel" style="font-size:10px; line-height:1.6; color:var(--dim);">
     <div class="panel-title">Method</div>
-    <b style="color:var(--text)">Störmer (δ-form)</b>, order 2, symplectic<br>
+    <b style="color:var(--c1)">Störmer (δ-form)</b>, order 2, symplectic<br>
     δₘ = δₘ₋₁ + h²·f(rₘ),&nbsp; r_{m+1} = rₘ + δₘ<br>
-    Startup: <b style="color:var(--text)">DOPRI5</b> (StepperDopr5::dy)<br>
+    <b style="color:var(--c3)">Numerov PECECE</b>, order 4<br>
+    Startup: 128 Störmer sub-steps (h/128)<br>
     h = 30 s,&nbsp; 10 orbits &nbsp;·&nbsp; 28.5° incl.
   </div>
 
 </div><!-- sidebar -->
 
 <div id="infobar">
-  <span>Integrator: <b>Störmer-Verlet δ-form (HNW §III.10)</b></span>
-  <span>Startup: <b>DOPRI5 (StepperDopr5::dy, non-adaptive)</b></span>
+  <span>C1/C2: <b>Störmer-Verlet δ-form (HNW §III.10)</b></span>
+  <span>C3: <b>Numerov PECECE, O(h⁴), startup 128×sub-steps</b></span>
   <span>Drag to rotate · Scroll to zoom</span>
 </div>
 
@@ -314,12 +378,14 @@ function propagateStormer(useJ2) {
 
   // Flat ECI position array [x0,y0,z0, x1,y1,z1, ...]
   const pos  = new Float64Array(3 * (N_STEPS + 1));
+  const vel  = new Float64Array(3 * (N_STEPS + 1));   // [vx,vy,vz] at each step
   const eErr = new Float32Array(N_STEPS + 1);
   const spd  = new Float32Array(N_STEPS + 1);   // |v| (m/s, half-integer)
 
   const E0 = 0.5 * (V0[0]**2 + V0[1]**2 + V0[2]**2) - MU / R0MAG;
 
   pos[0] = R0[0]; pos[1] = R0[1]; pos[2] = R0[2];
+  vel[0] = V0[0]; vel[1] = V0[1]; vel[2] = V0[2];
   spd[0] = VCIRC;
   eErr[0] = 0;
 
@@ -350,6 +416,10 @@ function propagateStormer(useJ2) {
     eErr[i + 1] = Math.abs((E - E0) / E0);
     spd[i + 1]  = Math.sqrt(vx*vx + vy*vy + vz*vz);
 
+    vel[3*(i+1)  ] = vx;
+    vel[3*(i+1)+1] = vy;
+    vel[3*(i+1)+2] = vz;
+
     rC = rN;
     pos[3*(i+1)  ] = rC[0];
     pos[3*(i+1)+1] = rC[1];
@@ -358,7 +428,142 @@ function propagateStormer(useJ2) {
   eErr[N_STEPS] = eErr[N_STEPS - 1];
   spd[N_STEPS]  = spd[N_STEPS - 1];
 
-  return {pos, eErr, spd, E0};
+  return {pos, vel, eErr, spd, E0};
+}
+
+// ── Numerov PECECE propagator ──────────────────────────────────────────────
+// 4th-order Numerov corrector-predictor PECECE scheme.
+// Startup: 128 Störmer sub-steps to reach y₁ with O(h²/128²) error.
+// Main loop: PECECE (predict → eval → correct × 2 → eval) then leapfrog vel.
+function propagateNumerov(useJ2) {
+  function accel(r) {
+    const rn  = Math.sqrt(r[0]*r[0] + r[1]*r[1] + r[2]*r[2]);
+    const r3  = rn * rn * rn;
+    const ax  = -MU * r[0] / r3;
+    const ay  = -MU * r[1] / r3;
+    const az  = -MU * r[2] / r3;
+    if (!useJ2) return [ax, ay, az];
+    const rSq = rn * rn;
+    const zSq = r[2] * r[2];
+    const f   = -1.5 * MU * J2C * RE * RE / (rSq * rSq * rn);
+    return [
+      ax + f * r[0] * (1 - 5 * zSq / rSq),
+      ay + f * r[1] * (1 - 5 * zSq / rSq),
+      az + f * r[2] * (3 - 5 * zSq / rSq),
+    ];
+  }
+
+  const pos  = new Float64Array(3 * (N_STEPS + 1));
+  const vel  = new Float64Array(3 * (N_STEPS + 1));
+  const eErr = new Float32Array(N_STEPS + 1);
+  const spd  = new Float32Array(N_STEPS + 1);
+
+  const E0 = 0.5 * (V0[0]**2 + V0[1]**2 + V0[2]**2) - MU / R0MAG;
+
+  // Store step 0
+  pos[0] = R0[0]; pos[1] = R0[1]; pos[2] = R0[2];
+  vel[0] = V0[0]; vel[1] = V0[1]; vel[2] = V0[2];
+  spd[0] = VCIRC; eErr[0] = 0;
+
+  // ── Startup: 128 Störmer sub-steps to get y₁ ────────────────────────────
+  const N_SUB  = 128;
+  const h_sub  = DT / N_SUB;
+  const h_sub2 = h_sub * h_sub;
+  const f0     = accel(R0);
+  let dSub = [
+    h_sub * V0[0] + 0.5 * h_sub2 * f0[0],
+    h_sub * V0[1] + 0.5 * h_sub2 * f0[1],
+    h_sub * V0[2] + 0.5 * h_sub2 * f0[2],
+  ];
+  let r1 = [R0[0] + dSub[0], R0[1] + dSub[1], R0[2] + dSub[2]];
+  for (let k = 1; k < N_SUB; k++) {
+    const aSub = accel(r1);
+    dSub[0] += h_sub2 * aSub[0];
+    dSub[1] += h_sub2 * aSub[1];
+    dSub[2] += h_sub2 * aSub[2];
+    r1[0] += dSub[0]; r1[1] += dSub[1]; r1[2] += dSub[2];
+  }
+  // Velocity at y₁ via leapfrog
+  const a1 = accel(r1);
+  let v1 = [
+    (r1[0] - R0[0]) / DT + 0.5 * DT * a1[0],
+    (r1[1] - R0[1]) / DT + 0.5 * DT * a1[1],
+    (r1[2] - R0[2]) / DT + 0.5 * DT * a1[2],
+  ];
+
+  pos[3] = r1[0]; pos[4] = r1[1]; pos[5] = r1[2];
+  vel[3] = v1[0]; vel[4] = v1[1]; vel[5] = v1[2];
+  const rn1 = Math.sqrt(r1[0]**2 + r1[1]**2 + r1[2]**2);
+  const E1  = 0.5 * (v1[0]**2 + v1[1]**2 + v1[2]**2) - MU / rn1;
+  eErr[1]   = Math.abs((E1 - E0) / E0);
+  spd[1]    = Math.sqrt(v1[0]**2 + v1[1]**2 + v1[2]**2);
+
+  // ── PECECE main loop ─────────────────────────────────────────────────────
+  const h2    = DT * DT;
+  const h2_12 = h2 / 12;
+
+  let yPrev = [R0[0], R0[1], R0[2]];      // y_{n-1}
+  let fPrev = accel(R0);                   // f_{n-1}
+  let yCurr = r1;                          // y_n
+  let fCurr = a1;                          // f_n
+
+  for (let i = 1; i < N_STEPS; i++) {
+    // rhs constant for PECECE corrector: 2*y_n - y_{n-1} + h²/12*(10*f_n + f_{n-1})
+    const rhs0 = 2*yCurr[0] - yPrev[0] + h2_12*(10*fCurr[0] + fPrev[0]);
+    const rhs1 = 2*yCurr[1] - yPrev[1] + h2_12*(10*fCurr[1] + fPrev[1]);
+    const rhs2 = 2*yCurr[2] - yPrev[2] + h2_12*(10*fCurr[2] + fPrev[2]);
+
+    // P: predictor (explicit Störmer)
+    const yP = [
+      2*yCurr[0] - yPrev[0] + h2*fCurr[0],
+      2*yCurr[1] - yPrev[1] + h2*fCurr[1],
+      2*yCurr[2] - yPrev[2] + h2*fCurr[2],
+    ];
+    // E
+    let fIter = accel(yP);
+    // C1
+    let yCorr = [
+      rhs0 + h2_12 * fIter[0],
+      rhs1 + h2_12 * fIter[1],
+      rhs2 + h2_12 * fIter[2],
+    ];
+    // E
+    fIter = accel(yCorr);
+    // C2
+    const yNew = [
+      rhs0 + h2_12 * fIter[0],
+      rhs1 + h2_12 * fIter[1],
+      rhs2 + h2_12 * fIter[2],
+    ];
+    // E
+    const fNew = accel(yNew);
+
+    // Leapfrog velocity O(h²): v_new = (y_new - y_n)/h + h/2*f_new
+    const vx = (yNew[0] - yCurr[0]) / DT + 0.5 * DT * fNew[0];
+    const vy = (yNew[1] - yCurr[1]) / DT + 0.5 * DT * fNew[1];
+    const vz = (yNew[2] - yCurr[2]) / DT + 0.5 * DT * fNew[2];
+
+    const rnN = Math.sqrt(yNew[0]**2 + yNew[1]**2 + yNew[2]**2);
+    const E   = 0.5 * (vx*vx + vy*vy + vz*vz) - MU / rnN;
+
+    eErr[i+1] = Math.abs((E - E0) / E0);
+    spd[i+1]  = Math.sqrt(vx*vx + vy*vy + vz*vz);
+
+    pos[3*(i+1)  ] = yNew[0];
+    pos[3*(i+1)+1] = yNew[1];
+    pos[3*(i+1)+2] = yNew[2];
+    vel[3*(i+1)  ] = vx;
+    vel[3*(i+1)+1] = vy;
+    vel[3*(i+1)+2] = vz;
+
+    // Advance
+    yPrev = yCurr; fPrev = fCurr;
+    yCurr = yNew;  fCurr = fNew;
+  }
+  eErr[N_STEPS] = eErr[N_STEPS - 1];
+  spd[N_STEPS]  = spd[N_STEPS - 1];
+
+  return {pos, vel, eErr, spd, E0};
 }
 
 // ── ECI → Three.js coordinates ─────────────────────────────────────────────
@@ -371,9 +576,70 @@ function eciToThreeFlat(pos, i) {
   return eciToThree(pos[i*3], pos[i*3+1], pos[i*3+2]);
 }
 
+// ── COE from state vector ──────────────────────────────────────────────────
+function computeCOE(r, v) {
+  const rx = r[0], ry = r[1], rz = r[2];
+  const vx = v[0], vy = v[1], vz = v[2];
+  const rMag = Math.sqrt(rx*rx + ry*ry + rz*rz);
+  const vMag = Math.sqrt(vx*vx + vy*vy + vz*vz);
+  // Specific angular momentum h = r × v
+  const hx = ry*vz - rz*vy;
+  const hy = rz*vx - rx*vz;
+  const hz = rx*vy - ry*vx;
+  const hMag = Math.sqrt(hx*hx + hy*hy + hz*hz);
+  // Eccentricity vector: e = v×h/mu - r/|r|
+  const vhx = vy*hz - vz*hy;
+  const vhy = vz*hx - vx*hz;
+  const vhz = vx*hy - vy*hx;
+  const ex = vhx/MU - rx/rMag;
+  const ey = vhy/MU - ry/rMag;
+  const ez = vhz/MU - rz/rMag;
+  const eMag = Math.sqrt(ex*ex + ey*ey + ez*ez);
+  // Specific orbital energy
+  const E_spec = 0.5*vMag*vMag - MU/rMag;
+  // Semi-major axis: a = -mu/(2E)
+  const a = -MU / (2 * E_spec);
+  // Inclination
+  const i = Math.acos(Math.max(-1, Math.min(1, hz / hMag)));
+  // Node vector: n = [-hy, hx, 0]
+  const nx = -hy, ny = hx, nz = 0;
+  const nMag = Math.sqrt(nx*nx + ny*ny);
+  // RAAN Omega
+  let Omega = 0;
+  if (nMag > 1e-10) {
+    Omega = Math.acos(Math.max(-1, Math.min(1, nx / nMag)));
+    if (ny < 0) Omega = 2*PI - Omega;
+  }
+  // Argument of perigee omega
+  let omega = 0;
+  if (nMag > 1e-10 && eMag > 1e-10) {
+    const nDotE = nx*ex + ny*ey + nz*ez;
+    omega = Math.acos(Math.max(-1, Math.min(1, nDotE / (nMag * eMag))));
+    if (ez < 0) omega = 2*PI - omega;
+  }
+  // True anomaly nu
+  let nu = 0;
+  if (eMag > 1e-10) {
+    const eDotR = ex*rx + ey*ry + ez*rz;
+    nu = Math.acos(Math.max(-1, Math.min(1, eDotR / (eMag * rMag))));
+    const rDotV = rx*vx + ry*vy + rz*vz;
+    if (rDotV < 0) nu = 2*PI - nu;
+  }
+  const R2D = 180 / PI;
+  return {
+    a_km:      a / 1000,
+    e:         eMag,
+    i_deg:     i   * R2D,
+    Omega_deg: Omega * R2D,
+    omega_deg: omega * R2D,
+    nu_deg:    nu   * R2D,
+  };
+}
+
 // ── Pre-propagate ──────────────────────────────────────────────────────────
 const case1 = propagateStormer(false);
 const case2 = propagateStormer(true);
+const case3 = propagateNumerov(false);
 
 // ── Three.js scene ─────────────────────────────────────────────────────────
 const renderer = new THREE.WebGLRenderer({antialias: true});
@@ -458,6 +724,7 @@ function buildTrackGeo(data, color, opacity) {
 }
 buildTrackGeo(case1, 0x004455, 0.25);   // cyan dim track
 buildTrackGeo(case2, 0x553300, 0.25);   // orange dim track
+buildTrackGeo(case3, 0x004422, 0.25);   // green dim track
 
 // ── Satellite spheres ──────────────────────────────────────────────────────
 function makeSat(color) {
@@ -472,6 +739,7 @@ function makeSat(color) {
 }
 const sat1 = makeSat(0x00eeff);
 const sat2 = makeSat(0xff8c00);
+const sat3 = makeSat(0x00ff66);
 
 // ── Trail geometry (updated each frame) ───────────────────────────────────
 function makeTrail(color) {
@@ -486,6 +754,7 @@ function makeTrail(color) {
 }
 const trail1 = makeTrail(0x00eeff);
 const trail2 = makeTrail(0xff8800);
+const trail3 = makeTrail(0x00ff66);
 
 // ── Separator line between the two satellites ──────────────────────────────
 const sepBuf = new Float32Array(6);
@@ -557,11 +826,13 @@ function animate(ts) {
   lastTs = ts;
 
   // ── Satellite positions ──────────────────────────────────────────────────
-  const i1 = simStep * 3, i2 = simStep * 3;
+  const i1 = simStep * 3, i2 = simStep * 3, i3 = simStep * 3;
   const p1 = eciToThree(case1.pos[i1], case1.pos[i1+1], case1.pos[i1+2]);
   const p2 = eciToThree(case2.pos[i2], case2.pos[i2+1], case2.pos[i2+2]);
+  const p3 = eciToThree(case3.pos[i3], case3.pos[i3+1], case3.pos[i3+2]);
   sat1.position.copy(p1);
   sat2.position.copy(p2);
+  sat3.position.copy(p3);
 
   // ── Separator line ───────────────────────────────────────────────────────
   sepBuf[0]=p1.x; sepBuf[1]=p1.y; sepBuf[2]=p1.z;
@@ -571,6 +842,7 @@ function animate(ts) {
   // ── Trails ───────────────────────────────────────────────────────────────
   updateTrail(trail1, case1, simStep);
   updateTrail(trail2, case2, simStep);
+  updateTrail(trail3, case3, simStep);
 
   // ── HUD stats ────────────────────────────────────────────────────────────
   const simTimeSec = simStep * DT;
@@ -578,6 +850,7 @@ function animate(ts) {
 
   const r1 = Math.sqrt(case1.pos[i1]**2 + case1.pos[i1+1]**2 + case1.pos[i1+2]**2);
   const r2 = Math.sqrt(case2.pos[i2]**2 + case2.pos[i2+1]**2 + case2.pos[i2+2]**2);
+  const r3 = Math.sqrt(case3.pos[i3]**2 + case3.pos[i3+1]**2 + case3.pos[i3+2]**2);
 
   document.getElementById('sTime' ).textContent = fmt(simTimeSec / 60, 1) + ' min';
   document.getElementById('sOrbit').textContent = orbit;
@@ -597,6 +870,79 @@ function animate(ts) {
   const argpDeg = J2_ARGP * simTimeSec * 180 / PI;
   document.getElementById('s2Raan').textContent = fmt(raanDeg, 4) + '°';
   document.getElementById('s2Argp').textContent = '+' + fmt(argpDeg, 4) + '°';
+
+  // Case 3 stats
+  document.getElementById('s3Alt'  ).textContent = fmt((r3 - RE) / 1000) + ' km';
+  document.getElementById('s3Speed').textContent = fmt(case3.spd[simStep] / 1000, 3) + ' km/s';
+  document.getElementById('s3Err'  ).textContent = fmtSci(case3.eErr[simStep]);
+
+  // ── COE from case1 state ─────────────────────────────────────────────────
+  {
+    const ri = [case1.pos[i1], case1.pos[i1+1], case1.pos[i1+2]];
+    const vi = [case1.vel[i1], case1.vel[i1+1], case1.vel[i1+2]];
+    const coe = computeCOE(ri, vi);
+    document.getElementById('coeA'    ).textContent = fmt(coe.a_km, 1) + ' km';
+    document.getElementById('coeE'    ).textContent = coe.e.toFixed(6);
+    document.getElementById('coeI'    ).textContent = fmt(coe.i_deg, 4) + '°';
+    document.getElementById('coeOmega').textContent = fmt(coe.Omega_deg, 3) + '°';
+    document.getElementById('coeArgp' ).textContent = fmt(coe.omega_deg, 3) + '°';
+    document.getElementById('coeNu'   ).textContent = fmt(coe.nu_deg, 2) + '°';
+  }
+
+  // ── Energy drift chart ───────────────────────────────────────────────────
+  {
+    const canvas = document.getElementById('eChart');
+    const ctx    = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const PAD_L = 8, PAD_R = 4, PAD_T = 6, PAD_B = 14;
+    const plotW = W - PAD_L - PAD_R;
+    const plotH = H - PAD_T - PAD_B;
+    const LOG_MIN = -16, LOG_MAX = 0;
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(2,5,16,0.85)';
+    ctx.fillRect(0, 0, W, H);
+
+    // Grid lines
+    ctx.strokeStyle = 'rgba(40,80,160,0.25)';
+    ctx.lineWidth = 0.5;
+    for (let lg = LOG_MIN; lg <= LOG_MAX; lg += 4) {
+      const y = PAD_T + plotH * (1 - (lg - LOG_MIN) / (LOG_MAX - LOG_MIN));
+      ctx.beginPath(); ctx.moveTo(PAD_L, y); ctx.lineTo(PAD_L + plotW, y); ctx.stroke();
+    }
+
+    // Axis labels
+    ctx.fillStyle = 'rgba(68,102,170,0.9)';
+    ctx.font = '8px monospace';
+    for (let lg = LOG_MIN; lg <= LOG_MAX; lg += 4) {
+      const y = PAD_T + plotH * (1 - (lg - LOG_MIN) / (LOG_MAX - LOG_MIN));
+      ctx.fillText(lg.toString(), 0, y + 3);
+    }
+    // X label
+    ctx.fillStyle = 'rgba(68,102,170,0.7)';
+    ctx.fillText('orbit', PAD_L + plotW/2 - 10, H - 2);
+
+    function drawLine(data, color) {
+      if (simStep < 1) return;
+      ctx.strokeStyle = color;
+      ctx.lineWidth   = 1.2;
+      ctx.beginPath();
+      let started = false;
+      for (let s = 0; s <= simStep && s <= N_STEPS; s++) {
+        const eVal = data.eErr[s];
+        const logE = eVal > 0 ? Math.log10(eVal) : LOG_MIN;
+        const clampedLog = Math.max(LOG_MIN, Math.min(LOG_MAX, logE));
+        const cx = PAD_L + (s / N_STEPS) * plotW;
+        const cy = PAD_T + plotH * (1 - (clampedLog - LOG_MIN) / (LOG_MAX - LOG_MIN));
+        if (!started) { ctx.moveTo(cx, cy); started = true; }
+        else ctx.lineTo(cx, cy);
+      }
+      ctx.stroke();
+    }
+    drawLine(case1, '#00eeff');
+    drawLine(case2, '#ff8c00');
+    drawLine(case3, '#00ff66');
+  }
 
   // Restart if done
   if (simStep >= N_STEPS - 1 && !paused) resetSim();
