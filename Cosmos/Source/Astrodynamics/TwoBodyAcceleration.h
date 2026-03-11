@@ -54,16 +54,30 @@ struct J2Perturbation
     R_(R_)
   {}
 
+  //----------------------------------------------------------------------------
+  /// Cartesian J2 acceleration (Curtis Eq. 4.51 / Bate §9.3):
+  ///   a_x = factor * x * (1 - 5*z²/r²)
+  ///   a_y = factor * y * (1 - 5*z²/r²)
+  ///   a_z = factor * z * (3 - 5*z²/r²)   ← NOTE: coefficient is 3, not 1
+  /// where factor = -1.5 * mu * J2 * R² / r^5.
+  ///
+  /// The z-component differs from x/y because the J2 potential is
+  /// axisymmetric about the z-axis (zonal harmonic P_2(cos θ)), which
+  /// introduces an extra ∂/∂z term proportional to (3z² - r²).
+  //----------------------------------------------------------------------------
   Vector3 operator()(const AccelerationInputs<Field>& inputs) const
   {
     const Field r_norm {inputs.r_.norm()};
     const Field r_squared {r_norm * r_norm};
-    const Field z_squared_over_r_squared {
+    const Field z_sq_over_r_sq {
       inputs.r_.z() * inputs.r_.z() / r_squared};
     const Field factor {
-      -1.5 * mu_ * J2_ * R_ * R_ / \
+      -1.5 * mu_ * J2_ * R_ * R_ /
         (r_squared * r_squared * r_norm)};
-    return inputs.r_ * factor * (1.0 - 5.0 * z_squared_over_r_squared);
+    return Vector3{
+      factor * inputs.r_.x() * (1.0 - 5.0 * z_sq_over_r_sq),
+      factor * inputs.r_.y() * (1.0 - 5.0 * z_sq_over_r_sq),
+      factor * inputs.r_.z() * (3.0 - 5.0 * z_sq_over_r_sq)};
   }
 
   //----------------------------------------------------------------------------

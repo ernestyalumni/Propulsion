@@ -79,12 +79,12 @@ class NumerovStep
 
     NumerovStep() = delete;
 
-    explicit NumerovStep(DerivativeType&& derivative)
-      : derivative_{std::forward<DerivativeType>(derivative)}
+    explicit NumerovStep(DerivativeType&& derivative):
+      derivative_{std::forward<DerivativeType>(derivative)}
     {}
 
-    explicit NumerovStep(DerivativeType& derivative)
-      : derivative_{std::forward<DerivativeType>(derivative)}
+    explicit NumerovStep(DerivativeType& derivative):
+      derivative_{std::forward<DerivativeType>(derivative)}
     {}
 
     virtual ~NumerovStep() = default;

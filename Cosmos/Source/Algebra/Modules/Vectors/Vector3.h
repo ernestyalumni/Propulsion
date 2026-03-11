@@ -206,6 +206,22 @@ std::ostream& operator<<(std::ostream& os, const Vector3<Field>& a)
   return os;
 }
 
+//------------------------------------------------------------------------------
+/// \brief Commutative scalar multiplication: scalar * vector.
+///
+/// \details NumerovStep and StormerStep templates write expressions like
+///   Field{2} * container and h2_12 * f_n.  Without this free function the
+///   templates fail to instantiate when ContainerT = Vector3<Field>.
+///
+///   Defined as a non-member so it participates in argument-dependent lookup
+///   alongside operator*(Field) const on the class.
+//------------------------------------------------------------------------------
+template <typename Field>
+Vector3<Field> operator*(const Field scalar_value, const Vector3<Field>& v)
+{
+  return v * scalar_value;
+}
+
 } // namespace Vectors
 } // namespace Modules
 } // namespace Algebra
