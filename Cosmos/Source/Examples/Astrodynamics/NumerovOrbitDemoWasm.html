@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Numerov Orbit Propagation — WASM (Cosmos C++)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #050510;
+      color: #e0e0ff;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      overflow: hidden;
+    }
+    #canvas-container {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+    #ui {
+      position: absolute;
+      top: 20px; left: 20px;
+      background: rgba(10, 15, 30, 0.9);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(100, 150, 255, 0.2);
+      backdrop-filter: blur(10px);
+      max-width: 380px;
+      z-index: 100;
+    }
+    h1 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #80b0ff;
+      letter-spacing: 0.5px;
+    }
+    .control-group {
+      margin: 12px 0;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      color: #90a0c0;
+      margin-bottom: 4px;
+    }
+    input[type="range"] {
+      width: 100%;
+      margin: 4px 0;
+    }
+    .value-display {
+      font-family: 'SF Mono', monospace;
+      font-size: 12px;
+      color: #60d0ff;
+      text-align: right;
+    }
+    .stats {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(100, 150, 255, 0.15);
+      font-family: 'SF Mono', monospace;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+    }
+    .stat-label { color: #789; }
+    .stat-value { color: #8af; }
+    button {
+      background: linear-gradient(135deg, #2a4a8a, #1a3a6a);
+      border: 1px solid #4a7aca;
+      color: #c0d8ff;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-right: 8px;
+      margin-top: 8px;
+      transition: all 0.2s;
+    }
+    button:hover {
+      background: linear-gradient(135deg, #3a5aaa, #2a4a8a);
+      border-color: #6a9aea;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 8px 0;
+    }
+    .toggle-label { font-size: 12px; color: #90a0c0; }
+    .loading {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 200;
+    }
+    .spinner {
+      width: 50px; height: 50px;
+      border: 3px solid rgba(100, 150, 255, 0.2);
+      border-top-color: #60d0ff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .wasm-badge {
+      display: inline-block;
+      background: #4a0;
+      color: #000;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading Cosmos C++ via WebAssembly...</p>
+  </div>
+
+  <div id="canvas-container"></div>
+
+  <div id="ui">
+    <h1>Numerov Orbit Propagation <span class="wasm-badge">WASM</span></h1>
+
+    <div class="toggle-row">
+      <label class="toggle-label">Perturbation:</label>
+      <label><input type="radio" name="perturbation" value="none" checked> Two-body</label>
+      <label><input type="radio" name="perturbation" value="j2"> + J2</label>
+    </div>
+
+    <div class="control-group">
+      <label>Altitude: <span id="alt-value" class="value-display">400 km</span></label>
+      <input type="range" id="altitude" min="200" max="1000" value="400" step="50">
+    </div>
+
+    <div class="control-group">
+      <label>Inclination: <span id="inc-value" class="value-display">28.5°</span></label>
+      <input type="range" id="inclination" min="0" max="90" value="28.5" step="0.5">
+    </div>
+
+    <div class="control-group">
+      <label>Time Scale: <span id="speed-value" class="value-display">100×</span></label>
+      <input type="range" id="speed" min="1" max="1000" value="100" step="10">
+    </div>
+
+    <div>
+      <button id="btn-reset">Reset</button>
+      <button id="btn-pause">Pause</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat-row"><span class="stat-label">t:</span><span class="stat-value" id="stat-t">0 s</span></div>
+      <div class="stat-row"><span class="stat-label">Orbit:</span><span class="stat-value" id="stat-orbit">0</span></div>
+      <div class="stat-row"><span class="stat-label">Altitude:</span><span class="stat-value" id="stat-alt">--</span></div>
+      <div class="stat-row"><span class="stat-label">Velocity:</span><span class="stat-value" id="stat-vel">--</span></div>
+      <div class="stat-row"><span class="stat-label">Specific Energy:</span><span class="stat-value" id="stat-energy">--</span></div>
+      <div class="stat-row"><span class="stat-label">Energy Error:</span><span class="stat-value" id="stat-err">--</span></div>
+    </div>
+  </div>
+
+  <script src="vendor/three.min.js"></script>
+  <script src="vendor/OrbitControls.js"></script>
+
+  <!-- Load Emscripten WASM module -->
+  <script src="numerov_orbit.js"></script>
+
+  <script>
+    //==========================================================================
+    // Cosmos C++ via WebAssembly
+    //==========================================================================
+    let Module = null;
+    let propagator = null;
+    let c_funcs = {};
+
+    // Earth constants (will be populated from WASM)
+    const CONSTANTS = {
+      MU_EARTH: 3.986004418e14,
+      J2: 1.08263e-3,
+      R_EARTH: 6.378137e6,
+      PERIOD_400KM: null
+    };
+
+    //==========================================================================
+    // Initialize WASM module
+    //==========================================================================
+    async function initWasm() {
+      try {
+        Module = await NumerovOrbitModule();
+
+        // Wrap C functions for easy calling
+        c_funcs.create = Module.cwrap('numerov_orbit_create', 'number',
+          ['number', 'number', 'number']);
+        c_funcs.destroy = Module.cwrap('numerov_orbit_destroy', null, ['number']);
+        c_funcs.step = Module.cwrap('numerov_orbit_step', null, ['number']);
+        c_funcs.step_n = Module.cwrap('numerov_orbit_step_n', null, ['number', 'number']);
+        c_funcs.get_state = Module.cwrap('numerov_orbit_get_state', null, ['number', 'number']);
+        c_funcs.get_earth_constants = Module.cwrap('numerov_orbit_get_earth_constants', null, ['number']);
+
+        // Get constants from C++
+        const constPtr = Module._malloc(4 * 8); // 4 doubles
+        c_funcs.get_earth_constants(constPtr);
+        const constArr = new Float64Array(Module.HEAPF64.buffer, constPtr, 4);
+        CONSTANTS.MU_EARTH = constArr[0];
+        CONSTANTS.J2 = constArr[1];
+        CONSTANTS.R_EARTH = constArr[2];
+        CONSTANTS.PERIOD_400KM = constArr[3];
+        Module._free(constPtr);
+
+        console.log('WASM loaded, constants:', CONSTANTS);
+        document.getElementById('loading').style.display = 'none';
+
+        initSimulation();
+      } catch (err) {
+        console.error('Failed to load WASM:', err);
+        document.querySelector('#loading p').textContent =
+          'Failed to load WASM. Build with: emcc wasm_bridge.cpp ...';
+      }
+    }
+
+    //==========================================================================
+    // Simulation state
+    //==========================================================================
+    let scene, camera, renderer, controls;
+    let earth, orbitLine, satellite;
+    let isPaused = false;
+    let timeScale = 100;
+    let currentAlt = 400e3;
+    let currentInc = 28.5 * Math.PI / 180;
+    let useJ2 = false;
+
+    // History for trail
+    const MAX_TRAIL = 2000;
+    let trailPositions = [];
+
+    // Initial energy for error tracking
+    let E0 = null;
+
+    //==========================================================================
+    // Create propagator from current settings
+    //==========================================================================
+    function createPropagator() {
+      if (propagator) {
+        c_funcs.destroy(propagator);
+        propagator = null;
+      }
+
+      const r0 = CONSTANTS.R_EARTH + currentAlt;
+      const v_circ = Math.sqrt(CONSTANTS.MU_EARTH / r0);
+
+      // Config: [mu, j2, r_earth, dt]
+      const configPtr = Module._malloc(4 * 8);
+      const configArr = new Float64Array(Module.HEAPF64.buffer, configPtr, 4);
+      configArr[0] = CONSTANTS.MU_EARTH;
+      configArr[1] = CONSTANTS.J2;
+      configArr[2] = CONSTANTS.R_EARTH;
+      configArr[3] = 60.0; // dt = 60s
+
+      // Initial state: [t, rx, ry, rz, vx, vy, vz]
+      const statePtr = Module._malloc(7 * 8);
+      const stateArr = new Float64Array(Module.HEAPF64.buffer, statePtr, 7);
+      stateArr[0] = 0; // t
+      stateArr[1] = r0; // rx
+      stateArr[2] = 0;  // ry
+      stateArr[3] = 0;  // rz
+      stateArr[4] = 0;  // vx
+      stateArr[5] = v_circ * Math.cos(currentInc); // vy
+      stateArr[6] = v_circ * Math.sin(currentInc); // vz
+
+      propagator = c_funcs.create(configPtr, statePtr, useJ2 ? 1 : 0);
+
+      Module._free(configPtr);
+      Module._free(statePtr);
+
+      // Get initial state for energy reference
+      const outPtr = Module._malloc(8 * 8);
+      c_funcs.get_state(propagator, outPtr);
+      const outArr = new Float64Array(Module.HEAPF64.buffer, outPtr, 8);
+      E0 = outArr[7]; // specific_energy
+      Module._free(outPtr);
+
+      // Reset accumulator and clear trail
+      stepAccum = 0;
+      trailPositions = [];
+      if (orbitLine) {
+        orbitLine.geometry.setFromPoints([]);
+      }
+    }
+
+    //==========================================================================
+    // Three.js setup
+    //==========================================================================
+    function initThree() {
+      const container = document.getElementById('canvas-container');
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x050510);
+
+      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1000, 1e9);
+      camera.position.set(0, 0, 2.5 * CONSTANTS.R_EARTH);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(renderer.domElement);
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+
+      // Earth
+      const earthGeo = new THREE.SphereGeometry(CONSTANTS.R_EARTH, 64, 64);
+      const earthMat = new THREE.MeshPhongMaterial({
+        color: 0x1a4a8a,
+        emissive: 0x051020,
+        specular: 0x224466,
+        shininess: 10
+      });
+      earth = new THREE.Mesh(earthGeo, earthMat);
+      scene.add(earth);
+
+      // Atmosphere glow
+      const atmoGeo = new THREE.SphereGeometry(CONSTANTS.R_EARTH * 1.02, 32, 32);
+      const atmoMat = new THREE.MeshBasicMaterial({
+        color: 0x60a0ff,
+        transparent: true,
+        opacity: 0.15
+      });
+      const atmosphere = new THREE.Mesh(atmoGeo, atmoMat);
+      scene.add(atmosphere);
+
+      // Orbit trail
+      const orbitGeo = new THREE.BufferGeometry();
+      const orbitMat = new THREE.LineBasicMaterial({
+        color: 0xff6b35,
+        linewidth: 2
+      });
+      orbitLine = new THREE.Line(orbitGeo, orbitMat);
+      scene.add(orbitLine);
+
+      // Satellite
+      const satGeo = new THREE.SphereGeometry(5e4, 16, 16);
+      const satMat = new THREE.MeshBasicMaterial({ color: 0xffd700 });
+      satellite = new THREE.Mesh(satGeo, satMat);
+      scene.add(satellite);
+
+      // Lighting
+      const ambient = new THREE.AmbientLight(0x404060, 0.5);
+      scene.add(ambient);
+
+      const sun = new THREE.DirectionalLight(0xffffff, 1);
+      sun.position.set(1e8, 0, 0.5e8);
+      scene.add(sun);
+
+      // Stars
+      const starsGeo = new THREE.BufferGeometry();
+      const starCount = 5000;
+      const starPos = new Float32Array(starCount * 3);
+      for (let i = 0; i < starCount * 3; i++) {
+        starPos[i] = (Math.random() - 0.5) * 2e9;
+      }
+      starsGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+      const starsMat = new THREE.PointsMaterial({ color: 0x88aadd, size: 2e6 });
+      const stars = new THREE.Points(starsGeo, starsMat);
+      scene.add(stars);
+
+      window.addEventListener('resize', onWindowResize);
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    //==========================================================================
+    // Animation loop
+    //==========================================================================
+    let lastTime = performance.now();
+    let stepAccum = 0; // fractional step accumulator (dt_sim = 60s fixed)
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if (!isPaused && propagator) {
+        const now = performance.now();
+        const dt = Math.min((now - lastTime) / 1000, 0.1); // cap at 100ms to avoid spiral
+        lastTime = now;
+
+        // Advance simulation — accumulate fractional steps to handle large dt_sim=60s
+        stepAccum += dt * timeScale / 60.0;
+        const steps = Math.floor(stepAccum);
+        stepAccum -= steps;
+        if (steps > 0) {
+          c_funcs.step_n(propagator, Math.min(steps, 500)); // cap to prevent browser stall
+        }
+
+        // Get current state
+        const outPtr = Module._malloc(8 * 8);
+        c_funcs.get_state(propagator, outPtr);
+        const s = new Float64Array(Module.HEAPF64.buffer, outPtr, 8);
+
+        const t = s[0];
+        const rx = s[1], ry = s[2], rz = s[3];
+        const vx = s[4], vy = s[5], vz = s[6];
+        const E = s[7];
+
+        // Update satellite position
+        satellite.position.set(rx, ry, rz);
+
+        // Update trail
+        trailPositions.push(new THREE.Vector3(rx, ry, rz));
+        if (trailPositions.length > MAX_TRAIL) {
+          trailPositions.shift();
+        }
+        orbitLine.geometry.setFromPoints(trailPositions);
+
+        // Update UI stats
+        const r_norm = Math.sqrt(rx*rx + ry*ry + rz*rz);
+        const v_norm = Math.sqrt(vx*vx + vy*vy + vz*vz);
+        const alt = r_norm - CONSTANTS.R_EARTH;
+        const period = 2 * Math.PI * Math.sqrt(r_norm*r_norm*r_norm / CONSTANTS.MU_EARTH);
+        const orbit = Math.floor(t / period);
+
+        document.getElementById('stat-t').textContent = (t/60).toFixed(1) + ' min';
+        document.getElementById('stat-orbit').textContent = orbit;
+        document.getElementById('stat-alt').textContent = (alt/1000).toFixed(1) + ' km';
+        document.getElementById('stat-vel').textContent = (v_norm/1000).toFixed(2) + ' km/s';
+        document.getElementById('stat-energy').textContent = E.toExponential(6) + ' J/kg';
+
+        if (E0 !== null)
+
+        {
+          const relErr = Math.abs((E - E0) / E0);
+          document.getElementById('stat-err').textContent = relErr.toExponential(3);
+        }
+
+        Module._free(outPtr);
+        lastTime = now;
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    //==========================================================================
+    // initSimulation — wires up Three.js, propagator, and all UI events
+    //==========================================================================
+    function initSimulation() {
+      initThree();
+      createPropagator();
+      lastTime = performance.now();
+      animate();
+
+      // Altitude slider
+      document.getElementById('altitude').addEventListener('input', function() {
+        currentAlt = parseInt(this.value) * 1e3;
+        document.getElementById('alt-value').textContent = this.value + ' km';
+        createPropagator();
+        lastTime = performance.now();
+      });
+
+      // Inclination slider
+      document.getElementById('inclination').addEventListener('input', function() {
+        currentInc = parseFloat(this.value) * Math.PI / 180;
+        document.getElementById('inc-value').textContent = this.value + '°';
+        createPropagator();
+        lastTime = performance.now();
+      });
+
+      // Speed slider
+      document.getElementById('speed').addEventListener('input', function() {
+        timeScale = parseInt(this.value);
+        document.getElementById('speed-value').textContent = this.value + '×';
+      });
+
+      // Perturbation radio buttons
+      document.querySelectorAll('input[name="perturbation"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+          useJ2 = this.value === 'j2';
+          createPropagator();
+          lastTime = performance.now();
+        });
+      });
+
+      // Reset button
+      document.getElementById('btn-reset').addEventListener('click', function() {
+        createPropagator();
+        lastTime = performance.now();
+      });
+
+      // Pause / Resume button
+      document.getElementById('btn-pause').addEventListener('click', function() {
+        isPaused = !isPaused;
+        this.textContent = isPaused ? 'Resume' : 'Pause';
+        if (!isPaused) lastTime = performance.now();
+      });
+    }
+
+    // Boot — load WASM then start everything
+    initWasm();
+  </script>
+</body>
+</html>
