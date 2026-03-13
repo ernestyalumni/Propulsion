@@ -580,17 +580,17 @@ TEST(TestIntegrateWithPIControl,
 //------------------------------------------------------------------------------
 TEST(TestIntegrateWithPIControl, IntegrateWorksForForcedOscillation)
 {
-  IntegrateWithPIControl integrate {
-    CalculateNewYAndError<
-      DOPRI5_s,
-      decltype(forced_oscillation_eq_of_motion<valarray<double>>)
-      >{
-      forced_oscillation_eq_of_motion<valarray<double>>,
-      DOPRI5_a_coefficients,
-      DOPRI5_c_coefficients,
-      DOPRI5_delta_coefficients},
-    CalculateScaledError{epsilon, 2 * epsilon},
-    ComputePIStepSize{alpha_5, beta_5}};
+  CalculateNewYAndError<
+    DOPRI5_s,
+    decltype(forced_oscillation_eq_of_motion<valarray<double>>)> new_y_and_error {
+    forced_oscillation_eq_of_motion<valarray<double>>,
+    DOPRI5_a_coefficients,
+    DOPRI5_c_coefficients,
+    DOPRI5_delta_coefficients};
+
+  CalculateScaledError scaled_error {epsilon, 2 * epsilon};
+  ComputePIStepSize pi_step {alpha_5, beta_5};
+  IntegrateWithPIControl integrate {new_y_and_error, scaled_error, pi_step};
 
   IntegrationInputsForDenseOutput<valarray<double>> inputs {
     valarray<double>{0.0, 0.0},

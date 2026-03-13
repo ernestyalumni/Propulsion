@@ -19,7 +19,8 @@
 ///     -s ENVIRONMENT=web \
 ///     -O3 \
 ///     -std=c++20
-///
+/// or copy-paste this one line:
+/// emcc wasm_bridge.cpp -I ../../../.. -o numerov_orbit.js -s WASM=1 -s EXPORTED_FUNCTIONS='["_malloc","_free"]' -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap"]' -s ALLOW_MEMORY_GROWTH=1 -s MODULARIZE=1 -s EXPORT_NAME="NumerovOrbitModule" -s ENVIRONMENT=web -O3 -std=c++20
 /// Or use the provided CMake target (see Examples/CMakeLists.txt).
 //------------------------------------------------------------------------------
 

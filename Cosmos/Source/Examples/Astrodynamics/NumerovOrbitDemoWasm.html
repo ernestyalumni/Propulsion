@@ -3,512 +3,246 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Numerov Orbit Propagation — WASM (Cosmos C++)</title>
+  <title>Cosmos: Numerov Orbit — J2 Perturbation Viz (C++ WASM)</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: #050510;
-      color: #e0e0ff;
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      overflow: hidden;
-    }
-    #canvas-container {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-    }
-    #ui {
-      position: absolute;
-      top: 20px; left: 20px;
-      background: rgba(10, 15, 30, 0.9);
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid rgba(100, 150, 255, 0.2);
-      backdrop-filter: blur(10px);
-      max-width: 380px;
-      z-index: 100;
-    }
-    h1 {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      color: #80b0ff;
-      letter-spacing: 0.5px;
-    }
-    .control-group {
-      margin: 12px 0;
-    }
-    label {
-      display: block;
-      font-size: 12px;
-      color: #90a0c0;
-      margin-bottom: 4px;
-    }
-    input[type="range"] {
-      width: 100%;
-      margin: 4px 0;
-    }
-    .value-display {
-      font-family: 'SF Mono', monospace;
-      font-size: 12px;
-      color: #60d0ff;
-      text-align: right;
-    }
-    .stats {
-      margin-top: 16px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(100, 150, 255, 0.15);
-      font-family: 'SF Mono', monospace;
-      font-size: 11px;
-      line-height: 1.6;
-    }
-    .stat-row {
-      display: flex;
-      justify-content: space-between;
-    }
-    .stat-label { color: #789; }
-    .stat-value { color: #8af; }
-    button {
-      background: linear-gradient(135deg, #2a4a8a, #1a3a6a);
-      border: 1px solid #4a7aca;
-      color: #c0d8ff;
-      padding: 8px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 12px;
-      margin-right: 8px;
-      margin-top: 8px;
-      transition: all 0.2s;
-    }
-    button:hover {
-      background: linear-gradient(135deg, #3a5aaa, #2a4a8a);
-      border-color: #6a9aea;
-    }
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 8px 0;
-    }
-    .toggle-label { font-size: 12px; color: #90a0c0; }
-    .loading {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      z-index: 200;
-    }
-    .spinner {
-      width: 50px; height: 50px;
-      border: 3px solid rgba(100, 150, 255, 0.2);
-      border-top-color: #60d0ff;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 20px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .wasm-badge {
-      display: inline-block;
-      background: #4a0;
-      color: #000;
-      font-size: 10px;
-      font-weight: bold;
-      padding: 2px 6px;
-      border-radius: 3px;
-      margin-left: 8px;
-    }
+    body { background: radial-gradient(ellipse at center, #0a0a20 0%, #000 70%); color: #e0e0ff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+    #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    #ui { position: absolute; top: 20px; left: 20px; background: rgba(10,15,30,0.95); padding: 24px; border-radius: 16px; border: 1px solid rgba(100,200,255,0.3); backdrop-filter: blur(20px); max-width: 420px; z-index: 100; box-shadow: 0 8px 32px rgba(0,100,255,0.2); }
+    h1 { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #80d0ff; letter-spacing: 0.5px; text-shadow: 0 0 10px rgba(128,208,255,0.5); }
+    .mode-badge { display: inline-block; background: linear-gradient(135deg, #4a90ff, #2a70ff); color: white; font-size: 11px; font-weight: bold; padding: 4px 8px; border-radius: 12px; margin-left: 10px; }
+    .control-group { margin: 16px 0; }
+    label { display: block; font-size: 13px; color: #a0c0ff; margin-bottom: 6px; font-weight: 500; }
+    input[type="range"] { width: 100%; accent-color: #60d0ff; }
+    .value-display { font-family: 'SF Mono', monospace; font-size: 13px; color: #60ffaa; text-align: right; }
+    .stats { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(100,200,255,0.2); font-family: 'SF Mono', monospace; font-size: 12px; line-height: 1.5; }
+    .stat-row { display: flex; justify-content: space-between; margin: 4px 0; }
+    .stat-label { color: #789abc; } .stat-value { color: #ffaa60; font-weight: 500; }
+    .highlight { color: #ff6b35; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.7} }
+    button { background: linear-gradient(135deg, #2a5a9a, #1a406a); border: 1px solid #4a8aca; color: #c0e0ff; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 13px; margin: 4px 8px 0 0; transition: all 0.3s; font-weight: 500; }
+    button:hover { background: linear-gradient(135deg, #3a6aba, #2a5a9a); border-color: #6ab0ea; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(100,150,255,0.4); }
+    button.active { background: linear-gradient(135deg, #ff6b35, #ff4500); border-color: #ff8c42; }
+    .toggle-row { display: flex; align-items: center; gap: 12px; margin: 12px 0; flex-wrap: wrap; }
+    .toggle-label { font-size: 13px; color: #90b0e0; font-weight: 500; }
   </style>
 </head>
 <body>
   <div id="loading" class="loading">
     <div class="spinner"></div>
-    <p>Loading Cosmos C++ via WebAssembly...</p>
+    <p>Loading Cosmos C++ Numerov Propagator via WebAssembly...</p>
   </div>
 
   <div id="canvas-container"></div>
 
   <div id="ui">
-    <h1>Numerov Orbit Propagation <span class="wasm-badge">WASM</span></h1>
+    <h1>Cosmos Orbit Viz <span class="mode-badge">C++ WASM</span></h1>
+
+    <div class="toggle-row">
+      <label class="toggle-label">Mode:</label>
+      <button id="btn-compare" class="active">Compare J2 vs 2-Body</button>
+      <button id="btn-single">Single Orbit</button>
+    </div>
 
     <div class="toggle-row">
       <label class="toggle-label">Perturbation:</label>
-      <label><input type="radio" name="perturbation" value="none" checked> Two-body</label>
-      <label><input type="radio" name="perturbation" value="j2"> + J2</label>
+      <label><input type="radio" name="pert" value="j2" checked> J2</label>
+      <label><input type="radio" name="pert" value="none"> Two-Body</label>
     </div>
 
     <div class="control-group">
       <label>Altitude: <span id="alt-value" class="value-display">400 km</span></label>
-      <input type="range" id="altitude" min="200" max="1000" value="400" step="50">
+      <input type="range" id="altitude" min="200" max="1200" value="400" step="50">
     </div>
 
     <div class="control-group">
-      <label>Inclination: <span id="inc-value" class="value-display">28.5°</span></label>
-      <input type="range" id="inclination" min="0" max="90" value="28.5" step="0.5">
+      <label>Inclination: <span id="inc-value" class="value-display">51.6°</span></label>
+      <input type="range" id="inclination" min="0" max="98" value="51.6" step="0.5">
     </div>
 
     <div class="control-group">
-      <label>Time Scale: <span id="speed-value" class="value-display">100×</span></label>
-      <input type="range" id="speed" min="1" max="1000" value="100" step="10">
+      <label>Speed: <span id="speed-value" class="value-display">500×</span></label>
+      <input type="range" id="speed" min="10" max="2000" value="500" step="10">
     </div>
 
     <div>
-      <button id="btn-reset">Reset</button>
+      <button id="btn-reset">Reset & Clear Trails</button>
       <button id="btn-pause">Pause</button>
     </div>
 
     <div class="stats">
-      <div class="stat-row"><span class="stat-label">t:</span><span class="stat-value" id="stat-t">0 s</span></div>
-      <div class="stat-row"><span class="stat-label">Orbit:</span><span class="stat-value" id="stat-orbit">0</span></div>
-      <div class="stat-row"><span class="stat-label">Altitude:</span><span class="stat-value" id="stat-alt">--</span></div>
-      <div class="stat-row"><span class="stat-label">Velocity:</span><span class="stat-value" id="stat-vel">--</span></div>
-      <div class="stat-row"><span class="stat-label">Specific Energy:</span><span class="stat-value" id="stat-energy">--</span></div>
-      <div class="stat-row"><span class="stat-label">Energy Error:</span><span class="stat-value" id="stat-err">--</span></div>
+      <div class="stat-row"><span class="stat-label">Time:</span><span class="stat-value" id="stat-t">0 min</span></div>
+      <div class="stat-row"><span class="stat-label">Orbits:</span><span class="stat-value" id="stat-orbit">0</span></div>
+      <div class="stat-row"><span class="stat-label">Alt:</span><span class="stat-value" id="stat-alt">-- km</span></div>
+      <div class="stat-row"><span class="stat-label">Vel:</span><span class="stat-value" id="stat-vel">-- km/s</span></div>
+      <div class="stat-row stat-row"><span class="stat-label" id="div-label">Sep:</span><span class="stat-value highlight" id="stat-div">0 km</span></div>
+      <div class="stat-row"><span class="stat-label">Energy Err:</span><span class="stat-value" id="stat-err">--</span></div>
     </div>
   </div>
 
   <script src="vendor/three.min.js"></script>
   <script src="vendor/OrbitControls.js"></script>
-
-  <!-- Load Emscripten WASM module -->
   <script src="numerov_orbit.js"></script>
 
   <script>
-    //==========================================================================
-    // Cosmos C++ via WebAssembly
-    //==========================================================================
-    let Module = null;
-    let propagator = null;
-    let c_funcs = {};
+    let Module, propJ2, prop2Body, c_funcs, CONSTANTS = {};
+    let scene, camera, renderer, controls, earth, atmo, stars, satGlow, particles;
+    let trailJ2 = [], trail2Body = [], separationLine;
+    let isPaused = false, isCompare = true, useJ2Single = true, timeScale = 500, currentAlt = 400e3, currentInc = 51.6 * Math.PI/180;
+    const MAX_TRAIL = 5000; let E0J2 = null, E02Body = null, stepAccum = 0;
 
-    // Earth constants (will be populated from WASM)
-    const CONSTANTS = {
-      MU_EARTH: 3.986004418e14,
-      J2: 1.08263e-3,
-      R_EARTH: 6.378137e6,
-      PERIOD_400KM: null
-    };
-
-    //==========================================================================
-    // Initialize WASM module
-    //==========================================================================
     async function initWasm() {
-      try {
-        Module = await NumerovOrbitModule();
-
-        // Wrap C functions for easy calling
-        c_funcs.create = Module.cwrap('numerov_orbit_create', 'number',
-          ['number', 'number', 'number']);
-        c_funcs.destroy = Module.cwrap('numerov_orbit_destroy', null, ['number']);
-        c_funcs.step = Module.cwrap('numerov_orbit_step', null, ['number']);
-        c_funcs.step_n = Module.cwrap('numerov_orbit_step_n', null, ['number', 'number']);
-        c_funcs.get_state = Module.cwrap('numerov_orbit_get_state', null, ['number', 'number']);
-        c_funcs.get_earth_constants = Module.cwrap('numerov_orbit_get_earth_constants', null, ['number']);
-
-        // Get constants from C++
-        const constPtr = Module._malloc(4 * 8); // 4 doubles
-        c_funcs.get_earth_constants(constPtr);
-        const constArr = new Float64Array(Module.HEAPF64.buffer, constPtr, 4);
-        CONSTANTS.MU_EARTH = constArr[0];
-        CONSTANTS.J2 = constArr[1];
-        CONSTANTS.R_EARTH = constArr[2];
-        CONSTANTS.PERIOD_400KM = constArr[3];
-        Module._free(constPtr);
-
-        console.log('WASM loaded, constants:', CONSTANTS);
-        document.getElementById('loading').style.display = 'none';
-
-        initSimulation();
-      } catch (err) {
-        console.error('Failed to load WASM:', err);
-        document.querySelector('#loading p').textContent =
-          'Failed to load WASM. Build with: emcc wasm_bridge.cpp ...';
-      }
+      Module = await NumerovOrbitModule();
+      c_funcs = {
+        create: Module.cwrap('numerov_orbit_create', 'number', ['number','number','number']),
+        destroy: Module.cwrap('numerov_orbit_destroy', null, ['number']),
+        step_n: Module.cwrap('numerov_orbit_step_n', null, ['number','number']),
+        get_state: Module.cwrap('numerov_orbit_get_state', null, ['number','number']),
+        get_constants: Module.cwrap('numerov_orbit_get_earth_constants', null, ['number'])
+      };
+      const ptr = Module._malloc(32); c_funcs.get_constants(ptr); 
+      const arr = new Float64Array(Module.HEAPF64.buffer, ptr, 4);
+      CONSTANTS = {MU:arr[0], J2:arr[1], RE:arr[2], PERIOD:arr[3]}; Module._free(ptr);
+      document.getElementById('loading').remove();
+      initViz(); createPropagators(); animate();
     }
 
-    //==========================================================================
-    // Simulation state
-    //==========================================================================
-    let scene, camera, renderer, controls;
-    let earth, orbitLine, satellite;
-    let isPaused = false;
-    let timeScale = 100;
-    let currentAlt = 400e3;
-    let currentInc = 28.5 * Math.PI / 180;
-    let useJ2 = false;
+    function initViz() {
+      const cont = document.getElementById('canvas-container');
+      scene = new THREE.Scene(); scene.fog = new THREE.FogExp2(0x050510, 1e-10);
+      camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 1e5, 1e10); camera.position.set(0,0,3*CONSTANTS.RE);
+      renderer = new THREE.WebGLRenderer({antialias:true}); renderer.setSize(innerWidth,innerHeight); renderer.setPixelRatio(2); cont.appendChild(renderer.domElement);
+      controls = new THREE.OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.dampingFactor = 0.08;
 
-    // History for trail
-    const MAX_TRAIL = 2000;
-    let trailPositions = [];
-
-    // Initial energy for error tracking
-    let E0 = null;
-
-    //==========================================================================
-    // Create propagator from current settings
-    //==========================================================================
-    function createPropagator() {
-      if (propagator) {
-        c_funcs.destroy(propagator);
-        propagator = null;
-      }
-
-      const r0 = CONSTANTS.R_EARTH + currentAlt;
-      const v_circ = Math.sqrt(CONSTANTS.MU_EARTH / r0);
-
-      // Config: [mu, j2, r_earth, dt]
-      const configPtr = Module._malloc(4 * 8);
-      const configArr = new Float64Array(Module.HEAPF64.buffer, configPtr, 4);
-      configArr[0] = CONSTANTS.MU_EARTH;
-      configArr[1] = CONSTANTS.J2;
-      configArr[2] = CONSTANTS.R_EARTH;
-      configArr[3] = 60.0; // dt = 60s
-
-      // Initial state: [t, rx, ry, rz, vx, vy, vz]
-      const statePtr = Module._malloc(7 * 8);
-      const stateArr = new Float64Array(Module.HEAPF64.buffer, statePtr, 7);
-      stateArr[0] = 0; // t
-      stateArr[1] = r0; // rx
-      stateArr[2] = 0;  // ry
-      stateArr[3] = 0;  // rz
-      stateArr[4] = 0;  // vx
-      stateArr[5] = v_circ * Math.cos(currentInc); // vy
-      stateArr[6] = v_circ * Math.sin(currentInc); // vz
-
-      propagator = c_funcs.create(configPtr, statePtr, useJ2 ? 1 : 0);
-
-      Module._free(configPtr);
-      Module._free(statePtr);
-
-      // Get initial state for energy reference
-      const outPtr = Module._malloc(8 * 8);
-      c_funcs.get_state(propagator, outPtr);
-      const outArr = new Float64Array(Module.HEAPF64.buffer, outPtr, 8);
-      E0 = outArr[7]; // specific_energy
-      Module._free(outPtr);
-
-      // Reset accumulator and clear trail
-      stepAccum = 0;
-      trailPositions = [];
-      if (orbitLine) {
-        orbitLine.geometry.setFromPoints([]);
-      }
-    }
-
-    //==========================================================================
-    // Three.js setup
-    //==========================================================================
-    function initThree() {
-      const container = document.getElementById('canvas-container');
-
-      scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x050510);
-
-      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1000, 1e9);
-      camera.position.set(0, 0, 2.5 * CONSTANTS.R_EARTH);
-
-      renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      container.appendChild(renderer.domElement);
-
-      controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.05;
-
-      // Earth
-      const earthGeo = new THREE.SphereGeometry(CONSTANTS.R_EARTH, 64, 64);
-      const earthMat = new THREE.MeshPhongMaterial({
-        color: 0x1a4a8a,
-        emissive: 0x051020,
-        specular: 0x224466,
-        shininess: 10
-      });
-      earth = new THREE.Mesh(earthGeo, earthMat);
+      // Earth w/ texture
+      const texLoader = new THREE.TextureLoader();
+      const earthTex = texLoader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
+      const earthGeo = new THREE.SphereGeometry(CONSTANTS.RE, 128, 64); 
+      earth = new THREE.Mesh(earthGeo, new THREE.MeshPhongMaterial({map: earthTex, bumpMap: earthTex, bumpScale: 0.005}));
       scene.add(earth);
 
+      // Clouds
+      const cloudTex = texLoader.load('https://threejs.org/examples/textures/planets/earth_clouds_1024.png');
+      const cloudGeo = new THREE.SphereGeometry(CONSTANTS.RE*1.01, 128, 64);
+      const clouds = new THREE.Mesh(cloudGeo, new THREE.MeshPhongMaterial({map: cloudTex, transparent:true, opacity:0.4}));
+      earth.add(clouds);
+
       // Atmosphere glow
-      const atmoGeo = new THREE.SphereGeometry(CONSTANTS.R_EARTH * 1.02, 32, 32);
-      const atmoMat = new THREE.MeshBasicMaterial({
-        color: 0x60a0ff,
-        transparent: true,
-        opacity: 0.15
-      });
-      const atmosphere = new THREE.Mesh(atmoGeo, atmoMat);
-      scene.add(atmosphere);
+      const atmoGeo = new THREE.SphereGeometry(CONSTANTS.RE*1.015, 64, 64);
+      atmo = new THREE.Mesh(atmoGeo, new THREE.MeshBasicMaterial({color:0x88ddff, transparent:true, opacity:0.2, side:THREE.BackSide}));
+      scene.add(atmo);
 
-      // Orbit trail
-      const orbitGeo = new THREE.BufferGeometry();
-      const orbitMat = new THREE.LineBasicMaterial({
-        color: 0xff6b35,
-        linewidth: 2
-      });
-      orbitLine = new THREE.Line(orbitGeo, orbitMat);
-      scene.add(orbitLine);
-
-      // Satellite
-      const satGeo = new THREE.SphereGeometry(5e4, 16, 16);
-      const satMat = new THREE.MeshBasicMaterial({ color: 0xffd700 });
-      satellite = new THREE.Mesh(satGeo, satMat);
-      scene.add(satellite);
-
-      // Lighting
-      const ambient = new THREE.AmbientLight(0x404060, 0.5);
-      scene.add(ambient);
-
-      const sun = new THREE.DirectionalLight(0xffffff, 1);
-      sun.position.set(1e8, 0, 0.5e8);
-      scene.add(sun);
-
-      // Stars
-      const starsGeo = new THREE.BufferGeometry();
-      const starCount = 5000;
-      const starPos = new Float32Array(starCount * 3);
-      for (let i = 0; i < starCount * 3; i++) {
-        starPos[i] = (Math.random() - 0.5) * 2e9;
-      }
-      starsGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-      const starsMat = new THREE.PointsMaterial({ color: 0x88aadd, size: 2e6 });
-      const stars = new THREE.Points(starsGeo, starsMat);
+      // Stars (20k)
+      const starGeo = new THREE.BufferGeometry(); const starPos = new Float32Array(20000*3);
+      for(let i=0; i<20000*3; i+=3) { starPos[i] = (Math.random()-0.5)*4e9; starPos[i+1] = (Math.random()-0.5)*4e9; starPos[i+2] = (Math.random()-0.5)*4e9; }
+      starGeo.setAttribute('position', new THREE.BufferAttribute(starPos,3));
+      stars = new THREE.Points(starGeo, new THREE.PointsMaterial({color:0xffffff, size:3e6, transparent:true, opacity:0.8}));
       scene.add(stars);
 
-      window.addEventListener('resize', onWindowResize);
+      // Trails
+      const trailMatJ2 = new THREE.LineBasicMaterial({color:0xffaa00, linewidth:3, transparent:true, opacity:0.9});
+      const trailGeoJ2 = new THREE.BufferGeometry(); separationLine = new THREE.Line(trailGeoJ2, new THREE.LineBasicMaterial({color:0xff4444, linewidth:2}));
+      orbitLineJ2 = new THREE.Line(trailGeoJ2, trailMatJ2); scene.add(orbitLineJ2); scene.add(separationLine);
+      const trailMat2B = new THREE.LineBasicMaterial({color:0x00ddff, linewidth:3, transparent:true, opacity:0.7});
+      const trailGeo2B = new THREE.BufferGeometry(); orbitLine2B = new THREE.Line(trailGeo2B, trailMat2B); scene.add(orbitLine2B);
+
+      // Satellite glow
+      const satGeo = new THREE.ConeGeometry(8e4, 2e5, 16); satGlow = new THREE.Mesh(satGeo, new THREE.MeshBasicMaterial({color:0xffff88, transparent:true, opacity:0.9}));
+      scene.add(satGlow);
+
+      // Particles trail
+      const particleGeo = new THREE.BufferGeometry(); const particlePos = new Float32Array(MAX_TRAIL*3); particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos,3));
+      particles = new THREE.Points(particleGeo, new THREE.PointsMaterial({color:0xffffff, size:1e5, transparent:true, opacity:0.6, blending:THREE.AdditiveBlending}));
+      scene.add(particles);
+
+      // Lights
+      scene.add(new THREE.AmbientLight(0x404080, 0.4));
+      const sun = new THREE.DirectionalLight(0xffffff, 1.2); sun.position.set(5e8,1e8,3e8); scene.add(sun);
+
+      addEventListeners(); window.addEventListener('resize', () => { camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); });
     }
 
-    function onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+    function createPropagators() {
+      [propJ2, prop2Body].forEach(p => { if(p) c_funcs.destroy(p); });
+      const r0 = CONSTANTS.RE + currentAlt; const vcirc = Math.sqrt(CONSTANTS.MU / r0);
+      const makeState = (inc) => { const ptr = Module._malloc(56); const arr = new Float64Array(Module.HEAPF64.buffer, ptr, 7); 
+        arr[0]=0; arr[1]=r0; arr[2]=0; arr[3]=0; arr[4]=0; arr[5]=vcirc*Math.cos(inc); arr[6]=vcirc*Math.sin(inc); return ptr; };
+      const configPtr = Module._malloc(32); const cfg = new Float64Array(Module.HEAPF64.buffer, configPtr,4); 
+      cfg[0]=CONSTANTS.MU; cfg[1]=CONSTANTS.J2; cfg[2]=CONSTANTS.RE; cfg[3]=30; // finer dt=30s
+      const stateJ2 = makeState(currentInc); propJ2 = c_funcs.create(configPtr, stateJ2, 1); Module._free(stateJ2);
+      const state2B = makeState(currentInc); prop2Body = c_funcs.create(configPtr, state2B, 0); Module._free(state2B);
+      Module._free(configPtr);
+      // Reset E0, trails
+      E0J2 = getEnergy(propJ2); E02Body = getEnergy(prop2Body); trailJ2 = []; trail2Body = []; stepAccum=0;
+      updateTrails();
     }
 
-    //==========================================================================
-    // Animation loop
-    //==========================================================================
-    let lastTime = performance.now();
-    let stepAccum = 0; // fractional step accumulator (dt_sim = 60s fixed)
+    function getEnergy(prop) { const ptr=Module._malloc(64); c_funcs.get_state(prop,ptr); const e = new Float64Array(Module.HEAPF64.buffer,ptr,8)[7]; Module._free(ptr); return e; }
+    function getState(prop) { const ptr=Module._malloc(64); c_funcs.get_state(prop,ptr); const s = new Float64Array(Module.HEAPF64.buffer,ptr,8); Module._free(ptr); return s; }
 
-    function animate() {
-      requestAnimationFrame(animate);
+    function updateTrails() {
+      orbitLineJ2.geometry.setFromPoints(trailJ2.map(p=>new THREE.Vector3(...p.slice(1,4))));
+      orbitLine2B.geometry.setFromPoints(trail2Body.map(p=>new THREE.Vector3(...p.slice(1,4))));
+      orbitLineJ2.geometry.attributes.position.needsUpdate = true; orbitLine2B.geometry.attributes.position.needsUpdate = true;
+    }
 
-      if (!isPaused && propagator) {
-        const now = performance.now();
-        const dt = Math.min((now - lastTime) / 1000, 0.1); // cap at 100ms to avoid spiral
-        lastTime = now;
+    let lastTime = 0; function animate(t=0) {
+      requestAnimationFrame(animate); if(isPaused || !propJ2) return;
+      const dt = Math.min((t-lastTime)/1000,0.05); lastTime = t;
+      stepAccum += dt * timeScale / 30; const steps = Math.floor(stepAccum); stepAccum -= steps;
+      if(steps>0) { c_funcs.step_n(propJ2, Math.min(steps,200)); if(isCompare) c_funcs.step_n(prop2Body, Math.min(steps,200)); }
 
-        // Advance simulation — accumulate fractional steps to handle large dt_sim=60s
-        stepAccum += dt * timeScale / 60.0;
-        const steps = Math.floor(stepAccum);
-        stepAccum -= steps;
-        if (steps > 0) {
-          c_funcs.step_n(propagator, Math.min(steps, 500)); // cap to prevent browser stall
-        }
+      const sJ2 = getState(propJ2), s2B = isCompare ? getState(prop2Body) : sJ2;
+      const posJ2 = sJ2.slice(1,4), velJ2 = sJ2.slice(4,7), pos2B = s2B.slice(1,4);
+      const simTime = sJ2[0], r = Math.hypot(...posJ2), alt = r - CONSTANTS.RE, v = Math.hypot(...velJ2), period = 2*Math.PI*Math.sqrt(r**3/CONSTANTS.MU), orbits = Math.floor(simTime/period);
 
-        // Get current state
-        const outPtr = Module._malloc(8 * 8);
-        c_funcs.get_state(propagator, outPtr);
-        const s = new Float64Array(Module.HEAPF64.buffer, outPtr, 8);
+      // Update sat (J2 primary)
+      satGlow.position.set(...posJ2); satGlow.lookAt(0,0,0);
+      // Camera follow
+      const camTarget = new THREE.Vector3(...posJ2).multiplyScalar(1.5); camera.position.lerp(camTarget, 0.02); controls.target.lerp(new THREE.Vector3(...posJ2), 0.01);
 
-        const t = s[0];
-        const rx = s[1], ry = s[2], rz = s[3];
-        const vx = s[4], vy = s[5], vz = s[6];
-        const E = s[7];
+      // Trails
+      trailJ2.push(sJ2); if(trailJ2.length > MAX_TRAIL) trailJ2.shift();
+      if(isCompare) { trail2Body.push(s2B); if(trail2Body.length > MAX_TRAIL) trail2Body.shift(); }
 
-        // Update satellite position
-        satellite.position.set(rx, ry, rz);
+      // Separation
+      const sepVec = posJ2.map((x,i)=>x-pos2B[i]), sep = Math.hypot(...sepVec);
+      const sepGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...posJ2), new THREE.Vector3(...pos2B)]);
+      separationLine.geometry.dispose(); separationLine.geometry = sepGeo; separationLine.visible = isCompare && sep>1e3;
+      separationLine.scale.setScalar(sep>1e6 ? 1e-6 : 1);
 
-        // Update trail
-        trailPositions.push(new THREE.Vector3(rx, ry, rz));
-        if (trailPositions.length > MAX_TRAIL) {
-          trailPositions.shift();
-        }
-        orbitLine.geometry.setFromPoints(trailPositions);
-
-        // Update UI stats
-        const r_norm = Math.sqrt(rx*rx + ry*ry + rz*rz);
-        const v_norm = Math.sqrt(vx*vx + vy*vy + vz*vz);
-        const alt = r_norm - CONSTANTS.R_EARTH;
-        const period = 2 * Math.PI * Math.sqrt(r_norm*r_norm*r_norm / CONSTANTS.MU_EARTH);
-        const orbit = Math.floor(t / period);
-
-        document.getElementById('stat-t').textContent = (t/60).toFixed(1) + ' min';
-        document.getElementById('stat-orbit').textContent = orbit;
-        document.getElementById('stat-alt').textContent = (alt/1000).toFixed(1) + ' km';
-        document.getElementById('stat-vel').textContent = (v_norm/1000).toFixed(2) + ' km/s';
-        document.getElementById('stat-energy').textContent = E.toExponential(6) + ' J/kg';
-
-        if (E0 !== null)
-
-        {
-          const relErr = Math.abs((E - E0) / E0);
-          document.getElementById('stat-err').textContent = relErr.toExponential(3);
-        }
-
-        Module._free(outPtr);
-        lastTime = now;
+      // Particles (speed lines)
+      const particlePos = particles.geometry.attributes.position.array;
+      for(let i=0; i<Math.min(trailJ2.length, MAX_TRAIL/2)*3; i+=3) {
+        const idx = Math.floor(i/3), back = trailJ2[trailJ2.length-1-idx]; if(back) { particlePos[i]=back[1]; particlePos[i+1]=back[2]; particlePos[i+2]=back[3]; }
       }
+      particles.geometry.attributes.position.needsUpdate = true;
 
-      controls.update();
-      renderer.render(scene, camera);
+      // Stats
+      document.getElementById('stat-t').textContent = (simTime/60).toFixed(0)+' min';
+      document.getElementById('stat-orbit').textContent = orbits;
+      document.getElementById('stat-alt').textContent = (alt/1e3).toFixed(0)+' km';
+      document.getElementById('stat-vel').textContent = (v/1e3).toFixed(1)+' km/s';
+      document.getElementById('stat-div').textContent = isCompare ? (sep/1e3).toFixed(0)+' km' : '--';
+      document.getElementById('stat-err').textContent = ((Math.abs(sJ2[7]-E0J2)/Math.abs(E0J2)*1e4)).toFixed(1)+'e-4';
+      document.getElementById('div-label').textContent = isCompare ? 'Sep:' : 'Energy Err:';
+
+      updateTrails(); earth.rotation.y += 0.001; controls.update(); renderer.render(scene, camera);
     }
 
-    //==========================================================================
-    // initSimulation — wires up Three.js, propagator, and all UI events
-    //==========================================================================
-    function initSimulation() {
-      initThree();
-      createPropagator();
-      lastTime = performance.now();
-      animate();
-
-      // Altitude slider
-      document.getElementById('altitude').addEventListener('input', function() {
-        currentAlt = parseInt(this.value) * 1e3;
-        document.getElementById('alt-value').textContent = this.value + ' km';
-        createPropagator();
-        lastTime = performance.now();
-      });
-
-      // Inclination slider
-      document.getElementById('inclination').addEventListener('input', function() {
-        currentInc = parseFloat(this.value) * Math.PI / 180;
-        document.getElementById('inc-value').textContent = this.value + '°';
-        createPropagator();
-        lastTime = performance.now();
-      });
-
-      // Speed slider
-      document.getElementById('speed').addEventListener('input', function() {
-        timeScale = parseInt(this.value);
-        document.getElementById('speed-value').textContent = this.value + '×';
-      });
-
-      // Perturbation radio buttons
-      document.querySelectorAll('input[name="perturbation"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-          useJ2 = this.value === 'j2';
-          createPropagator();
-          lastTime = performance.now();
-        });
-      });
-
-      // Reset button
-      document.getElementById('btn-reset').addEventListener('click', function() {
-        createPropagator();
-        lastTime = performance.now();
-      });
-
-      // Pause / Resume button
-      document.getElementById('btn-pause').addEventListener('click', function() {
-        isPaused = !isPaused;
-        this.textContent = isPaused ? 'Resume' : 'Pause';
-        if (!isPaused) lastTime = performance.now();
-      });
+    function addEventListeners() {
+      document.getElementById('altitude').oninput = e => { currentAlt = +e.target.value*1e3; document.getElementById('alt-value').textContent = e.target.value+' km'; createPropagators(); };
+      document.getElementById('inclination').oninput = e => { currentInc = +e.target.value*Math.PI/180; document.getElementById('inc-value').textContent = e.target.value+'°'; createPropagators(); };
+      document.getElementById('speed').oninput = e => { timeScale = +e.target.value; document.getElementById('speed-value').textContent = e.target.value+'×'; };
+      document.querySelectorAll('input[name="pert"]').forEach(r => r.onchange = () => { useJ2Single = r.value==='j2'; createPropagators(); });
+      document.getElementById('btn-compare').onclick = () => toggleMode(true);
+      document.getElementById('btn-single').onclick = () => toggleMode(false);
+      document.getElementById('btn-reset').onclick = createPropagators;
+      document.getElementById('btn-pause').onclick = () => { isPaused = !isPaused; event.target.textContent = isPaused ? 'Resume' : 'Pause'; };
     }
+    function toggleMode(compare) { isCompare = compare; document.getElementById('btn-compare').classList.toggle('active', compare); document.getElementById('btn-single').classList.toggle('active', !compare); 
+      separationLine.visible = compare; document.getElementById('div-label').textContent = compare ? 'Sep:' : 'Energy Err:'; updateTrails(); }
 
-    // Boot — load WASM then start everything
     initWasm();
   </script>
 </body>

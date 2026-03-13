@@ -77,6 +77,12 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
+# Emscripten/Clang: avoid -Werror=character-conversion in Googletest
+if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+  target_compile_options(gtest PRIVATE -Wno-character-conversion)
+  target_compile_options(gtest_main PRIVATE -Wno-character-conversion)
+endif()
+
 # Add_subdirectory call makes use of libraries.
 # Add_subdirectory adds the source CMakeLists.txt and code files in the
 # directory.

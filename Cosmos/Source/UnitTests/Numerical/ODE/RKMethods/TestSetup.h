@@ -244,7 +244,8 @@ struct ForcedOscillationExactSolution
   static constexpr double d_ {-0.474996286928106};
   static constexpr double Gamma_ {0.06};
   static constexpr double omega_d_ {0.4};
-  static constexpr double omega_ {std::sqrt(0.9991)};
+  //static constexpr double omega_ {std::sqrt(0.9991)};
+  static constexpr double omega_ {0.9995499500067497};
 
   inline static double compute_exact_solution(const double x)
   {

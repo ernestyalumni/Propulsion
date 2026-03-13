@@ -81,32 +81,32 @@ TEST(TestHigherOrderIntegrateWithPIControl, ConstructsWithLValueObjects)
 TEST(TestHigherOrderIntegrateWithPIControl, ConstructsWithRValueObjects)
 {
   {
-    HigherOrderIntegrateWithPIControl integrate {
-      CalculateNewY<DOPR853_s, decltype(example_f_with_std_valarray)>{
-        example_f_with_std_valarray,
-        DOPR853_a_coefficients,
-        DOPR853_b_coefficients,
-        DOPR853_c_coefficients},
-      CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, valarray<double>>{
-        DOPR853_delta_coefficients,
-        DOPR853_bhh_coefficients,
-        valarray<double>(epsilon, 1),
-        valarray<double>(2 * epsilon, 1)},
-      ComputePIStepSize{1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0}};
+    CalculateNewY<DOPR853_s, decltype(example_f_with_std_valarray)> new_y {
+      example_f_with_std_valarray,
+      DOPR853_a_coefficients,
+      DOPR853_b_coefficients,
+      DOPR853_c_coefficients};
+    CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, valarray<double>> error {
+      DOPR853_delta_coefficients,
+      DOPR853_bhh_coefficients,
+      valarray<double>(epsilon, 1),
+      valarray<double>(2 * epsilon, 1)};
+    ComputePIStepSize pi_step {1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0};
+    HigherOrderIntegrateWithPIControl integrate {new_y, error, pi_step};
   }
   {
-    HigherOrderIntegrateWithPIControl integrate {
-      CalculateNewY<DOPR853_s, decltype(example_f_with_NVector<1>)>{
-        example_f_with_NVector<1>,
-        DOPR853_a_coefficients,
-        DOPR853_b_coefficients,
-        DOPR853_c_coefficients},
-      CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, NVector<1>>{
-        DOPR853_delta_coefficients,
-        DOPR853_bhh_coefficients,
-        NVector<1>(epsilon),
-        NVector<1>(2 * epsilon)},
-      ComputePIStepSize{1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0}};
+    CalculateNewY<DOPR853_s, decltype(example_f_with_NVector<1>)> new_y {
+      example_f_with_NVector<1>,
+      DOPR853_a_coefficients,
+      DOPR853_b_coefficients,
+      DOPR853_c_coefficients};
+    CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, NVector<1>> error {
+      DOPR853_delta_coefficients,
+      DOPR853_bhh_coefficients,
+      NVector<1>(epsilon),
+      NVector<1>(2 * epsilon)};
+    ComputePIStepSize pi_step{1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0};
+    HigherOrderIntegrateWithPIControl integrate {new_y, error, pi_step};
   }
 
   SUCCEED();
@@ -116,18 +116,18 @@ TEST(TestHigherOrderIntegrateWithPIControl, ConstructsWithRValueObjects)
 //------------------------------------------------------------------------------
 TEST(TestHigherOrderIntegrateWithPIControl, IntegrateIntegratesWithStdValarray)
 {
-  HigherOrderIntegrateWithPIControl integrate {
-    CalculateNewY<DOPR853_s, decltype(example_f_with_std_valarray)>{
-      example_f_with_std_valarray,
-      DOPR853_a_coefficients,
-      DOPR853_b_coefficients,
-      DOPR853_c_coefficients},
-    CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, valarray<double>>{
-      DOPR853_delta_coefficients,
-      DOPR853_bhh_coefficients,
-      valarray<double>(larger_epsilon, 1),
-      valarray<double>(larger_epsilon, 1)},
-    ComputePIStepSize{1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0}};
+  CalculateNewY<DOPR853_s, decltype(example_f_with_std_valarray)> new_y {
+    example_f_with_std_valarray,
+    DOPR853_a_coefficients,
+    DOPR853_b_coefficients,
+    DOPR853_c_coefficients};
+  CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, valarray<double>> error {
+    DOPR853_delta_coefficients,
+    DOPR853_bhh_coefficients,
+    valarray<double>(larger_epsilon, 1),
+    valarray<double>(larger_epsilon, 1)};
+  ComputePIStepSize pi_step {1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0};
+  HigherOrderIntegrateWithPIControl integrate {new_y, error, pi_step};
 
   const auto result = integrate.integrate<1>(
     integrate_inputs_with_std_valarray);
@@ -160,18 +160,18 @@ TEST(TestHigherOrderIntegrateWithPIControl, IntegrateIntegratesWithStdValarray)
 //------------------------------------------------------------------------------
 TEST(TestHigherOrderIntegrateWithPIControl, IntegrateIntegratesWithNVector)
 {
-  HigherOrderIntegrateWithPIControl integrate {
-    CalculateNewY<DOPR853_s, decltype(example_f_with_NVector<1>)>{
-      example_f_with_NVector<1>,
-      DOPR853_a_coefficients,
-      DOPR853_b_coefficients,
-      DOPR853_c_coefficients},
-    CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, NVector<1>>{
-      DOPR853_delta_coefficients,
-      DOPR853_bhh_coefficients,
-      NVector<1>(larger_epsilon),
-      NVector<1>(larger_epsilon)},
-    ComputePIStepSize{1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0}};
+  CalculateNewY<DOPR853_s, decltype(example_f_with_NVector<1>)> new_y {
+    example_f_with_NVector<1>,
+    DOPR853_a_coefficients,
+    DOPR853_b_coefficients,
+    DOPR853_c_coefficients};
+  CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, NVector<1>> error {
+    DOPR853_delta_coefficients,
+    DOPR853_bhh_coefficients,
+    NVector<1>(larger_epsilon),
+    NVector<1>(larger_epsilon)};
+  ComputePIStepSize pi_step{1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0};
+  HigherOrderIntegrateWithPIControl integrate {new_y, error, pi_step};
 
   const auto result = integrate.integrate<1>(integrate_inputs_with_nvector);
 
@@ -206,18 +206,18 @@ TEST(TestHigherOrderIntegrateWithPIControl,
 {
   constexpr double given_epsilon {1e-3};
 
-  HigherOrderIntegrateWithPIControl integrate {
-    CalculateNewY<DOPR853_s, decltype(example_f_with_std_valarray_2)>{
-      example_f_with_std_valarray_2,
-      DOPR853_a_coefficients,
-      DOPR853_b_coefficients,
-      DOPR853_c_coefficients},
-    CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, valarray<double>>{
-      DOPR853_delta_coefficients,
-      DOPR853_bhh_coefficients,
-      valarray<double>(given_epsilon, 2),
-      valarray<double>(given_epsilon, 2)},
-    ComputePIStepSize{1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0}};
+  CalculateNewY<DOPR853_s, decltype(example_f_with_std_valarray_2)> new_y {
+    example_f_with_std_valarray_2,
+    DOPR853_a_coefficients,
+    DOPR853_b_coefficients,
+    DOPR853_c_coefficients};
+  CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, valarray<double>> error {
+    DOPR853_delta_coefficients,
+    DOPR853_bhh_coefficients,
+    valarray<double>(given_epsilon, 2),
+    valarray<double>(given_epsilon, 2)};
+  ComputePIStepSize pi_step {1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0};
+  HigherOrderIntegrateWithPIControl integrate {new_y, error, pi_step};
 
   const auto result = integrate.integrate<2>(
     integrate_inputs_with_std_valarray_2);
@@ -254,18 +254,18 @@ TEST(TestHigherOrderIntegrateWithPIControl,
 {
   constexpr double given_epsilon {1e-3};
 
-  HigherOrderIntegrateWithPIControl integrate {
-    CalculateNewY<DOPR853_s, decltype(example_f_with_NVector_2)>{
-      example_f_with_NVector_2,
-      DOPR853_a_coefficients,
-      DOPR853_b_coefficients,
-      DOPR853_c_coefficients},
-    CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, NVector<2>>{
-      DOPR853_delta_coefficients,
-      DOPR853_bhh_coefficients,
-      NVector<2>(given_epsilon),
-      NVector<2>(given_epsilon)},
-    ComputePIStepSize{1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0}};
+  CalculateNewY<DOPR853_s, decltype(example_f_with_NVector_2)> new_y {
+    example_f_with_NVector_2,
+    DOPR853_a_coefficients,
+    DOPR853_b_coefficients,
+    DOPR853_c_coefficients};
+  CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, NVector<2>> error {
+    DOPR853_delta_coefficients,
+    DOPR853_bhh_coefficients,
+    NVector<2>(given_epsilon),
+    NVector<2>(given_epsilon)};
+  ComputePIStepSize pi_step {1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0};
+  HigherOrderIntegrateWithPIControl integrate {new_y, error, pi_step};
 
   const auto result = integrate.integrate<2>(integrate_inputs_with_nvector_2);
 
@@ -299,21 +299,20 @@ TEST(TestHigherOrderIntegrateWithPIControl,
 TEST(TestHigherOrderIntegrateWithPIControl,
   IntegrateIntegratesForcedOscillation)
 {
-  HigherOrderIntegrateWithPIControl integrate {
-    CalculateNewY<
-      DOPR853_s,
-      decltype(forced_oscillation_eq_of_motion<valarray<double>>)
-      >{
-      forced_oscillation_eq_of_motion<valarray<double>>,
-      DOPR853_a_coefficients,
-      DOPR853_b_coefficients,
-      DOPR853_c_coefficients},
-    CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, valarray<double>>{
-      DOPR853_delta_coefficients,
-      DOPR853_bhh_coefficients,
-      valarray<double>(epsilon, 1),
-      valarray<double>(epsilon, 2)},
-    ComputePIStepSize{1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0}};
+  CalculateNewY<
+    DOPR853_s,
+    decltype(forced_oscillation_eq_of_motion<valarray<double>>)> new_y {
+    forced_oscillation_eq_of_motion<valarray<double>>,
+    DOPR853_a_coefficients,
+    DOPR853_b_coefficients,
+    DOPR853_c_coefficients};
+  CalculateError<DOPR853_s, DOPR853_BHHCoefficientSize, valarray<double>> error {
+    DOPR853_delta_coefficients,
+    DOPR853_bhh_coefficients,
+    valarray<double>(epsilon, 1),
+    valarray<double>(epsilon, 2)};
+  ComputePIStepSize pi_step {1.0 / 8.0 - beta_8, beta_8, 0.333, 6.0};
+  HigherOrderIntegrateWithPIControl integrate {new_y, error, pi_step};
 
   IntegrationInputs<valarray<double>> inputs {
     valarray<double>{0.0, 0.0},

@@ -27,7 +27,7 @@ struct InitialMinimumBracketing
     const T a,
     const T b,
     const T c,
-    const T fa,
+    [[maybe_unused]] const T fa,
     const T fb,
     const T fc,
     const T u,
