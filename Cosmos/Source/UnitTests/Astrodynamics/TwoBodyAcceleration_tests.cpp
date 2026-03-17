@@ -9,6 +9,7 @@ using Algebra::Modules::Vectors::Vector3;
 using Astrodynamics::TwoBodyAcceleration::AccelerationInputs;
 using Astrodynamics::TwoBodyAcceleration::NewtonsGravitation;
 using Astrodynamics::TwoBodyAcceleration::J2Perturbation;
+using Astrodynamics::TwoBodyAcceleration::AtmosphericDrag;
 using Astrodynamics::TwoBodyAcceleration::TotalAcceleration;
 
 namespace GoogleUnitTests
@@ -177,6 +178,82 @@ TEST(J2PerturbationTests, NorthPoleXYZeroZPositive)
   const double r4 {r_mag * r_mag * r_mag * r_mag};
   const double expected_az {3.0 * kMu * kJ2 * kREarth * kREarth / r4};
   EXPECT_NEAR(a.z(), expected_az, 1.0e-9 * expected_az);
+}
+
+//------------------------------------------------------------------------------
+/// AtmosphericDrag: zero velocity → zero drag
+//------------------------------------------------------------------------------
+TEST(AtmosphericDragTests, ZeroVelocityZeroDrag)
+{
+  const Vector3<double> r_vec {kREarth + 400.0e3, 0.0, 0.0};
+  const Vector3<double> v_vec {0.0, 0.0, 0.0};
+  const AccelerationInputs<double> inputs {r_vec, v_vec};
+  const AtmosphericDrag<double> drag {2.2e-3, kREarth};
+
+  const Vector3<double> a {drag(inputs)};
+
+  EXPECT_DOUBLE_EQ(a.x(), 0.0);
+  EXPECT_DOUBLE_EQ(a.y(), 0.0);
+  EXPECT_DOUBLE_EQ(a.z(), 0.0);
+}
+
+//------------------------------------------------------------------------------
+/// AtmosphericDrag: acceleration opposes velocity direction
+//------------------------------------------------------------------------------
+TEST(AtmosphericDragTests, OpposesVelocity)
+{
+  // ISS-like: altitude 400 km, speed ~7.66 km/s prograde
+  const Vector3<double> r_vec {kREarth + 400.0e3, 0.0, 0.0};
+  const Vector3<double> v_vec {0.0, 7.66e3, 0.0};  // prograde in y
+  const AccelerationInputs<double> inputs {r_vec, v_vec};
+  const AtmosphericDrag<double> drag {2.2e-3, kREarth};
+
+  const Vector3<double> a {drag(inputs)};
+
+  // Drag opposes v: a_y < 0, a_x = 0, a_z = 0
+  EXPECT_DOUBLE_EQ(a.x(), 0.0);
+  EXPECT_LT(a.y(), 0.0);
+  EXPECT_DOUBLE_EQ(a.z(), 0.0);
+}
+
+//------------------------------------------------------------------------------
+/// AtmosphericDrag: magnitude proportional to v² (drag ~ |v|·v → |a| ~ v²)
+//------------------------------------------------------------------------------
+TEST(AtmosphericDragTests, MagnitudeProportionalToVSquared)
+{
+  const Vector3<double> r_vec {kREarth + 400.0e3, 0.0, 0.0};
+  const AtmosphericDrag<double> drag {2.2e-3, kREarth};
+
+  const Vector3<double> v1 {7.0e3, 0.0, 0.0};
+  const Vector3<double> v2 {14.0e3, 0.0, 0.0};  // 2× speed
+
+  const Vector3<double> a1 {drag(AccelerationInputs<double>{r_vec, v1})};
+  const Vector3<double> a2 {drag(AccelerationInputs<double>{r_vec, v2})};
+
+  // |a2| / |a1| = 4  (drag ∝ v²)
+  EXPECT_NEAR(a2.norm() / a1.norm(), 4.0, 1.0e-10);
+}
+
+//------------------------------------------------------------------------------
+/// AtmosphericDrag: decreases with altitude (exponential atmosphere)
+//------------------------------------------------------------------------------
+TEST(AtmosphericDragTests, DecreasesWithAltitude)
+{
+  const Vector3<double> v_vec {7.5e3, 0.0, 0.0};
+  const AtmosphericDrag<double> drag {2.2e-3, kREarth};
+
+  const Vector3<double> r_low  {kREarth + 400.0e3, 0.0, 0.0};  // 400 km
+  const Vector3<double> r_high {kREarth + 800.0e3, 0.0, 0.0};  // 800 km
+
+  const Vector3<double> a_low  {drag(AccelerationInputs<double>{r_low,  v_vec})};
+  const Vector3<double> a_high {drag(AccelerationInputs<double>{r_high, v_vec})};
+
+  // Higher altitude → thinner air → less drag
+  EXPECT_LT(a_high.norm(), a_low.norm());
+
+  // Ratio = exp(−Δh / H) = exp(−400e3 / 8500)
+  const double expected_ratio {std::exp(-400.0e3 / 8500.0)};
+  EXPECT_NEAR(a_high.norm() / a_low.norm(), expected_ratio, 1.0e-6 * expected_ratio);
 }
 
 //------------------------------------------------------------------------------

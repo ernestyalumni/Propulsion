@@ -3,6 +3,7 @@
 
 #include "Algebra/Modules/Vectors/Vector3.h"
 
+#include <cmath>
 #include <concepts>
 #include <vector>
 
@@ -16,9 +17,16 @@ struct AccelerationInputs
 {
   using Vector3 = Algebra::Modules::Vectors::Vector3<Field>;
   Vector3 r_;
+  Vector3 v_;  ///< velocity [m/s]; used by drag; defaults to zero
 
-  explicit AccelerationInputs(const Vector3& r):
-    r_(r)
+  /// Position-only constructor (backward compatible — v defaults to zero)
+  explicit AccelerationInputs(const Vector3& r)
+    : r_(r), v_(Vector3{})
+  {}
+
+  /// Full constructor with position and velocity
+  AccelerationInputs(const Vector3& r, const Vector3& v)
+    : r_(r), v_(v)
   {}
 };
 
@@ -112,6 +120,59 @@ struct J2Perturbation
       (R_ / p) * \
       (R_ / p) * \
       (5.0 * std::cos(i) * std::cos(i) - 1.0);
+  }
+};
+
+// ---------------------------------------------------------------------------
+/// Exponential atmosphere + ballistic drag (simple LEO model).
+///
+/// Drag acceleration:
+///   a_drag = -0.5 * B * rho(r) * |v| * v
+///
+/// where:
+///   B     = Cd * A / m   [m^2/kg]  ballistic coefficient
+///   rho   = rho0 * exp(-(|r| - Re) / H)   [kg/m^3]
+///   |v|   = speed [m/s]
+///   v     = velocity vector [m/s]  (from AccelerationInputs::v_)
+///
+/// Default parameters (representative LEO satellite):
+///   rho0 = 1.225  kg/m^3  (sea-level density)
+///   H    = 8500.0 m       (scale height; conservative for 200-600 km)
+///   B    = 2.2e-3 m^2/kg  (Cd~2.2, A/m~0.001 m^2/kg, e.g. small sat)
+///
+/// Assumptions:
+///   - Velocity relative to atmosphere ≈ inertial velocity (no Earth rotation).
+///     Error ~0.3% for LEO, acceptable for demo purposes.
+///   - Exponential density model breaks down above ~1000 km; fine for LEO.
+///
+/// References: Curtis §10.4; Vallado §8.5; Bate §9.6.
+// ---------------------------------------------------------------------------
+template <std::floating_point Field = double>
+struct AtmosphericDrag
+{
+  using Vector3 = Algebra::Modules::Vectors::Vector3<Field>;
+
+  Field B_;     ///< Ballistic coefficient Cd*A/m [m^2/kg]
+  Field Re_;    ///< Reference (equatorial) radius [m]
+  Field rho0_;  ///< Sea-level density [kg/m^3]
+  Field H_;     ///< Atmospheric scale height [m]
+
+  explicit AtmosphericDrag(
+      Field B,
+      Field Re,
+      Field rho0 = static_cast<Field>(1.225),
+      Field H    = static_cast<Field>(8500.0))
+    : B_(B), Re_(Re), rho0_(rho0), H_(H)
+  {}
+
+  Vector3 operator()(const AccelerationInputs<Field>& inputs) const
+  {
+    const Field r_norm    {inputs.r_.norm()};
+    const Field altitude  {r_norm - Re_};
+    const Field rho       {rho0_ * std::exp(-altitude / H_)};
+    const Field v_norm    {inputs.v_.norm()};
+    // a_drag = -0.5 * B * rho * |v| * v
+    return inputs.v_ * static_cast<Field>(-0.5 * B_ * rho * v_norm);
   }
 };
 
