@@ -1018,7 +1018,498 @@ cmake .. && make NumerovOrbitDemo
 \bibitem{Curtis2005} H. D. Curtis, \textit{Orbital Mechanics for Engineering Students}, 2nd ed.\ (Elsevier, 2005). Ch.~10 (Orbital Perturbations): \S10.2 (Cowell), \S10.3 (Encke), \S10.4 (Atmospheric Drag), \S10.5 (Gravitational Perturbations).
 \bibitem{Hintz2015} G. R. Hintz, \textit{Orbital Mechanics and Astrodynamics} (Springer, 2015). Ch.~5: \S5.2 (Cowell's Method), \S5.3 (Encke's Method), \S5.5 (Integration Schemes), \S5.7 (Analytic Formulation of Perturbations).
 
+\bibitem{Vallado2013} D. A. Vallado, \textit{Fundamentals of Astrodynamics and Applications},
+        4th ed.\ (Microcosm Press / Springer, 2013).
+        Ch.~8 (Perturbation Methods): \S8.6 (Non-spherical Earth), \S8.7 ($J_2$ Secular Effects).
+
+\bibitem{Kaula1966} W. M. Kaula, \textit{Theory of Satellite Geodesy} (Blaisdell, 1966;
+        Dover reprint 2000). Ch.~2: spherical harmonic expansion of the geopotential;
+        Ch.~3: orbital perturbations.
+
+\bibitem{Heiskanen1967} W. A. Heiskanen and H. Moritz,
+        \textit{Physical Geodesy} (Freeman, 1967). \S1-19: Legendre functions and the
+        external gravitational potential.
+
 \end{thebibliography}
 
+% ===========================================================================
+\section{Gravitational Potential and Spherical Harmonics Expansion}
+\label{sec:gravity-harmonics}
+% ===========================================================================
+
+This section derives the full spherical harmonic expansion of Earth's gravitational
+potential from first principles, obtains the explicit $J_2$ and $J_3$ perturbation
+terms, and provides the Cartesian acceleration expressions used in orbit propagators
+such as Cosmos GNC.
+
+% ---------------------------------------------------------------------------
+\subsection{Coordinate Conventions}
+\label{ssec:coords}
+% ---------------------------------------------------------------------------
+
+We adopt the standard right-handed \emph{spherical coordinates}
+$(r,\theta,\phi)$, where
+\begin{itemize}
+  \item $r \geq 0$: radial distance from the Earth's centre of mass,
+  \item $\theta \in [0,\pi]$: \emph{colatitude} (polar angle measured from
+        the north pole along the rotation axis $+z$),
+  \item $\phi \in [0, 2\pi)$: \emph{east longitude}.
+\end{itemize}
+These relate to Cartesian coordinates $(x,y,z)$ --- with $z$ pointing north
+along Earth's spin axis --- by
+\begin{align}
+  x &= r\sin\theta\cos\phi, \label{eq:sph2cart-x}\\
+  y &= r\sin\theta\sin\phi, \label{eq:sph2cart-y}\\
+  z &= r\cos\theta.         \label{eq:sph2cart-z}
+\end{align}
+Inverting:
+\begin{equation}
+  r = \sqrt{x^2+y^2+z^2},\qquad
+  \theta = \arccos\!\frac{z}{r},\qquad
+  \phi = \mathop{\mathrm{atan2}}(y,x).
+  \label{eq:cart2sph}
+\end{equation}
+
+\begin{remark}[Latitude vs.\ colatitude]
+  Geodetic \emph{latitude} $\varphi$ satisfies $\varphi = \tfrac{\pi}{2}-\theta$,
+  so $\cos\theta = \sin\varphi$ and $\sin\theta = \cos\varphi$.  Some references
+  (Vallado~\cite{Vallado2013}, Kaula~\cite{Kaula1966}) use latitude; we use
+  colatitude throughout for cleaner Legendre notation.
+\end{remark}
+
+% ---------------------------------------------------------------------------
+\subsection{Transformation Matrix: Spherical to Cartesian}
+\label{ssec:transform}
+% ---------------------------------------------------------------------------
+
+The spherical orthonormal basis at $(r,\theta,\phi)$ is
+\begin{align}
+  \hat{e}_r      &= \sin\theta\cos\phi\,\hat{x}
+                  + \sin\theta\sin\phi\,\hat{y}
+                  + \cos\theta\,\hat{z},
+                  \label{eq:e-r}\\
+  \hat{e}_\theta &= \cos\theta\cos\phi\,\hat{x}
+                  + \cos\theta\sin\phi\,\hat{y}
+                  - \sin\theta\,\hat{z},
+                  \label{eq:e-theta}\\
+  \hat{e}_\phi   &= -\sin\phi\,\hat{x}
+                  + \cos\phi\,\hat{y}.
+                  \label{eq:e-phi}
+\end{align}
+These three directions are mutually orthogonal and right-handed:
+$\hat{e}_r \times \hat{e}_\theta = \hat{e}_\phi$.
+The matrix whose \emph{columns} are the spherical basis vectors expressed in
+Cartesian components is
+\begin{equation}
+  R(\theta,\phi)
+  \;=\;
+  \begin{pmatrix}
+    \sin\theta\cos\phi & \cos\theta\cos\phi & -\sin\phi \\
+    \sin\theta\sin\phi & \cos\theta\sin\phi &  \cos\phi \\
+    \cos\theta         & -\sin\theta        &  0
+  \end{pmatrix},
+  \label{eq:R-matrix}
+\end{equation}
+so that a vector $\mathbf{v}$ with spherical components
+$(v_r, v_\theta, v_\phi)^T$ has Cartesian components
+\begin{equation}
+  \begin{pmatrix}v_x\\v_y\\v_z\end{pmatrix}
+  = R(\theta,\phi)
+  \begin{pmatrix}v_r\\v_\theta\\v_\phi\end{pmatrix}.
+  \label{eq:sph-to-cart-vec}
+\end{equation}
+Since $R$ is orthogonal ($R^T = R^{-1}$, verified by direct multiplication
+$R^T R = I_3$), the inverse is
+\begin{equation}
+  \begin{pmatrix}v_r\\v_\theta\\v_\phi\end{pmatrix}
+  = R^T(\theta,\phi)
+  \begin{pmatrix}v_x\\v_y\\v_z\end{pmatrix}.
+  \label{eq:cart-to-sph-vec}
+\end{equation}
+
+\begin{remark}[Rotating frame]
+  The spherical frame $(\hat{e}_r,\hat{e}_\theta,\hat{e}_\phi)$ rotates
+  with the satellite's position: as $\theta$ and $\phi$ change along the
+  orbit, $R$ changes.  When converting the spherical-frame acceleration
+  components back to inertial Cartesian, apply~\eqref{eq:sph-to-cart-vec}
+  evaluated at the \emph{current} $(r,\theta,\phi)$.
+\end{remark}
+
+% ---------------------------------------------------------------------------
+\subsection{Gravitational Potential: Multipole Expansion from First Principles}
+\label{ssec:multipole}
+% ---------------------------------------------------------------------------
+
+The Newtonian gravitational potential at exterior point $\mathbf{r}$ due to a
+body with mass density $\rho(\mathbf{r}')$ is
+\begin{equation}
+  V(\mathbf{r})
+  = -G\int_{\mathcal{B}} \frac{\rho(\mathbf{r}')}{|\mathbf{r}-\mathbf{r}'|}\,dV'.
+  \label{eq:V-integral}
+\end{equation}
+(Convention: $V < 0$ for bound orbits.  Some references use $U = -V > 0$.)
+
+\paragraph{Legendre generating function.}
+For $r = |\mathbf{r}| > r' = |\mathbf{r}'|$ (exterior expansion), the identity
+\begin{equation}
+  \frac{1}{|\mathbf{r}-\mathbf{r}'|}
+  = \frac{1}{r}\sum_{n=0}^\infty
+    \left(\frac{r'}{r}\right)^n P_n(\cos\gamma),
+  \label{eq:legendre-gen}
+\end{equation}
+where $\gamma$ is the angle between $\mathbf{r}$ and $\mathbf{r}'$, follows from
+the generating function of Legendre polynomials
+$\sum_{n=0}^\infty t^n P_n(u) = (1-2tu+t^2)^{-1/2}$ with $t=r'/r$,
+$u=\cos\gamma$.  The series converges absolutely for $r > r'$.
+
+Substituting~\eqref{eq:legendre-gen} into~\eqref{eq:V-integral}:
+\begin{equation}
+  V(\mathbf{r})
+  = -\frac{G}{r}\sum_{n=0}^\infty \frac{1}{r^n}
+    \int_{\mathcal{B}} \rho(\mathbf{r}')\,(r')^n\,P_n(\cos\gamma)\,dV'.
+  \label{eq:V-series-gamma}
+\end{equation}
+
+\paragraph{Spherical harmonic addition theorem.}
+The addition theorem for $P_n$ decouples the angles of $\mathbf{r}$ and
+$\mathbf{r}'$:
+\begin{equation}
+  P_n(\cos\gamma)
+  = \frac{4\pi}{2n+1}\sum_{m=-n}^{n}
+    Y_{nm}^*(\theta',\phi')\,Y_{nm}(\theta,\phi),
+  \label{eq:addition-theorem}
+\end{equation}
+where $Y_{nm}$ are the complex spherical harmonics.  Substituting into
+\eqref{eq:V-series-gamma} and integrating over $\mathbf{r}'$, the
+\emph{multipole moments} of the body appear naturally:
+\begin{equation}
+  V(\mathbf{r})
+  = -G\sum_{n=0}^\infty\sum_{m=-n}^{n}
+    \frac{4\pi}{(2n+1)\,r^{n+1}}
+    \!\left[\int_{\mathcal{B}}\rho(\mathbf{r}')\,(r')^n\,Y_{nm}^*(\theta',\phi')\,dV'\right]
+    Y_{nm}(\theta,\phi).
+  \label{eq:V-multipole-complex}
+\end{equation}
+
+\paragraph{Real harmonic form.}
+Converting to real tesseral harmonics via
+$Y_{nm}^c = \sqrt{2}\,\mathrm{Re}[Y_{nm}]$ and $Y_{nm}^s = \sqrt{2}\,\mathrm{Im}[Y_{nm}]$,
+and introducing the reference equatorial radius $R_e$ and total mass $M$ to
+non-dimensionalise the coefficients, one obtains the standard
+\emph{geopotential expansion}:
+\begin{equation}
+  \boxed{
+  V(r,\theta,\phi)
+  = \frac{\mu}{r}\sum_{n=0}^\infty\sum_{m=0}^{n}
+    \left(\frac{R_e}{r}\right)^{\!n}
+    P_{nm}(\cos\theta)
+    \Bigl[C_{nm}\cos(m\phi) + S_{nm}\sin(m\phi)\Bigr]
+  }
+  \label{eq:geopotential}
+\end{equation}
+where $\mu = GM$ is the standard gravitational parameter, $R_e$ is the mean
+equatorial radius, $P_{nm}$ are the \emph{associated Legendre functions}
+(see Section~\ref{ssec:legendre}), and $C_{nm}$, $S_{nm}$ are the dimensionless
+Stokes coefficients (gravity field harmonics).
+
+\begin{remark}[Sign convention]
+  Some references (Kaula~\cite{Kaula1966}; older geodesy) define $V$ with a
+  positive sign (force potential $U = -V$).  The convention
+  in~\eqref{eq:geopotential} gives $V < 0$ and acceleration
+  $\mathbf{a} = -\nabla V$.
+\end{remark}
+
+% ---------------------------------------------------------------------------
+\subsection{Legendre Polynomials and Associated Legendre Functions}
+\label{ssec:legendre}
+% ---------------------------------------------------------------------------
+
+The \emph{Legendre polynomials} $P_n(u)$ are the $m=0$ solutions of Legendre's
+differential equation $(1-u^2)P_n'' - 2uP_n' + n(n+1)P_n = 0$.  The first few
+are:
+\begin{align}
+  P_0(u) &= 1,\label{eq:P0}\\
+  P_1(u) &= u,\label{eq:P1}\\
+  P_2(u) &= \tfrac{1}{2}(3u^2-1),\label{eq:P2}\\
+  P_3(u) &= \tfrac{1}{2}(5u^3-3u),\label{eq:P3}\\
+  P_4(u) &= \tfrac{1}{8}(35u^4-30u^2+3).\label{eq:P4}
+\end{align}
+They satisfy the orthogonality relation
+$\int_{-1}^1 P_n(u)\,P_{n'}(u)\,du = \tfrac{2}{2n+1}\delta_{nn'}$.
+
+The \emph{associated Legendre functions} (un-normalized, matching
+\eqref{eq:geopotential}) are defined by
+\begin{equation}
+  P_{nm}(u) = (1-u^2)^{m/2}\,\frac{d^m}{du^m}P_n(u),
+  \quad n \geq 0,\; 0 \leq m \leq n.
+  \label{eq:Pnm-def}
+\end{equation}
+Explicitly for the terms needed through $n=3$:
+\begin{align}
+  P_{20}(u) &= P_2(u) = \tfrac{1}{2}(3u^2-1),\label{eq:P20}\\
+  P_{21}(u) &= 3u\sqrt{1-u^2},\label{eq:P21}\\
+  P_{22}(u) &= 3(1-u^2),\label{eq:P22}\\
+  P_{30}(u) &= P_3(u) = \tfrac{1}{2}(5u^3-3u),\label{eq:P30}\\
+  P_{31}(u) &= \tfrac{3}{2}(5u^2-1)\sqrt{1-u^2},\label{eq:P31}\\
+  P_{32}(u) &= 15u(1-u^2),\label{eq:P32}\\
+  P_{33}(u) &= 15(1-u^2)^{3/2}.\label{eq:P33}
+\end{align}
+
+\paragraph{Harmonic taxonomy.}
+The $(n,m)$ harmonics are classified as:
+\begin{itemize}
+  \item \textbf{Zonal} ($m=0$): depend only on latitude; axisymmetric rings.
+        Coefficient $J_n \equiv -C_{n0}$.  Earth's oblateness is dominated by
+        $J_2 \approx 1.08\times10^{-3}$.
+  \item \textbf{Tesseral} ($0 < m < n$): depend on both latitude and longitude;
+        ``checkerboard'' patterns on the sphere.
+  \item \textbf{Sectoral} ($m=n$): depend primarily on longitude;
+        ``orange-peel'' slices.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\subsection{Explicit Expansion: Monopole through $J_3$}
+\label{ssec:explicit}
+% ---------------------------------------------------------------------------
+
+We expand \eqref{eq:geopotential} term by term, substituting $u = \cos\theta$
+and the Cartesian relations \eqref{eq:sph2cart-x}--\eqref{eq:sph2cart-z}.
+
+\subsubsection{$n=0$: Monopole (Point-Mass)}
+
+\begin{equation}
+  V_0 = \frac{\mu}{r},
+  \label{eq:V0}
+\end{equation}
+with $C_{00} = 1$ by normalization (total-mass convention).
+This is the two-body Keplerian potential.
+
+\subsubsection{$n=1$: Dipole (Vanishes at Centre of Mass)}
+
+The $n=1$ terms, using $P_{10}(u)=u$ and $P_{11}(u)=\sqrt{1-u^2}$, are:
+\begin{equation}
+  V_1 = \frac{\mu R_e}{r^3}
+        \Bigl[C_{10}\,z + C_{11}\,x + S_{11}\,y\Bigr].
+  \label{eq:V1-cart}
+\end{equation}
+The coefficients $C_{10}$, $C_{11}$, $S_{11}$ are proportional to the
+components of the body's centre of mass expressed in the body-fixed frame.
+\emph{When the origin is chosen at the body's centre of mass,
+$C_{10}=C_{11}=S_{11}=0$}, and $V_1 \equiv 0$.  This is the standard
+assumption for geocentric orbit mechanics.
+
+\subsubsection{$n=2$, $m=0$: The $J_2$ Zonal Term}
+
+\begin{equation}
+  V_{20} = \frac{\mu}{r}\left(\frac{R_e}{r}\right)^{\!2}
+            P_2(\cos\theta)\,C_{20}.
+  \label{eq:V20}
+\end{equation}
+Using \eqref{eq:P2} with $u=\cos\theta=z/r$:
+\begin{equation}
+  P_2(\cos\theta)
+  = \tfrac{1}{2}(3\cos^2\theta - 1)
+  = \tfrac{1}{2}\!\left(\frac{3z^2}{r^2} - 1\right)
+  = \frac{2z^2 - x^2 - y^2}{2r^2}.
+  \label{eq:P2-cart}
+\end{equation}
+Defining $J_2 = -C_{20} > 0$ (Earth is oblate, so $C_{20} < 0$):
+\begin{equation}
+  \boxed{
+  V_{J_2}
+  = -\frac{\mu J_2 R_e^2}{2r^3}\left(3\cos^2\theta - 1\right)
+  = -\frac{\mu J_2 R_e^2}{2r^5}\left(2z^2 - x^2 - y^2\right).
+  }
+  \label{eq:V-J2}
+\end{equation}
+
+The $n=2$ tesseral ($m=1$) and sectoral ($m=2$) harmonics are:
+\begin{align}
+  V_{21} &= \frac{3\mu R_e^2}{r^5}
+             \bigl(C_{21}\,xz + S_{21}\,yz\bigr),
+  \label{eq:V21}\\
+  V_{22} &= \frac{3\mu R_e^2}{r^5}
+             \bigl[C_{22}(x^2-y^2) + 2S_{22}\,xy\bigr].
+  \label{eq:V22}
+\end{align}
+For Earth, $|C_{21}|,|S_{21}| < 10^{-9}$ (negligible);
+$C_{22} \approx 1.574\times10^{-6}$ encodes the equatorial ellipticity.
+
+\subsubsection{$n=3$, $m=0$: The $J_3$ Zonal Term}
+
+\begin{equation}
+  V_{30} = \frac{\mu}{r}\left(\frac{R_e}{r}\right)^{\!3}
+            P_3(\cos\theta)\,C_{30},
+  \quad J_3 = -C_{30}.
+  \label{eq:V30}
+\end{equation}
+Using \eqref{eq:P3} with $u=\cos\theta=z/r$:
+\begin{equation}
+  P_3(\cos\theta)
+  = \tfrac{1}{2}(5\cos^3\theta - 3\cos\theta)
+  = \frac{z(5z^2 - 3r^2)}{2r^3}.
+  \label{eq:P3-cart}
+\end{equation}
+Therefore:
+\begin{equation}
+  \boxed{
+  V_{J_3}
+  = -\frac{\mu J_3 R_e^3}{2r^7}\,z\bigl(5z^2 - 3r^2\bigr).
+  }
+  \label{eq:V-J3}
+\end{equation}
+For Earth, $J_3 \approx -2.532\times10^{-6}$ (negative: slight
+southern-hemisphere mass excess, the ``pear-shape'' perturbation).
+
+\paragraph{Numerical constants (WGS84 / EGM96).}
+\begin{align*}
+  \mu    &= 3.986\,004\,418\times10^{14}\ \mathrm{m^3\,s^{-2}},\\
+  R_e    &= 6\,378\,137\ \mathrm{m},\\
+  J_2    &= 1.082\,63\times10^{-3},\\
+  J_3    &\approx -2.532\times10^{-6}.
+\end{align*}
+The full zonal potential through $J_3$ in compact spherical form is:
+\begin{equation}
+  V \approx \frac{\mu}{r}\left[
+    1
+    - J_2\left(\frac{R_e}{r}\right)^{\!2}\!\frac{3\cos^2\theta-1}{2}
+    - J_3\left(\frac{R_e}{r}\right)^{\!3}\!\frac{5\cos^3\theta-3\cos\theta}{2}
+  \right].
+  \label{eq:V-J2J3}
+\end{equation}
+
+% ---------------------------------------------------------------------------
+\subsection{Gradient and Acceleration}
+\label{ssec:gradient}
+% ---------------------------------------------------------------------------
+
+The gravitational acceleration is $\mathbf{a} = -\nabla V$.  The gradient in
+spherical coordinates is
+\begin{equation}
+  \nabla V
+  = \frac{\partial V}{\partial r}\hat{e}_r
+  + \frac{1}{r}\frac{\partial V}{\partial \theta}\hat{e}_\theta
+  + \frac{1}{r\sin\theta}\frac{\partial V}{\partial \phi}\hat{e}_\phi.
+  \label{eq:grad-sph}
+\end{equation}
+
+\subsubsection{Two-Body (Keplerian) Acceleration}
+
+\begin{equation}
+  \mathbf{a}_0 = -\frac{\mu}{r^2}\hat{e}_r
+  = -\frac{\mu}{r^3}\mathbf{r},
+  \label{eq:a0}
+\end{equation}
+so in Cartesian: $\mathbf{a}_0 = -(\mu/r^3)(x,y,z)^T$.
+
+\subsubsection{$J_2$ Acceleration in Spherical Coordinates}
+
+Differentiating \eqref{eq:V-J2} with respect to $r$ and $\theta$:
+\begin{align}
+  \frac{\partial V_{J_2}}{\partial r}
+  &= \frac{3\mu J_2 R_e^2}{2r^4}(3\cos^2\theta-1),
+  \label{eq:dVJ2dr}\\
+  \frac{1}{r}\frac{\partial V_{J_2}}{\partial\theta}
+  &= \frac{3\mu J_2 R_e^2}{r^4}\cos\theta\sin\theta.
+  \label{eq:dVJ2dtheta}
+\end{align}
+Since $V_{J_2}$ is independent of $\phi$, the $\hat{e}_\phi$ component is zero.
+The spherical-frame $J_2$ acceleration is:
+\begin{align}
+  a_{J_2,r}      &= -\frac{3\mu J_2 R_e^2}{2r^4}(3\cos^2\theta-1),
+  \label{eq:aJ2r}\\
+  a_{J_2,\theta} &= -\frac{3\mu J_2 R_e^2}{r^4}\cos\theta\sin\theta,
+  \label{eq:aJ2theta}\\
+  a_{J_2,\phi}   &= 0.
+  \label{eq:aJ2phi}
+\end{align}
+
+\subsubsection{$J_2$ Acceleration in Cartesian Coordinates}
+
+Apply the rotation~\eqref{eq:sph-to-cart-vec}:
+\begin{equation}
+  \begin{pmatrix}a_x\\a_y\\a_z\end{pmatrix}_{J_2}
+  = R(\theta,\phi)
+  \begin{pmatrix}a_{J_2,r}\\a_{J_2,\theta}\\0\end{pmatrix}.
+  \label{eq:aJ2-rotate}
+\end{equation}
+Expanding with $\cos\theta = z/r$,
+$\sin\theta\cos\phi = x/r$, $\sin\theta\sin\phi = y/r$:
+\begin{align}
+  a_x^{J_2} &= a_{J_2,r}\sin\theta\cos\phi + a_{J_2,\theta}\cos\theta\cos\phi
+             = \cos\phi\bigl(a_{J_2,r}\sin\theta + a_{J_2,\theta}\cos\theta\bigr).
+  \label{eq:aJ2x-expand}
+\end{align}
+Substituting \eqref{eq:aJ2r}--\eqref{eq:aJ2theta} and simplifying, the result
+is the compact form used in orbital mechanics codes:
+\begin{equation}
+  \boxed{
+  \mathbf{a}_{J_2}
+  = -\frac{3\mu J_2 R_e^2}{2r^5}
+    \begin{pmatrix}
+      x\!\left(1 - 5z^2/r^2\right)\\[2pt]
+      y\!\left(1 - 5z^2/r^2\right)\\[2pt]
+      z\!\left(3 - 5z^2/r^2\right)
+    \end{pmatrix}.
+  }
+  \label{eq:aJ2-compact}
+\end{equation}
+
+\begin{remark}[Equatorial check]
+  Setting $z=0$ (equatorial orbit): $\mathbf{a}_{J_2} = -(3\mu J_2 R_e^2/2r^5)
+  (x,y,0)^T$.  This is a radially outward perturbation in the equatorial
+  plane, consistent with the oblate equatorial bulge attracting a test mass
+  less strongly than a sphere of the same mass.
+\end{remark}
+
+\begin{remark}[Polar check]
+  Setting $x=y=0$, $z=r$ (polar pass): $\mathbf{a}_{J_2} = -(3\mu J_2 R_e^2/2r^5)
+  \cdot z(3-5) \hat{z} = +(\mu J_2 R_e^2/r^5)z\,\hat{z}$.  The $J_2$
+  acceleration is directed \emph{away} from Earth at the poles, as expected
+  (less equatorial mass overhead means slightly less gravitational pull).
+\end{remark}
+
+\subsubsection{$J_3$ Acceleration in Cartesian Coordinates}
+
+Differentiating \eqref{eq:V-J3} and applying the same rotation procedure:
+\begin{equation}
+  \boxed{
+  \mathbf{a}_{J_3}
+  = -\frac{5\mu J_3 R_e^3}{2r^7}
+    \begin{pmatrix}
+      xz\!\left(3 - 7z^2/r^2\right)\\[2pt]
+      yz\!\left(3 - 7z^2/r^2\right)\\[2pt]
+      \frac{3r^2}{5} - 6z^2 + \frac{7z^4}{r^2}
+    \end{pmatrix}.
+  }
+  \label{eq:aJ3-compact}
+\end{equation}
+Note that $a_x^{J_3}$ and $a_y^{J_3}$ are both proportional to $z$: the
+$J_3$ perturbation has no in-plane component at the equator ($z=0$), only
+north--south asymmetry.
+
+% ---------------------------------------------------------------------------
+\subsection{Summary: Total Acceleration Through $J_3$}
+\label{ssec:gravity-summary}
+% ---------------------------------------------------------------------------
+
+The total gravitational acceleration in inertial Cartesian (ECI) coordinates,
+including the two-body term and zonal harmonics through $J_3$, is:
+\begin{equation}
+  \mathbf{a}(\mathbf{r})
+  = -\frac{\mu}{r^3}\mathbf{r}
+  + \mathbf{a}_{J_2}
+  + \mathbf{a}_{J_3}
+  + \mathcal{O}(J_4),
+  \label{eq:a-total}
+\end{equation}
+with $\mathbf{a}_{J_2}$ from \eqref{eq:aJ2-compact} and $\mathbf{a}_{J_3}$
+from \eqref{eq:aJ3-compact}.  For a low-Earth orbit satellite,
+$|\mathbf{a}_{J_2}|/|\mathbf{a}_0| \approx J_2(R_e/r)^2 \approx 10^{-3}$
+while $|\mathbf{a}_{J_3}|/|\mathbf{a}_0| \approx 10^{-6}$.
+
+This acceleration is the right-hand side of the second-order ODE
+\eqref{eq:stormer-ode} propagated by the St\"{o}rmer/Numerov integrators
+described in the preceding sections.
 
 \end{document}
