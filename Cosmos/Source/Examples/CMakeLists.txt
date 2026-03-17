@@ -46,8 +46,8 @@ SET_TARGET_PROPERTIES(NumerovOrbitDemo PROPERTIES
 #       (Emscripten 5+ requires explicit export of all heap/value helpers)
 # Note: ENVIRONMENT flag omitted → supports both web and node environments
 #------------------------------------------------------------------------------
-IF(EMSCRIPTEN)
-  MESSAGE(STATUS "Emscripten detected — building WASM bridge")
+IF(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+  MESSAGE(STATUS "Emscripten toolchain detected — building WASM bridge")
 
   ADD_EXECUTABLE(numerov_orbit_wasm Astrodynamics/wasm_bridge.cpp)
 
@@ -69,8 +69,8 @@ IF(EMSCRIPTEN)
     OUTPUT_NAME "numerov_orbit"
   )
 ELSE()
-  MESSAGE(STATUS "Emscripten not detected — skipping WASM bridge")
-  MESSAGE(STATUS "To build WASM: source emsdk_env.sh, then cmake ..")
+  MESSAGE(STATUS "Native build — skipping WASM bridge (no Emscripten toolchain)")
+  MESSAGE(STATUS "  To build WASM: source emsdk_env.sh && cmake .. -DCMAKE_TOOLCHAIN_FILE=$EMSDK/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake")
 ENDIF()
 
 #------------------------------------------------------------------------------

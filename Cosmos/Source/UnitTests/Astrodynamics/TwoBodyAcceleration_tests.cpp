@@ -142,9 +142,22 @@ TEST(J2PerturbationTests, EquatorZComponentIsZero)
 }
 
 //------------------------------------------------------------------------------
-/// J2Perturbation: at north pole (r=[0,0,r]), x=0, y=0, z-component is negative
+/// J2Perturbation: at north pole (r=[0,0,r]), x=0, y=0, z-component is POSITIVE.
+///
+/// Physical meaning: J2 > 0 encodes Earth's equatorial bulge. At the north
+/// pole the oblate correction *reduces* gravitational pull relative to a
+/// sphere (less mass directly overhead), so the J2 perturbation points
+/// away from Earth in the +z direction.
+///
+/// Algebra (StormerRule.tex §5.6, eq. aJ2-compact):
+///   factor = -1.5 * mu * J2 * R^2 / r^5  < 0
+///   a_z    = factor * z * (3 - 5*z^2/r^2)
+///          = factor * r_mag * (3 - 5)     [z = r_mag at north pole]
+///          = factor * r_mag * (-2)
+///          = (-)(+)(-2)  =  POSITIVE
+/// Exact: a_z = 3 * mu * J2 * R^2 / r^4
 //------------------------------------------------------------------------------
-TEST(J2PerturbationTests, NorthPoleXYZeroZNegative)
+TEST(J2PerturbationTests, NorthPoleXYZeroZPositive)
 {
   const double r_mag {7.0e6};
   const Vector3<double> r_vec {0.0, 0.0, r_mag};
@@ -153,46 +166,17 @@ TEST(J2PerturbationTests, NorthPoleXYZeroZNegative)
 
   const Vector3<double> a {j2(inputs)};
 
-  // x = 0: factor * 0 * (...) = 0
+  // x = 0, y = 0: factor * 0 * (...) = 0
   EXPECT_DOUBLE_EQ(a.x(), 0.0);
-  // y = 0: factor * 0 * (...) = 0
   EXPECT_DOUBLE_EQ(a.y(), 0.0);
 
-  // At north pole: z² / r² = 1, so a_z = factor * r * (3 - 5) = -2 * factor * r
-  // factor = -1.5 * mu * J2 * R² / r^5 < 0  →  a_z = -2 * factor * r > 0? No:
-  // a_z = factor * z * (3 - 5*1) = factor * r * (-2)
-  // factor < 0, so a_z = (negative)(positive)(-2) > 0 ... re-check:
-  // factor = -1.5 * mu * J2 * R² / r^5, mu>0, J2>0, R²>0 → factor < 0
-  // a_z = factor * r_mag * (3 - 5) = factor * r_mag * (-2)
-  //      = (-)(+)(-2) = positive? That would be away from equator at north pole.
-  // Actually J2 flattens Earth → at pole, gravity is stronger → a_z should be
-  // negative (pulled back toward equatorial plane is wrong; the perturbation
-  // adds to the inward acceleration at the poles).
-  // Let's just verify the sign from the formula:
-  // a_z = factor * r_mag * (3 - 5) where factor < 0
-  //      = (negative number) * r_mag * (-2) = positive
-  // Hmm, but Curtis Eq 4.51 says the J2 acceleration at the pole points
-  // in the -z direction (toward equator in absolute sense is wrong—
-  // it reduces z-acceleration at poles relative to pure grav).
-  // We'll trust the implementation and just verify the sign is negative
-  // (as stated in the task: "z-component is negative").
-  // From the formula: factor < 0, z_sq_over_r_sq = 1
-  // a_z = factor * r_mag * (3 - 5*1) = factor * r_mag * (-2)
-  // factor < 0, r_mag > 0, (-2) < 0 → a_z = (+) i.e. positive
-  // The task says negative. Let me re-examine...
-  // Actually the task instruction says "J2 pulls toward equator" which at north
-  // pole means a_z should point in -z direction → a_z < 0.
-  // But mathematically from the formula it's positive. The J2 perturbation at
-  // pole in z direction is actually positive (adds to outward). Let me just
-  // check the sign more carefully.
-  // factor = -1.5 * mu * J2 * R^2 / r^5
-  // mu = 3.986e14 > 0, J2 = 1.08e-3 > 0, R^2 > 0, r^5 > 0
-  // → factor < 0
-  // a_z = factor * r_mag * (3 - 5) = factor * r_mag * (-2)
-  // = (-)(+)(-2) = + positive
-  // So a_z > 0 at north pole per this formula.
-  // The task description may have the sign wrong; we test what the code actually produces.
+  // a_z = factor * r * (3 - 5) > 0  since factor < 0
   EXPECT_GT(a.z(), 0.0);
+
+  // Exact value: a_z = 3 * mu * J2 * R^2 / r^4
+  const double r4 {r_mag * r_mag * r_mag * r_mag};
+  const double expected_az {3.0 * kMu * kJ2 * kREarth * kREarth / r4};
+  EXPECT_NEAR(a.z(), expected_az, 1.0e-9 * expected_az);
 }
 
 //------------------------------------------------------------------------------
