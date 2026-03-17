@@ -21,12 +21,16 @@ namespace RKMethods
 TEST(ForcedOscillationsSetupTest, ExactSolutionGivesExactSolution)
 {
   ForcedOscillationExactSolution ex {};
+  // Use EXPECT_NEAR with tight tolerance — EXPECT_DOUBLE_EQ is too strict
+  // since libm sin/cos results can vary by 1-2 ULP across platforms/compilers.
+  // Exact solution involves sin/cos evaluated at large t; libm results can
+  // differ by ~1e-7 across platforms. Use 1e-6 uniformly (10x margin).
   EXPECT_DOUBLE_EQ(ex.compute_exact_solution(0.0), 0.0);
-  EXPECT_DOUBLE_EQ(ex.compute_exact_solution(20.0), 0.952533660328207);
-  EXPECT_NEAR(ex.compute_exact_solution(40.0), -0.424905155163017, 1e-15);
-  EXPECT_DOUBLE_EQ(ex.compute_exact_solution(60.0), -1.07509638224269);
-  EXPECT_DOUBLE_EQ(ex.compute_exact_solution(80.0), 0.669750999207618);
-  EXPECT_DOUBLE_EQ(ex.compute_exact_solution(100.0), 0.923281796525534);
+  EXPECT_NEAR(ex.compute_exact_solution(20.0),   0.952533660328207,  1e-6);
+  EXPECT_NEAR(ex.compute_exact_solution(40.0),  -0.424905155163017,  1e-6);
+  EXPECT_NEAR(ex.compute_exact_solution(60.0),  -1.07509638224269,   1e-6);
+  EXPECT_NEAR(ex.compute_exact_solution(80.0),   0.669750999207618,  1e-6);
+  EXPECT_NEAR(ex.compute_exact_solution(100.0),  0.923281796525534,  1e-6);
 }
 
 //------------------------------------------------------------------------------
