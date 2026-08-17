@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quaternion Conventions — Two-Slide Brief</title>
+    <style>
+      :root { --cyan:#64e5ff; --orange:#ff9f43; --ink:#f2f8fc; --muted:#9bb0c1; --line:rgba(143,205,230,.22); }
+      * { box-sizing:border-box; }
+      html,body { width:100%; height:100%; margin:0; overflow:hidden; background:#02070d; color:var(--ink); font-family:Inter,ui-sans-serif,system-ui,sans-serif; }
+      body:before { content:""; position:fixed; inset:0; background:radial-gradient(circle at 82% 15%,rgba(39,145,180,.2),transparent 36%),radial-gradient(circle at 10% 86%,rgba(255,133,49,.11),transparent 32%); pointer-events:none; }
+      .deck { width:100%; height:100%; }
+      .slide { display:none; width:100%; height:100%; padding:4.2vh 6.2vw 3vh; position:relative; }
+      .slide.active { display:flex; flex-direction:column; }
+      .eyebrow { color:var(--cyan); font:700 1.05vw/1 ui-monospace,monospace; letter-spacing:.17em; text-transform:uppercase; }
+      h1 { margin:1vh 0 1.4vh; font-size:4.35vw; line-height:1.02; letter-spacing:-.05em; font-weight:660; }
+      .subtitle { max-width:76vw; color:var(--muted); font-size:1.45vw; line-height:1.45; }
+      .accent { color:var(--cyan); } .warn { color:var(--orange); }
+      .cards { display:grid; grid-template-columns:1fr 1fr; gap:2vw; margin-top:3vh; flex:1; }
+      .card { border:1px solid var(--line); border-radius:1.1vw; background:rgba(8,20,31,.74); padding:1.8vw 2.2vw; box-shadow:0 2vw 5vw rgba(0,0,0,.24); }
+      .number { display:inline-grid; place-items:center; width:3.2vw; height:3.2vw; border-radius:50%; border:1px solid currentColor; color:var(--cyan); font:700 1.45vw ui-monospace,monospace; }
+      .card h2 { display:inline; margin-left:.9vw; font-size:2.25vw; letter-spacing:-.03em; }
+      .equation { margin:2vh 0 1.7vh; padding:1vw; border-radius:.7vw; background:rgba(2,8,14,.72); color:#fff; font:600 1.7vw/1.5 ui-monospace,monospace; text-align:center; }
+      .card p { margin:1.2vh 0; color:#c4d2dc; font-size:1.25vw; line-height:1.5; }
+      .card strong { color:#fff; }
+      .chips { display:flex; flex-wrap:wrap; gap:.6vw; margin-top:1.7vh; }
+      .chip { padding:.45vw .65vw; border:1px solid var(--line); border-radius:99px; color:var(--muted); font:650 .91vw ui-monospace,monospace; }
+      .bottom-line { margin-top:1.5vh; padding:.9vh 1vw; border-left:.28vw solid var(--orange); color:#dbe7ee; font-size:1.12vw; background:rgba(255,159,67,.07); }
+      .contract-grid { display:grid; grid-template-columns:.92fr 1.08fr; gap:2vw; margin-top:3vh; flex:1; }
+      .contract-list { display:grid; gap:1.1vh; }
+      .contract-item { display:grid; grid-template-columns:1.5vw 1fr; gap:.8vw; align-items:start; padding:1.1vh 1vw; border-bottom:1px solid var(--line); }
+      .contract-item:before { content:"✓"; color:var(--cyan); font:700 1.2vw ui-monospace,monospace; }
+      .contract-item b { display:block; font:700 1.13vw ui-monospace,monospace; }
+      .contract-item span { color:var(--muted); font-size:1.02vw; line-height:1.4; }
+      pre { margin:0; height:100%; padding:1.55vw; overflow:hidden; border:1px solid var(--line); border-radius:1vw; background:#050d15; color:#dcebf4; font:500 .98vw/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; }
+      code .c { color:#6e889a; } code .k { color:#ff9f78; } code .f { color:#68dbff; } code .s { color:#b9e889; }
+      .tests { display:grid; grid-template-columns:repeat(4,1fr); gap:.8vw; margin-top:2vh; }
+      .test { padding:.8vw; border:1px solid var(--line); border-radius:.6vw; background:rgba(8,20,31,.75); }
+      .test b { display:block; color:var(--cyan); font:700 .82vw ui-monospace,monospace; }
+      .test span { color:var(--muted); font-size:.78vw; }
+      .footer { display:flex; justify-content:space-between; margin-top:auto; padding-top:1.2vh; color:#63798a; font:600 .72vw ui-monospace,monospace; letter-spacing:.05em; }
+      .progress { position:fixed; right:2.4vw; bottom:2.2vh; z-index:3; color:var(--muted); font:700 .85vw ui-monospace,monospace; }
+      @media print { @page { size:16in 9in; margin:0; } .slide { display:flex!important; flex-direction:column; page-break-after:always; } .progress { display:none; } }
+    </style>
+  </head>
+  <body>
+    <main class="deck">
+      <section class="slide active">
+        <div class="eyebrow">Quaternion conventions / the precise answer</div>
+        <h1>There are <span class="accent">two different “twos.”</span></h1>
+        <div class="subtitle">The topology explains why two quaternion values can encode one attitude. It does <em>not</em> explain why two software systems can disagree about four numbers.</div>
+        <div class="cards">
+          <article class="card">
+            <span class="number">1</span><h2>Representation ambiguity</h2>
+            <div class="equation">SU(2) → SO(3) &nbsp;is 2-to-1<br><span class="accent">R(q) = R(−q)</span></div>
+            <p><strong>q and −q are antipodes on S³</strong> that produce the same 3D rotation. A 360° path reaches −q; 720° returns to q.</p>
+            <p>Engineering consequence: attitude error, interpolation, and time histories must be <strong>sign invariant / hemisphere aligned</strong>.</p>
+          </article>
+          <article class="card">
+            <span class="number" style="color:var(--orange)">2</span><h2>Convention mismatch</h2>
+            <div class="chips">
+              <span class="chip">scalar first / last</span><span class="chip">Hamilton / alternate product</span>
+              <span class="chip">active / passive</span><span class="chip">body→world / world→body</span>
+              <span class="chip">left / right composition</span>
+            </div>
+            <p style="margin-top:2.4vh"><strong>These are interface contracts.</strong> A mismatch changes the physical attitude even though every quaternion remains normalized and every multiplication compiles.</p>
+            <p><span class="warn">“JPL convention” is not a complete contract.</span> State each choice; different JPL-associated systems do not all use one layout/product combination.</p>
+          </article>
+        </div>
+        <div class="bottom-line"><strong>The interview answer:</strong> SU(2)’s double cover explains q versus −q. The “two conventions” Ryan referenced likely concern software semantics; enumerate them rather than attributing them to the double cover.</div>
+        <div class="footer"><span>TRUE ANOMALY / SPACECRAFT SIMULATION</span><span>keyboard: ← →</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="eyebrow">Make the contract executable</div>
+        <h1 style="font-size:3.8vw">Name it. Adapt at boundaries. <span class="accent">Test one known rotation.</span></h1>
+        <div class="contract-grid">
+          <div class="contract-list">
+            <div class="contract-item"><div><b>Algebra</b><span>Hamilton product: i·j = k</span></div></div>
+            <div class="contract-item"><div><b>Memory / API layout</b><span>scalar first: (w, x, y, z)</span></div></div>
+            <div class="contract-item"><div><b>Action</b><span>active vector rotation</span></div></div>
+            <div class="contract-item"><div><b>Frame mapping</b><span>body/local → inertial/world</span></div></div>
+            <div class="contract-item"><div><b>Sandwich product</b><span>vᵢ = q (0,vᵦ) q*</span></div></div>
+            <div class="contract-item"><div><b>Composition</b><span>q₂q₁ applies q₁, then q₂</span></div></div>
+          </div>
+          <pre><code><span class="c">// C++20 and Rust implement the same contract.</span>
+<span class="k">Quaternion</span> <span class="f">rotate</span>(Quaternion q, Vector3 v) {
+  <span class="k">return</span> q * Quaternion{0, v} * conjugate(q);
+}
+
+<span class="c">// q and -q: use a physical, sign-invariant metric.</span>
+double attitude_error(Quaternion a, Quaternion b) {
+  <span class="k">return</span> 2 * acos(clamp(abs(dot(a, b)), 0, 1));
+}
+
+<span class="c">// Cross boundaries through named adapters.</span>
+Quaternion <span class="f">from_scalar_last</span>(XYZW wire);
+
+<span class="c">// Golden test nails action, handedness, and sign.</span>
+q = axis_angle(+Z, +90_deg);
+assert(rotate(q, +X) == +Y); <span class="s">// not -Y</span></code></pre>
+        </div>
+        <div class="tests">
+          <div class="test"><b>ANTIPODAL</b><span>DCM(q) = DCM(−q)</span></div>
+          <div class="test"><b>GOLDEN VECTOR</b><span>Rz(+90°)X = Y</span></div>
+          <div class="test"><b>ROUND TRIP</b><span>layout adapters preserve R</span></div>
+          <div class="test"><b>FAILURE INJECTION</b><span>wrong layout/action visibly diverges</span></div>
+        </div>
+        <div class="footer"><span>C++20 · RUST · THREE.JS / SAME INVARIANTS</span><span></span></div>
+      </section>
+    </main>
+    <div class="progress" id="progress">1 / 2</div>
+    <script>
+      const slides = [...document.querySelectorAll('.slide')];
+      let current = 0;
+      function show(index) {
+        current = Math.max(0, Math.min(slides.length - 1, index));
+        slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
+        document.querySelector('#progress').textContent = `${current + 1} / ${slides.length}`;
+      }
+      addEventListener('keydown', event => {
+        if (['ArrowRight','PageDown',' '].includes(event.key)) show(current + 1);
+        if (['ArrowLeft','PageUp'].includes(event.key)) show(current - 1);
+      });
+      addEventListener('click', event => show(current + (event.clientX > innerWidth / 2 ? 1 : -1)));
+      const requestedSlide = Number(new URLSearchParams(location.search).get('slide'));
+      if (Number.isInteger(requestedSlide) && requestedSlide >= 1) show(requestedSlide - 1);
+    </script>
+  </body>
+</html>

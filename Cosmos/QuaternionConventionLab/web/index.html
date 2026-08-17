@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quaternion Convention Lab</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --cyan: #66e4ff;
+        --orange: #ff9f43;
+        --ink: #e9f5ff;
+        --muted: #8fa7ba;
+        --panel: rgba(6, 16, 28, 0.84);
+        --line: rgba(143, 197, 224, 0.22);
+      }
+      * { box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+      body {
+        background: radial-gradient(circle at 50% 30%, #102d49 0%, #06111f 38%, #02060c 100%);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      canvas { display: block; }
+      .hud { position: fixed; inset: 0; pointer-events: none; }
+      .topbar {
+        position: absolute; top: 24px; left: 28px; right: 28px;
+        display: flex; justify-content: space-between; align-items: flex-start;
+      }
+      .eyebrow { color: var(--cyan); font: 700 11px/1.3 ui-monospace, monospace; letter-spacing: .18em; }
+      h1 { margin: 6px 0 0; font-size: clamp(24px, 3vw, 42px); font-weight: 650; letter-spacing: -.035em; }
+      .contract { max-width: 490px; margin-top: 9px; color: var(--muted); font: 12px/1.55 ui-monospace, monospace; }
+      .status {
+        min-width: 210px; padding: 13px 16px; border: 1px solid var(--line);
+        background: var(--panel); backdrop-filter: blur(14px); border-radius: 10px; text-align: right;
+      }
+      .status strong { display: block; color: var(--cyan); font: 700 24px/1.1 ui-monospace, monospace; }
+      .status span { color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+      .craft-label {
+        position: absolute; top: 44%; transform: translate(-50%, -50%); text-align: center;
+        color: var(--muted); font: 700 11px/1.3 ui-monospace, monospace; letter-spacing: .14em;
+        text-transform: uppercase; text-shadow: 0 1px 8px #000;
+      }
+      .craft-label b { display: block; margin-bottom: 170px; font-size: 14px; color: var(--ink); }
+      #label-a { left: 31%; }
+      #label-b { left: 69%; }
+      .panel {
+        pointer-events: auto; position: absolute; left: 28px; right: 28px; bottom: 24px;
+        display: grid; grid-template-columns: minmax(360px, 1.45fr) minmax(310px, 1fr); gap: 14px;
+      }
+      .card {
+        padding: 15px 18px; border: 1px solid var(--line); border-radius: 12px;
+        background: var(--panel); backdrop-filter: blur(16px); box-shadow: 0 18px 60px rgba(0,0,0,.28);
+      }
+      .mode-row, .control-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+      .control-row { margin-top: 13px; }
+      button, select {
+        border: 1px solid var(--line); border-radius: 7px; padding: 8px 11px;
+        background: rgba(19, 40, 57, .78); color: var(--ink); font: 650 12px ui-monospace, monospace;
+      }
+      button { cursor: pointer; }
+      button:hover, button.active { border-color: var(--cyan); background: rgba(44, 127, 153, .28); }
+      label { color: var(--muted); font: 11px ui-monospace, monospace; }
+      input[type="range"] { flex: 1; min-width: 160px; accent-color: var(--cyan); }
+      .angle { min-width: 65px; color: var(--cyan); font: 700 13px ui-monospace, monospace; text-align: right; }
+      .readouts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 18px; }
+      .readout span { display: block; margin-bottom: 4px; color: var(--muted); font: 10px ui-monospace, monospace; letter-spacing: .12em; }
+      .readout code { color: var(--ink); font: 12px/1.45 ui-monospace, monospace; white-space: nowrap; }
+      .explanation { grid-column: 1 / -1; padding-top: 11px; border-top: 1px solid var(--line); color: #bed0dd; font-size: 12px; line-height: 1.48; }
+      .explanation strong { color: var(--orange); }
+      .footer-note { position: fixed; right: 30px; bottom: 3px; color: #607486; font: 9px ui-monospace, monospace; }
+      @media (max-width: 850px) {
+        .status { display: none; }
+        .panel { grid-template-columns: 1fr; max-height: 46vh; overflow: auto; }
+        .craft-label b { margin-bottom: 120px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hud">
+      <div class="topbar">
+        <div>
+          <div class="eyebrow">SPACECRAFT ATTITUDE / FAILURE INJECTION</div>
+          <h1>Quaternion Convention Lab</h1>
+          <div class="contract">Hamilton product · scalar-first API (w,x,y,z) · active body→world · v′ = q(0,v)q*</div>
+        </div>
+        <div class="status">
+          <strong id="attitude-error">0.000°</strong>
+          <span>physical attitude error</span>
+        </div>
+      </div>
+
+      <div id="label-a" class="craft-label"><b>REFERENCE</b><span id="label-a-detail">q</span></div>
+      <div id="label-b" class="craft-label"><b>COMPARISON</b><span id="label-b-detail">−q</span></div>
+
+      <div class="panel">
+        <section class="card">
+          <div class="mode-row">
+            <button id="mode-antipode" class="active">q versus −q</button>
+            <button id="mode-mismatch">Convention mismatch</button>
+            <select id="mismatch-kind" disabled aria-label="Mismatch type">
+              <option value="layout">[x,y,z,w] read as [w,x,y,z]</option>
+              <option value="passive">active rotation read as passive</option>
+            </select>
+          </div>
+          <div class="control-row">
+            <button id="play">Pause</button>
+            <label for="axis">axis</label>
+            <select id="axis">
+              <option value="z">+Z</option>
+              <option value="x">+X</option>
+              <option value="y">+Y</option>
+              <option value="123">[1,2,3]</option>
+            </select>
+            <input id="angle" type="range" min="0" max="720" step="0.1" value="0" aria-label="Rotation angle">
+            <output id="angle-output" class="angle">0.0°</output>
+          </div>
+        </section>
+
+        <section class="card readouts">
+          <div class="readout"><span>REFERENCE / SCALAR FIRST</span><code id="q-a">(+1.000, +0.000, +0.000, +0.000)</code></div>
+          <div class="readout"><span>COMPARISON / INTERPRETED</span><code id="q-b">(−1.000, −0.000, −0.000, −0.000)</code></div>
+          <div id="explanation" class="explanation"><strong>Same physical attitude.</strong> SU(2) double-covers SO(3), so antipodal points q and −q produce the same rotation matrix. The sign is not a second engineering convention.</div>
+        </section>
+      </div>
+      <div class="footer-note">drag to orbit · scroll to zoom · press space to play/pause</div>
+    </div>
+
+    <script src="../../Source/Examples/Astrodynamics/vendor/three.min.js"></script>
+    <script src="../../Source/Examples/Astrodynamics/vendor/OrbitControls.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
