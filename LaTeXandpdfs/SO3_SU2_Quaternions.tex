@@ -1,0 +1,1421 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,bm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=NavyBlue,urlcolor=NavyBlue,
+  pdftitle={The SO(3)-SU(2) Correspondence and Quaternions}}
+
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\Ad}{Ad}
+\DeclareMathOperator{\ad}{ad}
+\DeclareMathOperator{\SO}{SO}
+\DeclareMathOperator{\SU}{SU}
+\DeclareMathOperator{\Or}{O}
+\DeclareMathOperator{\GL}{GL}
+\newcommand{\so}{\mathfrak{so}}
+\newcommand{\su}{\mathfrak{su}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\HH}{\mathbb{H}}
+\newcommand{\Sph}{\mathbb{S}}
+\newcommand{\RP}{\mathbb{RP}}
+\newcommand{\vv}[1]{\bm{#1}}
+\newcommand{\hatmap}[1]{\widehat{#1}}
+\newcommand{\ii}{\mathrm{i}}
+\newcommand{\halfth}{\tfrac{\theta}{2}}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\newtcolorbox{practical}[1][]{
+  breakable, colback=NavyBlue!4, colframe=NavyBlue!60!black,
+  fonttitle=\bfseries, coltitle=white, title={Engineering translation: #1},
+  boxrule=0.6pt, left=6pt, right=6pt, top=5pt, bottom=5pt}
+
+\newtcolorbox{pitfall}[1][]{
+  breakable, colback=BrickRed!5, colframe=BrickRed!70!black,
+  fonttitle=\bfseries, coltitle=white, title={Pitfall: #1},
+  boxrule=0.6pt, left=6pt, right=6pt, top=5pt, bottom=5pt}
+
+\title{\bfseries The $\SO(3)$--$\SU(2)$ Correspondence and Quaternions\\[4pt]
+\large A complete derivation for the mathematical physicist,\\
+with the answers a GNC or simulation engineer actually needs}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{-2.5em}
+
+\begin{center}
+\emph{Every algebraic step is written out. Nothing is left as ``it can be shown.''}
+\end{center}
+
+\tableofcontents
+\newpage
+
+\section{How to read this, and the conventions we fix}
+
+This document has two interleaved tracks.
+
+\begin{itemize}[leftmargin=1.4em]
+\item The \textbf{main text} is the mathematics, done completely: definitions, propositions, and
+proofs in which every index manipulation and every series regrouping is displayed.
+\item The \textbf{blue boxes} translate the result just proved into the language of an engineer who
+must write, review, or debug flight code, and the \textbf{red boxes} record the specific way each
+result is gotten wrong in practice.
+\end{itemize}
+
+A mathematical physicist asked to support a GNC team is usually not asked ``is the exponential map
+surjective?'' They are asked ``why did my quaternion flip sign in the middle of a maneuver?'' The
+second question is the first question wearing work clothes. The boxes make that identification
+explicit.
+
+\subsection{Conventions, fixed once}
+
+Almost every contradiction between two quaternion references is a convention clash, not an error.
+We therefore fix everything now and never deviate.
+
+\begin{enumerate}[leftmargin=1.6em,label=(C\arabic*)]
+\item \textbf{Quaternion algebra: Hamilton.} Writing the quaternion units as $\mathbf i,\mathbf j,\mathbf k$ (reserving $\ii$ for $\sqrt{-1}$): $\mathbf i^2=\mathbf j^2=\mathbf k^2=\mathbf i\mathbf j\mathbf k=-1$, hence $\mathbf i\mathbf j=\mathbf k$, $\mathbf j\mathbf k=\mathbf i$, $\mathbf k\mathbf i=\mathbf j$.
+\item \textbf{Scalar first.} $q=(q_0,\vv q)=q_0+q_1\mathbf i+q_2\mathbf j+q_3\mathbf k$ with
+$\vv q=(q_1,q_2,q_3)^{\!\top}\!\in\R^3$.
+\item \textbf{Active rotations.} $R\in\SO(3)$ rotates a vector within a fixed frame:
+$\vv v'=R\vv v$. It does \emph{not} re-express a fixed vector in a rotated frame.
+\item \textbf{Sandwich acts on the left.} $\vv v'=q\,\vv v\,q^{*}$, with $\vv v$ embedded as the
+pure quaternion $(0,\vv v)$.
+\item \textbf{Body-to-inertial.} When a physical attitude is meant, $R$ and $q$ carry body-frame
+coordinates to inertial coordinates: $\vv v_{\mathcal I}=R\,\vv v_{\mathcal B}$.
+\item \textbf{Pauli matrices.} $\sigma_1=\begin{psmallmatrix}0&1\\1&0\end{psmallmatrix}$,
+$\sigma_2=\begin{psmallmatrix}0&-\ii\\ \ii&0\end{psmallmatrix}$,
+$\sigma_3=\begin{psmallmatrix}1&0\\0&-1\end{psmallmatrix}$.
+\end{enumerate}
+
+\begin{practical}[the convention table you should paste into your repository]
+The four independent binary choices, and what the two dominant camps pick:
+
+\smallskip
+{\small\begin{tabular}{@{}lll@{}}
+\hline
+\textbf{Choice} & \textbf{Hamilton} (this doc, Eigen, ROS) & \textbf{JPL/Shuster} (NASA attitude)\\
+\hline
+Component order & scalar first $(q_0,\vv q)$ & scalar last $(\vv q,q_4)$\\
+Unit product & $\mathbf i\mathbf j=+\mathbf k$ & $\mathbf i\mathbf j=-\mathbf k$\\
+Composition & $R(p\otimes q)=R(p)R(q)$ & $R(p\otimes q)=R(q)R(p)$\\
+Default sense & body $\to$ inertial (active) & inertial $\to$ body (passive)\\
+\hline
+\end{tabular}}
+\smallskip
+
+A ``quaternion bug'' is, in the overwhelming majority of cases, two modules disagreeing on one row
+of this table. Before debugging arithmetic, print $R(q)$ for $q=\exp$ of a $90^\circ$ rotation
+about $\vv e_3$ and check the sign of the $(1,2)$ entry. That single number distinguishes the
+conventions faster than any amount of code reading.
+\end{practical}
+
+\section{The three groups and their Lie algebras}
+
+\subsection{$\SO(3)$ and $\so(3)$}
+
+\begin{definition}
+$\SO(3)=\{R\in\GL(3,\R): R^{\!\top}R=I,\ \det R=+1\}$.
+\end{definition}
+
+\begin{proposition}\label{prop:so3}
+$\so(3)=\{A\in\R^{3\times3}: A^{\!\top}=-A\}$, a $3$-dimensional real vector space.
+\end{proposition}
+
+\begin{proof}
+Let $R(t)$ be a smooth curve in $\SO(3)$ with $R(0)=I$, and set $A=\dot R(0)$. Differentiating the
+constraint $R(t)^{\!\top}R(t)=I$ gives
+\[
+\frac{d}{dt}\Big(R^{\!\top}R\Big)=\dot R^{\!\top}R+R^{\!\top}\dot R=0 .
+\]
+Evaluating at $t=0$, where $R(0)=I$,
+\[
+A^{\!\top}+A=0 ,
+\]
+so $A$ is skew-symmetric. Conversely, if $A^{\!\top}=-A$ then $R(t)=e^{tA}$ satisfies
+\[
+R(t)^{\!\top}R(t)=e^{tA^{\!\top}}e^{tA}=e^{-tA}e^{tA}=I,
+\]
+where the middle equality uses $A^{\!\top}=-A$ and the last uses that $-tA$ and $tA$ commute. Also
+$\det e^{tA}=e^{t\tr A}=e^{0}=1$ because a skew matrix has zero diagonal, hence zero trace. So
+$e^{tA}$ is a curve in $\SO(3)$ through $I$ with velocity $A$. A skew $3\times3$ matrix is
+determined by its three entries above the diagonal, so $\dim\so(3)=3$.
+\end{proof}
+
+\begin{definition}[Hat map]
+For $\vv v=(v_1,v_2,v_3)^{\!\top}\in\R^3$ define
+\[
+\hatmap{\vv v}=\begin{pmatrix}0&-v_3&v_2\\ v_3&0&-v_1\\ -v_2&v_1&0\end{pmatrix}\in\so(3),
+\qquad\text{equivalently}\qquad (\hatmap{\vv v})_{jk}=-\varepsilon_{jkl}v_l .
+\]
+\end{definition}
+
+\begin{lemma}\label{lem:hatcross}
+$\hatmap{\vv v}\,\vv w=\vv v\times\vv w$ for all $\vv v,\vv w\in\R^3$.
+\end{lemma}
+
+\begin{proof}
+Componentwise, using $(\hatmap{\vv v})_{jk}=-\varepsilon_{jkl}v_l$ and summing repeated indices,
+\[
+(\hatmap{\vv v}\,\vv w)_j=(\hatmap{\vv v})_{jk}w_k=-\varepsilon_{jkl}v_lw_k
+=\varepsilon_{jlk}v_lw_k=(\vv v\times\vv w)_j ,
+\]
+where the third equality is the antisymmetry $\varepsilon_{jkl}=-\varepsilon_{jlk}$ and the fourth
+is the definition $(\vv a\times\vv b)_j=\varepsilon_{jlk}a_lb_k$. Written out for $j=1$:
+$(\hatmap{\vv v}\vv w)_1=-v_3w_2+v_2w_3=v_2w_3-v_3w_2$, which is indeed the first component of
+$\vv v\times\vv w$.
+\end{proof}
+
+Take as basis $L_j=\hatmap{\vv e_j}$, explicitly
+\[
+L_1=\begin{pmatrix}0&0&0\\0&0&-1\\0&1&0\end{pmatrix},\quad
+L_2=\begin{pmatrix}0&0&1\\0&0&0\\-1&0&0\end{pmatrix},\quad
+L_3=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&0\end{pmatrix}.
+\]
+
+\begin{proposition}\label{prop:sobrackets}
+$[L_1,L_2]=L_3$, and cyclically $[L_2,L_3]=L_1$, $[L_3,L_1]=L_2$. Equivalently
+$[L_j,L_k]=\varepsilon_{jkl}L_l$.
+\end{proposition}
+
+\begin{proof}
+We compute $L_1L_2$ and $L_2L_1$ entry by entry rather than asserting the result. Writing rows,
+$L_1$ has rows $(0,0,0)$, $(0,0,-1)$, $(0,1,0)$ and $L_2$ has rows $(0,0,1)$, $(0,0,0)$,
+$(-1,0,0)$.
+
+Row $j$ of $L_1L_2$ is the combination of the rows of $L_2$ weighted by row $j$ of $L_1$:
+\begin{align*}
+\text{row }1&: 0\cdot(0,0,1)+0\cdot(0,0,0)+0\cdot(-1,0,0)=(0,0,0),\\
+\text{row }2&: 0\cdot(0,0,1)+0\cdot(0,0,0)+(-1)\cdot(-1,0,0)=(1,0,0),\\
+\text{row }3&: 0\cdot(0,0,1)+1\cdot(0,0,0)+0\cdot(-1,0,0)=(0,0,0),
+\end{align*}
+so $L_1L_2=\begin{psmallmatrix}0&0&0\\1&0&0\\0&0&0\end{psmallmatrix}$. Similarly row $j$ of
+$L_2L_1$ is the rows of $L_1$ weighted by row $j$ of $L_2$:
+\begin{align*}
+\text{row }1&: 0\cdot(0,0,0)+0\cdot(0,0,-1)+1\cdot(0,1,0)=(0,1,0),\\
+\text{row }2&: (0,0,0),\\
+\text{row }3&: (-1)\cdot(0,0,0)+0+0=(0,0,0),
+\end{align*}
+so $L_2L_1=\begin{psmallmatrix}0&1&0\\0&0&0\\0&0&0\end{psmallmatrix}$. Subtracting,
+\[
+[L_1,L_2]=L_1L_2-L_2L_1=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&0\end{pmatrix}=L_3 .
+\]
+The other two identities follow by cycling $1\to2\to3\to1$, which permutes the $L_j$ in the same
+way because $(\hatmap{\vv v})_{jk}=-\varepsilon_{jkl}v_l$ is cyclically symmetric.
+\end{proof}
+
+\begin{corollary}\label{cor:hatbracket}
+$[\hatmap{\vv v},\hatmap{\vv w}]=\widehat{\vv v\times\vv w}$.
+\end{corollary}
+
+\begin{proof}
+Both sides are bilinear in $(\vv v,\vv w)$, so it suffices to check basis vectors. With
+$\vv v=\vv e_j$, $\vv w=\vv e_k$ the left side is $[L_j,L_k]=\varepsilon_{jkl}L_l$ by
+Proposition~\ref{prop:sobrackets}, and the right side is
+$\widehat{\vv e_j\times\vv e_k}=\widehat{\varepsilon_{jkl}\vv e_l}=\varepsilon_{jkl}L_l$.
+\end{proof}
+
+\begin{practical}[angular velocity is simultaneously a vector and a matrix]
+Corollary~\ref{cor:hatbracket} is the precise reason your code can carry $\bm\omega$ as a
+three-component array and still write $\dot R=R\,\hatmap{\bm\omega}$. The hat map is a Lie algebra
+isomorphism $(\R^3,\times)\to(\so(3),[\cdot,\cdot])$: cross product \emph{is} matrix commutator in
+disguise. When a reviewer asks why you are allowed to move between the two, this is the theorem to
+cite, and it also tells you the failure mode --- the identification is basis dependent, so it holds
+only in a right-handed orthonormal frame. In a left-handed frame every cross product flips sign.
+\end{practical}
+
+\subsection{$\SU(2)$ and $\su(2)$}
+
+\begin{definition}
+$\SU(2)=\{U\in\C^{2\times2}: U^{\dagger}U=I,\ \det U=1\}$.
+\end{definition}
+
+\begin{proposition}\label{prop:su2form}
+$U\in\SU(2)$ if and only if
+$U=\begin{pmatrix}\alpha&-\bar\beta\\ \beta&\bar\alpha\end{pmatrix}$
+with $\alpha,\beta\in\C$ and $|\alpha|^2+|\beta|^2=1$. Consequently $\SU(2)$ is diffeomorphic to
+the unit sphere $\Sph^3\subset\R^4$.
+\end{proposition}
+
+\begin{proof}
+Write $U=\begin{psmallmatrix}\alpha&\gamma\\\beta&\delta\end{psmallmatrix}$. The condition
+$\det U=1$ reads $\alpha\delta-\gamma\beta=1$. For a $2\times2$ matrix of determinant $1$ the
+inverse is $U^{-1}=\begin{psmallmatrix}\delta&-\gamma\\-\beta&\alpha\end{psmallmatrix}$. Unitarity
+says $U^{\dagger}=U^{-1}$, and
+$U^{\dagger}=\begin{psmallmatrix}\bar\alpha&\bar\beta\\\bar\gamma&\bar\delta\end{psmallmatrix}$.
+Equating entries:
+\[
+\bar\alpha=\delta,\qquad \bar\beta=-\gamma,\qquad \bar\gamma=-\beta,\qquad \bar\delta=\alpha .
+\]
+The first and fourth are the same statement; so are the second and third. Substituting
+$\delta=\bar\alpha$ and $\gamma=-\bar\beta$ into $\det U=1$ gives
+$\alpha\bar\alpha+\bar\beta\beta=|\alpha|^2+|\beta|^2=1$. Writing
+$\alpha=a_0+\ii a_1$, $\beta=a_2+\ii a_3$ identifies the solution set with
+$\{a\in\R^4:\ a_0^2+a_1^2+a_2^2+a_3^2=1\}=\Sph^3$.
+\end{proof}
+
+\begin{proposition}\label{prop:su2alg}
+$\su(2)=\{X\in\C^{2\times2}: X^{\dagger}=-X,\ \tr X=0\}$, a $3$-dimensional \emph{real} vector
+space with basis
+\[
+E_j:=-\tfrac{\ii}{2}\sigma_j,\qquad j=1,2,3 .
+\]
+\end{proposition}
+
+\begin{proof}
+Let $U(t)\subset\SU(2)$ with $U(0)=I$ and $X=\dot U(0)$. Differentiating $U^{\dagger}U=I$ at $t=0$
+gives $X^{\dagger}+X=0$. Differentiating $\det U(t)=1$ and using Jacobi's formula
+$\frac{d}{dt}\det U=\det U\cdot\tr(U^{-1}\dot U)$ at $t=0$ gives $\tr X=0$. Conversely, if
+$X^\dagger=-X$ and $\tr X=0$ then $e^{tX}$ is unitary and has $\det e^{tX}=e^{t\tr X}=1$.
+
+For the basis: each $\sigma_j$ is Hermitian and traceless, so $E_j=-\tfrac{\ii}{2}\sigma_j$
+satisfies $E_j^{\dagger}=+\tfrac{\ii}{2}\sigma_j^{\dagger}=\tfrac{\ii}{2}\sigma_j=-E_j$ and
+$\tr E_j=-\tfrac{\ii}{2}\tr\sigma_j=0$. A general anti-Hermitian traceless $2\times2$ matrix is
+$\begin{psmallmatrix}\ii c& z\\ -\bar z& -\ii c\end{psmallmatrix}$ with $c\in\R$, $z\in\C$, which
+is three real parameters, so the $E_j$ (three real-independent elements) span.
+\end{proof}
+
+\begin{lemma}[Pauli product identity]\label{lem:pauli}
+$\sigma_j\sigma_k=\delta_{jk}I+\ii\,\varepsilon_{jkl}\sigma_l$, and consequently for any
+$\vv a,\vv b\in\R^3$,
+\[
+(\vv a\cdot\vv\sigma)(\vv b\cdot\vv\sigma)=(\vv a\cdot\vv b)\,I+\ii\,(\vv a\times\vv b)\cdot\vv\sigma .
+\]
+\end{lemma}
+
+\begin{proof}
+Direct computation on the six independent cases. Squares first:
+\[
+\sigma_1^2=\begin{pmatrix}0&1\\1&0\end{pmatrix}^{\!2}=\begin{pmatrix}1&0\\0&1\end{pmatrix}=I,
+\]
+and identically $\sigma_2^2=\sigma_3^2=I$, matching $\delta_{jj}I$ with no $\varepsilon$ term.
+Now the mixed products:
+\[
+\sigma_1\sigma_2=\begin{pmatrix}0&1\\1&0\end{pmatrix}\begin{pmatrix}0&-\ii\\ \ii&0\end{pmatrix}
+=\begin{pmatrix}\ii&0\\0&-\ii\end{pmatrix}=\ii\sigma_3 ,
+\]
+\[
+\sigma_2\sigma_1=\begin{pmatrix}0&-\ii\\ \ii&0\end{pmatrix}\begin{pmatrix}0&1\\1&0\end{pmatrix}
+=\begin{pmatrix}-\ii&0\\0&\ii\end{pmatrix}=-\ii\sigma_3 .
+\]
+So $\sigma_1\sigma_2=\ii\varepsilon_{12l}\sigma_l=\ii\sigma_3$ and
+$\sigma_2\sigma_1=\ii\varepsilon_{21l}\sigma_l=-\ii\sigma_3$, as claimed. Likewise
+\[
+\sigma_2\sigma_3=\begin{pmatrix}0&-\ii\\ \ii&0\end{pmatrix}\begin{pmatrix}1&0\\0&-1\end{pmatrix}
+=\begin{pmatrix}0&\ii\\ \ii&0\end{pmatrix}=\ii\sigma_1 ,\qquad
+\sigma_3\sigma_1=\begin{pmatrix}1&0\\0&-1\end{pmatrix}\begin{pmatrix}0&1\\1&0\end{pmatrix}
+=\begin{pmatrix}0&1\\-1&0\end{pmatrix}=\ii\sigma_2 ,
+\]
+and the reversed products give the opposite sign by the same arithmetic. This exhausts all
+$j,k$ and establishes $\sigma_j\sigma_k=\delta_{jk}I+\ii\varepsilon_{jkl}\sigma_l$.
+
+For the vector form, expand bilinearly:
+\[
+(\vv a\cdot\vv\sigma)(\vv b\cdot\vv\sigma)=a_jb_k\,\sigma_j\sigma_k
+=a_jb_k\big(\delta_{jk}I+\ii\varepsilon_{jkl}\sigma_l\big)
+=(a_kb_k)I+\ii\,\varepsilon_{jkl}a_jb_k\,\sigma_l ,
+\]
+and $\varepsilon_{jkl}a_jb_k=\varepsilon_{ljk}a_jb_k=(\vv a\times\vv b)_l$ by cyclicity of
+$\varepsilon$.
+\end{proof}
+
+\begin{proposition}\label{prop:subrackets}
+$[E_j,E_k]=\varepsilon_{jkl}E_l$.
+\end{proposition}
+
+\begin{proof}
+Using $E_j=-\tfrac{\ii}{2}\sigma_j$ and Lemma~\ref{lem:pauli},
+\[
+[E_j,E_k]=\Big(-\tfrac{\ii}{2}\Big)^{\!2}[\sigma_j,\sigma_k]
+=-\tfrac14\Big(\big(\delta_{jk}I+\ii\varepsilon_{jkl}\sigma_l\big)
+-\big(\delta_{kj}I+\ii\varepsilon_{kjl}\sigma_l\big)\Big).
+\]
+The $\delta$ terms cancel, and $\varepsilon_{kjl}=-\varepsilon_{jkl}$, so the bracket of the Pauli
+matrices is $[\sigma_j,\sigma_k]=2\ii\varepsilon_{jkl}\sigma_l$. Hence
+\[
+[E_j,E_k]=-\tfrac14\cdot 2\ii\,\varepsilon_{jkl}\sigma_l
+=-\tfrac{\ii}{2}\varepsilon_{jkl}\sigma_l=\varepsilon_{jkl}E_l . \qedhere
+\]
+\end{proof}
+
+\begin{theorem}[Lie algebra isomorphism]\label{thm:algiso}
+The linear maps determined by $\vv e_j\mapsto L_j$ and $\vv e_j\mapsto E_j$ give isomorphisms of
+real Lie algebras
+\[
+(\R^3,\times)\;\cong\;\so(3)\;\cong\;\su(2).
+\]
+\end{theorem}
+
+\begin{proof}
+All three are $3$-dimensional real vector spaces, and each map sends a basis to a basis, hence is a
+linear isomorphism. It remains only to check that brackets correspond, and they do because all
+three satisfy the \emph{same} structure constants $\varepsilon_{jkl}$:
+$\vv e_j\times\vv e_k=\varepsilon_{jkl}\vv e_l$ by definition of the cross product,
+$[L_j,L_k]=\varepsilon_{jkl}L_l$ by Proposition~\ref{prop:sobrackets}, and
+$[E_j,E_k]=\varepsilon_{jkl}E_l$ by Proposition~\ref{prop:subrackets}.
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:algiso} is a statement about the \emph{infinitesimal} objects only. The groups
+$\SO(3)$ and $\SU(2)$ are \emph{not} isomorphic --- Section~\ref{sec:cover} shows the map between
+them is two-to-one. Isomorphic Lie algebras with non-isomorphic groups is exactly the phenomenon
+that produces the half-angle and the sign flip that engineers meet in the field.
+\end{remark}
+
+\subsection{Quaternions}
+
+\begin{definition}
+$\HH=\{q_0+q_1\mathbf i+q_2\mathbf j+q_3\mathbf k: q_\mu\in\R\}$ with multiplication determined by
+$\mathbf i^2=\mathbf j^2=\mathbf k^2=\mathbf i\mathbf j\mathbf k=-1$ and $\R$-bilinearity. The
+conjugate is $q^{*}=q_0-q_1\mathbf i-q_2\mathbf j-q_3\mathbf k$ and the norm is
+$|q|^2=q\,q^{*}=q_0^2+q_1^2+q_2^2+q_3^2$.
+\end{definition}
+
+\begin{lemma}[Product in vector form]\label{lem:qprod}
+For $p=(p_0,\vv p)$ and $q=(q_0,\vv q)$,
+\[
+p\otimes q=\big(p_0q_0-\vv p\cdot\vv q,\ \ p_0\vv q+q_0\vv p+\vv p\times\vv q\big).
+\]
+\end{lemma}
+
+\begin{proof}
+First derive the products of units from the defining relations. From $\mathbf i\mathbf j\mathbf
+k=-1$, multiply on the right by $\mathbf k$: $\mathbf i\mathbf j\mathbf k^2=-\mathbf k$, and since
+$\mathbf k^2=-1$ this gives $-\mathbf i\mathbf j=-\mathbf k$, i.e.\ $\mathbf i\mathbf j=\mathbf k$.
+Multiplying $\mathbf i\mathbf j=\mathbf k$ on the left by $\mathbf i$ gives
+$\mathbf i^2\mathbf j=\mathbf i\mathbf k$, so $-\mathbf j=\mathbf i\mathbf k$, i.e.\
+$\mathbf k\mathbf i=\mathbf j$ after a similar right multiplication. Cycling gives
+\[
+\mathbf i\mathbf j=\mathbf k=-\mathbf j\mathbf i,\qquad
+\mathbf j\mathbf k=\mathbf i=-\mathbf k\mathbf j,\qquad
+\mathbf k\mathbf i=\mathbf j=-\mathbf i\mathbf k .
+\]
+In one formula, with $\mathbf e_1=\mathbf i$, $\mathbf e_2=\mathbf j$, $\mathbf e_3=\mathbf k$:
+\[
+\mathbf e_j\mathbf e_k=-\delta_{jk}+\varepsilon_{jkl}\mathbf e_l .
+\]
+Now expand the product bilinearly:
+\[
+p\otimes q=(p_0+p_j\mathbf e_j)(q_0+q_k\mathbf e_k)
+=p_0q_0+p_0q_k\mathbf e_k+q_0p_j\mathbf e_j+p_jq_k\,\mathbf e_j\mathbf e_k .
+\]
+Substituting $\mathbf e_j\mathbf e_k=-\delta_{jk}+\varepsilon_{jkl}\mathbf e_l$ splits the last term
+into a scalar piece $-p_jq_j=-\vv p\cdot\vv q$ and a vector piece
+$\varepsilon_{jkl}p_jq_k\mathbf e_l=(\vv p\times\vv q)_l\mathbf e_l$. Collecting scalar and vector
+parts gives the stated formula.
+\end{proof}
+
+\begin{proposition}\label{prop:S3SU2}
+The map
+\[
+\Psi(q_0,\vv q)=q_0I-\ii\,(\vv q\cdot\vv\sigma)
+=\begin{pmatrix} q_0-\ii q_3 & -q_2-\ii q_1\\ q_2-\ii q_1& q_0+\ii q_3\end{pmatrix}
+\]
+restricts to a group isomorphism from the unit quaternions $(\Sph^3,\otimes)$ onto $\SU(2)$.
+\end{proposition}
+
+\begin{proof}
+\emph{Lands in $\SU(2)$.} Since each $\sigma_j$ is Hermitian,
+$\Psi(q)^{\dagger}=q_0I+\ii(\vv q\cdot\vv\sigma)$, so by Lemma~\ref{lem:pauli}
+\[
+\Psi(q)^{\dagger}\Psi(q)=\big(q_0I+\ii\vv q\cdot\vv\sigma\big)\big(q_0I-\ii\vv q\cdot\vv\sigma\big)
+=q_0^2I+(\vv q\cdot\vv\sigma)^2
+=q_0^2I+|\vv q|^2I=|q|^2I ,
+\]
+using $(\vv q\cdot\vv\sigma)^2=(\vv q\cdot\vv q)I+\ii(\vv q\times\vv q)\cdot\vv\sigma=|\vv q|^2I$
+because $\vv q\times\vv q=0$; note also the cross terms $\mp\ii q_0(\vv q\cdot\vv\sigma)$ cancel.
+Hence $|q|=1$ implies $\Psi(q)^{\dagger}\Psi(q)=I$. The determinant of the displayed matrix is
+\[
+(q_0-\ii q_3)(q_0+\ii q_3)-(-q_2-\ii q_1)(q_2-\ii q_1)
+=(q_0^2+q_3^2)+ (q_2+\ii q_1)(q_2-\ii q_1)=q_0^2+q_3^2+q_2^2+q_1^2=1 .
+\]
+
+\emph{Homomorphism.} Using Lemma~\ref{lem:pauli} again,
+\begin{align*}
+\Psi(p)\Psi(q)&=\big(p_0I-\ii\vv p\cdot\vv\sigma\big)\big(q_0I-\ii\vv q\cdot\vv\sigma\big)\\
+&=p_0q_0I-\ii p_0(\vv q\cdot\vv\sigma)-\ii q_0(\vv p\cdot\vv\sigma)
+-(\vv p\cdot\vv\sigma)(\vv q\cdot\vv\sigma)\\
+&=p_0q_0I-\ii p_0(\vv q\cdot\vv\sigma)-\ii q_0(\vv p\cdot\vv\sigma)
+-(\vv p\cdot\vv q)I-\ii(\vv p\times\vv q)\cdot\vv\sigma\\
+&=\big(p_0q_0-\vv p\cdot\vv q\big)I
+-\ii\big(p_0\vv q+q_0\vv p+\vv p\times\vv q\big)\cdot\vv\sigma ,
+\end{align*}
+which is exactly $\Psi(p\otimes q)$ by Lemma~\ref{lem:qprod}.
+
+\emph{Bijectivity.} Comparing with Proposition~\ref{prop:su2form}, setting
+$\alpha=q_0-\ii q_3$ and $\beta=q_2-\ii q_1$ recovers the general element of $\SU(2)$, and the
+correspondence $(q_0,q_1,q_2,q_3)\leftrightarrow(\alpha,\beta)$ is an $\R$-linear bijection
+$\R^4\to\C^2$ carrying $\Sph^3$ onto $\{|\alpha|^2+|\beta|^2=1\}$.
+\end{proof}
+
+\begin{practical}[a unit quaternion \emph{is} an $\SU(2)$ matrix]
+Nothing is lost or gained by storing attitude as four real numbers rather than a complex
+$2\times2$ matrix; Proposition~\ref{prop:S3SU2} says they are the same object. The four-number
+form wins in flight software only for storage and bandwidth reasons: $4$ doubles versus $8$, and no
+complex arithmetic in the inner loop. When a physicist writes $\SU(2)$ and an engineer writes
+\texttt{Quaterniond}, they are pointing at the same group element.
+\end{practical}
+
+\section{The exponential maps, summed explicitly}
+
+\subsection{$\exp$ on $\so(3)$: Rodrigues' formula}
+
+\begin{lemma}\label{lem:Kcubed}
+Let $\vv n\in\R^3$ with $|\vv n|=1$ and $K=\hatmap{\vv n}$. Then
+\[
+K^2=\vv n\vv n^{\!\top}-I,\qquad K^3=-K .
+\]
+\end{lemma}
+
+\begin{proof}
+Apply both sides of the first claim to an arbitrary $\vv w$. By Lemma~\ref{lem:hatcross},
+$K^2\vv w=\vv n\times(\vv n\times\vv w)$. Use the standard triple product expansion
+$\vv a\times(\vv b\times\vv c)=\vv b(\vv a\cdot\vv c)-\vv c(\vv a\cdot\vv b)$, proved in
+Appendix~\ref{app:eps}:
+\[
+K^2\vv w=\vv n(\vv n\cdot\vv w)-\vv w(\vv n\cdot\vv n)=\vv n(\vv n^{\!\top}\vv w)-\vv w
+=(\vv n\vv n^{\!\top}-I)\vv w ,
+\]
+using $|\vv n|=1$. Since $\vv w$ was arbitrary, $K^2=\vv n\vv n^{\!\top}-I$.
+
+For the second claim,
+\[
+K^3=K\cdot K^2=K(\vv n\vv n^{\!\top}-I)=(K\vv n)\vv n^{\!\top}-K = \vv 0\cdot\vv n^{\!\top}-K=-K ,
+\]
+because $K\vv n=\vv n\times\vv n=\vv 0$.
+\end{proof}
+
+\begin{theorem}[Rodrigues]\label{thm:rodrigues}
+For $|\vv n|=1$, $\theta\in\R$, and $K=\hatmap{\vv n}$,
+\[
+\boxed{\ e^{\theta K}=I+\sin\theta\,K+(1-\cos\theta)K^2\ }
+\]
+\end{theorem}
+
+\begin{proof}
+Because $K^3=-K$, every power of $K$ reduces to $K$ or $K^2$. By induction, for $m\ge0$
+\[
+K^{2m+1}=(-1)^{m}K ,\qquad K^{2m+2}=(-1)^{m}K^{2}.
+\]
+\emph{Base:} $m=0$ gives $K^1=K$ and $K^2=K^2$. \emph{Step:} assuming both hold at $m$,
+\begin{align*}
+K^{2m+3}&=K^{2m+1}K^2=(-1)^mK\cdot K^2=(-1)^mK^3=(-1)^{m+1}K,\\
+K^{2m+4}&=K^{2m+2}K^{2}=(-1)^mK^2K^2=(-1)^mK\,K^3=(-1)^{m}K(-K)=(-1)^{m+1}K^2 .
+\end{align*}
+
+Now split the exponential series by parity, isolating the $m=0$ term $I$:
+\[
+e^{\theta K}=\sum_{p\ge0}\frac{\theta^p}{p!}K^p
+= I+\sum_{m\ge0}\frac{\theta^{2m+1}}{(2m+1)!}K^{2m+1}
++\sum_{m\ge0}\frac{\theta^{2m+2}}{(2m+2)!}K^{2m+2}.
+\]
+Substituting the reduced powers,
+\[
+e^{\theta K}=I+\Big(\sum_{m\ge0}\frac{(-1)^m\theta^{2m+1}}{(2m+1)!}\Big)K
++\Big(\sum_{m\ge0}\frac{(-1)^m\theta^{2m+2}}{(2m+2)!}\Big)K^2 .
+\]
+The first bracket is the Taylor series of $\sin\theta$. For the second, re-index with $r=m+1$:
+\[
+\sum_{m\ge0}\frac{(-1)^m\theta^{2m+2}}{(2m+2)!}
+=\sum_{r\ge1}\frac{(-1)^{r-1}\theta^{2r}}{(2r)!}
+=-\sum_{r\ge1}\frac{(-1)^{r}\theta^{2r}}{(2r)!}
+=-\Big(\cos\theta-1\Big)=1-\cos\theta ,
+\]
+where the last step adds and subtracts the $r=0$ term of the cosine series. This is the claim.
+\end{proof}
+
+\begin{corollary}\label{cor:rodvec}
+$e^{\theta\hatmap{\vv n}}\vv v=\cos\theta\,\vv v+\sin\theta\,(\vv n\times\vv v)
++(1-\cos\theta)(\vv n\cdot\vv v)\vv n$.
+\end{corollary}
+
+\begin{proof}
+Apply Theorem~\ref{thm:rodrigues} to $\vv v$ and use $K\vv v=\vv n\times\vv v$ and
+$K^2\vv v=(\vv n\vv n^{\!\top}-I)\vv v=(\vv n\cdot\vv v)\vv n-\vv v$:
+\[
+e^{\theta K}\vv v=\vv v+\sin\theta(\vv n\times\vv v)+(1-\cos\theta)\big[(\vv n\cdot\vv v)\vv n-\vv v\big]
+=\cos\theta\,\vv v+\sin\theta(\vv n\times\vv v)+(1-\cos\theta)(\vv n\cdot\vv v)\vv n . \qedhere
+\]
+\end{proof}
+
+\begin{practical}[the only three matrices you ever need to build a rotation]
+Theorem~\ref{thm:rodrigues} says a rotation matrix is $I$, plus $\sin\theta$ times a cross-product
+matrix, plus $(1-\cos\theta)$ times its square. No trigonometric bookkeeping of axes, no Euler
+sequence. In code this is three \texttt{axpy} operations on $3\times3$ blocks and two transcendental
+calls. If you are building $R$ from an axis and angle any other way, you are doing more work and
+introducing more branches than the mathematics requires.
+\end{practical}
+
+\begin{pitfall}[the $\theta\to0$ cancellation]
+As $\theta\to0$, $1-\cos\theta\to0$ like $\theta^2/2$, and computing it as a literal
+$1-\cos\theta$ loses about half your significant digits by cancellation: at
+$\theta=10^{-8}$, $\cos\theta$ rounds to $1$ exactly in double precision and you get $0$ instead of
+$5\times10^{-17}$. Use the algebraically equivalent forms
+\[
+1-\cos\theta=2\sin^2\halfth,\qquad \frac{\sin\theta}{\theta},\qquad \frac{1-\cos\theta}{\theta^2},
+\]
+and switch to the truncated series $\frac{\sin\theta}{\theta}\approx1-\frac{\theta^2}{6}$,
+$\frac{1-\cos\theta}{\theta^{2}}\approx\frac12-\frac{\theta^{2}}{24}$ below a threshold of roughly
+$\theta<10^{-4}$. This single change is the difference between an attitude propagator that holds
+orthogonality for a whole mission and one that drifts visibly in an hour.
+\end{pitfall}
+
+\subsection{$\exp$ on $\su(2)$: where the half-angle comes from}
+
+\begin{theorem}\label{thm:expsu2}
+For $|\vv n|=1$ and $\theta\in\R$,
+\[
+\boxed{\ \exp\!\big(\theta\,\vv n\cdot\vv E\big)
+=\exp\!\Big(-\tfrac{\ii\theta}{2}\,\vv n\cdot\vv\sigma\Big)
+=\cos\halfth\,I-\ii\sin\halfth\,\big(\vv n\cdot\vv\sigma\big)\ }
+\]
+where $\vv n\cdot\vv E=n_jE_j$.
+\end{theorem}
+
+\begin{proof}
+Write $S=\vv n\cdot\vv\sigma$. By Lemma~\ref{lem:pauli},
+\[
+S^2=(\vv n\cdot\vv\sigma)(\vv n\cdot\vv\sigma)=(\vv n\cdot\vv n)I+\ii(\vv n\times\vv n)\cdot\vv\sigma=I ,
+\]
+since $\vv n\times\vv n=\vv 0$ and $|\vv n|=1$. Hence $S^{2m}=I$ and $S^{2m+1}=S$ for all $m\ge0$.
+Now expand with $\phi:=\theta/2$:
+\[
+e^{-\ii\phi S}=\sum_{p\ge0}\frac{(-\ii\phi)^p}{p!}S^p
+=\sum_{m\ge0}\frac{(-\ii\phi)^{2m}}{(2m)!}\underbrace{S^{2m}}_{=I}
++\sum_{m\ge0}\frac{(-\ii\phi)^{2m+1}}{(2m+1)!}\underbrace{S^{2m+1}}_{=S}.
+\]
+For the even sum, $(-\ii\phi)^{2m}=\big((-\ii)^2\big)^m\phi^{2m}=(-1)^m\phi^{2m}$, so
+\[
+\sum_{m\ge0}\frac{(-\ii\phi)^{2m}}{(2m)!}\,I
+=\Big(\sum_{m\ge0}\frac{(-1)^m\phi^{2m}}{(2m)!}\Big)I=\cos\phi\,I .
+\]
+For the odd sum, $(-\ii\phi)^{2m+1}=(-1)^m(-\ii)\phi^{2m+1}$, so
+\[
+\sum_{m\ge0}\frac{(-\ii\phi)^{2m+1}}{(2m+1)!}\,S
+=-\ii\Big(\sum_{m\ge0}\frac{(-1)^m\phi^{2m+1}}{(2m+1)!}\Big)S=-\ii\sin\phi\,S .
+\]
+Adding the two gives $e^{-\ii\phi S}=\cos\phi\,I-\ii\sin\phi\,S$ with $\phi=\theta/2$.
+\end{proof}
+
+\begin{corollary}[Axis--angle to quaternion]\label{cor:axisangle}
+Under $\Psi$ of Proposition~\ref{prop:S3SU2}, the group element $\exp(\theta\,\vv n\cdot\vv E)$
+corresponds to the unit quaternion
+\[
+q=\Big(\cos\halfth,\ \sin\halfth\,\vv n\Big).
+\]
+\end{corollary}
+
+\begin{proof}
+$\Psi(q_0,\vv q)=q_0I-\ii\vv q\cdot\vv\sigma$. Matching against
+$\cos\halfth I-\ii\sin\halfth(\vv n\cdot\vv\sigma)$ gives $q_0=\cos\halfth$ and
+$\vv q=\sin\halfth\,\vv n$.
+\end{proof}
+
+\begin{remark}[The half-angle is not a convention]
+Compare Theorem~\ref{thm:rodrigues} and Theorem~\ref{thm:expsu2}: the \emph{same} Lie algebra
+element $\theta\vv n$, exponentiated in the two groups, produces $\theta$ in $\SO(3)$ and
+$\theta/2$ in $\SU(2)$. The factor of two is forced by the identification of Lie algebras in
+Theorem~\ref{thm:algiso} together with the two-to-one group map of Section~\ref{sec:cover}: the
+$\SU(2)$ parameter must run twice as slowly so that a $2\pi$ rotation in $\SO(3)$ corresponds to a
+$4\pi$ traversal in $\SU(2)$.
+\end{remark}
+
+\section{The covering homomorphism $\SU(2)\to\SO(3)$}\label{sec:cover}
+
+\begin{definition}
+For $\vv v\in\R^3$ put $X(\vv v)=\vv v\cdot\vv E=-\tfrac{\ii}{2}(\vv v\cdot\vv\sigma)\in\su(2)$, a
+real-linear isomorphism $\R^3\to\su(2)$. For $U\in\SU(2)$ define the adjoint action
+$\Ad_U:\su(2)\to\su(2)$, $\Ad_U(X)=UXU^{\dagger}$, and define $\varphi(U)\in\R^{3\times3}$ by
+\[
+X\big(\varphi(U)\vv v\big)=U\,X(\vv v)\,U^{\dagger}.
+\]
+\end{definition}
+
+\begin{lemma}\label{lem:welldef}
+$\Ad_U$ maps $\su(2)$ into $\su(2)$, so $\varphi(U)$ is well defined and linear.
+\end{lemma}
+
+\begin{proof}
+Let $X\in\su(2)$, so $X^\dagger=-X$ and $\tr X=0$. Then
+$(UXU^{\dagger})^{\dagger}=U X^{\dagger}U^{\dagger}=-UXU^{\dagger}$, so $UXU^\dagger$ is
+anti-Hermitian; and $\tr(UXU^{\dagger})=\tr(XU^{\dagger}U)=\tr X=0$ by cyclicity of the trace and
+$U^\dagger U=I$. Linearity of $\varphi(U)$ follows because $X$ is linear and
+$X\mapsto UXU^\dagger$ is linear.
+\end{proof}
+
+\begin{lemma}[The invariant inner product]\label{lem:innerprod}
+For all $\vv v,\vv w\in\R^3$, $\ -2\tr\big(X(\vv v)X(\vv w)\big)=\vv v\cdot\vv w$.
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:pauli},
+\[
+X(\vv v)X(\vv w)=\Big(-\tfrac{\ii}{2}\Big)^{\!2}(\vv v\cdot\vv\sigma)(\vv w\cdot\vv\sigma)
+=-\tfrac14\Big[(\vv v\cdot\vv w)I+\ii(\vv v\times\vv w)\cdot\vv\sigma\Big].
+\]
+Now $\tr I=2$ and $\tr\sigma_l=0$ for each $l$ (immediate from the explicit matrices), so
+\[
+\tr\big(X(\vv v)X(\vv w)\big)=-\tfrac14\big[(\vv v\cdot\vv w)\cdot 2+0\big]=-\tfrac12\,\vv v\cdot\vv w .
+\]
+Multiplying by $-2$ gives the claim.
+\end{proof}
+
+\begin{theorem}\label{thm:cover}
+$\varphi:\SU(2)\to\SO(3)$ is a surjective group homomorphism with kernel $\{+I,-I\}$. Hence
+\[
+\SO(3)\;\cong\;\SU(2)/\{\pm I\}\;\cong\;\Sph^3/\!\sim\;=\;\RP^3 .
+\]
+\end{theorem}
+
+\begin{proof}
+\emph{Orthogonality.} Using Lemma~\ref{lem:innerprod} twice and cyclicity of the trace,
+\begin{align*}
+\varphi(U)\vv v\cdot\varphi(U)\vv w
+&=-2\tr\Big(X(\varphi(U)\vv v)\,X(\varphi(U)\vv w)\Big)
+=-2\tr\Big(UX(\vv v)U^{\dagger}\,UX(\vv w)U^{\dagger}\Big)\\
+&=-2\tr\Big(UX(\vv v)X(\vv w)U^{\dagger}\Big)
+=-2\tr\Big(X(\vv v)X(\vv w)U^{\dagger}U\Big)
+=-2\tr\big(X(\vv v)X(\vv w)\big)=\vv v\cdot\vv w .
+\end{align*}
+So $\varphi(U)$ preserves the inner product, i.e.\ $\varphi(U)\in\Or(3)$.
+
+\emph{Determinant $+1$.} $\SU(2)\cong\Sph^3$ is path connected, and $\varphi$ is continuous
+(it is polynomial in the entries of $U$). Therefore $\det\varphi(U)$ is a continuous function on a
+connected space taking values in the discrete set $\{\pm1\}$, hence constant. At $U=I$ we get
+$\varphi(I)=I$ and $\det=+1$, so $\det\varphi(U)=+1$ for all $U$.
+
+\emph{Homomorphism.} For $U,V\in\SU(2)$,
+\[
+X\big(\varphi(UV)\vv v\big)=(UV)X(\vv v)(UV)^{\dagger}=U\big(VX(\vv v)V^{\dagger}\big)U^{\dagger}
+=U\,X\big(\varphi(V)\vv v\big)\,U^{\dagger}=X\big(\varphi(U)\varphi(V)\vv v\big),
+\]
+and since $X$ is injective, $\varphi(UV)=\varphi(U)\varphi(V)$.
+
+\emph{Kernel.} Suppose $\varphi(U)=I$, i.e.\ $UX(\vv v)U^{\dagger}=X(\vv v)$ for every $\vv v$,
+equivalently $U\sigma_jU^{\dagger}=\sigma_j$, i.e.\ $U$ commutes with $\sigma_1,\sigma_2,\sigma_3$.
+Rather than invoke Schur's lemma, compute. Write
+$U=\begin{psmallmatrix}\alpha&-\bar\beta\\\beta&\bar\alpha\end{psmallmatrix}$.
+Commuting with $\sigma_3=\mathrm{diag}(1,-1)$:
+\[
+U\sigma_3=\begin{pmatrix}\alpha&\bar\beta\\ \beta&-\bar\alpha\end{pmatrix},\qquad
+\sigma_3U=\begin{pmatrix}\alpha&-\bar\beta\\ -\beta&\bar\alpha\end{pmatrix}.
+\]
+Equality of the $(1,2)$ entries forces $\bar\beta=-\bar\beta$, so $\beta=0$; then
+$|\alpha|^2=1$ and $U=\mathrm{diag}(\alpha,\bar\alpha)$. Commuting this with $\sigma_1$:
+\[
+U\sigma_1=\begin{pmatrix}0&\alpha\\ \bar\alpha&0\end{pmatrix},\qquad
+\sigma_1U=\begin{pmatrix}0&\bar\alpha\\ \alpha&0\end{pmatrix},
+\]
+so $\alpha=\bar\alpha$, i.e.\ $\alpha\in\R$, and with $|\alpha|=1$ this gives $\alpha=\pm1$, that
+is $U=\pm I$. Conversely $\pm I$ clearly act trivially since $(-I)X(-I)^{\dagger}=X$.
+
+\emph{Surjectivity.} Let $R\in\SO(3)$. By Corollary~\ref{cor:phiexp} below, $\varphi$ maps
+$\exp(\theta\,\vv n\cdot\vv E)$ to $\exp(\theta\hatmap{\vv n})$, and every element of $\SO(3)$ is
+of the latter form by the axis--angle theorem (a real orthogonal $3\times3$ matrix with
+$\det=+1$ has $+1$ as an eigenvalue, whose eigenvector is the axis; restricted to the orthogonal
+complement it is a planar rotation). Hence $\varphi$ is onto.
+
+The isomorphism statements are the first isomorphism theorem plus the observation that quotienting
+$\Sph^3$ by the antipodal identification $q\sim-q$ is precisely the definition of $\RP^3$.
+\end{proof}
+
+\begin{corollary}\label{cor:phiexp}
+$\varphi\big(\exp(\theta\,\vv n\cdot\vv E)\big)=\exp\big(\theta\,\hatmap{\vv n}\big)$; equivalently
+$d\varphi_I=\mathrm{id}$ under the identifications $\vv e_j\mapsto E_j$ and $\vv e_j\mapsto L_j$.
+\end{corollary}
+
+\begin{proof}
+Differentiate the defining relation $X(\varphi(U)\vv v)=UX(\vv v)U^{\dagger}$ along
+$U(t)=\exp(tY)$ with $Y\in\su(2)$, at $t=0$:
+\[
+X\big(d\varphi_I(Y)\vv v\big)=YX(\vv v)-X(\vv v)Y=[Y,X(\vv v)] .
+\]
+Take $Y=E_j$ and $\vv v=\vv e_k$, so $X(\vv v)=E_k$. By Proposition~\ref{prop:subrackets},
+$[E_j,E_k]=\varepsilon_{jkl}E_l=X(\varepsilon_{jkl}\vv e_l)=X(\vv e_j\times\vv e_k)
+=X(\hatmap{\vv e_j}\vv e_k)$. Injectivity of $X$ gives $d\varphi_I(E_j)=\hatmap{\vv e_j}=L_j$.
+Since $d\varphi_I$ is a Lie algebra homomorphism sending $E_j\mapsto L_j$, naturality of
+$\exp$ ($\varphi\circ\exp=\exp\circ\,d\varphi_I$ for a Lie group homomorphism $\varphi$) yields the
+displayed identity.
+\end{proof}
+
+\begin{practical}[why your quaternion flips sign, and what to do about it]
+Theorem~\ref{thm:cover} is the entire explanation. $q$ and $-q$ are distinct points of
+$\Sph^3$ but map to the \emph{same} rotation, because the kernel of $\varphi$ is $\{\pm I\}$.
+Consequences you will meet:
+\begin{itemize}[leftmargin=1.2em,topsep=2pt]
+\item A filter or a solver may output $-q$ where you expected $q$. Nothing is wrong.
+\item Comparing attitudes with $\|q_1-q_2\|$ is \textbf{incorrect}. Use
+$1-|\langle q_1,q_2\rangle|$, or the geodesic angle
+$2\arccos|\langle q_1,q_2\rangle|$ --- the absolute value is what quotients by the sign.
+\item Before interpolating between $q_1$ and $q_2$, negate one if
+$\langle q_1,q_2\rangle<0$; otherwise you take the long way round the sphere ($>180^\circ$).
+\item Canonicalizing to $q_0\ge0$ is fine for logging and comparison, but never do it \emph{inside}
+an integrator: it injects a discontinuity into a signal your propagator assumes is smooth.
+\end{itemize}
+\end{practical}
+
+\begin{remark}[The belt trick is a statement about $\pi_1$]
+$\Sph^3$ is simply connected and the covering is two-sheeted, so
+$\pi_1(\SO(3))\cong\ker\varphi\cong\Z/2\Z$. Physically: a loop of rotations through $2\pi$ is not
+contractible, while a loop through $4\pi$ is. This is the belt or plate trick, and it is why
+spin-$\tfrac12$ exists. It is also why a naive ``unwind the total rotation angle'' bookkeeping in
+software must decide, explicitly, whether it is tracking an element of $\SO(3)$ or a path in
+$\SU(2)$.
+\end{remark}
+
+\section{Quaternion to rotation matrix, every step}
+
+\begin{theorem}\label{thm:sandwich}
+Let $q=(q_0,\vv q)$ be a unit quaternion and $\vv v\in\R^3$ embedded as the pure quaternion
+$(0,\vv v)$. Then $q\otimes(0,\vv v)\otimes q^{*}$ is again pure, and its vector part is
+\[
+\boxed{\ \vv v'=\big(q_0^2-|\vv q|^2\big)\vv v+2(\vv q\cdot\vv v)\,\vv q+2q_0\,(\vv q\times\vv v)\ }
+\]
+\end{theorem}
+
+\begin{proof}
+\emph{Step 1: the inner product $q\otimes(0,\vv v)$.} By Lemma~\ref{lem:qprod} with
+$p=(q_0,\vv q)$ and the second factor $(0,\vv v)$,
+\[
+q\otimes(0,\vv v)=\big(q_0\cdot 0-\vv q\cdot\vv v,\ \ q_0\vv v+0\cdot\vv q+\vv q\times\vv v\big)
+=\big(-\vv q\cdot\vv v,\ \ q_0\vv v+\vv q\times\vv v\big).
+\]
+
+\emph{Step 2: multiply on the right by $q^{*}=(q_0,-\vv q)$.} Apply Lemma~\ref{lem:qprod} with
+$p=(-\vv q\cdot\vv v,\ q_0\vv v+\vv q\times\vv v)$ and $q^{*}=(q_0,-\vv q)$.
+
+The scalar part is
+\[
+(-\vv q\cdot\vv v)q_0-\big(q_0\vv v+\vv q\times\vv v\big)\cdot(-\vv q)
+=-q_0(\vv q\cdot\vv v)+q_0(\vv v\cdot\vv q)+(\vv q\times\vv v)\cdot\vv q .
+\]
+The first two terms cancel exactly. The third vanishes because $\vv q\times\vv v$ is orthogonal to
+$\vv q$: indeed $(\vv q\times\vv v)\cdot\vv q=\varepsilon_{jkl}q_kv_lq_j=0$, since
+$\varepsilon_{jkl}$ is antisymmetric in $j\leftrightarrow k$ while $q_jq_k$ is symmetric, and the
+contraction of a symmetric with an antisymmetric tensor is zero. So the result is pure, as claimed.
+
+The vector part is, term by term,
+\[
+\underbrace{(-\vv q\cdot\vv v)(-\vv q)}_{\text{first scalar}\ \times\ \text{second vector}}
++\underbrace{q_0\big(q_0\vv v+\vv q\times\vv v\big)}_{\text{second scalar}\ \times\ \text{first vector}}
++\underbrace{\big(q_0\vv v+\vv q\times\vv v\big)\times(-\vv q)}_{\text{cross term}} .
+\]
+Handle each piece.
+\begin{itemize}[leftmargin=1.3em,topsep=2pt]
+\item First piece: $(-\vv q\cdot\vv v)(-\vv q)=(\vv q\cdot\vv v)\vv q$.
+\item Second piece: $q_0^2\vv v+q_0(\vv q\times\vv v)$.
+\item Third piece: expand the cross product and use antisymmetry $\vv a\times\vv b=-\vv b\times\vv a$:
+\[
+\big(q_0\vv v\big)\times(-\vv q)+\big(\vv q\times\vv v\big)\times(-\vv q)
+=-q_0(\vv v\times\vv q)-(\vv q\times\vv v)\times\vv q
+=q_0(\vv q\times\vv v)+\vv q\times(\vv q\times\vv v).
+\]
+Now apply the triple product expansion (Appendix~\ref{app:eps}):
+$\vv q\times(\vv q\times\vv v)=\vv q(\vv q\cdot\vv v)-\vv v(\vv q\cdot\vv q)
+=(\vv q\cdot\vv v)\vv q-|\vv q|^2\vv v$.
+\end{itemize}
+Summing the three pieces:
+\[
+\vv v'=(\vv q\cdot\vv v)\vv q+q_0^2\vv v+q_0(\vv q\times\vv v)
++q_0(\vv q\times\vv v)+(\vv q\cdot\vv v)\vv q-|\vv q|^2\vv v .
+\]
+Collecting like terms --- two copies of $(\vv q\cdot\vv v)\vv q$, two copies of
+$q_0(\vv q\times\vv v)$, and the $\vv v$ terms --- gives exactly the boxed formula.
+\end{proof}
+
+\begin{corollary}[Consistency with Rodrigues]
+Substituting $q_0=\cos\halfth$ and $\vv q=\sin\halfth\,\vv n$ into Theorem~\ref{thm:sandwich}
+reproduces Corollary~\ref{cor:rodvec}.
+\end{corollary}
+
+\begin{proof}
+Coefficient of $\vv v$: $\cos^2\halfth-\sin^2\halfth=\cos\theta$ by the double-angle identity.
+Coefficient of $(\vv n\cdot\vv v)\vv n$: $2\sin^2\halfth=1-\cos\theta$, again double angle.
+Coefficient of $\vv n\times\vv v$: $2\cos\halfth\sin\halfth=\sin\theta$. Substituting,
+\[
+\vv v'=\cos\theta\,\vv v+(1-\cos\theta)(\vv n\cdot\vv v)\vv n+\sin\theta\,(\vv n\times\vv v),
+\]
+which is Corollary~\ref{cor:rodvec}. This also confirms independently that the half-angle in
+Corollary~\ref{cor:axisangle} is correct: a quaternion built with $\theta/2$ produces a rotation
+by $\theta$.
+\end{proof}
+
+\begin{corollary}[Matrix form]\label{cor:Rofq}
+With $q$ a unit quaternion,
+\[
+R(q)=\big(q_0^2-|\vv q|^2\big)I+2\,\vv q\vv q^{\!\top}+2q_0\hatmap{\vv q}
+=\begin{pmatrix}
+q_0^2+q_1^2-q_2^2-q_3^2 & 2(q_1q_2-q_0q_3) & 2(q_1q_3+q_0q_2)\\[2pt]
+2(q_1q_2+q_0q_3) & q_0^2-q_1^2+q_2^2-q_3^2 & 2(q_2q_3-q_0q_1)\\[2pt]
+2(q_1q_3-q_0q_2) & 2(q_2q_3+q_0q_1) & q_0^2-q_1^2-q_2^2+q_3^2
+\end{pmatrix}.
+\]
+\end{corollary}
+
+\begin{proof}
+The three terms of Theorem~\ref{thm:sandwich} are, as operators on $\vv v$: multiplication by the
+scalar $q_0^2-|\vv q|^2$; the map $\vv v\mapsto2(\vv q\cdot\vv v)\vv q=2\vv q\vv q^{\!\top}\vv v$;
+and $\vv v\mapsto2q_0(\vv q\times\vv v)=2q_0\hatmap{\vv q}\vv v$ by Lemma~\ref{lem:hatcross}. For
+the entries, take the $(1,1)$ element: $q_0^2-|\vv q|^2+2q_1^2+0
+=q_0^2-q_1^2-q_2^2-q_3^2+2q_1^2=q_0^2+q_1^2-q_2^2-q_3^2$. Take the $(1,2)$ element:
+the diagonal term contributes nothing off-diagonal, $2\vv q\vv q^{\!\top}$ contributes $2q_1q_2$,
+and $2q_0\hatmap{\vv q}$ contributes $2q_0\cdot(-q_3)$, giving $2(q_1q_2-q_0q_3)$. The remaining
+entries follow identically.
+\end{proof}
+
+\section{Rotation matrix to quaternion: Shepperd's method, derived}
+
+This is the direction that breaks in production code, because the naive formula divides by a
+quantity that can vanish.
+
+\begin{lemma}[Trace and antisymmetric part]\label{lem:traceanti}
+For $R=R(q)$ as in Corollary~\ref{cor:Rofq} with $|q|=1$,
+\[
+\tr R=4q_0^2-1 ,\qquad R-R^{\!\top}=4q_0\hatmap{\vv q}.
+\]
+\end{lemma}
+
+\begin{proof}
+Trace: sum the three diagonal entries from Corollary~\ref{cor:Rofq},
+\[
+\tr R=(q_0^2+q_1^2-q_2^2-q_3^2)+(q_0^2-q_1^2+q_2^2-q_3^2)+(q_0^2-q_1^2-q_2^2+q_3^2)
+=3q_0^2-q_1^2-q_2^2-q_3^2 .
+\]
+Using $q_1^2+q_2^2+q_3^2=1-q_0^2$, this is $3q_0^2-(1-q_0^2)=4q_0^2-1$.
+
+Antisymmetric part: in $R=(q_0^2-|\vv q|^2)I+2\vv q\vv q^{\!\top}+2q_0\hatmap{\vv q}$ the first two
+terms are symmetric ($I^{\!\top}=I$ and $(\vv q\vv q^{\!\top})^{\!\top}=\vv q\vv q^{\!\top}$) and the
+third is antisymmetric, so
+$R-R^{\!\top}=2q_0\hatmap{\vv q}-2q_0\hatmap{\vv q}^{\!\top}=2q_0\hatmap{\vv q}+2q_0\hatmap{\vv q}
+=4q_0\hatmap{\vv q}$.
+\end{proof}
+
+\begin{corollary}[Naive branch]\label{cor:naive}
+If $\tr R>-1$ then $q_0=\tfrac12\sqrt{1+\tr R}$ (choosing the $+$ sign) and
+\[
+q_1=\frac{R_{32}-R_{23}}{4q_0},\qquad q_2=\frac{R_{13}-R_{31}}{4q_0},\qquad
+q_3=\frac{R_{21}-R_{12}}{4q_0}.
+\]
+\end{corollary}
+
+\begin{proof}
+From $\tr R=4q_0^2-1$ we get $q_0^2=(1+\tr R)/4$. From $R-R^{\!\top}=4q_0\hatmap{\vv q}$, read off
+the $(3,2)$ entry: $(\hatmap{\vv q})_{32}=q_1$, so $R_{32}-R_{23}=4q_0q_1$. The $(1,3)$ entry gives
+$(\hatmap{\vv q})_{13}=q_2$, so $R_{13}-R_{31}=4q_0q_2$; the $(2,1)$ entry gives
+$(\hatmap{\vv q})_{21}=q_3$, so $R_{21}-R_{12}=4q_0q_3$.
+\end{proof}
+
+\begin{lemma}[The other three branches]\label{lem:branches}
+With $R=R(q)$, $|q|=1$,
+\[
+1+R_{11}-R_{22}-R_{33}=4q_1^2,\qquad
+1-R_{11}+R_{22}-R_{33}=4q_2^2,\qquad
+1-R_{11}-R_{22}+R_{33}=4q_3^2 .
+\]
+Moreover $R_{12}+R_{21}=4q_1q_2$, $R_{13}+R_{31}=4q_1q_3$, $R_{23}+R_{32}=4q_2q_3$.
+\end{lemma}
+
+\begin{proof}
+For the first, substitute the diagonal entries of Corollary~\ref{cor:Rofq}:
+\begin{align*}
+R_{11}-R_{22}-R_{33}
+&=(q_0^2+q_1^2-q_2^2-q_3^2)-(q_0^2-q_1^2+q_2^2-q_3^2)-(q_0^2-q_1^2-q_2^2+q_3^2)\\
+&=q_0^2+q_1^2-q_2^2-q_3^2-q_0^2+q_1^2-q_2^2+q_3^2-q_0^2+q_1^2+q_2^2-q_3^2\\
+&=-q_0^2+3q_1^2-q_2^2-q_3^2 .
+\end{align*}
+Adding $1=q_0^2+q_1^2+q_2^2+q_3^2$ gives $4q_1^2$, as claimed. The other two follow by permuting
+the roles of the indices $1,2,3$, which permutes the diagonal entries in the same pattern.
+
+For the symmetric off-diagonal identities, from Corollary~\ref{cor:Rofq}
+$R_{12}=2(q_1q_2-q_0q_3)$ and $R_{21}=2(q_1q_2+q_0q_3)$, so their sum is $4q_1q_2$; the
+antisymmetric $q_0$ pieces cancel. Identically $R_{13}+R_{31}=2(q_1q_3+q_0q_2)+2(q_1q_3-q_0q_2)
+=4q_1q_3$ and $R_{23}+R_{32}=2(q_2q_3-q_0q_1)+2(q_2q_3+q_0q_1)=4q_2q_3$.
+\end{proof}
+
+\begin{theorem}[Shepperd's four-case algorithm]\label{thm:shepperd}
+Compute the four quantities
+\[
+t_0=1+\tr R=4q_0^2,\quad t_1=1+R_{11}-R_{22}-R_{33}=4q_1^2,
+\]
+\[
+t_2=1-R_{11}+R_{22}-R_{33}=4q_2^2,\quad t_3=1-R_{11}-R_{22}+R_{33}=4q_3^2 ,
+\]
+select the index $\mu$ with $t_\mu$ largest, set $q_\mu=\tfrac12\sqrt{t_\mu}$, and obtain the
+remaining components by dividing the appropriate identity of Lemma~\ref{lem:traceanti} or
+Lemma~\ref{lem:branches} by $4q_\mu$. Explicitly:
+\[
+\begin{array}{ll}
+\mu=0: & q_1=\dfrac{R_{32}-R_{23}}{4q_0},\quad q_2=\dfrac{R_{13}-R_{31}}{4q_0},\quad q_3=\dfrac{R_{21}-R_{12}}{4q_0};\\[10pt]
+\mu=1: & q_0=\dfrac{R_{32}-R_{23}}{4q_1},\quad q_2=\dfrac{R_{12}+R_{21}}{4q_1},\quad q_3=\dfrac{R_{13}+R_{31}}{4q_1};\\[10pt]
+\mu=2: & q_0=\dfrac{R_{13}-R_{31}}{4q_2},\quad q_1=\dfrac{R_{12}+R_{21}}{4q_2},\quad q_3=\dfrac{R_{23}+R_{32}}{4q_2};\\[10pt]
+\mu=3: & q_0=\dfrac{R_{21}-R_{12}}{4q_3},\quad q_1=\dfrac{R_{13}+R_{31}}{4q_3},\quad q_2=\dfrac{R_{23}+R_{32}}{4q_3}.
+\end{array}
+\]
+The selected $t_\mu$ always satisfies $t_\mu\ge1$, so the division is never by a small number.
+\end{theorem}
+
+\begin{proof}
+The four displayed identities are Lemma~\ref{lem:traceanti} (for $t_0$) and
+Lemma~\ref{lem:branches} (for $t_1,t_2,t_3$). Each case then solves for the remaining three
+components using the products $4q_\mu q_\nu$ supplied by those two lemmas.
+
+For the conditioning claim, sum the four quantities:
+\[
+t_0+t_1+t_2+t_3=4\big(q_0^2+q_1^2+q_2^2+q_3^2\big)=4 .
+\]
+Four non-negative numbers summing to $4$ must have a maximum at least their average, namely
+$\max_\mu t_\mu\ge1$. Hence $q_\mu=\tfrac12\sqrt{t_\mu}\ge\tfrac12$ and the divisor
+$4q_\mu\ge2$.
+\end{proof}
+
+\begin{practical}[why the textbook one-liner is a latent bug]
+Corollary~\ref{cor:naive} is the formula printed in most references. It divides by $4q_0$, and
+$q_0=\cos\halfth\to0$ as $\theta\to\pi$. A $180^\circ$ rotation is not exotic --- it is a
+spacecraft flipped end for end, a common commanded slew. Near it the naive formula loses precision
+catastrophically and at exactly $\theta=\pi$ it divides by zero.
+
+Theorem~\ref{thm:shepperd} costs one extra comparison chain and is unconditionally well
+conditioned, because the pigeonhole argument guarantees the chosen divisor is at least $2$. Use it
+always. When you review someone's attitude library, ``does the matrix-to-quaternion routine branch
+on four cases?'' is a one-question audit of whether the author knew what they were doing.
+\end{practical}
+
+\begin{pitfall}[feeding it a matrix that is not quite a rotation]
+Every identity above assumed $R^{\!\top}R=I$ exactly. After a long propagation, $R$ drifts and
+$t_\mu$ can go slightly negative, making $\sqrt{t_\mu}$ a NaN that then poisons the entire state
+vector. Guard with $\max(t_\mu,0)$, and re-orthogonalize $R$ (polar decomposition, or Gram--Schmidt
+if you must) \emph{before} conversion rather than debugging NaNs afterwards.
+\end{pitfall}
+
+\section{The logarithm and its singularities}
+
+\begin{proposition}\label{prop:log}
+Let $R\in\SO(3)$ with $\tr R\ne -1$ and $R\ne I$. Then $R=\exp(\theta\hatmap{\vv n})$ with
+\[
+\theta=\arccos\!\Big(\frac{\tr R-1}{2}\Big)\in(0,\pi),\qquad
+\hatmap{\vv n}=\frac{R-R^{\!\top}}{2\sin\theta}.
+\]
+\end{proposition}
+
+\begin{proof}
+Take the trace of Rodrigues' formula (Theorem~\ref{thm:rodrigues}). We have $\tr I=3$,
+$\tr K=0$ (a skew matrix has zero diagonal), and by Lemma~\ref{lem:Kcubed}
+$\tr K^2=\tr(\vv n\vv n^{\!\top}-I)=|\vv n|^2-3=1-3=-2$. Hence
+\[
+\tr R=3+\sin\theta\cdot0+(1-\cos\theta)(-2)=3-2+2\cos\theta=1+2\cos\theta ,
+\]
+which rearranges to $\cos\theta=(\tr R-1)/2$. For the axis, the symmetric terms $I$ and $K^2$ drop
+out of $R-R^{\!\top}$, leaving $R-R^{\!\top}=2\sin\theta\,K$, so $K=(R-R^{\!\top})/(2\sin\theta)$
+provided $\sin\theta\ne0$, i.e.\ $\theta\notin\{0,\pi\}$, which is exactly the excluded set.
+\end{proof}
+
+\begin{practical}[the two singular attitudes, and the fix]
+The logarithm degenerates in precisely two places, and both are physically ordinary:
+\begin{itemize}[leftmargin=1.2em,topsep=2pt]
+\item $\theta\to0$ ($R\to I$): the axis is undefined because there is no rotation. Any unit vector
+will do; return $\vv 0$ for the rotation vector and do not normalize.
+\item $\theta\to\pi$ ($\tr R\to-1$): $\sin\theta\to0$ and the axis formula divides by zero, yet the
+axis is perfectly well defined. Recover it from the \emph{symmetric} part instead:
+$R+R^{\!\top}=2\big[(1-\cos\theta)\vv n\vv n^{\!\top}+\cos\theta I\big]$, so at $\theta=\pi$,
+$\vv n\vv n^{\!\top}=(R+I)/2$, and $\vv n$ is the properly normalized column of $R+I$ with the
+largest norm. The sign of $\vv n$ is genuinely ambiguous here --- rotating by $+\pi$ and $-\pi$
+about the same axis give the same $R$ --- which is the double cover asserting itself again.
+\end{itemize}
+Go through the quaternion instead and both problems soften: build $q$ by
+Theorem~\ref{thm:shepperd}, then $\theta=2\operatorname{atan2}(|\vv q|,q_0)$. Using
+\texttt{atan2} rather than \texttt{arccos} is not cosmetic: $\arccos$ has infinite derivative at its
+endpoints, so it amplifies input error precisely where you can least afford it, whereas
+\texttt{atan2} is well conditioned over the whole range.
+\end{practical}
+
+\section{Kinematics: the equations you actually integrate}
+
+\begin{proposition}\label{prop:Rdot}
+Let $R(t)\in\SO(3)$ be differentiable, carrying body coordinates to inertial coordinates. Then
+there exist unique $\bm\omega_{\mathcal B}(t),\bm\omega_{\mathcal I}(t)\in\R^3$ with
+\[
+\dot R=R\,\hatmap{\bm\omega_{\mathcal B}}=\hatmap{\bm\omega_{\mathcal I}}\,R ,
+\qquad\text{and}\qquad \bm\omega_{\mathcal I}=R\,\bm\omega_{\mathcal B}.
+\]
+\end{proposition}
+
+\begin{proof}
+Differentiate $R^{\!\top}R=I$:
+\[
+\dot R^{\!\top}R+R^{\!\top}\dot R=0\quad\Longrightarrow\quad
+\big(R^{\!\top}\dot R\big)^{\!\top}=-\big(R^{\!\top}\dot R\big),
+\]
+so $R^{\!\top}\dot R$ is skew-symmetric and by Proposition~\ref{prop:so3} equals
+$\hatmap{\bm\omega_{\mathcal B}}$ for a unique $\bm\omega_{\mathcal B}$. Multiplying on the left by
+$R$ gives $\dot R=R\hatmap{\bm\omega_{\mathcal B}}$. Similarly differentiating $RR^{\!\top}=I$ shows
+$\dot RR^{\!\top}$ is skew, $=\hatmap{\bm\omega_{\mathcal I}}$, giving
+$\dot R=\hatmap{\bm\omega_{\mathcal I}}R$.
+
+For the relation between them, equate the two expressions:
+$R\hatmap{\bm\omega_{\mathcal B}}=\hatmap{\bm\omega_{\mathcal I}}R$, hence
+$\hatmap{\bm\omega_{\mathcal I}}=R\hatmap{\bm\omega_{\mathcal B}}R^{\!\top}$. Apply both sides to an
+arbitrary $\vv w$ and set $\vv u=R^{\!\top}\vv w$:
+\[
+\hatmap{\bm\omega_{\mathcal I}}\vv w=R\big(\bm\omega_{\mathcal B}\times\vv u\big)
+=\big(R\bm\omega_{\mathcal B}\big)\times\big(R\vv u\big)
+=\big(R\bm\omega_{\mathcal B}\big)\times\vv w ,
+\]
+where the middle equality is the identity $R(\vv a\times\vv b)=(R\vv a)\times(R\vv b)$ valid for
+$R\in\SO(3)$ (proved in Appendix~\ref{app:eps}). Since $\vv w$ is arbitrary,
+$\bm\omega_{\mathcal I}=R\bm\omega_{\mathcal B}$.
+\end{proof}
+
+\begin{theorem}[Quaternion kinematics]\label{thm:qdot}
+With $q(t)$ the unit quaternion of $R(t)$ and $\bm\omega=\bm\omega_{\mathcal B}$ the body-frame
+angular velocity,
+\[
+\boxed{\ \dot q=\tfrac12\,q\otimes(0,\bm\omega)\ }
+\qquad\text{equivalently}\qquad
+\dot q=\tfrac12\,\Omega(\bm\omega)\,q,\quad
+\Omega(\bm\omega)=\begin{pmatrix}
+0&-\omega_1&-\omega_2&-\omega_3\\
+\omega_1&0&\omega_3&-\omega_2\\
+\omega_2&-\omega_3&0&\omega_1\\
+\omega_3&\omega_2&-\omega_1&0
+\end{pmatrix}.
+\]
+If instead $\bm\omega_{\mathcal I}$ is used, the increment multiplies from the left:
+$\dot q=\tfrac12(0,\bm\omega_{\mathcal I})\otimes q$.
+\end{theorem}
+
+\begin{proof}
+Over $[t,t+h]$ the attitude advances by a small body-frame rotation, so
+$q(t+h)=q(t)\otimes\delta q(h)$ where $\delta q(h)$ is the quaternion of the rotation by angle
+$|\bm\omega|h$ about $\bm\omega/|\bm\omega|$. By Corollary~\ref{cor:axisangle},
+\[
+\delta q(h)=\Big(\cos\tfrac{|\bm\omega|h}{2},\ \sin\tfrac{|\bm\omega|h}{2}\,
+\frac{\bm\omega}{|\bm\omega|}\Big)
+=\Big(1-\tfrac{|\bm\omega|^2h^2}{8}+O(h^4),\ \tfrac{h}{2}\bm\omega+O(h^3)\Big),
+\]
+using $\cos x=1-x^2/2+O(x^4)$ and $\sin x=x+O(x^3)$ with $x=|\bm\omega|h/2$. Therefore
+\[
+\dot q(t)=\lim_{h\to0}\frac{q(t)\otimes\delta q(h)-q(t)}{h}
+=q(t)\otimes\lim_{h\to0}\frac{\delta q(h)-(1,\vv 0)}{h}
+=q(t)\otimes\big(0,\tfrac12\bm\omega\big)=\tfrac12 q\otimes(0,\bm\omega),
+\]
+where pulling $q(t)$ out of the limit uses bilinearity and continuity of $\otimes$.
+
+For the matrix form, expand $q\otimes(0,\bm\omega)$ with Lemma~\ref{lem:qprod}:
+\[
+q\otimes(0,\bm\omega)=\big(-\vv q\cdot\bm\omega,\ q_0\bm\omega+\vv q\times\bm\omega\big).
+\]
+Its scalar component is $-(q_1\omega_1+q_2\omega_2+q_3\omega_3)$, which is precisely row $0$ of
+$\Omega(\bm\omega)q$. Its first vector component is
+$q_0\omega_1+(q_2\omega_3-q_3\omega_2)$, and row $1$ of $\Omega(\bm\omega)q$ reads
+$\omega_1q_0+0\cdot q_1+\omega_3q_2-\omega_2q_3$ --- the same. The second component is
+$q_0\omega_2+(q_3\omega_1-q_1\omega_3)$ against row $2$,
+$\omega_2q_0-\omega_3q_1+0\cdot q_2+\omega_1q_3$ --- the same. The third is
+$q_0\omega_3+(q_1\omega_2-q_2\omega_1)$ against row $3$,
+$\omega_3q_0+\omega_2q_1-\omega_1q_2+0\cdot q_3$ --- the same. Hence
+$q\otimes(0,\bm\omega)=\Omega(\bm\omega)q$ identically.
+\end{proof}
+
+\begin{proposition}[Norm is conserved by the exact flow]\label{prop:normcons}
+If $\dot q=\tfrac12\Omega(\bm\omega)q$ then $\frac{d}{dt}|q|^2=0$.
+\end{proposition}
+
+\begin{proof}
+$\Omega(\bm\omega)$ is skew-symmetric: inspect the displayed matrix --- the diagonal is zero and
+each $(\mu,\nu)$ entry is minus the $(\nu,\mu)$ entry, e.g.\ $\Omega_{01}=-\omega_1$ while
+$\Omega_{10}=+\omega_1$, and $\Omega_{12}=\omega_3$ while $\Omega_{21}=-\omega_3$. Therefore
+\[
+\frac{d}{dt}|q|^2=\frac{d}{dt}\big(q^{\!\top}q\big)=2q^{\!\top}\dot q
+=q^{\!\top}\Omega(\bm\omega)q=0 ,
+\]
+because for any skew $A$ and any vector $x$, $x^{\!\top}Ax=(x^{\!\top}Ax)^{\!\top}
+=x^{\!\top}A^{\!\top}x=-x^{\!\top}Ax$, forcing $x^{\!\top}Ax=0$.
+\end{proof}
+
+\begin{pitfall}[your integrator does not know about Proposition~\ref{prop:normcons}]
+The exact flow preserves $|q|=1$, but a Runge--Kutta step does not: RK4 applied to
+$\dot q=\tfrac12\Omega q$ leaves $|q|=1+O(h^5)$ per step, and the error accumulates monotonically
+because the truncated exponential of a skew matrix has norm slightly greater than one. Three
+standard responses, in increasing order of virtue:
+\begin{enumerate}[leftmargin=1.4em,topsep=2pt]
+\item \textbf{Renormalize} $q\leftarrow q/|q|$ after each step. Cheap, universal, and it silently
+converts a norm error into an attitude error --- acceptable for most work, but note that you are
+projecting, not correcting.
+\item \textbf{Add a Baumgarte term} $\dot q\mathrel{+}=\tfrac12\lambda(1-|q|^2)q$, which makes the
+unit sphere attracting rather than merely invariant. Tune $\lambda$ against your step size.
+\item \textbf{Integrate on the group.} Advance by the exact exponential of the increment,
+$q_{k+1}=q_k\otimes\exp\!\big(\tfrac{h}{2}(0,\bar{\bm\omega})\big)$ with
+$\bar{\bm\omega}$ a suitable midpoint average, so every iterate is a unit quaternion \emph{by
+construction}. This is the Lie-group (Munthe--Kaas / Crouch--Grossman) philosophy: respect the
+manifold instead of correcting for having left it.
+\end{enumerate}
+Option 3 is what a high-fidelity spacecraft simulator should do; option 1 is what most code does.
+Knowing that the difference exists, and being able to say why, is a good answer to ``how would you
+improve our propagator?''
+\end{pitfall}
+
+\section{Estimation on $\SO(3)$: why attitude filters are multiplicative}
+
+\begin{proposition}[The constraint makes an additive covariance singular]\label{prop:singular}
+Let $q$ be a random $4$-vector supported on $\Sph^3$, with mean $\bar q$ and covariance
+$P=\mathbb E[(q-\bar q)(q-\bar q)^{\!\top}]$. Then to first order in the deviation, $P$ is singular
+with $\bar q$ in its null space.
+\end{proposition}
+
+\begin{proof}
+Write $q=\bar q+\delta$ with $|\delta|$ small. The constraint gives
+\[
+1=|q|^2=(\bar q+\delta)^{\!\top}(\bar q+\delta)=|\bar q|^2+2\bar q^{\!\top}\delta+|\delta|^2
+=1+2\bar q^{\!\top}\delta+O(|\delta|^2),
+\]
+so $\bar q^{\!\top}\delta=O(|\delta|^2)$; to first order the deviation is orthogonal to the mean.
+Then
+\[
+P\bar q=\mathbb E\big[\delta\,\delta^{\!\top}\big]\bar q=\mathbb E\big[\delta\,(\bar q^{\!\top}\delta)\big]
+=O(|\delta|^3)\approx 0 ,
+\]
+so $\bar q$ is (to this order) a null vector of $P$ and $\det P\approx0$.
+\end{proof}
+
+\begin{practical}[the multiplicative extended Kalman filter, and why it exists]
+Proposition~\ref{prop:singular} is fatal for a naive Kalman filter: the covariance you must invert
+in the gain computation is structurally singular, so the filter is numerically ill posed and will
+eventually produce a non-positive-definite $P$. The standard repair --- the \textbf{MEKF} --- is
+pure Lie theory in disguise:
+\begin{enumerate}[leftmargin=1.4em,topsep=2pt]
+\item Keep the attitude as a unit quaternion reference $\hat q$ that is \emph{not} a filter state.
+\item Represent the error \emph{multiplicatively}, $q=\hat q\otimes\delta q$, and parameterize the
+small error by a three-vector, $\delta q\approx\big(1,\tfrac12\delta\bm\theta\big)$ --- exactly the
+first-order expansion of Corollary~\ref{cor:axisangle} with $\theta=|\delta\bm\theta|$ small.
+\item Carry the $3\times3$ covariance of $\delta\bm\theta$, which is non-singular because
+$\delta\bm\theta$ ranges over the whole Lie algebra $\so(3)\cong\R^3$ with no constraint.
+\item After each update, \textbf{reset}: fold the estimated $\delta\bm\theta$ into the reference,
+$\hat q\leftarrow\hat q\otimes\delta q$, renormalize, and zero the error state.
+\end{enumerate}
+Stated in one sentence a mathematician will recognize instantly: \emph{the state lives on the
+group, the uncertainty lives on the Lie algebra, and the exponential map moves between them.} That
+sentence is also the correct answer to ``why can't I just put a $4\times4$ covariance on the
+quaternion?'' --- and if you are asked to design an attitude estimator on a whiteboard, drawing
+that separation first is worth more than writing any filter equation.
+\end{practical}
+
+\begin{remark}[Uncertainty on the group, properly]
+The MEKF is the first-order version of a more honest object: a concentrated Gaussian on $\SO(3)$,
+$q=\hat q\otimes\exp(\bm\xi)$ with $\bm\xi\sim\mathcal N(\vv 0,\Sigma)$ on $\so(3)$. Composition of
+uncertainties is then governed not by addition but by the Baker--Campbell--Hausdorff series,
+\[
+\log\big(e^{X}e^{Y}\big)=X+Y+\tfrac12[X,Y]+\tfrac1{12}\big[X,[X,Y]\big]-\tfrac1{12}\big[Y,[X,Y]\big]+\cdots,
+\]
+whose first correction $\tfrac12[X,Y]$ is exactly the cross-product term
+$\tfrac12\bm\xi_1\times\bm\xi_2$ under Theorem~\ref{thm:algiso}. When two attitude uncertainties are
+compounded and the answer ``looks rotated,'' this bracket is why.
+\end{remark}
+
+\section{Interpolation: SLERP, derived}
+
+\begin{proposition}\label{prop:slerp}
+Let $q_1,q_2$ be unit quaternions with $\cos\Omega_{12}=\langle q_1,q_2\rangle>0$. The constant-speed
+geodesic on $\Sph^3$ from $q_1$ to $q_2$ is
+\[
+\mathrm{slerp}(q_1,q_2;t)=\frac{\sin\big((1-t)\Omega_{12}\big)}{\sin\Omega_{12}}\,q_1
++\frac{\sin\big(t\,\Omega_{12}\big)}{\sin\Omega_{12}}\,q_2 ,\qquad t\in[0,1].
+\]
+\end{proposition}
+
+\begin{proof}
+A great-circle arc through $q_1$ in the plane spanned by $q_1,q_2$ has the form
+$c(t)=\cos\!\big(t\Omega_{12}\big)q_1+\sin\!\big(t\Omega_{12}\big)u$, where $u$ is the unit vector in
+that plane orthogonal to $q_1$. Gram--Schmidt gives
+\[
+u=\frac{q_2-\langle q_1,q_2\rangle q_1}{\big|q_2-\langle q_1,q_2\rangle q_1\big|}
+=\frac{q_2-\cos\Omega_{12}\,q_1}{\sin\Omega_{12}},
+\]
+where the denominator is computed as
+$|q_2-\cos\Omega_{12}q_1|^2=1-2\cos^2\Omega_{12}+\cos^2\Omega_{12}=1-\cos^2\Omega_{12}=\sin^2\Omega_{12}$.
+Substituting,
+\[
+c(t)=\cos(t\Omega_{12})q_1+\sin(t\Omega_{12})\frac{q_2-\cos\Omega_{12}q_1}{\sin\Omega_{12}}
+=\frac{\cos(t\Omega_{12})\sin\Omega_{12}-\sin(t\Omega_{12})\cos\Omega_{12}}{\sin\Omega_{12}}q_1
++\frac{\sin(t\Omega_{12})}{\sin\Omega_{12}}q_2 .
+\]
+The numerator of the first coefficient is $\sin\big(\Omega_{12}-t\Omega_{12}\big)
+=\sin\big((1-t)\Omega_{12}\big)$ by the sine subtraction formula. Finally $c(0)=q_1$ and
+$c(1)=q_2$, and $|c'(t)|=\Omega_{12}$ is constant, so the parameterization has constant speed.
+\end{proof}
+
+\begin{practical}[three rules for interpolating attitude]
+(i) If $\langle q_1,q_2\rangle<0$, replace $q_2$ by $-q_2$ first --- same rotation
+(Theorem~\ref{thm:cover}), shorter path. Skipping this makes a gimbal appear to take the scenic
+route through $>180^\circ$. (ii) As $\Omega_{12}\to0$ the formula divides by $\sin\Omega_{12}\to0$;
+fall back to normalized linear interpolation, which agrees to $O(\Omega_{12}^2)$. (iii) SLERP is
+$C^1$ but not $C^2$ at the knots when chained, so a sequence of SLERP segments has discontinuous
+angular acceleration --- fine for visualization, wrong for anything that then differentiates the
+signal to get a torque command.
+\end{practical}
+
+\section{The compendium: engineer's questions, physicist's answers}
+
+\paragraph{``Which convention are we using?''}
+The four rows of the table in Section~1. Insist that the answer be written down in the interface
+control document, not inferred. State it as: scalar-first Hamilton, active, body-to-inertial.
+
+\paragraph{``Why a half angle? It looks like a typo.''}
+Because $\SU(2)\to\SO(3)$ is two-to-one (Theorem~\ref{thm:cover}). The quaternion parameter must
+run at half speed so that a full $2\pi$ physical rotation corresponds to a $4\pi$ circuit of
+$\Sph^3$. It is not a normalization choice; it is forced by the topology.
+
+\paragraph{``Why did the sign flip?''}
+$\ker\varphi=\{\pm I\}$: $q$ and $-q$ are the same rotation. Compare with
+$1-|\langle q_1,q_2\rangle|$, never $\|q_1-q_2\|$.
+
+\paragraph{``Why not Euler angles?''}
+Two separate reasons, and it is worth keeping them distinct. \emph{Practically}, gimbal lock: at
+$\pm90^\circ$ pitch the first and third axes coincide, the Jacobian from Euler rates to
+$\bm\omega$ becomes singular, and the rate command blows up. \emph{Topologically}, $\SO(3)\cong\RP^3$
+is a compact $3$-manifold, and no compact $3$-manifold admits a global diffeomorphism onto an open
+subset of $\R^3$; therefore \emph{no} three-parameter attitude representation can be globally
+non-singular. Euler angles are not badly chosen --- three parameters are simply impossible. This is
+why every good representation is either four numbers with one constraint (quaternions) or nine with
+six constraints ($\SO(3)$ matrices).
+
+\paragraph{``$\bm\omega$ in body or inertial frame?''}
+$\dot R=R\hatmap{\bm\omega_{\mathcal B}}$ for body, $\dot R=\hatmap{\bm\omega_{\mathcal I}}R$ for
+inertial, with $\bm\omega_{\mathcal I}=R\bm\omega_{\mathcal B}$
+(Proposition~\ref{prop:Rdot}). Right multiplication is the body frame; left multiplication is the
+inertial frame. Gyros measure body rates, so flight software almost always wants the right-multiply
+form. Getting this backwards produces an error that vanishes at $t=0$ and grows --- the worst kind,
+because the unit test passes.
+
+\paragraph{``How do I test the implementation?''}
+Test against mathematics, not against the previous implementation. The invariant list:
+\begin{enumerate}[leftmargin=1.4em,topsep=2pt]
+\item $\|R^{\!\top}R-I\|_\infty<10^{-14}$ and $\det R=1$ for every generated $R$.
+\item $|q|=1$ to machine precision; $q\otimes q^{*}=(1,\vv 0)$.
+\item Round trip: $q\to R\to q'$ gives $q'=\pm q$ --- assert on $|\langle q,q'\rangle|=1$, and if
+your test asserts $q'=q$ it will fail intermittently and correctly.
+\item Composition: $R(p\otimes q)=R(p)R(q)$. This is the single test that catches a convention
+mismatch.
+\item Group action: $R(q)\vv v$ equals the vector part of $q\otimes(0,\vv v)\otimes q^{*}$.
+\item Known values: $90^\circ$ about $\vv e_3$ sends $\vv e_1\mapsto\vv e_2$.
+\item Small angle: $\|R(\theta\vv n)-(I+\theta\hatmap{\vv n})\|=O(\theta^2)$; verify the exponent
+numerically by halving $\theta$ and checking the error drops by four.
+\item Adversarial angles: $\theta=\pi$ exactly, $\theta=\pi\pm10^{-8}$, $\theta=0$,
+$\theta=10^{-12}$. This is where Shepperd and the $\arccos$/\texttt{atan2} choice earn their keep.
+\end{enumerate}
+Items 3, 4 and 8 are the ones usually missing, and they are the ones that fail in flight.
+
+\paragraph{``The propagator loses orthogonality overnight.''}
+It always will; see the pitfall after Proposition~\ref{prop:normcons}. Either renormalize every
+step or integrate on the group.
+
+\paragraph{``Can I average attitudes?''}
+Not by averaging components --- the mean of unit quaternions is not a unit quaternion, and the
+answer depends on the arbitrary signs. The correct object is the Fr\'echet mean: minimize
+$\sum_i d(q,q_i)^2$ with $d$ the geodesic distance, computed either by the eigenvector of
+$\sum_iq_iq_i^{\!\top}$ belonging to the largest eigenvalue (Markley's method) or by iterating
+$\hat q\leftarrow\hat q\otimes\exp\big(\tfrac1N\sum_i\log(\hat q^{*}\otimes q_i)\big)$.
+
+\section{Reference card}
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\hline
+\textbf{Object} & \textbf{Formula}\\
+\hline
+Hat map & $\hatmap{\vv v}\vv w=\vv v\times\vv w$, $\ \hatmap{\vv v}^2=\vv v\vv v^{\!\top}-|\vv v|^2I$\\
+Brackets & $[L_j,L_k]=\varepsilon_{jkl}L_l=[E_j,E_k]$, $\ E_j=-\tfrac{\ii}{2}\sigma_j$\\
+Rodrigues & $e^{\theta\hatmap{\vv n}}=I+\sin\theta\,\hatmap{\vv n}+(1-\cos\theta)\hatmap{\vv n}^2$\\
+Axis--angle $\to q$ & $q=\big(\cos\halfth,\ \sin\halfth\,\vv n\big)$\\
+Product & $p\otimes q=(p_0q_0-\vv p\cdot\vv q,\ p_0\vv q+q_0\vv p+\vv p\times\vv q)$\\
+Action & $\vv v'=(q_0^2-|\vv q|^2)\vv v+2(\vv q\cdot\vv v)\vv q+2q_0(\vv q\times\vv v)$\\
+$q\to R$ & $R=(q_0^2-|\vv q|^2)I+2\vv q\vv q^{\!\top}+2q_0\hatmap{\vv q}$\\
+$R\to q$ & Shepperd: $t_\mu$ largest of $\{1+\tr R,\ 1\pm R_{11}\mp R_{22}\mp R_{33},\dots\}$\\
+Trace & $\tr R=1+2\cos\theta=4q_0^2-1$\\
+Angle & $\theta=2\operatorname{atan2}\big(|\vv q|,q_0\big)$ \ (not $\arccos$)\\
+Kinematics & $\dot q=\tfrac12q\otimes(0,\bm\omega_{\mathcal B})$, $\ \dot R=R\hatmap{\bm\omega_{\mathcal B}}$\\
+Error state & $q=\hat q\otimes\delta q$, $\ \delta q\approx(1,\tfrac12\delta\bm\theta)$, covariance on $\delta\bm\theta\in\R^3$\\
+Distance & $d(q_1,q_2)=2\arccos\big|\langle q_1,q_2\rangle\big|$\\
+\hline
+\end{tabular}
+\end{center}
+
+\appendix
+
+\section{The $\varepsilon$--$\delta$ identities used above}\label{app:eps}
+
+\begin{lemma}\label{lem:epsdelta}
+$\varepsilon_{ijk}\varepsilon_{ilm}=\delta_{jl}\delta_{km}-\delta_{jm}\delta_{kl}$.
+\end{lemma}
+
+\begin{proof}
+Both sides are antisymmetric under $j\leftrightarrow k$ and under $l\leftrightarrow m$, and both
+vanish if $j=k$ or $l=m$. So it suffices to check one representative non-vanishing case and let the
+symmetries generate the rest. Take $j=l=1$, $k=m=2$. The left side is
+$\varepsilon_{i12}\varepsilon_{i12}=\varepsilon_{312}^2=1$ (only $i=3$ contributes). The right side
+is $\delta_{11}\delta_{22}-\delta_{12}\delta_{21}=1\cdot1-0\cdot0=1$. Now take $j=1,k=2,l=2,m=1$:
+the left is $\varepsilon_{i12}\varepsilon_{i21}=\varepsilon_{312}\varepsilon_{321}=(1)(-1)=-1$, and
+the right is $\delta_{12}\delta_{21}-\delta_{11}\delta_{22}=-1$. Finally if $\{j,k\}\ne\{l,m\}$ as
+sets, no value of $i$ makes both $\varepsilon$ factors non-zero, and correspondingly each
+$\delta$ product on the right contains a $\delta$ with distinct indices. All cases agree.
+\end{proof}
+
+\begin{corollary}[Triple product]\label{cor:triple}
+$\vv a\times(\vv b\times\vv c)=\vv b(\vv a\cdot\vv c)-\vv c(\vv a\cdot\vv b)$.
+\end{corollary}
+
+\begin{proof}
+Compute the $j$-th component, using $(\vv x\times\vv y)_j=\varepsilon_{jkl}x_ky_l$ twice:
+\[
+\big(\vv a\times(\vv b\times\vv c)\big)_j=\varepsilon_{jkl}a_k(\vv b\times\vv c)_l
+=\varepsilon_{jkl}a_k\varepsilon_{lmn}b_mc_n=\varepsilon_{ljk}\varepsilon_{lmn}\,a_kb_mc_n ,
+\]
+where the last step cycles $\varepsilon_{jkl}=\varepsilon_{ljk}$. Applying
+Lemma~\ref{lem:epsdelta} with the summed index $l$ in first position,
+\[
+=\big(\delta_{jm}\delta_{kn}-\delta_{jn}\delta_{km}\big)a_kb_mc_n
+=b_j(a_kc_k)-c_j(a_kb_k)=b_j(\vv a\cdot\vv c)-c_j(\vv a\cdot\vv b). \qedhere
+\]
+\end{proof}
+
+\begin{corollary}[Rotations commute with the cross product]\label{cor:Rcross}
+For $R\in\SO(3)$ and all $\vv a,\vv b\in\R^3$, $\ R(\vv a\times\vv b)=(R\vv a)\times(R\vv b)$.
+\end{corollary}
+
+\begin{proof}
+Write the $i$-th component of the right side and insert $\det R=1$ in the form of the classical
+identity $\varepsilon_{jkl}R_{jp}R_{kq}R_{lr}=\det R\,\varepsilon_{pqr}=\varepsilon_{pqr}$:
+\[
+\big((R\vv a)\times(R\vv b)\big)_i=\varepsilon_{ijk}R_{jp}a_pR_{kq}b_q .
+\]
+Multiply and divide by the orthogonality relation $R_{li}R_{lm}=\delta_{im}$:
+\[
+=R_{li}\,\big(R_{li}\varepsilon_{ijk}R_{jp}R_{kq}\big)a_pb_q\Big|_{\text{sum over }i}
+\quad\text{where}\quad \varepsilon_{ijk}R_{li}R_{jp}R_{kq}=\varepsilon_{lpq}.
+\]
+Hence $\big((R\vv a)\times(R\vv b)\big)_i=R_{li}^{-1\top}\varepsilon_{lpq}a_pb_q$; since
+$R^{-\top}=R$ for $R\in\SO(3)$, this is $R_{il}\varepsilon_{lpq}a_pb_q
+=R_{il}(\vv a\times\vv b)_l=\big(R(\vv a\times\vv b)\big)_i$.
+\end{proof}
+
+\begin{remark}
+Corollary~\ref{cor:Rcross} fails for $R\in\Or(3)$ with $\det R=-1$: the identity picks up the factor
+$\det R$, so a reflection sends $\vv a\times\vv b$ to $-(R\vv a)\times(R\vv b)$. This is the precise
+sense in which the cross product is a pseudovector, and the practical reason a left-handed
+coordinate convention silently negates every angular quantity in a simulation.
+\end{remark}
+
+\end{document}
