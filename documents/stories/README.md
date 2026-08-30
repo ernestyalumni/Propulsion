@@ -15,7 +15,7 @@ constraints phrased as obligations — prose without them yields zero invariants
 | 4 | [Reading companion, grounded answers](04-reading-companion.md) | `as-a-researcher-reading-toward-a-simulation-i-wa-ccdc8d0d` | 5 / 2 |
 | 5 | [Corpus → cited simulation](05-corpus-to-simulation.md) | `as-a-researcher-when-the-corpus-gives-me-a-gover-6c9e01ed` | 5 / 2 |
 | 6 | [SpaceX capability signal](06-spacex-capability-signal.md) | `as-an-engineer-deciding-which-physics-to-build-n-12a208d2` | 5 / 3 |
-| 7 | [Corpus package transfer](07-corpus-package-transfer.md) | `as-a-researcher-with-one-gpu-machine-and-several-b9f85b9c` | 5 / 2 |
+| 7 | [Corpus package transfer](07-corpus-package-transfer.md) | `as-a-researcher-with-one-gpu-machine-and-several-3fc67a86` | 5 / 2 |
 | 8 | [Group-typed rigid body](08-group-typed-rigid-body.md) | `as-an-engineer-composing-simulations-across-doma-5b78cc0d` | 5 / 1 |
 
 Every story plans as `characterize_then_adopt` (conventional brownfield), and
@@ -109,10 +109,17 @@ These came out of the charter and are not yet characterized.
   exist because a careers page is copyrighted, goes stale, and is a lagging
   indicator: the record keeps the extracted capability and the URL, never the
   source text, and every harvest is dated so the signal reads as a trend.
-- **7 (package transfer)** is sized by a real measurement. The seven parsed books
-  occupy 437 MB, but 315 MB of that is `reconciled/pages` and `reconciled/sheets`
-  — PNG strips rendered for the vision-resolution pass and regenerable from the
-  PDF. Excluding them takes a full-corpus package to about 122 MB.
+- **7 (package transfer)** is sized by measurement, and packages are expected to
+  get large. The seven parsed books occupy 437 MB, but 315 MB of that is
+  `reconciled/pages` and `reconciled/sheets` — PNG strips rendered for the
+  vision-resolution pass and regenerable from the source — so a parsed-products
+  package for all seven is about 122 MB. Original source documents are a
+  separate, explicit choice at export time: they are not regenerable, the corpus
+  holds 61 of them totalling 826 MB, and 13 are `.djvu` rather than `.pdf`
+  (Sidi's among them), so selection is by content and never by extension. The
+  package file lives outside the repository and is never committed, by LFS or
+  otherwise; import surfaces it under the receiving machine's own corpus data
+  directory, which is not the `Data/` fixture directory inside this repo.
 - **8 (group-typed rigid body)** does not re-derive anything.
   `LaTeXandpdfs/SO3_SU2_Quaternions.tex` and `Cosmos/QuaternionConventionLab/`
   already fix the mathematics and the five conventions; this story makes that
