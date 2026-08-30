@@ -17,6 +17,10 @@ constraints phrased as obligations — prose without them yields zero invariants
 | 6 | [SpaceX capability signal](06-spacex-capability-signal.md) | `as-an-engineer-deciding-which-physics-to-build-n-12a208d2` | 5 / 3 |
 | 7 | [Corpus package transfer](07-corpus-package-transfer.md) | `as-a-researcher-with-one-gpu-machine-and-several-3fc67a86` | 5 / 2 |
 | 8 | [Group-typed rigid body](08-group-typed-rigid-body.md) | `as-an-engineer-composing-simulations-across-doma-5b78cc0d` | 5 / 1 |
+| 9 | [Adversarial physics-ML check](09-adversarial-physics-ml-check.md) | `as-an-engineer-betting-against-physics-specific--5d2e5d55` | 5 / 2 |
+| 10 | [Modern LLM architecture](10-modern-llm-architecture.md) | `as-an-engineer-who-intends-to-fine-tune-rather-t-3794c1fd` | 5 / 4 |
+| 11 | [RL foundations](11-reinforcement-learning-foundations.md) | `as-an-engineer-who-does-not-yet-know-reinforceme-5d5e58f3` | 5 / 3 |
+| 12 | [Fine-tune vs from-scratch](12-finetune-vs-from-scratch.md) | `as-an-engineer-betting-that-transfer-from-a-pret-1d3fbfcc` | 5 / 1 |
 
 Every story plans as `characterize_then_adopt` (conventional brownfield), and
 every one asks the same question: *which current behavior should we lock down
@@ -125,3 +129,31 @@ These came out of the charter and are not yet characterized.
   already fix the mathematics and the five conventions; this story makes that
   contract binding on `Cosmos/Source` and `CombustionInstability`, enforced by a
   double-cover property test rather than by a PDF.
+
+## Note on stories 9–12 (the physics-ML bet)
+
+These four serve [../PHYSICS-ML-BET.md](../PHYSICS-ML-BET.md), which holds the
+thesis, the evidence, and the falsifiers. Read that first — several of the MUST
+NOTs here only make sense against it.
+
+Their requirements are unusually specific because they are derived from failures
+found by reading the two repositories cited as evidence for the bet:
+
+- **A policy whose actions never reach the simulator.** In one repo the action is
+  written to a field nothing reads, while physics steps on random torques. Story
+  11 requires an assertion for exactly this.
+- **An update signal that is identically zero.** The same repo averages z-scored
+  returns, which sums to zero by construction, giving per-weight updates near
+  1e-19. Story 11 requires reporting update magnitude next to the reward curve.
+- **Discarding the thing under test.** The other repo replaces a pretrained
+  model's token embeddings and LM head with identity, then reports on transfer.
+  Story 12 forbids that, because it removes the pretrained knowledge being
+  measured.
+- **A missing baseline.** That same repo's own numbers show a 700 K from-scratch
+  model beating the 410 M pretrained one by about 5x. Story 12 requires both
+  baselines on the same axes.
+
+Story 10 is deliberately narrow: the attention ladder already exists in CuLLM
+from scalar through WMMA to CuTe, so the study covers only the modern stack
+(mixture-of-experts routing, grouped-query attention, RoPE, normalisation
+placement) and explicitly forbids rebuilding attention.
