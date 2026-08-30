@@ -1,0 +1,409 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,bm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=NavyBlue,urlcolor=NavyBlue,
+  pdftitle={The Source-Term Surrogate for Stiff Chemical Kinetics}}
+
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\spn}{span}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\vv}[1]{\bm{#1}}
+\newcommand{\Yv}{\vv{Y}}
+\newcommand{\phiv}{\vv{\phi}}
+\newcommand{\Sv}{\vv{S}}
+\newcommand{\Rmap}{\mathcal{R}}
+\newcommand{\Net}{\mathcal{N}}
+\newcommand{\dt}{\Delta t}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\newtcolorbox{engbox}[1]{breakable,enhanced,colback=NavyBlue!4,
+  colframe=NavyBlue!55,fonttitle=\bfseries,title={#1}}
+
+\title{The Source-Term Surrogate for Stiff Chemical Kinetics\\
+{\large Why the flow map is learnable where the vector field is not}}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Physics-informed neural networks fail on stiff chemical kinetics for a reason
+that is structural rather than incidental: the training residual inherits the
+Lipschitz constant of the chemical source term, which for hydrocarbon and
+hydrogen mechanisms spans eight to twelve decades. This note derives that
+obstruction, then shows that the object a working surrogate actually learns ---
+the finite-time \emph{flow map} of the chemistry substep --- is a contraction
+precisely in the directions that make the vector field stiff. Stiffness, which
+destroys the residual formulation, is what makes the flow-map formulation
+well-posed. We then give the constraints that make such a surrogate usable
+inside a CFD solver: exact element and mass conservation by linear projection,
+temperature recovered from enthalpy rather than predicted, positivity, and
+per-species scale separation. We close with an evaluation protocol designed
+against the documented failure mode of this literature.
+\end{abstract}
+
+\section{Where the surrogate goes}
+
+Consider a reacting flow with $n_s$ species. Writing $\rho$ for density,
+$\vv{u}$ for velocity and $Y_k$ for the mass fraction of species $k$,
+\begin{equation}
+\frac{\partial (\rho Y_k)}{\partial t} + \nabla\cdot(\rho\vv{u}Y_k)
+  \;=\; \nabla\cdot\!\left(\rho D_k \nabla Y_k\right) \;+\; \dot\omega_k,
+\qquad k = 1,\dots,n_s,
+\label{eq:species}
+\end{equation}
+where $\dot\omega_k$ is the chemical production rate. Essentially every
+production solver advances \eqref{eq:species} by operator splitting. In Strang
+form, over a step $\dt$,
+\begin{equation}
+\Phi_{\dt} \;=\; \mathcal{T}_{\dt/2}\circ\mathcal{C}_{\dt}\circ\mathcal{T}_{\dt/2},
+\label{eq:strang}
+\end{equation}
+with $\mathcal{T}$ the transport (advection--diffusion) operator and
+$\mathcal{C}$ the chemistry operator. The essential fact is that
+$\mathcal{C}_{\dt}$ is \emph{spatially local}: in each cell it is an
+initial-value problem in the thermochemical state alone,
+\begin{equation}
+\phiv \;=\; (T,\,Y_1,\dots,Y_{n_s})^{\!\top} \in \R^{n_s+1},
+\qquad
+\frac{d\phiv}{dt} \;=\; \Sv(\phiv),
+\label{eq:ode}
+\end{equation}
+with no spatial coupling and no neighbours. The chemistry substep is therefore
+the same $\R^{n_s+1}\to\R^{n_s+1}$ problem solved independently in every cell,
+$10^6$ to $10^9$ times per simulation. In a detailed-chemistry LES it routinely
+consumes $70$--$90\%$ of wall time.
+
+\begin{definition}[Reaction map]
+The \emph{reaction map} at step $\dt$ is the time-$\dt$ flow of \eqref{eq:ode},
+\begin{equation}
+\Rmap_{\dt}: \R^{n_s+1}\to\R^{n_s+1},
+\qquad
+\Rmap_{\dt}(\phiv_0) \;=\; \phiv_0 + \int_{0}^{\dt}\Sv\big(\phiv(\tau)\big)\,d\tau ,
+\label{eq:reactionmap}
+\end{equation}
+where $\phiv(\cdot)$ solves \eqref{eq:ode} from $\phiv(0)=\phiv_0$.
+\end{definition}
+
+\begin{engbox}{What is being replaced}
+The surrogate replaces \emph{one call} to the stiff ODE integrator --- CVODE,
+Radau, or a specialised implicit method --- with one forward pass. It does not
+replace the CFD solver, the transport operator, the pressure solve, or the
+turbulence closure. Those remain exactly as they were, and they continue to
+enforce the conservation laws they always enforced. This is the entire reason
+the approach is tractable, and it is what distinguishes it from a
+physics-informed network that attempts to represent the solution field itself.
+\end{engbox}
+
+\section{Why the residual formulation fails}
+
+\subsection{The stiffness of the vector field}
+
+Let $J(\phiv) = \partial\Sv/\partial\phiv \in \R^{(n_s+1)\times(n_s+1)}$ be the
+Jacobian of the chemical source, with eigenvalues $\{\lambda_i\}$. Define the
+stiffness ratio on a trajectory,
+\begin{equation}
+\varsigma \;=\;
+\frac{\max_i \left|\operatorname{Re}\lambda_i\right|}
+     {\min_{i:\,\operatorname{Re}\lambda_i\neq 0} \left|\operatorname{Re}\lambda_i\right|}.
+\label{eq:stiffratio}
+\end{equation}
+For a hydrogen--air mechanism $\varsigma \sim 10^{8}$; for detailed
+hydrocarbon mechanisms $\varsigma$ reaches $10^{12}$. The fast eigenvalues
+belong to radical species --- $\mathrm{H}$, $\mathrm{O}$, $\mathrm{OH}$,
+$\mathrm{HO_2}$ --- whose concentrations equilibrate on timescales of
+$10^{-10}$ to $10^{-8}\,$s, while the slow modes governing heat release and
+fuel consumption evolve on $10^{-4}$ to $10^{-2}\,$s.
+
+\subsection{The obstruction}
+
+A physics-informed network posits $\phiv_\theta(t)$ represented by a network
+with parameters $\theta$, and minimises the residual
+\begin{equation}
+L(\theta) \;=\; \int_0^{\mathcal{T}}
+  \left\| \frac{d\phiv_\theta}{dt}(t) - \Sv\big(\phiv_\theta(t)\big) \right\|^2 dt .
+\label{eq:pinnloss}
+\end{equation}
+
+\begin{proposition}[Residual conditioning]
+\label{prop:cond}
+Let $g(\theta) = \tfrac{d\phiv_\theta}{dt} - \Sv(\phiv_\theta)$ denote the
+residual and let $P_\theta = \partial\phiv_\theta/\partial\theta$ be the
+parameter Jacobian. The Gauss--Newton approximation to the Hessian of
+\eqref{eq:pinnloss} is
+\begin{equation}
+H \;\approx\; \int_0^{\mathcal{T}}
+  P_\theta^{\!\top}\big(\partial_t - J\big)^{\!\top}\big(\partial_t - J\big) P_\theta \, dt .
+\end{equation}
+The spectrum of $(\partial_t - J)^{\!\top}(\partial_t - J)$ contains the squared
+eigenvalue magnitudes $|\lambda_i|^2$. Hence, absent preconditioning,
+\begin{equation}
+\kappa(H) \;\gtrsim\; \varsigma^2 ,
+\end{equation}
+and first-order optimisation converges at a rate governed by
+$1 - \mathcal{O}(\kappa(H)^{-1})$.
+\end{proposition}
+
+For $\varsigma = 10^8$ this gives $\kappa \gtrsim 10^{16}$, which is the
+reciprocal of double-precision epsilon. No learning-rate schedule, adaptive
+optimiser, or loss reweighting repairs a condition number at that magnitude;
+the fast modes saturate the residual and the slow modes --- the ones carrying
+the heat release one actually wants --- contribute gradient components below
+numerical noise.
+
+\begin{engbox}{The same obstruction, in classical language}
+This is not a machine-learning pathology. It is the identical obstruction that
+forbids explicit time integration of stiff systems. An explicit method requires
+$\dt \lesssim 2/\max_i|\lambda_i|$, which for $\varsigma=10^{8}$ means resolving
+$10^{-10}\,$s steps to follow $10^{-2}\,$s dynamics. The classical response was
+not a better explicit method: it was to change formulation, to implicit schemes
+that solve a linear system with $J$ rather than stepping along it. Gradient
+descent on \eqref{eq:pinnloss} is an explicit method in disguise, and it fails
+for the same reason.
+\end{engbox}
+
+\section{Why the flow map is learnable}
+
+The surrogate does not learn $\Sv$. It learns $\Rmap_{\dt}$. This is a
+different object with different conditioning, and the difference is the whole
+argument.
+
+\begin{proposition}[The flow map contracts the stiff directions]
+\label{prop:contract}
+Let $\Sv$ be linearised about an equilibrium $\phiv^\ast$ on the slow manifold,
+$\Sv(\phiv)\approx J(\phiv-\phiv^\ast)$ with $J$ diagonalisable,
+$J = V\Lambda V^{-1}$, $\Lambda=\diag(\lambda_1,\dots,\lambda_{n_s+1})$ and
+$\operatorname{Re}\lambda_i \le 0$. Then
+\begin{equation}
+\Rmap_{\dt}(\phiv) - \phiv^\ast
+  \;=\; V \exp(\Lambda \dt) V^{-1} (\phiv - \phiv^\ast),
+\end{equation}
+so the singular values of $D\Rmap_{\dt}$ in the eigenbasis are
+$e^{\operatorname{Re}\lambda_i \dt}$. Consequently
+\begin{equation}
+\operatorname{Lip}(\Rmap_{\dt}) \;\le\; \kappa(V)\,
+  e^{\dt\,\max_i \operatorname{Re}\lambda_i} \;\le\; \kappa(V),
+\end{equation}
+whereas $\operatorname{Lip}(\Sv) = \|J\| \sim \max_i|\lambda_i|$.
+\end{proposition}
+
+\begin{proof}
+Immediate from $\Rmap_{\dt} = \exp(J\dt)$ in the linearised setting and the
+spectral mapping theorem. The bound on the Lipschitz constant follows since
+$\operatorname{Re}\lambda_i\le 0$ gives $e^{\operatorname{Re}\lambda_i\dt}\le 1$.
+\end{proof}
+
+The content of Proposition~\ref{prop:contract} is worth stating plainly. In the
+fast directions, $|\lambda_i|\dt \gg 1$, so $e^{\lambda_i \dt}\approx 0$: the
+flow map \emph{annihilates} exactly those directions in which the vector field
+is violent. What survives after $\dt$ is motion on the slow manifold, whose
+dimension is typically $5$ to $15$ regardless of $n_s$. The map is smooth,
+bounded, non-expansive, and effectively low-dimensional.
+
+\begin{engbox}{The inversion}
+Stiffness is the obstruction for the residual formulation and the \emph{gift}
+for the flow-map formulation. A large $\varsigma$ means the fast transients have
+already decayed within one $\dt$, so the function being approximated is a
+projection onto a low-dimensional attracting manifold. The stiffer the
+chemistry, the more the flow map contracts, and the easier it is to learn. This
+is why the same problem that defeats a PINN yields to a supervised surrogate,
+and it is not a matter of engineering effort or network capacity.
+\end{engbox}
+
+\begin{remark}
+This is also why the idea long predates machine learning. In-situ adaptive
+tabulation and flamelet-manifold methods are, in this language, nearest-neighbour
+and low-rank approximations of the same $\Rmap_{\dt}$. A neural surrogate is a
+better interpolant for the same object, not a new physical idea.
+\end{remark}
+
+\section{Constructing the surrogate}
+
+\subsection{Target and scale separation}
+
+Predict the \emph{increment}, not the state:
+\begin{equation}
+\Delta\phiv \;=\; \Rmap_{\dt}(\phiv_0) - \phiv_0 .
+\end{equation}
+Mass fractions span more than twenty decades, from $Y \sim 1$ for the bath gas
+to $Y\sim10^{-20}$ for trace radicals, and a uniformly-weighted $\ell^2$ loss on
+raw $Y$ is dominated entirely by $\mathrm{N_2}$. Two transformations are used,
+and they matter more than architecture.
+
+\paragraph{Logarithmic (or Box--Cox) transform.} With a floor $\epsilon>0$,
+\begin{equation}
+\psi_k \;=\; \ln\!\left(Y_k + \epsilon\right),
+\qquad\text{or}\qquad
+\psi_k \;=\; \frac{(Y_k+\epsilon)^{\nu}-1}{\nu},
+\label{eq:boxcox}
+\end{equation}
+the latter reducing to the former as $\nu\to0$. This makes relative error the
+quantity being minimised, which is the quantity that matters for a radical
+species four decades below the fuel.
+
+\paragraph{Per-species standardisation.} After transformation,
+\begin{equation}
+\tilde\psi_k \;=\; \frac{\psi_k - \mu_k}{\sigma_k},
+\qquad
+\mu_k=\mathbb{E}[\psi_k],\quad \sigma_k^2=\operatorname{Var}[\psi_k],
+\end{equation}
+with the statistics computed over the training set. Each species then
+contributes comparably to the loss.
+
+\subsection{Exact conservation by projection}
+
+Let $E\in\R^{n_e\times n_s}$ have entries
+\begin{equation}
+E_{jk} \;=\; a_{jk}\,\frac{W_j}{W_k},
+\end{equation}
+where $a_{jk}$ is the number of atoms of element $j$ in species $k$, and $W$
+denotes molar mass. Element conservation during the chemistry substep is the
+\emph{linear} statement
+\begin{equation}
+E\,\Delta\Yv \;=\; \vv{0},
+\label{eq:elemcons}
+\end{equation}
+and total mass conservation $\sum_k \Delta Y_k = 0$ is the additional row
+$\vv{1}^{\!\top}\Delta\Yv=0$. Append it to $E$. Rather than penalising
+\eqref{eq:elemcons} in the loss, impose it exactly: let $\Net_\theta$ be the
+raw network output and project,
+\begin{equation}
+\boxed{\;
+\Delta\Yv \;=\; \left(I - E^{+}E\right)\Net_\theta(\phiv_0),
+\qquad E^{+}=E^{\!\top}(EE^{\!\top})^{-1}.
+\;}
+\label{eq:projection}
+\end{equation}
+Since $\left(I-E^{+}E\right)$ is the orthogonal projector onto $\ker E$, the
+constraint holds to machine precision for every input, trained or not. The cost
+is one $n_e\times n_s$ matrix product with $n_e\le5$, negligible against the
+forward pass, and $E^{+}$ is precomputed once.
+
+\begin{engbox}{Hard constraints beat penalties here}
+A conservation penalty $\lambda\|E\Delta\Yv\|^2$ trades conservation against
+accuracy through a weight nobody can choose principledly, and it is violated on
+exactly the out-of-distribution states where violation is most damaging.
+Projection \eqref{eq:projection} costs less, cannot be tuned wrong, and holds
+under distribution shift. Where a constraint is linear, project; reserve
+penalties for constraints that are not.
+\end{engbox}
+
+\subsection{Temperature from enthalpy, not from the network}
+
+At constant pressure the chemistry substep conserves specific enthalpy:
+\begin{equation}
+h \;=\; \sum_{k=1}^{n_s} Y_k h_k(T) \;=\; \text{const},
+\qquad
+h_k(T) = h_k^{\circ} + \int_{T^{\circ}}^{T} c_{p,k}(T')\,dT'.
+\label{eq:enthalpy}
+\end{equation}
+Do not give the network a temperature output. Predict $\Delta\Yv$ only, then
+recover $T$ by solving the scalar equation \eqref{eq:enthalpy} for $T$ with
+Newton's method,
+\begin{equation}
+T^{(m+1)} \;=\; T^{(m)} -
+  \frac{\sum_k Y_k h_k(T^{(m)}) - h}{\sum_k Y_k c_{p,k}(T^{(m)})},
+\end{equation}
+which converges in two or three iterations from the previous temperature. This
+reduces the output dimension by one, removes a large-magnitude output that would
+otherwise dominate the loss, and makes energy conservation exact rather than
+approximate.
+
+\subsection{Positivity and the simplex}
+
+Mass fractions must satisfy $Y_k\ge0$ and $\sum_k Y_k=1$. Predicting in the
+transformed variable \eqref{eq:boxcox} and inverting gives $Y_k>0$
+automatically. Renormalise afterwards,
+\begin{equation}
+Y_k \leftarrow \frac{\max(Y_k,0)}{\sum_j \max(Y_j,0)} ,
+\end{equation}
+applied \emph{after} the projection \eqref{eq:projection} and accepted as a
+final $\mathcal{O}(\text{machine }\epsilon)$ correction.
+
+\section{The failure mode that matters: a posteriori drift}
+
+A surrogate with excellent single-step error can still destroy a simulation.
+Writing $\hat\Rmap$ for the surrogate and $\varepsilon_n$ for the error after
+$n$ applications, one step of error propagation gives
+\begin{equation}
+\varepsilon_{n+1} \;\le\; \operatorname{Lip}(\Rmap_{\dt})\,\varepsilon_n
+   + \left\|\hat\Rmap - \Rmap_{\dt}\right\|_{\infty}.
+\label{eq:accum}
+\end{equation}
+By Proposition~\ref{prop:contract}, $\operatorname{Lip}(\Rmap_{\dt})\le1$ on the
+stiff directions, so error does \emph{not} amplify along the attracting
+manifold --- which is the structural reason the approach is stable at all. The
+danger is elsewhere: the coupled system revisits states the training set never
+covered, because transport carries cells into composition space that
+one-dimensional flame data does not populate. Two mitigations are standard.
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Manifold-aware sampling.} Draw training states from canonical
+      flames --- freely propagating premixed, counterflow diffusion,
+      homogeneous ignition --- which populate the attracting manifold densely.
+\item \textbf{Physics-aware augmentation.} Interpolate between neighbouring
+      sampled states and add constrained random perturbations that respect
+      \eqref{eq:elemcons} and \eqref{eq:enthalpy}, thickening the training
+      distribution transverse to the manifold without leaving the physically
+      admissible set.
+\end{enumerate}
+
+\section{Evaluation protocol}
+
+The published record in this area carries a documented reporting problem: of
+articles claiming that a machine-learned method outperforms a standard
+numerical method on a fluid-related PDE, $79\%$ ($60$ of $76$) compared against
+a weak baseline, with outcome-reporting and publication bias both present.\!%
+\footnote{N.~McGreivy and A.~Hakim, \emph{Weak baselines and reporting biases
+lead to overoptimism in machine learning for fluid-related partial differential
+equations}, Nature Machine Intelligence \textbf{6}, 1256--1269 (2024).}
+The protocol below is written against that finding.
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{The baseline is a tuned CVODE at the tolerance actually required},
+      not at a tolerance chosen to make it slow. Report the tolerance.
+\item \textbf{Include the real incumbent.} The production alternative is not
+      naive direct integration; it is tabulation --- ISAT or a flamelet
+      manifold. A surrogate that beats CVODE but loses to ISAT has not earned
+      its complexity.
+\item \textbf{Report a posteriori, not a priori.} Single-step $L^2$ error on a
+      held-out set is not the claim. The claim is a coupled CFD run: ignition
+      delay, laminar flame speed, extinction strain rate, and the full
+      temperature and major-species profiles against the direct-integration
+      reference.
+\item \textbf{Report end-to-end wall time}, including the projection, the
+      Newton solve for $T$, and the host--device transfers --- not kernel time.
+\item \textbf{State the conservation residuals} $\|E\Delta\Yv\|_\infty$ and the
+      enthalpy drift over the whole run.
+\item \textbf{Report where it breaks.} Name the equivalence ratio, pressure and
+      temperature range outside which the surrogate departs from the reference,
+      and publish that boundary with the model.
+\end{enumerate}
+
+\begin{engbox}{The honest target}
+Reported gains for this formulation are $\mathcal{O}(10^2)$ on isolated
+chemistry evaluation against CVODE and roughly $10$--$20\times$ end-to-end in
+coupled CFD. The gap between those two numbers is the point: once chemistry
+stops dominating, Amdahl's law caps the benefit, and further speedup must come
+from transport. A surrogate is worth building when a design sweep or an
+uncertainty quantification study needs $10^5$--$10^6$ runs and tolerates
+percent-level error. It is not worth building to make a single high-fidelity
+run faster.
+\end{engbox}
+
+\end{document}

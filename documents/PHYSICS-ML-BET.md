@@ -68,8 +68,11 @@ pipeline. They are simply not evidence for the claim being made of them.
 
 ## The defensible version of the bet
 
-> **An LLM is a strong *author* of physics code, objectives, and experiment
-> configurations, and an unproven *substrate* for a physics surrogate.**
+> **A large pretrained generative model is a strong *author* of physics code,
+> objectives and experiment configurations when pretrained on text, and a
+> promising *substrate* for a physics surrogate when pretrained on video or
+> simulation data. A text-pretrained LLM is the wrong instrument for a
+> state-transition surrogate.**
 
 The second repo is real evidence for the first half: given a documented state
 schema, a model writes and iteratively refines reward and cost functions — the
@@ -105,6 +108,24 @@ autoregressive-rollout stability story, because the simulator carries the state.
 LLM-based systems tailored to physics *research* — symbolic manipulation,
 literature synthesis, experimental data analysis — not numerical surrogates. The
 term that exists names the bet we are calling defensible.
+
+**PhysiX is the strongest evidence the thesis has, and it was nearly missed.**
+`arXiv:2506.17774` initializes its universal tokenizer **from a pretrained Cosmos
+video checkpoint**, and reports that this "significantly accelerates convergence
+and improves reconstruction performance compared to training from scratch."
+Its ablation compares PhysiX-f, which fine-tunes the pretrained model, against
+PhysiX-s, which trains from scratch: **PhysiX-f consistently outperforms
+PhysiX-s across all settings.** A 4.5 B standard autoregressive transformer,
+reusing pretrained generative weights, beating from-scratch training on physics
+simulation, is precisely this document's thesis with an ablation attached.
+
+The correction it forces is about **modality**. The pretraining that transfers
+here is *video*, not text. Natural video contains real physical dynamics --
+falling, flowing, deforming; text contains descriptions of them. For a
+state-transition surrogate, video priors are the right kind of prior and text
+priors are not. The thesis should therefore read: reuse a large pretrained
+generative model whose pretraining modality shares structure with the target,
+which for surrogates means video or simulation data rather than an LLM.
 
 **Physics foundation models for simulation do now exist**, and they are new:
 PhysiX (`arXiv:2506.17774`, 4.5 B parameters, discrete tokenizer, autoregressive
