@@ -14,14 +14,23 @@ constraints phrased as obligations — prose without them yields zero invariants
 | 3 | [One queryable corpus index](03-corpus-index.md) | `as-a-researcher-with-a-dozen-parsed-textbooks-wh-68fe47cd` | 5 / 2 |
 | 4 | [Reading companion, grounded answers](04-reading-companion.md) | `as-a-researcher-reading-toward-a-simulation-i-wa-ccdc8d0d` | 5 / 2 |
 | 5 | [Corpus → cited simulation](05-corpus-to-simulation.md) | `as-a-researcher-when-the-corpus-gives-me-a-gover-6c9e01ed` | 5 / 2 |
+| 6 | [SpaceX capability signal](06-spacex-capability-signal.md) | `as-an-engineer-deciding-which-physics-to-build-n-12a208d2` | 5 / 3 |
+| 7 | [Corpus package transfer](07-corpus-package-transfer.md) | `as-a-researcher-with-one-gpu-machine-and-several-b9f85b9c` | 5 / 2 |
+| 8 | [Group-typed rigid body](08-group-typed-rigid-body.md) | `as-an-engineer-composing-simulations-across-doma-5b78cc0d` | 5 / 1 |
 
 Every story plans as `characterize_then_adopt` (conventional brownfield), and
 every one asks the same question: *which current behavior should we lock down
 with tests before changing anything?*
 
-Dependencies: 2 → 1 → 3 → 4 → 5. Story 3 needs the completion record from
-story 1 ("never index a source that has no recorded complete parse"); stories 4
-and 5 need the locators from story 3.
+Dependencies: 2 → 1 → 3 → 4 → 5, with 7 following 1 and 8 standing alone.
+Story 3 needs the completion record from story 1 ("never index a source that has
+no recorded complete parse"); stories 4 and 5 need the locators from story 3;
+story 7 ships story 1's parse record between machines. Stories 6 and 8 depend on
+nothing here and can be applied in any order.
+
+The vision these serve — scope, doctrine, sequencing, non-goals — is in
+[../CHARTER.md](../CHARTER.md). That document holds what is not yet testable;
+when a paragraph there becomes checkable it graduates into a story here.
 
 ## Re-planning a story
 
@@ -91,3 +100,21 @@ a requirement — delete it when story 1 lands.
   path.
 - **Characterize 1–2, apply 3–5 direct.** Stories 3, 4 and 5 add new modules;
   there is no current behavior to preserve.
+
+## Note on stories 6–8
+
+These came out of the charter and are not yet characterized.
+
+- **6 (SpaceX signal)** is the only story that reaches the network. Its MUST NOTs
+  exist because a careers page is copyrighted, goes stale, and is a lagging
+  indicator: the record keeps the extracted capability and the URL, never the
+  source text, and every harvest is dated so the signal reads as a trend.
+- **7 (package transfer)** is sized by a real measurement. The seven parsed books
+  occupy 437 MB, but 315 MB of that is `reconciled/pages` and `reconciled/sheets`
+  — PNG strips rendered for the vision-resolution pass and regenerable from the
+  PDF. Excluding them takes a full-corpus package to about 122 MB.
+- **8 (group-typed rigid body)** does not re-derive anything.
+  `LaTeXandpdfs/SO3_SU2_Quaternions.tex` and `Cosmos/QuaternionConventionLab/`
+  already fix the mathematics and the five conventions; this story makes that
+  contract binding on `Cosmos/Source` and `CombustionInstability`, enforced by a
+  double-cover property test rather than by a PDF.
