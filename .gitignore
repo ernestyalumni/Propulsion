@@ -1,6 +1,9 @@
 # CMake build directories
 T1000/BuildGcc/
 T1000/BuildInDocker/
+Cosmos/BuildEmcc/
+Cosmos/BuildGcc/
+Cosmos/BuildWasm/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -35,3 +38,9 @@ T1000/DivisionalBoilerplate/DivisionalBoilerplate/static/css/bootstrap-grid*
 T1000/DivisionalBoilerplate/DivisionalBoilerplate/static/css/bootstrap-reboot*
 T1000/DivisionalBoilerplate/DivisionalBoilerplate/static/css/bootstrap.*
 T1000/FunctionalBoilerplate/FunctionalBoilerplate/static/css/bootstrap.min*
+
+# pdd debug snapshots
+.pdd/core_dumps/
+
+# LiteLLM on-disk response cache
+litellm_cache.sqlite/
