@@ -18,8 +18,10 @@ import pytest
 from conftest import read_json
 
 
-# The seven sources that carry OCR output today.
+# The nine sources that carry OCR output today.
 PARSED_BOOK_SLUGS = (
+    "EngineeringPhysics/Chirikjian-StochasticModelsInformationTheoryLieGroups-v1",
+    "EngineeringPhysics/Chirikjian-StochasticModelsInformationTheoryLieGroups-v2",
     "EngineeringPhysics/HorowitzHill-ArtOfElectronics3e",
     "EngineeringPhysics/Lieuwen-UnsteadyCombustorPhysics",
     "EngineeringPhysics/Natanzon-CombustionInstability",
@@ -74,13 +76,13 @@ def test_every_parsed_book_holds_the_equations_contract(books_root, book_slug):
 
 
 @pytest.mark.parametrize("book_slug", PARSED_BOOK_SLUGS)
-def test_conflict_resolution_has_run_for_five_of_the_seven_books(
+def test_conflict_resolution_has_run_for_five_of_the_nine_books(
         books_root,
         book_slug):
     """Parsing has stages, and the corpus is mid-way through them.
 
-    HorowitzHill and Arnold stop after reconciliation, so a completion record
-    cannot be a single boolean per source.
+    HorowitzHill, Arnold and both Chirikjian volumes stop after reconciliation,
+    so a completion record cannot be a single boolean per source.
     """
     resolved_path = (
         books_root / book_slug / "ocr-compare" / "reconciled"
