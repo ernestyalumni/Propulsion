@@ -33,6 +33,8 @@ PARSED_BOOK_SLUGS = (
 
 # The subset whose conflict-resolution stage has run to completion.
 RESOLVED_BOOK_SLUGS = (
+    "EngineeringPhysics/Chirikjian-StochasticModelsInformationTheoryLieGroups-v1",
+    "EngineeringPhysics/Chirikjian-StochasticModelsInformationTheoryLieGroups-v2",
     "EngineeringPhysics/Lieuwen-UnsteadyCombustorPhysics",
     "EngineeringPhysics/Natanzon-CombustionInstability",
     "EngineeringPhysics/Sidi-SpacecraftDynamicsControl",
@@ -76,13 +78,13 @@ def test_every_parsed_book_holds_the_equations_contract(books_root, book_slug):
 
 
 @pytest.mark.parametrize("book_slug", PARSED_BOOK_SLUGS)
-def test_conflict_resolution_has_run_for_five_of_the_nine_books(
+def test_conflict_resolution_has_run_for_seven_of_the_nine_books(
         books_root,
         book_slug):
     """Parsing has stages, and the corpus is mid-way through them.
 
-    HorowitzHill, Arnold and both Chirikjian volumes stop after reconciliation,
-    so a completion record cannot be a single boolean per source.
+    HorowitzHill and Arnold still stop after reconciliation, so a completion
+    record cannot be a single boolean per source.
     """
     resolved_path = (
         books_root / book_slug / "ocr-compare" / "reconciled"
