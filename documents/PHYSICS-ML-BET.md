@@ -192,24 +192,41 @@ proving.
 The bet is only worth holding if it can lose. Story 09 makes the adversarial
 check standing rather than occasional. The falsifiers, fixed in advance:
 
-- **The bet loses** if, on a stiff benchmark with a documented stiffness ratio, a
-  fine-tuned open-weights model fails to beat both a from-scratch transformer of
-  comparable parameter count and a competently tuned neural operator.
-- **The bet also loses** if it can only be made to win by discarding the
-  pretrained embeddings, since that removes the thing under test.
+- **The chemistry bet loses** if a source-term surrogate cannot beat a
+  competently tuned stiff integrator and the practical tabulation or manifold
+  incumbent at matched acceptable error, including end-to-end solver time.
+- **The transfer bet stops before the large model** if a video-pretrained
+  tokenizer does not beat the identical tokenizer trained from scratch at fixed
+  compression, data, training budget, and physical-field fidelity.
+- **The full-field transfer bet loses** if the transferred autoregressive model
+  fails to beat both the same architecture trained from scratch and competently
+  tuned FNO/TFNO and convolutional baselines on long-rollout stability under the
+  same data and evaluation budgets.
+- **A transfer claim also loses** if incompatible input or output layers are
+  replaced without recording which pretrained parameters survived, since that
+  makes the transferred object ambiguous.
 - **The PINN rejection loses** if the contrarian track produces a stiff-kinetics
   PINN result that a classical implicit integrator does not dominate on accuracy
   per unit compute.
 
 ## Sequencing
 
-- **Track 1 — the adversary** (story 09). Runs from the start, permanently.
-- **Track 2 — architecture** (story 10). Narrower than first scoped: the
+- **Standing track — the adversary** (story 09). Runs from the start,
+  permanently, across both experimental tracks.
+- **Track 1 — engineering first: stiff chemistry** (story 12). Keep the
+  classical reacting-flow solver and replace only its expensive chemistry
+  substep with a supervised source-term or flow-map surrogate. Compare against
+  the stiff solver and the practical tabulation or manifold incumbent.
+- **Track 2 — research second: transferred field surrogate** (stories 13–14).
+  First test video-pretrained versus from-scratch tokenization on a small field
+  dataset, locally and without a multi-billion-parameter checkpoint. Only a
+  predeclared win opens the full autoregressive rollout experiment and possible
+  rented-cluster work.
+- **Supporting track — architecture** (story 10). Narrower than first scoped: the
   attention ladder is already built in CuLLM, scalar through WMMA to CuTe, and
   Episode 1 of the attention series is recorded. What is missing is the modern
   stack — mixture-of-experts routing, grouped-query attention, RoPE, and modern
   normalisation placement.
-- **Track 3 — reinforcement learning** (story 11). From zero, and the two repos
-  are a warning about what "has RL" can mean.
-- **Track 4 — the experiment** (story 12). The actual fine-tune, with the
-  baseline repo 1 accidentally ran and lost.
+- **Supporting track — reinforcement learning** (story 11). From zero, and the
+  two repos are a warning about what "has RL" can mean. It is relevant to later
+  policy learning, not a prerequisite for stories 12–14.

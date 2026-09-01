@@ -9,7 +9,7 @@ constraints phrased as obligations — prose without them yields zero invariants
 
 | # | Story | Intent ID | Invariants / examples captured |
 |---|-------|-----------|-------------------------------|
-| 1 | [Parse once, record what it produced](01-parse-once.md) | `as-a-researcher-building-propulsion-simulations--7b053a29` | 5 / 3 |
+| 1 | [Parse once, record what it produced](01-parse-once.md) | `as-a-researcher-building-propulsion-simulations--a5943e77` | 5 / 3 |
 | 2 | [Configured corpus root, code-only repo](02-corpus-root.md) | `as-a-researcher-running-propulsion-tooling-when--a0b575b5` | 5 / 3 |
 | 3 | [One queryable corpus index](03-corpus-index.md) | `as-a-researcher-with-a-dozen-parsed-textbooks-wh-68fe47cd` | 5 / 2 |
 | 4 | [Reading companion, grounded answers](04-reading-companion.md) | `as-a-researcher-reading-toward-a-simulation-i-wa-ccdc8d0d` | 5 / 2 |
@@ -20,7 +20,9 @@ constraints phrased as obligations — prose without them yields zero invariants
 | 9 | [Adversarial physics-ML check](09-adversarial-physics-ml-check.md) | `as-an-engineer-betting-against-physics-specific--5d2e5d55` | 5 / 2 |
 | 10 | [Modern LLM architecture](10-modern-llm-architecture.md) | `as-an-engineer-who-intends-to-fine-tune-rather-t-3794c1fd` | 5 / 4 |
 | 11 | [RL foundations](11-reinforcement-learning-foundations.md) | `as-an-engineer-who-does-not-yet-know-reinforceme-5d5e58f3` | 5 / 3 |
-| 12 | [Fine-tune vs from-scratch](12-finetune-vs-from-scratch.md) | `as-an-engineer-betting-that-transfer-from-a-pret-1d3fbfcc` | 5 / 1 |
+| 12 | [Stiff-chemistry source-term surrogate](12-stiff-chemistry-source-term-surrogate.md) | `as-an-engineer-accelerating-reacting-flow-simula-aac8d0ba` | 5 / 2 |
+| 13 | [Video-tokenizer transfer ablation](13-video-tokenizer-transfer-ablation.md) | `as-an-engineer-testing-whether-natural-video-pre-5de6038a` | 5 / 2 |
+| 14 | [Full-field rollout surrogate](14-full-field-rollout-surrogate.md) | `as-an-engineer-evaluating-a-pretrained-generativ-e26a6b4f` | 5 / 2 |
 
 Every story plans as `characterize_then_adopt` (conventional brownfield), and
 every one asks the same question: *which current behavior should we lock down
@@ -31,6 +33,10 @@ Story 3 needs the completion record from story 1 ("never index a source that has
 no recorded complete parse"); stories 4 and 5 need the locators from story 3;
 story 7 ships story 1's parse record between machines. Stories 6 and 8 depend on
 nothing here and can be applied in any order.
+
+The physics-ML experiment order is story 12 first and story 13 → story 14
+second, with story 9 adversarially checking both tracks. Stories 10 and 11 are
+supporting studies; neither blocks the source-term or tokenizer experiments.
 
 The vision these serve — scope, doctrine, sequencing, non-goals — is in
 [../CHARTER.md](../CHARTER.md). That document holds what is not yet testable;
@@ -86,11 +92,15 @@ Two findings from writing it went straight back into story 1:
 - **Parsing has stages, not a boolean.** Five of the seven parsed books carry
   `reconciled/equations_resolved.json`; HorowitzHill-ArtOfElectronics3e and
   Arnold-MathematicalMethodsClassicalMechanics-2e stop after reconciliation.
-- **A failed parse is indistinguishable from a good one by directory presence.**
+- **A stage that produced nothing is indistinguishable from a failure.**
   Arnold holds the same `nougat_out/`, `reconciled/` and `.marker.md` as
-  Lieuwen, but reconciled 0 agreements, 0 conflicts, 1 marker-only equation, and
-  one nougat page repeated 24 times. A presence heuristic would mark that failed
-  parse complete and permanently block the redo.
+  Lieuwen and reconciled 0 agreements, 0 conflicts and 1 marker-only equation.
+  It is tempting to read that as a failed parse — an earlier note in this repo
+  did — but the OCR is sound and the extracted text is full size. The book
+  numbers no equations at all, so the tag-based reconciler has nothing to align
+  on: 0 `\tag{}` in both engines' output against 843 for Goldstein. Neither
+  directory presence nor a low equation count separates this from a real
+  failure, which is why the record has to name the stage and its conclusion.
 
 `test_no_source_carries_a_parse_completion_record_today` is the baseline gap, not
 a requirement — delete it when story 1 lands.
@@ -130,9 +140,9 @@ These came out of the charter and are not yet characterized.
   contract binding on `Cosmos/Source` and `CombustionInstability`, enforced by a
   double-cover property test rather than by a PDF.
 
-## Note on stories 9–12 (the physics-ML bet)
+## Note on stories 9–14 (the physics-ML bet)
 
-These four serve [../PHYSICS-ML-BET.md](../PHYSICS-ML-BET.md), which holds the
+These six serve [../PHYSICS-ML-BET.md](../PHYSICS-ML-BET.md), which holds the
 thesis, the evidence, and the falsifiers. Read that first — several of the MUST
 NOTs here only make sense against it.
 
@@ -147,11 +157,21 @@ found by reading the two repositories cited as evidence for the bet:
   1e-19. Story 11 requires reporting update magnitude next to the reward curve.
 - **Discarding the thing under test.** The other repo replaces a pretrained
   model's token embeddings and LM head with identity, then reports on transfer.
-  Story 12 forbids that, because it removes the pretrained knowledge being
-  measured.
+  Story 13 generalizes the lesson correctly for physics fields: channel adapters
+  may change, but every retained, inflated, replaced, frozen, and trained
+  parameter must be recorded, and the scratch control must be architecturally
+  identical.
 - **A missing baseline.** That same repo's own numbers show a 700 K from-scratch
-  model beating the 410 M pretrained one by about 5x. Story 12 requires both
-  baselines on the same axes.
+  model beating the 410 M pretrained one by about 5x. Story 13 requires both
+  initialization baselines on the same axes, and story 14 adds specialist
+  field-surrogate baselines.
+
+Story 12 is the engineering-first track: it keeps the classical solver and
+learns only the stiff chemistry substep. Stories 13 and 14 are the research
+track: the small tokenizer-transfer ablation gates the expensive full-field
+autoregressive experiment. The RTX 3060 is useful for story 13 after the
+model-independent harness exists; no 4 B checkpoint or cloud allocation belongs
+in the first milestone.
 
 Story 10 is deliberately narrow: the attention ladder already exists in CuLLM
 from scalar through WMMA to CuTe, so the study covers only the modern stack

@@ -35,6 +35,7 @@ PARSED_BOOK_SLUGS = (
 RESOLVED_BOOK_SLUGS = (
     "EngineeringPhysics/Chirikjian-StochasticModelsInformationTheoryLieGroups-v1",
     "EngineeringPhysics/Chirikjian-StochasticModelsInformationTheoryLieGroups-v2",
+    "EngineeringPhysics/HorowitzHill-ArtOfElectronics3e",
     "EngineeringPhysics/Lieuwen-UnsteadyCombustorPhysics",
     "EngineeringPhysics/Natanzon-CombustionInstability",
     "EngineeringPhysics/Sidi-SpacecraftDynamicsControl",
@@ -78,13 +79,15 @@ def test_every_parsed_book_holds_the_equations_contract(books_root, book_slug):
 
 
 @pytest.mark.parametrize("book_slug", PARSED_BOOK_SLUGS)
-def test_conflict_resolution_has_run_for_seven_of_the_nine_books(
+def test_conflict_resolution_has_run_for_eight_of_the_nine_books(
         books_root,
         book_slug):
     """Parsing has stages, and the corpus is mid-way through them.
 
-    HorowitzHill and Arnold still stop after reconciliation, so a completion
-    record cannot be a single boolean per source.
+    Arnold is the only source without a resolution stage, and not because
+    anything failed: the book numbers no equations, so there were no conflicts
+    to resolve. A completion record therefore cannot be a single boolean per
+    source, nor inferred from an equation count.
     """
     resolved_path = (
         books_root / book_slug / "ocr-compare" / "reconciled"
@@ -93,14 +96,17 @@ def test_conflict_resolution_has_run_for_seven_of_the_nine_books(
     assert resolved_path.is_file() == (book_slug in RESOLVED_BOOK_SLUGS)
 
 
-def test_a_failed_parse_looks_identical_to_a_good_one_from_the_directory_tree(
+def test_an_unnumbered_book_looks_identical_to_a_good_one_from_the_tree(
         books_root):
     """The reason completeness cannot be inferred from directory presence.
 
-    Arnold carries the same directories and the same marker markdown as
-    Lieuwen, but its reconcile found nothing: zero agreements, zero conflicts,
-    one marker-only equation, and a nougat page emitted twenty-four times. That
-    parse failed and must stay re-runnable.
+    Arnold carries the same directories and a full-size marker markdown, and
+    its OCR is sound. Its reconcile still found almost nothing: zero
+    agreements, zero conflicts, one marker-only equation. The cause is that the
+    book numbers no equations at all, so the tag-based reconciler has nothing
+    to align on. A completion record must therefore record which stage ran and
+    what it concluded, since neither directory presence nor a low equation
+    count distinguishes this from a genuine failure.
     """
     lieuwen_path = books_root / LIEUWEN_SLUG / "ocr-compare"
     arnold_path = books_root / ARNOLD_SLUG / "ocr-compare"
