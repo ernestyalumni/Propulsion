@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root{color-scheme:light dark}
+    body{margin:0;font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+    img{max-width:100%}
+    [hidden]{display:none!important}
+  </style>
+  <title>Numerical Recipes for Spacecraft, Propulsion, and GNC</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ctext%20y%3D%22.9em%22%20font-size%3D%2290%22%3E%F0%9F%9B%B0%EF%B8%8F%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <!-- standalone copy; published at https://claude.ai/code/artifact/3a63d17a-ec6f-4f40-b6f0-f9c93113cb31 -->
+</head>
+<body>
+<style>
+:root{
+  --paper:#FCFBF8;
+  --surface:#F5F3EC;
+  --ink:#14171C;
+  --muted:#676F73;
+  --faint:#8A9195;
+  --rule:#DEDCD4;
+  --accent:#0E5B61;
+  --accent-soft:#E2EDEC;
+  --ember:#9A4A21;
+  --ember-soft:#F6E9E0;
+  --shadow:0 1px 2px rgba(20,23,28,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1215;
+    --surface:#171B20;
+    --ink:#E8E9E6;
+    --muted:#97A0A5;
+    --faint:#78828A;
+    --rule:#262B31;
+    --accent:#55B6BC;
+    --accent-soft:#12292C;
+    --ember:#D98450;
+    --ember-soft:#2A1C14;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1215;
+  --surface:#171B20;
+  --ink:#E8E9E6;
+  --muted:#97A0A5;
+  --faint:#78828A;
+  --rule:#262B31;
+  --accent:#55B6BC;
+  --accent-soft:#12292C;
+  --ember:#D98450;
+  --ember-soft:#2A1C14;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:Spectral,Georgia,"Times New Roman",serif;
+  font-size:17px;
+  line-height:1.62;
+  margin:0;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  max-width:1180px;
+  margin:0 auto;
+  padding:0 24px 96px;
+}
+@media (min-width:1000px){
+  .wrap{grid-template-columns:216px minmax(0,1fr);gap:56px;padding:0 32px 120px}
+}
+
+/* ---------- masthead ---------- */
+.masthead{
+  grid-column:1/-1;
+  border-bottom:1px solid var(--rule);
+  padding:52px 0 30px;
+  margin-bottom:44px;
+}
+.eyebrow{
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin:0 0 14px;
+}
+h1{
+  font-family:Spectral,Georgia,serif;
+  font-weight:700;
+  font-size:clamp(2rem,4.6vw,3.05rem);
+  line-height:1.08;
+  letter-spacing:-.018em;
+  margin:0 0 16px;
+  text-wrap:balance;
+  max-width:24ch;
+}
+.standfirst{
+  font-size:1.115rem;
+  color:var(--muted);
+  max-width:62ch;
+  margin:0 0 26px;
+}
+.keyline{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.keychip{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:12px;
+  padding:6px 11px;
+  border:1px solid var(--rule);
+  border-radius:3px;
+  background:var(--surface);
+  color:var(--muted);
+}
+.keychip b{color:var(--ink);font-weight:500}
+
+/* ---------- nav rail ---------- */
+.rail{display:none}
+@media (min-width:1000px){
+  .rail{
+    display:block;
+    align-self:start;
+    position:sticky;
+    top:32px;
+    font-family:"IBM Plex Sans",system-ui,sans-serif;
+    font-size:13px;
+    padding-bottom:40px;
+  }
+  .rail h2{
+    font-size:10px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--faint);
+    font-weight:600;
+    margin:0 0 12px;
+  }
+  .rail ol{list-style:none;margin:0 0 26px;padding:0;display:flex;flex-direction:column;gap:2px}
+  .rail a{
+    display:flex;
+    gap:9px;
+    align-items:baseline;
+    color:var(--muted);
+    text-decoration:none;
+    padding:5px 8px;
+    border-radius:3px;
+    border-left:2px solid transparent;
+  }
+  .rail a:hover{color:var(--ink);background:var(--surface);border-left-color:var(--accent)}
+  .rail a:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .rail .tag{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    color:var(--faint);
+    min-width:14px;
+  }
+  .rail a:hover .tag{color:var(--accent)}
+}
+
+/* ---------- sections ---------- */
+main{min-width:0}
+section{margin-bottom:60px;scroll-margin-top:24px}
+h2.sec{
+  font-family:Spectral,Georgia,serif;
+  font-size:1.62rem;
+  font-weight:600;
+  letter-spacing:-.012em;
+  margin:0 0 6px;
+  text-wrap:balance;
+  display:flex;
+  align-items:baseline;
+  gap:12px;
+}
+h2.sec .num{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:.78rem;
+  font-weight:500;
+  color:var(--accent);
+  letter-spacing:.06em;
+}
+h3{
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  font-size:.94rem;
+  font-weight:600;
+  letter-spacing:.005em;
+  margin:34px 0 10px;
+  color:var(--ink);
+}
+.dek{color:var(--muted);margin:0 0 24px;max-width:66ch;font-size:1.02rem}
+p{max-width:66ch;margin:0 0 16px}
+a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 32%,transparent)}
+a:hover{border-bottom-color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+code{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:.855em;
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:3px;
+  padding:1px 5px;
+}
+strong{font-weight:600}
+em{font-style:italic}
+
+/* ---------- pull quote ---------- */
+blockquote{
+  margin:0 0 22px;
+  padding:2px 0 2px 22px;
+  border-left:2px solid var(--accent);
+  font-size:1.06rem;
+  font-style:italic;
+  color:var(--muted);
+  max-width:64ch;
+}
+blockquote cite{
+  display:block;
+  font-style:normal;
+  font-family:"IBM Plex Sans",sans-serif;
+  font-size:.78rem;
+  color:var(--faint);
+  margin-top:9px;
+}
+
+/* ---------- callout ---------- */
+.callout{
+  border:1px solid var(--rule);
+  border-left:3px solid var(--ember);
+  background:var(--ember-soft);
+  border-radius:0 4px 4px 0;
+  padding:16px 20px;
+  margin:22px 0;
+  max-width:68ch;
+}
+.callout .label{
+  font-family:"IBM Plex Sans",sans-serif;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  color:var(--ember);
+  display:block;
+  margin-bottom:7px;
+}
+.callout p{margin:0;font-size:.965rem;max-width:none}
+.callout p + p{margin-top:10px}
+
+/* ---------- tables ---------- */
+.tscroll{overflow-x:auto;margin:0 0 22px;border:1px solid var(--rule);border-radius:4px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:540px}
+thead th{
+  font-family:"IBM Plex Sans",sans-serif;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+  color:var(--faint);
+  text-align:left;
+  padding:11px 14px;
+  border-bottom:1px solid var(--rule);
+  white-space:nowrap;
+}
+tbody td{
+  padding:11px 14px;
+  border-bottom:1px solid var(--rule);
+  vertical-align:top;
+  color:var(--ink);
+}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--paper)}
+td.sig{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:.83rem;
+  color:var(--accent);
+  white-space:nowrap;
+  font-weight:500;
+}
+td.title{font-weight:600;min-width:190px}
+td.note{color:var(--muted);font-size:.875rem;min-width:230px}
+td.note b{color:var(--ink);font-weight:600}
+
+/* the page-reference chip: printed page + pdf page, always together */
+.pp{
+  display:inline-flex;
+  align-items:stretch;
+  font-family:"IBM Plex Mono",monospace;
+  font-size:11.5px;
+  border:1px solid var(--rule);
+  border-radius:3px;
+  overflow:hidden;
+  white-space:nowrap;
+  background:var(--paper);
+  font-variant-numeric:tabular-nums;
+}
+.pp span{padding:3px 7px}
+.pp .pr{color:var(--ink);font-weight:500}
+.pp .pd{background:var(--accent-soft);color:var(--accent);border-left:1px solid var(--rule)}
+
+/* ---------- arc header ---------- */
+.arc{
+  display:flex;
+  align-items:baseline;
+  gap:13px;
+  margin:44px 0 4px;
+  padding-top:22px;
+  border-top:1px solid var(--rule);
+}
+.arc:first-of-type{border-top:none;padding-top:0;margin-top:26px}
+.arc .badge{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:.08em;
+  color:var(--accent);
+  border:1px solid var(--accent);
+  border-radius:3px;
+  padding:2px 7px;
+  flex:none;
+}
+.arc h3{margin:0;font-family:Spectral,Georgia,serif;font-size:1.28rem;font-weight:600;letter-spacing:-.01em}
+.arc .here{
+  font-family:"IBM Plex Sans",sans-serif;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+  color:var(--paper);
+  background:var(--accent);
+  padding:3px 8px;
+  border-radius:3px;
+}
+
+/* ---------- ordered steps ---------- */
+ol.steps{
+  list-style:none;
+  counter-reset:s;
+  padding:0;
+  margin:0 0 22px;
+  display:flex;
+  flex-direction:column;
+  gap:13px;
+  max-width:70ch;
+}
+ol.steps li{
+  counter-increment:s;
+  display:grid;
+  grid-template-columns:26px minmax(0,1fr);
+  gap:14px;
+  align-items:baseline;
+}
+ol.steps li::before{
+  content:counter(s);
+  font-family:"IBM Plex Mono",monospace;
+  font-size:12px;
+  color:var(--accent);
+  border-bottom:1px solid var(--rule);
+  padding-bottom:2px;
+  font-variant-numeric:tabular-nums;
+}
+ol.steps p{margin:0;font-size:.97rem}
+
+/* ---------- bibliography ---------- */
+.bib{list-style:none;padding:0;margin:0 0 22px;display:flex;flex-direction:column;gap:17px;max-width:70ch}
+.bib li{padding-left:15px;border-left:1px solid var(--rule)}
+.bib .work{font-weight:600;display:block;margin-bottom:3px}
+.bib .work em{font-style:italic;font-weight:600}
+.bib p{margin:0;font-size:.935rem;color:var(--muted);max-width:none}
+.tierhead{
+  font-family:"IBM Plex Sans",sans-serif;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  color:var(--faint);
+  margin:32px 0 14px;
+  padding-bottom:7px;
+  border-bottom:1px solid var(--rule);
+}
+ul.plain{margin:0 0 20px;padding-left:19px;max-width:68ch}
+ul.plain li{margin-bottom:8px;font-size:.96rem}
+
+footer{
+  grid-column:1/-1;
+  border-top:1px solid var(--rule);
+  padding-top:22px;
+  margin-top:26px;
+  font-family:"IBM Plex Sans",sans-serif;
+  font-size:12.5px;
+  color:var(--faint);
+}
+footer code{font-size:11.5px}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Reading guide · Press, Teukolsky, Vetterling &amp; Flannery, 3rd ed. (2007)</p>
+    <h1>Numerical Recipes for Spacecraft, Propulsion, and GNC</h1>
+    <p class="standfirst">A route through 1235 pages, ordered by the simulation-and-control pipeline rather than by chapter — plus what to substitute where the book has aged, and the queue for rewriting its C++ from first principles.</p>
+    <div class="keyline">
+      <span class="keychip"><b>PDF page = printed page + 24</b></span>
+      <span class="keychip">1262 pp · born-digital · <b>text layer intact</b></span>
+      <span class="keychip">215 sections · 2403 equation tags indexed</span>
+      <span class="keychip"><b>Rust primary</b> · C++ twins · CUDA when data-parallel</span>
+    </div>
+  </header>
+
+  <nav class="rail" aria-label="Contents">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#how"><span class="tag">0</span><span>How to read it</span></a></li>
+      <li><a href="#tier0"><span class="tag">1</span><span>Read first</span></a></li>
+      <li><a href="#arcs"><span class="tag">2</span><span>The five arcs</span></a></li>
+      <li><a href="#roadmap"><span class="tag">2b</span><span>Every chapter, ranked</span></a></li>
+      <li><a href="#week"><span class="tag">3</span><span>This week</span></a></li>
+      <li><a href="#queue"><span class="tag">4</span><span>Rewrite queue</span></a></li>
+      <li><a href="#beyond"><span class="tag">5</span><span>Beyond NR</span></a></li>
+    </ol>
+    <h2>Arcs</h2>
+    <ol>
+      <li><a href="#arc-a"><span class="tag">A</span><span>Propagate</span></a></li>
+      <li><a href="#arc-b"><span class="tag">B</span><span>Estimate</span></a></li>
+      <li><a href="#arc-c"><span class="tag">C</span><span>Optimize</span></a></li>
+      <li><a href="#arc-d"><span class="tag">D</span><span>Propulsion</span></a></li>
+      <li><a href="#arc-e"><span class="tag">E</span><span>Signals</span></a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <!-- ============ 0 ============ -->
+    <section id="how">
+      <h2 class="sec"><span class="num">§0</span>How to read this book</h2>
+      <p class="dek">Read <em>Numerical Recipes</em> as a map of the territory, not as a source of algorithms to copy.</p>
+
+      <p>That framing matters, because it is the consensus critique of the book and it is largely fair:</p>
+
+      <blockquote>
+        Reviews by scientists and engineers tend to extol the broad scope and convenience, while reviews by numerical analysts are very critical of the quality of the discussions and the codes.
+        <cite>— <a href="https://www.stat.uchicago.edu/~lekheng/courses/302/wnnr/nr.html">“Why not use Numerical Recipes?”</a></cite>
+      </blockquote>
+
+      <p>Two specific charges land directly on our use cases. First, <strong>Chapter 17 on ODEs “describes numerical methods from the viewpoint of 1970.”</strong> That is the chapter closest to spacecraft propagation, so it is the one that most needs a modern companion. Second, the special-function approximations <strong>“shouldn’t be trusted beyond 6 digits”</strong> — fine for a demo, not fine for an ephemeris or a covariance.</p>
+
+      <p>What NR is uniquely good at, and why it is still worth the read: it tells you <em>why one algorithm beats another on real hardware</em> — conditioning, cancellation, step-size policy, when to give up and restart. That reasoning is the durable content. The FORTRAN-in-C++ implementations are the disposable part.</p>
+
+      <h3>The structural problem in the shipped code</h3>
+
+      <p>Open <code>NR_C301/code/stepperdopr5.h</code> — 142 lines. Two mathematical objects are buried inside function bodies as unnamed literals.</p>
+
+      <p><strong>The Butcher tableau.</strong> <code>a21 … a76</code>, <code>c2 … c5</code>, <code>e1 … e7</code> are declared <code>static const Doub</code> <em>inside</em> <code>StepperDopr5&lt;D&gt;::dy()</code>. The tableau <em>is</em> the identity of the method — its order, its stability region, its error estimator. As written you cannot name it, unit-test its order conditions, print it, or swap it for DOPR853 without editing a function body.</p>
+
+      <p><strong>The step-size control law.</strong> <code>beta=0.0, alpha=0.2-beta*0.75, safe=0.9, minscale=0.2, maxscale=10.0</code> are <code>static const</code> inside <code>Controller::success()</code>. Note <code>beta=0.0</code>: that single literal silently disables Lund stabilization, turning a PI controller into a plain I controller. A design decision with real consequences is expressed as a magic number three scopes deep.</p>
+
+      <p>That is what “the principles are buried in the code” means concretely. The book’s prose explains PI step control; the code hides whether it is even switched on.</p>
+
+      <h3>The fix is already proven in Cosmos</h3>
+
+      <p><code>Propulsion/Cosmos/Source/Numerical/ODE/</code> is exactly the right decomposition, and it already exists:</p>
+
+      <div class="tscroll">
+        <table>
+          <thead><tr><th>NR buries it in…</th><th>Cosmos names it</th></tr></thead>
+          <tbody>
+            <tr><td class="title"><code>dy()</code> local statics</td><td class="note"><code>RKMethods/Coefficients/{A,B,C,K}Coefficients.h</code>, <code>DOPRI5Coefficients.h</code>, <code>DOPR853Coefficients.h</code>, <code>RK4Coefficients.h</code></td></tr>
+            <tr><td class="title"><code>Controller::success()</code> statics</td><td class="note"><code>RKMethods/ComputePIStepSize.h</code> — <code>alpha</code>, <code>beta</code>, <code>safety_factor</code>, <code>min_scale</code>, <code>max_scale</code> are ctor params with <code>assert</code>s, and the comment <b>names</b> Lund stabilization</td></tr>
+            <tr><td class="title">inline error norm</td><td class="note"><code>CalculateError.h</code>, <code>CalculateScaledError.h</code></td></tr>
+            <tr><td class="title"><code>rcont1..rcont5</code> in <code>dense_out()</code></td><td class="note"><code>CalculateDenseOutputCoefficient.h</code>, <code>calculate_hermite_interpolation.h</code></td></tr>
+            <tr><td class="title">the step itself</td><td class="note"><code>CalculateNewY.h</code>, <code>CalculateNewYAndError.h</code>, <code>StepWithPIControl.h</code></td></tr>
+            <tr><td class="title"><code>Odeint::integrate()</code> monolith</td><td class="note"><code>IntegrateWithPIControl.h</code>, <code>HigherOrderIntegrateWithPIControl.h</code>, <code>IntegrationInputs.h</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The pattern is: <strong>every noun in the mathematics becomes a named type; every magic constant becomes a named, asserted, injected parameter; every verb becomes a testable free function or a small class.</strong> Chapter 17 is done. The reading order below is essentially the queue for applying that same pattern to the rest of the book.</p>
+    </section>
+
+    <!-- ============ 1 ============ -->
+    <section id="tier0">
+      <h2 class="sec"><span class="num">§1</span>Read before anything else</h2>
+      <p class="dek">About 35 printed pages. You cannot reason about a covariance matrix, a convergence test, or an integrator tolerance without this.</p>
+
+      <div class="tscroll">
+        <table>
+          <thead><tr><th>§</th><th>Title</th><th>Pages</th><th>Why it matters here</th></tr></thead>
+          <tbody>
+            <tr><td class="sig">1.1</td><td class="title">Error, Accuracy, and Stability</td><td><span class="pp"><span class="pr">8</span><span class="pd">pdf 32</span></span></td><td class="note">Roundoff vs truncation; the vocabulary for every tolerance you will ever set</td></tr>
+            <tr><td class="sig">5.7</td><td class="title">Numerical Derivatives</td><td><span class="pp"><span class="pr">229</span><span class="pd">pdf 253</span></span></td><td class="note">Finite-difference Jacobians — the step-size choice here directly sets <b>EKF linearization error</b></td></tr>
+            <tr><td class="sig">22.2</td><td class="title">Diagnosing Machine Parameters</td><td><span class="pp"><span class="pr">1163</span><span class="pd">pdf 1187</span></span></td><td class="note">What <code>eps</code> actually is on your target — matters on the Jetson / TX2i, not just x86</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <span class="label">Read, but do not imitate</span>
+        <p><strong>§1.3–1.5</strong> <span class="pp"><span class="pr">17–36</span><span class="pd">pdf 41–60</span></span> — “Objects, Classes, and Inheritance” and “Vector and Matrix Objects.” This is where NR’s C++ philosophy is stated outright, including the admission on p. 36 that they dump ~500 names into the global namespace and use <code>void</code> functions with out-parameters because they don’t trust the copy constructor.</p>
+        <p>Read it as a primary source on <em>why the code looks the way it does</em>, then do the opposite. It is a 2007-vintage argument that C++17/20 has since answered — move semantics, guaranteed RVO, <code>std::span</code> / <code>mdspan</code>.</p>
+      </div>
+    </section>
+
+    <!-- ============ 2 ============ -->
+    <section id="arcs">
+      <h2 class="sec"><span class="num">§2</span>The five arcs</h2>
+      <p class="dek">Rather than reading front to back, follow the GNC pipeline: <strong>propagate → estimate → optimize</strong>, with two supporting arcs. Each is self-contained and each maps onto a module in <code>Cosmos/Source</code>.</p>
+
+      <!-- ARC A -->
+      <div class="arc" id="arc-a">
+        <span class="badge">ARC A</span>
+        <h3>Propagate — spacecraft simulation</h3>
+        <span class="here">Start here</span>
+      </div>
+      <p>This is the arc you are already building, so it is the one where reading pays off fastest: you can check every page against code you have written.</p>
+
+      <div class="tscroll">
+        <table>
+          <thead><tr><th>§</th><th>Title</th><th>Pages</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr><td class="sig">17.0</td><td class="title">Introduction</td><td><span class="pp"><span class="pr">899</span><span class="pd">pdf 923</span></span></td><td class="note">Frames the whole chapter</td></tr>
+            <tr><td class="sig">17.1</td><td class="title">Runge–Kutta Method</td><td><span class="pp"><span class="pr">907</span><span class="pd">pdf 931</span></span></td><td class="note">The tableau. Compare against <code>RK4Coefficients.h</code></td></tr>
+            <tr><td class="sig">17.2</td><td class="title">Adaptive Stepsize Control for Runge–Kutta</td><td><span class="pp"><span class="pr">910</span><span class="pd">pdf 934</span></span></td><td class="note"><b>The PI-control section.</b> Read against <code>ComputePIStepSize.h</code> — the book explains what <code>beta</code> does; the NR code sets it to zero</td></tr>
+            <tr><td class="sig">17.4</td><td class="title">Second-Order Conservative Equations</td><td><span class="pp"><span class="pr">928</span><span class="pd">pdf 952</span></span></td><td class="note">Störmer / Numerov — you have <code>StormerMethods/</code>. The right integrator class for orbits, and NR undersells it</td></tr>
+            <tr><td class="sig">17.3</td><td class="title">Richardson Extrapolation &amp; Bulirsch–Stoer</td><td><span class="pp"><span class="pr">921</span><span class="pd">pdf 945</span></span></td><td class="note">High-accuracy smooth propagation; the classic ephemeris workhorse</td></tr>
+            <tr><td class="sig">17.5</td><td class="title">Stiff Sets of Equations</td><td><span class="pp"><span class="pr">931</span><span class="pd">pdf 955</span></span></td><td class="note">Rosenbrock / semi-implicit. Bridges to propulsion (Arc D)</td></tr>
+            <tr><td class="sig">17.6</td><td class="title">Multistep, Multivalue, Predictor–Corrector</td><td><span class="pp"><span class="pr">942</span><span class="pd">pdf 966</span></span></td><td class="note">Why Gauss–Jackson dominates operational orbit propagation</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><strong>Then immediately:</strong> Chapter 3, §§3.0–3.3 <span class="pp"><span class="pr">110–124</span><span class="pd">pdf 134–148</span></span>. Dense output <em>is</em> interpolation — <code>calculate_hermite_interpolation.h</code> is a Chapter 3 object living in an ODE directory. §3.1 on searching an ordered table is already mirrored by <code>Numerical/Interpolation/Lookup.h</code>.</p>
+
+      <p><strong>Also in this arc:</strong> §21.5 “Spheres and Rotations” <span class="pp"><span class="pr">1128</span><span class="pd">pdf 1152</span></span> — quaternions and rotation composition, connecting straight to <code>Cosmos/QuaternionConventionLab</code>.</p>
+
+      <div class="callout">
+        <span class="label">Substitute for Arc A</span>
+        <p>Chapter 17 is the weakest chapter relative to the state of the art. Read it for intuition, then read Hairer &amp; Wanner for the actual theory. The single most important idea NR omits: for a Hamiltonian system like an orbit, a <strong>symplectic</strong> integrator has bounded energy error over exponentially long times, while DOPRI5 — no matter how tight the tolerance — drifts secularly.</p>
+      </div>
+
+      <!-- ARC B -->
+      <div class="arc" id="arc-b">
+        <span class="badge">ARC B</span>
+        <h3>Estimate — navigation</h3>
+      </div>
+
+      <div class="tscroll">
+        <table>
+          <thead><tr><th>§</th><th>Title</th><th>Pages</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr><td class="sig">2.9</td><td class="title">Cholesky Decomposition</td><td><span class="pp"><span class="pr">100</span><span class="pd">pdf 124</span></span></td><td class="note"><b>The most important two pages in the book for GNC.</b> Square-root / UD filtering is Cholesky applied to a covariance</td></tr>
+            <tr><td class="sig">2.10</td><td class="title">QR Decomposition</td><td><span class="pp"><span class="pr">102</span><span class="pd">pdf 126</span></span></td><td class="note">The other half of square-root filtering; also the numerically sound way to do least squares</td></tr>
+            <tr><td class="sig">2.6</td><td class="title">Singular Value Decomposition</td><td><span class="pp"><span class="pr">65</span><span class="pd">pdf 89</span></span></td><td class="note">Rank deficiency, observability analysis, pseudo-inverse</td></tr>
+            <tr><td class="sig">2.3</td><td class="title">LU Decomposition</td><td><span class="pp"><span class="pr">48</span><span class="pd">pdf 72</span></span></td><td class="note">Baseline — read to understand <em>why</em> you use Cholesky / QR instead</td></tr>
+            <tr><td class="sig">15.4</td><td class="title">General Linear Least Squares</td><td><span class="pp"><span class="pr">788</span><span class="pd">pdf 812</span></span></td><td class="note">Batch orbit determination in its simplest form</td></tr>
+            <tr><td class="sig">15.5</td><td class="title">Nonlinear Models</td><td><span class="pp"><span class="pr">799</span><span class="pd">pdf 823</span></span></td><td class="note">Levenberg–Marquardt — the batch OD workhorse</td></tr>
+            <tr><td class="sig">15.6</td><td class="title">Confidence Limits on Estimated Parameters</td><td><span class="pp"><span class="pr">807</span><span class="pd">pdf 831</span></span></td><td class="note">Where the covariance actually comes from</td></tr>
+            <tr><td class="sig">7.4</td><td class="title">Multivariate Normal Deviates</td><td><span class="pp"><span class="pr">378</span><span class="pd">pdf 402</span></span></td><td class="note">Monte Carlo dispersion analysis — again Cholesky</td></tr>
+            <tr><td class="sig">7.8</td><td class="title">Quasi- (Sub-)Random Sequences</td><td><span class="pp"><span class="pr">403</span><span class="pd">pdf 427</span></span></td><td class="note">Sobol. Far better convergence than pseudo-random for dispersion runs</td></tr>
+            <tr><td class="sig">11.0</td><td class="title">Eigensystems</td><td><span class="pp"><span class="pr">563</span><span class="pd">pdf 587</span></span></td><td class="note">Inertia tensors, principal axes, linear stability of controllers</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <span class="label">Substitute for Arc B</span>
+        <p>NR contains <strong>no Kalman filter at all</strong>. This is the single biggest gap for GNC. Everything above is the <em>numerical substrate</em> of estimation; the estimator itself has to come from Markley &amp; Crassidis or Tapley, Schutz &amp; Born.</p>
+      </div>
+
+      <!-- ARC C -->
+      <div class="arc" id="arc-c">
+        <span class="badge">ARC C</span>
+        <h3>Optimize — guidance and targeting</h3>
+      </div>
+
+      <div class="tscroll">
+        <table>
+          <thead><tr><th>§</th><th>Title</th><th>Pages</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr><td class="sig">9.6</td><td class="title">Newton–Raphson for Nonlinear Systems</td><td><span class="pp"><span class="pr">473</span><span class="pd">pdf 497</span></span></td><td class="note">The core of a targeter</td></tr>
+            <tr><td class="sig">9.7</td><td class="title">Globally Convergent Methods</td><td><span class="pp"><span class="pr">477</span><span class="pd">pdf 501</span></span></td><td class="note">Line search + dogleg. What makes a Lambert / targeting solver actually converge</td></tr>
+            <tr><td class="sig">18.1</td><td class="title">The Shooting Method</td><td><span class="pp"><span class="pr">959</span><span class="pd">pdf 983</span></span></td><td class="note">Two-point BVP = trajectory targeting. Read directly after 9.7</td></tr>
+            <tr><td class="sig">18.2</td><td class="title">Shooting to a Fitting Point</td><td><span class="pp"><span class="pr">962</span><span class="pd">pdf 986</span></span></td><td class="note">Multiple shooting — the practical version</td></tr>
+            <tr><td class="sig">18.3</td><td class="title">Relaxation Methods</td><td><span class="pp"><span class="pr">964</span><span class="pd">pdf 988</span></span></td><td class="note">Collocation, in embryo</td></tr>
+            <tr><td class="sig">10.3</td><td class="title">Parabolic Interpolation &amp; Brent’s Method</td><td><span class="pp"><span class="pr">496</span><span class="pd">pdf 520</span></span></td><td class="note">You have <code>FindParabolicInterpolation.h</code>, <code>InitialMinimumBracketing.h</code></td></tr>
+            <tr><td class="sig">10.9</td><td class="title">Quasi-Newton / Variable Metric (BFGS)</td><td><span class="pp"><span class="pr">521</span><span class="pd">pdf 545</span></span></td><td class="note">The optimizer behind most direct methods</td></tr>
+            <tr><td class="sig">10.8</td><td class="title">Conjugate Gradient in Multidimensions</td><td><span class="pp"><span class="pr">515</span><span class="pd">pdf 539</span></span></td><td class="note">Large sparse problems</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <span class="label">Substitute for Arc C</span>
+        <p>§18.1–18.3 is 1970s-vintage. Modern trajectory optimization is direct collocation / pseudospectral → NLP. Read Betts’ survey right after §18.3 — it is the bridge from NR’s shooting to what actually flies.</p>
+      </div>
+
+      <!-- ARC D -->
+      <div class="arc" id="arc-d">
+        <span class="badge">ARC D</span>
+        <h3>Propulsion physics</h3>
+      </div>
+
+      <div class="tscroll">
+        <table>
+          <thead><tr><th>§</th><th>Title</th><th>Pages</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr><td class="sig">17.5</td><td class="title">Stiff Sets of Equations</td><td><span class="pp"><span class="pr">931</span><span class="pd">pdf 955</span></span></td><td class="note">Chemical kinetics is <em>the</em> stiff problem. Read alongside the CVODE / SUNDIALS docs</td></tr>
+            <tr><td class="sig">17.7</td><td class="title">Stochastic Simulation of Chemical Reaction Networks</td><td><span class="pp"><span class="pr">946</span><span class="pd">pdf 970</span></span></td><td class="note">Gillespie SSA</td></tr>
+            <tr><td class="sig">20.1</td><td class="title">Flux-Conservative Initial Value Problems</td><td><span class="pp"><span class="pr">1031</span><span class="pd">pdf 1055</span></span></td><td class="note">CFL, upwinding, artificial viscosity — nozzle and duct flow</td></tr>
+            <tr><td class="sig">20.2</td><td class="title">Diffusive Initial Value Problems</td><td><span class="pp"><span class="pr">1043</span><span class="pd">pdf 1067</span></span></td><td class="note">Regenerative cooling, thermal soak</td></tr>
+            <tr><td class="sig">20.6</td><td class="title">Multigrid Methods</td><td><span class="pp"><span class="pr">1066</span><span class="pd">pdf 1090</span></span></td><td class="note">The scalable elliptic solver</td></tr>
+            <tr><td class="sig">4.6</td><td class="title">Gaussian Quadratures &amp; Orthogonal Polynomials</td><td><span class="pp"><span class="pr">179</span><span class="pd">pdf 203</span></span></td><td class="note">Performance integrals; also the basis of pseudospectral methods in Arc C</td></tr>
+            <tr><td class="sig">5.8</td><td class="title">Chebyshev Approximation</td><td><span class="pp"><span class="pr">233</span><span class="pd">pdf 257</span></span></td><td class="note">How to fit thermodynamic properties — cf. NASA polynomials — without Runge phenomenon</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ARC E -->
+      <div class="arc" id="arc-e">
+        <span class="badge">ARC E</span>
+        <h3>Signals — telemetry, sensors, combustion instability</h3>
+      </div>
+
+      <div class="tscroll">
+        <table>
+          <thead><tr><th>§</th><th>Title</th><th>Pages</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr><td class="sig">13.4</td><td class="title">Power Spectrum Estimation Using the FFT</td><td><span class="pp"><span class="pr">652</span><span class="pd">pdf 676</span></span></td><td class="note"><b>Combustion instability, POGO, structural modes.</b> Ties to your Lieuwen OCR work</td></tr>
+            <tr><td class="sig">13.5</td><td class="title">Digital Filtering in the Time Domain</td><td><span class="pp"><span class="pr">667</span><span class="pd">pdf 691</span></span></td><td class="note">IMU and sensor conditioning</td></tr>
+            <tr><td class="sig">14.9</td><td class="title">Savitzky–Golay Smoothing Filters</td><td><span class="pp"><span class="pr">766</span><span class="pd">pdf 790</span></span></td><td class="note">Smoothing telemetry without destroying derivatives</td></tr>
+            <tr><td class="sig">13.8</td><td class="title">Spectral Analysis of Unevenly Sampled Data</td><td><span class="pp"><span class="pr">685</span><span class="pd">pdf 709</span></span></td><td class="note">Lomb–Scargle. Real telemetry is <em>never</em> uniformly sampled — underrated section</td></tr>
+            <tr><td class="sig">13.3</td><td class="title">Optimal (Wiener) Filtering</td><td><span class="pp"><span class="pr">649</span><span class="pd">pdf 673</span></span></td><td class="note">The frequency-domain sibling of the Kalman filter</td></tr>
+            <tr><td class="sig">12.0</td><td class="title">Fast Fourier Transform</td><td><span class="pp"><span class="pr">600</span><span class="pd">pdf 624</span></span></td><td class="note">Foundation for all of the above</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+
+    <!-- ============ 2b ============ -->
+    <section id="roadmap">
+      <h2 class="sec"><span class="num">§2b</span>Every chapter, ranked</h2>
+      <p class="dek">The book view to go with the five arcs: all twenty-two chapters ordered by relevance to a dispersed six-degree-of-freedom simulation, post-flight correlation, and guidance, with the physics that earns each its place. Ranking signal: current Starship GNC, Simulations, and Flight Software postings (recorded 2026-09-01) plus what already exists in <code>Cosmos/Source</code>.</p>
+
+      <div class="callout">
+        <span class="label">Language policy</span>
+        <p><strong>Rust is primary</strong> for every new module, in the <code>Cosmos/Rust</code> workspace, generic over wildrider's field trait. <strong>C++ stays</strong> where the C++ simulation stack consumes it; when both exist, the C++ build emits golden vectors and the Rust test reads them. <strong>CUDA only for data-parallel work</strong> with a measured CPU baseline: batched Monte Carlo propagation, batched factorizations, PDE stencils, FFTs.</p>
+      </div>
+
+      <div class="tscroll">
+        <table>
+          <thead><tr><th>Rank</th><th>Chapter</th><th>The physics</th><th>Sections (printed page)</th><th>Language</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td class="sig">1</td><td class="title">17 Integration of ODEs</td><td class="note">The propagator: 6-DOF equations of motion; orbits are Hamiltonian; stiff chemistry</td><td class="note">17.0–17.7 (899–946)</td><td class="note">Rust port; C++ kept</td><td class="note">C++ done for RK4, DOPRI5, DOPR853, PI control, dense output, Störmer/Numerov</td></tr>
+            <tr><td class="sig">2</td><td class="title">2 Linear algebra</td><td class="note">Covariance P = LLᵀ, square-root filters, normal equations, mass-matrix solves</td><td class="note">2.9 (100), 2.10 (102), 2.6 (65), 2.3 (48), 2.4 (56), 2.7 (75)</td><td class="note">Rust; CUDA later for batched Cholesky</td><td class="note">Cholesky in Rust 2026-09-01</td></tr>
+            <tr><td class="sig">3</td><td class="title">7 Random numbers</td><td class="note">Monte Carlo dispersions: 3σ initial conditions, aero, thrust; reproducible streams</td><td class="note">7.1 (341), 7.3 (361), 7.4 (378), 7.8 (403), 7.7 (397)</td><td class="note">Rust; CUDA for batched propagation</td><td class="note">not started</td></tr>
+            <tr><td class="sig">4</td><td class="title">15 Modeling of data</td><td class="note">Post-flight correlation, orbit determination, parameter identification, covariance of estimates</td><td class="note">15.4 (788), 15.5 (799), 15.6 (807), 15.7 (818), 15.8 (824)</td><td class="note">Rust</td><td class="note">not started</td></tr>
+            <tr><td class="sig">5</td><td class="title">9 Root finding</td><td class="note">Kepler&#x27;s equation, targeting, trim, every implicit stage</td><td class="note">9.1 (445), 9.3 (454), 9.4 (456), 9.6 (473), 9.7 (477)</td><td class="note">Rust</td><td class="note">not started</td></tr>
+            <tr><td class="sig">6</td><td class="title">3 Interpolation</td><td class="note">Aero databases, atmosphere tables, engine maps, dense output</td><td class="note">3.1 (114), 3.2 (118), 3.3 (120), 3.6 (132), 3.7 (139)</td><td class="note">Rust; C++ Lookup.h exists</td><td class="note">lookup, linear 1-D in C++</td></tr>
+            <tr><td class="sig">7</td><td class="title">10 Minimization</td><td class="note">Control allocation (LP/QP), trim, trajectory-optimization outer loop</td><td class="note">10.1–10.3 (490–496), 10.5 (502), 10.8 (515), 10.9 (521), 10.10–10.11 (526–537)</td><td class="note">Rust</td><td class="note">bracketing, golden section in C++; mins.h still NR-shaped</td></tr>
+            <tr><td class="sig">8</td><td class="title">18 Two-point BVPs</td><td class="note">Boost-back and landing-burn targeting; Betts for collocation</td><td class="note">18.1 (959), 18.2 (962), 18.3 (964)</td><td class="note">Rust</td><td class="note">not started</td></tr>
+            <tr><td class="sig">9</td><td class="title">11 Eigensystems</td><td class="note">Principal axes of inertia; controller stability from the spectrum of ∂f/∂x; structural modes</td><td class="note">11.1 (570), 11.3–11.4 (578–583), 11.6–11.7 (590–596)</td><td class="note">Rust</td><td class="note">not started</td></tr>
+            <tr><td class="sig">10</td><td class="title">14 Statistical description</td><td class="note">Flight-vs-simulation distribution tests; Monte Carlo statistics; telemetry smoothing</td><td class="note">14.1–14.3 (721–730), 14.9 (766)</td><td class="note">Rust</td><td class="note">not started</td></tr>
+            <tr><td class="sig">11</td><td class="title">12 + 13 FFT and spectral</td><td class="note">Combustion instability, POGO, IMU conditioning, unevenly sampled telemetry</td><td class="note">12.2 (608), 13.4 (652), 13.5 (667), 13.8 (685), 13.3 (649)</td><td class="note">Rust; CUDA for batched FFT</td><td class="note">not started</td></tr>
+            <tr><td class="sig">12</td><td class="title">4 Quadrature</td><td class="note">Δv and impulse integrals; pseudospectral basis</td><td class="note">4.6 (179), 4.3 (166), 4.7 (194)</td><td class="note">Rust</td><td class="note">not started</td></tr>
+            <tr><td class="sig">13</td><td class="title">5 Evaluation of functions</td><td class="note">Finite-difference Jacobians; Chebyshev ephemerides and property fits; Clenshaw for Legendre</td><td class="note">5.7 (229), 5.8 (233), 5.4 (219)</td><td class="note">Rust</td><td class="note">not started</td></tr>
+            <tr><td class="sig">14</td><td class="title">6 Special functions</td><td class="note">Spherical harmonics for the geopotential; Bessel for chamber acoustics; Jacobi elliptic for the torque-free rigid body</td><td class="note">6.7 (292), 6.5 (274), 6.11 (309)</td><td class="note">Rust; verify beyond 6 digits</td><td class="note">not started</td></tr>
+            <tr><td class="sig">15</td><td class="title">20 PDEs</td><td class="note">1-D nozzle Euler, regenerative-cooling diffusion, elliptic solves</td><td class="note">20.1 (1031), 20.2 (1043), 20.6 (1066), 20.7 (1083)</td><td class="note">CUDA C++ with a Rust reference</td><td class="note">toy solvers in CUDACFD/</td></tr>
+            <tr><td class="sig">16</td><td class="title">21 Computational geometry</td><td class="note">Quaternions (done); KD trees for star catalogs; Delaunay for meshes</td><td class="note">21.5 (1128), 21.2 (1101), 21.6 (1131)</td><td class="note">Rust</td><td class="note">21.5 done in QuaternionConventionLab</td></tr>
+            <tr><td class="sig">17</td><td class="title">19 Integral equations, inverse theory</td><td class="note">Inverse heat conduction for wall heat flux; regularized system identification</td><td class="note">19.4 (1001), 19.5 (1006)</td><td class="note">Rust</td><td class="note">not started</td></tr>
+            <tr><td class="sig">18</td><td class="title">22 Less-numerical</td><td class="note">Machine epsilon on the target; CRC for telemetry; arbitrary precision for reference solutions</td><td class="note">22.2 (1163), 22.4 (1168), 22.6 (1185)</td><td class="note">Rust</td><td class="note">CRC-16 exists in the telemetry harness</td></tr>
+            <tr><td class="sig">19</td><td class="title">1 Preliminaries</td><td class="note">Error and stability vocabulary; the 2007 C++ philosophy, read adversarially</td><td class="note">1.1 (8), 1.3–1.5 (17–36)</td><td class="note">—</td><td class="note">Tier 0</td></tr>
+            <tr><td class="sig">20</td><td class="title">8 Sorting and selection</td><td class="note">Indexing and ranking of telemetry; standard libraries cover the rest</td><td class="note">8.4 (428)</td><td class="note">—</td><td class="note">read only</td></tr>
+            <tr><td class="sig">21</td><td class="title">16 Classification and inference</td><td class="note">Mode detection in telemetry (HMM, Viterbi); the rest superseded</td><td class="note">16.3 (850), 16.4 (856)</td><td class="note">—</td><td class="note">read only</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>The first-principles protocol, per section</h3>
+      <p>Reading a section is not finished until all seven exist. This is what keeps the rewrite from aping the book.</p>
+      <ol class="steps">
+        <li><p><strong>Physics first.</strong> The system and its governing equations in the library's own units, frames, and groups.</p></li>
+        <li><p><strong>The structure exploited.</strong> Positive definite ⇒ Cholesky without pivoting; Hamiltonian ⇒ symplectic; stiff ⇒ implicit; no <em>y′</em> ⇒ Störmer.</p></li>
+        <li><p><strong>Named objects.</strong> Every noun a type, every constant an asserted parameter, every verb a testable function.</p></li>
+        <li><p><strong>Derive, then compare.</strong> Write the recurrence from the equations, then read NR's prose. Never open <code>NR_C301/code</code> while writing.</p></li>
+        <li><p><strong>Tests from the mathematics.</strong> Order conditions, reconstruction to machine precision, bounded drift, observed convergence order, cross-language golden vectors.</p></li>
+        <li><p><strong>Citation sidecar</strong> with section, page, equation tags, and the substitute reference where NR is dated.</p></li>
+        <li><p><strong>Ledger entry</strong> in <code>READING-LEDGER.md</code>: what NR got right, what aged, what resulted.</p></li>
+      </ol>
+      <p>Source of truth for this section: <code>documents/research/numerical-recipes-rewrite/ROADMAP.md</code>.</p>
+    </section>
+
+    <!-- ============ 3 ============ -->
+    <section id="week">
+      <h2 class="sec"><span class="num">§3</span>What to read this week</h2>
+      <p class="dek">Roughly 60 printed pages, in dependency order. It takes you from “I have an integrator” to “I know what I need for a navigation filter.”</p>
+
+      <ol class="steps">
+        <li><p><strong>§1.1</strong> <span class="pp"><span class="pr">8</span><span class="pd">pdf 32</span></span> — four pages. Non-negotiable.</p></li>
+        <li><p><strong>§17.2</strong> <span class="pp"><span class="pr">910</span><span class="pd">pdf 934</span></span> — read it with <code>ComputePIStepSize.h</code> open beside it. You will see your own design decisions justified in the prose, and you will see the <code>beta=0.0</code> choice the NR code makes silently.</p></li>
+        <li><p><strong>§17.4</strong> <span class="pp"><span class="pr">928</span><span class="pd">pdf 952</span></span> — Störmer, against your <code>StormerMethods/</code>.</p></li>
+        <li><p><strong>§3.0–3.3</strong> <span class="pp"><span class="pr">110–124</span><span class="pd">pdf 134–148</span></span> — the interpolation theory behind dense output.</p></li>
+        <li><p><strong>§2.9 + §2.10</strong> <span class="pp"><span class="pr">100–106</span><span class="pd">pdf 124–130</span></span> — Cholesky and QR. The gateway to the estimation work, and only about six pages.</p></li>
+        <li><p><strong>§1.3–1.5</strong> <span class="pp"><span class="pr">17–36</span><span class="pd">pdf 41–60</span></span> — last, as an artifact of 2007 C++ thinking. Read adversarially.</p></li>
+      </ol>
+    </section>
+
+    <!-- ============ 4 ============ -->
+    <section id="queue">
+      <h2 class="sec"><span class="num">§4</span>Rewrite queue</h2>
+      <p class="dek">In dependency order, matching the arcs. Chapter 17 is done in C++. The Rust workspace at <code>Cosmos/Rust</code> started 2026-09-01 with the PI step-size controller as a golden-vector twin of the C++ and a Cholesky factorization type from first principles; this is what follows.</p>
+
+      <ol class="steps">
+        <li><p><strong><code>Numerical/LinearAlgebra/</code></strong> — <code>Cholesky</code>, <code>QRDecomposition</code>, <code>SVD</code>, <code>LUDecomposition</code>. Named factorization <em>types</em> that own their factors, not <code>void</code> functions with out-parameters. Follow <code>NVector</code>’s lead in <code>Algebra/Modules/Vectors/</code>.</p></li>
+        <li><p><strong><code>Numerical/Interpolation/</code></strong> — extend what exists: <code>CubicSpline</code>, <code>PolynomialInterpolation</code>, <code>RationalInterpolation</code>. <code>Lookup.h</code> already generalizes NR’s <code>Base_interp::locate/hunt</code>.</p></li>
+        <li><p><strong><code>Numerical/RootFinding/</code></strong> — <code>Bisection</code>, <code>Brent</code>, <code>NewtonRaphson</code>, <code>LineSearch</code>, <code>GloballyConvergentNewton</code>. NR fuses the line-search policy into <code>lnsrch</code>; separate it, the same way <code>ComputePIStepSize</code> was separated from the stepper.</p></li>
+        <li><p><strong><code>Numerical/Quadrature/</code></strong> — the <code>Quadrature</code> base in §4.2 is one of the few genuinely good abstractions in the book. Keep the idea, fix the naming.</p></li>
+        <li><p><strong><code>Estimation/</code></strong> — <em>not</em> from NR. Build on the Cholesky / QR types from step 1.</p></li>
+        <li><p><strong><code>Numerical/Optimization/</code></strong> — already started. <code>mins.h</code> is still NR-shaped; that file is the obvious next cleanup.</p></li>
+      </ol>
+
+      <div class="callout">
+        <span class="label">Licensing</span>
+        <p>The NR code is <strong>not freely redistributable</strong> — one of the standing criticisms of the book. Since we are deriving from published mathematics rather than copying their source, the rewrite should be written from the <em>prose and the equations</em>, not by transliterating <code>NR_C301/code/*.h</code>. Given how much of the mathematics is buried in their literals, that is also the only way to get a design worth having.</p>
+      </div>
+    </section>
+
+    <!-- ============ 5 ============ -->
+    <section id="beyond">
+      <h2 class="sec"><span class="num">§5</span>Beyond Numerical Recipes</h2>
+      <p class="dek">Where the book has aged, these are the replacements — ordered by how much they matter for this work.</p>
+
+      <p class="tierhead">Tier 1 · Buy these</p>
+      <ul class="bib">
+        <li>
+          <span class="work">Hairer, Nørsett &amp; Wanner, <em>Solving Ordinary Differential Equations I &amp; II</em></span>
+          <p>The definitive treatment. Dense output, embedded pairs, order conditions, and PI step-size control are all developed properly here — this is where NR §17.2’s ideas actually come from. Volume II covers stiff and differential-algebraic problems.</p>
+        </li>
+        <li>
+          <span class="work">Hairer, Lubich &amp; Wanner, <em><a href="https://www.amazon.com/Geometric-Numerical-Integration-Structure-Preserving-Computational/dp/364205157X">Geometric Numerical Integration</a></em></span>
+          <p>Symplectic and symmetric methods, problems on manifolds. <strong>The single highest-value book on this list for spacecraft simulation</strong> — the theory of why your orbit shouldn’t lose energy. Hairer’s <a href="https://www.unige.ch/~hairer/poly_geoint/intro.pdf">lecture notes are free</a>.</p>
+        </li>
+        <li>
+          <span class="work">Montenbruck &amp; Gill, <em><a href="https://link.springer.com/content/pdf/10.1007%2F978-3-642-58351-3.pdf">Satellite Orbits: Models, Methods and Applications</a></em></span>
+          <p>The best marriage of numerical methods to actual orbit propagation — force models, numerical integration, and estimation in one volume, at implementation level of detail.</p>
+        </li>
+        <li>
+          <span class="work">Markley &amp; Crassidis, <em>Fundamentals of Spacecraft Attitude Determination and Control</em></span>
+          <p>Springer, 2014. Fills NR’s total gap on estimation: MEKF, quaternion error states, attitude filters.</p>
+        </li>
+        <li>
+          <span class="work">Higham, <em><a href="http://ftp.demec.ufpr.br/CFD/bibliografia/Higham_2002_Accuracy%20and%20Stability%20of%20Numerical%20Algorithms.pdf">Accuracy and Stability of Numerical Algorithms</a></em></span>
+          <p>SIAM, 2nd ed. Chapter 2 on floating point is described as possibly “the single most useful chapter in the book.” This is Tier-0 material done rigorously.</p>
+        </li>
+      </ul>
+
+      <p class="tierhead">Tier 2 · Read for specific arcs</p>
+      <ul class="bib">
+        <li><span class="work">Trefethen &amp; Bau, <em>Numerical Linear Algebra</em></span><p>For Arc B. Short, and the best book on conditioning and stability of factorizations.</p></li>
+        <li><span class="work">Tapley, Schutz &amp; Born, <em>Statistical Orbit Determination</em></span><p>2004. Batch and sequential OD in full detail — the operational reference.</p></li>
+        <li><span class="work">Vallado, <em>Fundamentals of Astrodynamics and Applications</em></span><p>Practitioner’s handbook with companion code. Complements Montenbruck’s rigor with breadth.</p></li>
+        <li><span class="work">Battin, <em>An Introduction to the Mathematics and Methods of Astrodynamics</em></span><p>Deepest on the mathematics — Lambert, universal variables. Hard going, but the classic.</p></li>
+        <li><span class="work">Betts, <a href="https://www.semanticscholar.org/paper/Survey-of-Numerical-Methods-for-Trajectory-Betts/274c344a4403e212377a31e6a729269614953e0d">“Survey of Numerical Methods for Trajectory Optimization”</a></span><p><em>JGCD</em> 21(2):193–207, 1998, plus his book <em>Practical Methods for Optimal Control Using Nonlinear Programming</em>. The bridge from NR ch. 18 to modern direct collocation.</p></li>
+        <li><span class="work">Law, <em>Combustion Physics</em></span><p>For Arc D, paired with the <a href="https://amrex-combustion.github.io/PelePhysics/IntroductionToCvode.html">SUNDIALS / CVODE</a> documentation — BDF methods are the workhorse for stiff chemistry.</p></li>
+        <li><span class="work">Crassidis, Markley &amp; Cheng, “Survey of Nonlinear Attitude Estimation Methods”</span><p><em>JGCD</em>, 2007. The map of the estimator landscape.</p></li>
+        <li><span class="work">Markley, <a href="https://ntrs.nasa.gov/api/citations/20040037784/downloads/20040037784.pdf">“Multiplicative vs. Additive Filtering for Spacecraft Attitude Determination”</a></span><p>NASA GSFC. Short, free, and settles the question of how to filter a quaternion.</p></li>
+      </ul>
+
+      <p class="tierhead">Tier 3 · C++ architecture for the rewrite</p>
+      <ul class="bib">
+        <li>
+          <span class="work"><a href="https://isocpp.org/files/papers/P1673R13.html">P1673</a> — “A free function linear algebra interface based on the BLAS,” and P1674</span>
+          <p>Read these as <em>design documents</em>. Their core argument is exactly our thesis: a free-function interface “clearly separates algorithms from data structures.” Built on <code>mdspan</code> (C++23). This is the standards-committee answer to the question NR answered badly in §1.4.</p>
+        </li>
+        <li>
+          <span class="work"><code>std::mdspan</code></span>
+          <p>The modern replacement for NR’s <code>MatDoub</code>. Non-owning, layout- and accessor-parameterized; solves the “don’t copy large objects” problem NR worked around with out-parameters.</p>
+        </li>
+        <li>
+          <span class="work">Eigen, and <a href="https://en.wikipedia.org/wiki/Expression_templates">expression templates</a></span>
+          <p>Study Eigen’s architecture even if we don’t adopt it — the reference implementation of lazy evaluation for linear algebra.</p>
+        </li>
+        <li>
+          <span class="work">Falcou et al., <a href="https://www.lri.fr/~falcou/paper/nt2.pdf">“The Numerical Template Toolbox: A Modern C++ Design for Scientific Computing”</a></span>
+          <p>A full worked example of the design problem we are solving.</p>
+        </li>
+        <li>
+          <span class="work">Goldberg, “What Every Computer Scientist Should Know About Floating-Point Arithmetic”</span>
+          <p>ACM Computing Surveys, 1991. Free, and the standard reference behind Tier 0.</p>
+        </li>
+      </ul>
+    </section>
+
+    <footer>
+      Companion artifacts sit beside the PDF in <code>NumericalRecipes-3e/</code> — <code>page_map.json</code>, <code>printed_to_pdf.json</code>, <code>sections.json</code>, <code>equation_index.json</code>, <code>text-layer/NR3.textlayer.txt</code>, and <code>READING_GUIDE.md</code>. Every page reference above was verified against the extracted section index rather than the printed table of contents.
+    </footer>
+
+  </main>
+</div>
+</body>
+</html>

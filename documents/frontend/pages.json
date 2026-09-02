@@ -1,0 +1,20 @@
+[
+  {
+    "file": "cosmos-reading-board.html",
+    "title": "Cosmos Reading Board",
+    "emoji": "📚",
+    "description": "Progress across all three books: every chapter ranked, its status, OCR phase, and the Rust and C++ test counts. Regenerated from the repository.",
+    "source": "documents/research/reading-program/dashboard/dashboard.html",
+    "artifact": "https://claude.ai/code/artifact/4b1c3653-ba81-431c-8ebf-70fb60bb5bfd",
+    "generated": true
+  },
+  {
+    "file": "numerical-recipes-guide.html",
+    "title": "Numerical Recipes for Spacecraft, Propulsion, and GNC",
+    "emoji": "🛰️",
+    "description": "The reading guide: five arcs through the book, every chapter ranked, the language policy, the rewrite queue, and the bibliography of substitutes where the book has aged.",
+    "source": "documents/research/numerical-recipes-rewrite/reading-guide.html",
+    "artifact": "https://claude.ai/code/artifact/3a63d17a-ec6f-4f40-b6f0-f9c93113cb31",
+    "generated": false
+  }
+]
