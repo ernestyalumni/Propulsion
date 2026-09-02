@@ -1,0 +1,28 @@
+{
+  "slug": "Wie-SpaceVehicleDynamicsControl-2e",
+  "short": "Wie 2e",
+  "title": "Space Vehicle Dynamics and Control, 2nd ed.",
+  "authors": "Bong Wie",
+  "publisher": "AIAA Education Series, 2008",
+  "pages": 970,
+  "page_offset": "PDF = printed + 18",
+  "corpus_dir": "/media/propdev/Expansion/openclaw/.openclaw/workspace/Data/Public/books/EngineeringPhysics/Wie-SpaceVehicleDynamicsControl-2e",
+  "pdf_stem": "4.860119",
+  "roadmap": "documents/research/reading-program/Wie-SpaceVehicleDynamicsControl-2e/ROADMAP.md",
+  "chapters": [
+    {"rank": 1, "number": "5", "title": "Rotational Kinematics", "printed_page": 323, "why": "the attitude state: DCM, Euler angles, eigenaxis, quaternion, kinematic equations", "module": "attitude::kinematics", "language": "Rust; lab kernels in C++ and Rust", "status": "reading", "notes": "quaternion lab exists; Wie scalar-last adapter needed"},
+    {"rank": 2, "number": "6", "title": "Rigid-Body Dynamics", "printed_page": 349, "why": "Euler's equations, inertia, torque-free oracles, gravity gradient", "module": "attitude::rigid_body", "language": "Rust; CUDA for batched Monte Carlo", "status": "todo", "notes": ""},
+    {"rank": 3, "number": "7", "title": "Rotational Maneuvers and Attitude Control", "printed_page": 403, "why": "quaternion feedback, wheels, jet selection, PWPF", "module": "attitude::control", "language": "Rust", "status": "todo", "notes": ""},
+    {"rank": 4, "number": "3", "title": "Orbital Dynamics", "printed_page": 221, "why": "Kepler, elements, perturbations, CR3BP", "module": "astrodynamics::{kepler, elements, cr3bp}", "language": "Rust; C++ two-body/J2/drag exist", "status": "reading", "notes": "Cosmos/Source/Astrodynamics covers two-body, J2, drag, Numerov"},
+    {"rank": 5, "number": "4", "title": "Orbital Maneuvers and Control", "printed_page": 277, "why": "Hohmann, rendezvous (Clohessy-Wiltshire), halo control", "module": "astrodynamics::{maneuvers, rendezvous}", "language": "Rust", "status": "todo", "notes": ""},
+    {"rank": 6, "number": "1", "title": "Dynamic Systems Modeling and Analysis", "printed_page": 3, "why": "Lagrange/Hamilton, linearization, stability", "module": "dynamics::{linearize, stability}", "language": "Rust", "status": "todo", "notes": "1.1 exists in wildrider/Cosmos algebra"},
+    {"rank": 7, "number": "2", "title": "Dynamic Systems Control", "printed_page": 121, "why": "digital control, LQR, robustness", "module": "control::{discretize, lqr}", "language": "Rust", "status": "todo", "notes": ""},
+    {"rank": 8, "number": "9", "title": "Attitude and Structural Control", "printed_page": 531, "why": "TVC with propellant slosh, pulse-modulated analysis", "module": "vehicle::{slosh_pendulum, tvc_loop}", "language": "Rust", "status": "todo", "notes": "ties to Sutton ch 18"},
+    {"rank": 9, "number": "8", "title": "Structural Dynamics", "printed_page": 489, "why": "beam modes, flexible appendages", "module": "structures::beam_modes", "language": "Rust", "status": "todo", "notes": ""},
+    {"rank": 10, "number": "10", "title": "Robust Optimal Maneuvers", "printed_page": 613, "why": "time-optimal control, input shaping", "module": "control::{time_optimal, input_shaping}", "language": "Rust", "status": "todo", "notes": ""},
+    {"rank": 11, "number": "11", "title": "Control Moment Gyros", "printed_page": 667, "why": "singularities, steering logic", "module": "actuators::cmg", "language": "Rust", "status": "todo", "notes": ""},
+    {"rank": 12, "number": "12", "title": "Solar-Sail Dynamics and Control", "printed_page": 741, "why": "SRP model reusable as a perturbation", "module": "astrodynamics::perturbations::srp", "language": "Rust", "status": "todo", "notes": "only 12.3 and 12.13"},
+    {"rank": 13, "number": "13", "title": "Solar-Sail Missions for Asteroid Deflection", "printed_page": 847, "why": "CR3BP applications", "module": "", "language": "", "status": "read-only", "notes": ""},
+    {"rank": 14, "number": "14", "title": "Space Solar Power Satellites", "printed_page": 901, "why": "large-structure attitude examples", "module": "", "language": "", "status": "read-only", "notes": ""}
+  ]
+}

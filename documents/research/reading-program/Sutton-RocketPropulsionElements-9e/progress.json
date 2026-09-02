@@ -1,0 +1,32 @@
+{
+  "slug": "Sutton-RocketPropulsionElements-9e",
+  "short": "Sutton 9e",
+  "title": "Rocket Propulsion Elements, 9th ed.",
+  "authors": "George P. Sutton and Oscar Biblarz",
+  "publisher": "Wiley, 2017",
+  "pages": 792,
+  "page_offset": "PDF = printed + 24",
+  "corpus_dir": "/media/propdev/Expansion/openclaw/.openclaw/workspace/Data/Public/books/EngineeringPhysics/Sutton-RocketPropulsionElements-9e",
+  "pdf_stem": "Rocket Propulsion Elements ( PDFDrive )",
+  "roadmap": "documents/research/reading-program/Sutton-RocketPropulsionElements-9e/ROADMAP.md",
+  "chapters": [
+    {"rank": 1, "number": "3", "title": "Nozzle Theory and Thermodynamic Relations", "printed_page": 45, "why": "the ideal rocket: isentropic expansion, C_F, c*, Isp, real-nozzle corrections", "module": "propulsion::nozzle", "language": "Rust; Python NozzleTheory.py as emitter", "status": "reading", "notes": "NozzleTheory.py exists"},
+    {"rank": 2, "number": "2", "title": "Definitions and Fundamentals", "printed_page": 26, "why": "thrust, Isp, total impulse, rocket equation, efficiencies as unit-bearing types", "module": "propulsion::performance", "language": "Rust", "status": "todo", "notes": ""},
+    {"rank": 3, "number": "4", "title": "Flight Performance", "printed_page": 99, "why": "ascent with gravity and drag losses, staging, standard atmosphere table", "module": "flight::ascent, atmosphere::us_standard", "language": "Rust; CUDA for dispersed ascent", "status": "todo", "notes": "Appendix 2 is the atmosphere table"},
+    {"rank": 4, "number": "6", "title": "Liquid Propellant Rocket Engine Fundamentals", "printed_page": 189, "why": "feed systems, pressurization, engine cycles incl. full-flow staged combustion", "module": "propulsion::cycle", "language": "Rust", "status": "todo", "notes": "the lumped-parameter engine model"},
+    {"rank": 5, "number": "10", "title": "Turbopumps and Their Gas Supplies", "printed_page": 365, "why": "pump head, NPSH, turbine work, power balance", "module": "propulsion::turbopump", "language": "Rust", "status": "todo", "notes": ""},
+    {"rank": 6, "number": "5", "title": "Chemical Rocket Propellant Performance Analysis", "printed_page": 154, "why": "thermochemistry, frozen vs shifting equilibrium, LOX/methane", "module": "propulsion::thermochemistry", "language": "Rust; Cantera as emitter", "status": "todo", "notes": "cantera_stuff/ exists"},
+    {"rank": 7, "number": "11", "title": "Engine Systems, Controls, and Integration", "printed_page": 399, "why": "start transients, calibration, health monitoring", "module": "propulsion::engine_control", "language": "Rust", "status": "todo", "notes": ""},
+    {"rank": 8, "number": "8", "title": "Thrust Chambers", "printed_page": 271, "why": "Bartz heat transfer, regenerative cooling, injector flow, sample design", "module": "propulsion::thrust_chamber", "language": "Rust; CUDA for wall transients", "status": "todo", "notes": ""},
+    {"rank": 9, "number": "9", "title": "Liquid Propellant Combustion and Its Stability", "printed_page": 344, "why": "chamber acoustics, Rayleigh criterion", "module": "combustion::chamber_acoustics", "language": "Rust", "status": "todo", "notes": "ties to CombustionInstability/, Lieuwen, Natanzon"},
+    {"rank": 10, "number": "18", "title": "Thrust Vector Control", "printed_page": 671, "why": "gimbal actuator limits and bandwidth", "module": "actuators::gimbal", "language": "Rust", "status": "todo", "notes": "ties to Wie 9.1"},
+    {"rank": 11, "number": "17", "title": "Electric Propulsion", "printed_page": 620, "why": "optimum Isp, electrostatic thrusters (Starlink Hall thrusters)", "module": "propulsion::electric", "language": "Rust", "status": "todo", "notes": ""},
+    {"rank": 12, "number": "20", "title": "Rocket Exhaust Plumes", "printed_page": 703, "why": "plume impingement", "module": "propulsion::plume_impingement", "language": "Rust", "status": "todo", "notes": ""},
+    {"rank": 13, "number": "7", "title": "Liquid Propellants", "printed_page": 244, "why": "property tables for LOX, methane, hydrogen", "module": "propellants::properties", "language": "Rust", "status": "todo", "notes": "Liquiddensity.py, LiquidVaporEq.py exist"},
+    {"rank": 14, "number": "12", "title": "Solid Propellant Rocket Motor Fundamentals", "printed_page": 434, "why": "internal ballistics ODE", "module": "propulsion::solid_ballistics", "language": "Rust", "status": "todo", "notes": ""},
+    {"rank": 15, "number": "21", "title": "Rocket Testing", "printed_page": 726, "why": "instrumentation, health monitoring, flight test", "module": "", "language": "", "status": "read-only", "notes": "informs test infrastructure"},
+    {"rank": 16, "number": "13-15", "title": "Solid Propellants, Combustion, Components", "printed_page": 491, "why": "solid-motor materials and hardware", "module": "", "language": "", "status": "read-only", "notes": ""},
+    {"rank": 17, "number": "16", "title": "Hybrid Propellant Rocket Propulsion", "printed_page": 593, "why": "regression-rate ballistics", "module": "", "language": "", "status": "read-only", "notes": ""},
+    {"rank": 18, "number": "1, 19", "title": "Classification; Selection of Propulsion Systems", "printed_page": 1, "why": "landscape and selection criteria", "module": "", "language": "", "status": "read-only", "notes": ""}
+  ]
+}
