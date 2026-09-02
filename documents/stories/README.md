@@ -7,6 +7,14 @@ constraints phrased as obligations — prose without them yields zero invariants
 
 ## Status
 
+> **Research-stage correction — 2026-09-01:** stories 12–14 are retained as
+> historical/provisional experiment sketches, but they are not approved for
+> `pdd intent apply`. Their candidate model, dataset, objective, and compute plan
+> remain unsettled. Use the comprehensive
+> [physics-generative-surrogates handoff](../research/physics-generative-surrogates/README.md)
+> and graduate the work back into stories only after the research criteria there
+> are satisfied. The recorded intent IDs below are provenance, not authorization.
+
 | # | Story | Intent ID | Invariants / examples captured |
 |---|-------|-----------|-------------------------------|
 | 1 | [Parse once, record what it produced](01-parse-once.md) | `as-a-researcher-building-propulsion-simulations--a5943e77` | 5 / 3 |

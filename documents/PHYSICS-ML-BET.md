@@ -1,8 +1,16 @@
 # The physics-ML bet
 
+> **Status correction — 2026-09-01:** this is a pre-story research thesis, not
+> an approved implementation program. The experiments previously expressed as
+> stories 12–14 are provisional sketches and MUST NOT be applied through PDD
+> until the target use case, candidate model, data contract, baselines, metrics,
+> compute budget, and stopping rule are settled. Continue from
+> [`research/physics-generative-surrogates/README.md`](research/physics-generative-surrogates/README.md).
+
 A long-horizon track. This document holds the thesis, the evidence for and
 against it, and the conditions under which we abandon it. Testable pieces live
-in `documents/stories/` (09–12).
+in `documents/stories/`; items 12–14 currently preserve candidate invariants
+rather than approved stories.
 
 ## The bet, as stated
 
