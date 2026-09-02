@@ -1,0 +1,6 @@
+# Matches the hand style in Stunticons/wildrider and the C++ in Cosmos/Source:
+# two-space indent, 80 columns. Brace-on-its-own-line is kept by hand because
+# rustfmt's brace_style option is nightly-only.
+tab_spaces = 2
+max_width = 80
+newline_style = "Unix"

@@ -1,0 +1,9 @@
+[package]
+name = "cosmos_numerical"
+version = "0.1.0"
+edition = "2021"
+description = "Numerical methods for spacecraft simulation and GNC, rewritten from first principles; Rust twin of Cosmos/Source/Numerical"
+license = "MIT"
+
+[dependencies]
+wildrider = { path = "../../../Stunticons/wildrider" }

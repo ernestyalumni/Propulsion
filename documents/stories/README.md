@@ -31,6 +31,8 @@ constraints phrased as obligations — prose without them yields zero invariants
 | 12 | [Stiff-chemistry source-term surrogate](12-stiff-chemistry-source-term-surrogate.md) | `as-an-engineer-accelerating-reacting-flow-simula-aac8d0ba` | 5 / 2 |
 | 13 | [Video-tokenizer transfer ablation](13-video-tokenizer-transfer-ablation.md) | `as-an-engineer-testing-whether-natural-video-pre-5de6038a` | 5 / 2 |
 | 14 | [Full-field rollout surrogate](14-full-field-rollout-surrogate.md) | `as-an-engineer-evaluating-a-pretrained-generativ-e26a6b4f` | 5 / 2 |
+| 15 | [Numerical Recipes first-principles rewrite](15-numerical-recipes-first-principles-rewrite.md) | `as-an-engineer-building-a-multi-physics-simulati-559e793f` | 5 / 2 |
+| 16 | [Rust port alongside C++ with golden vectors](16-rust-port-alongside-cpp-golden-vectors.md) | `as-an-engineer-who-wants-the-simulation-library--4d30582f` | 5 / 2 |
 
 Every story plans as `characterize_then_adopt` (conventional brownfield), and
 every one asks the same question: *which current behavior should we lock down
@@ -147,6 +149,23 @@ These came out of the charter and are not yet characterized.
   already fix the mathematics and the five conventions; this story makes that
   contract binding on `Cosmos/Source` and `CombustionInstability`, enforced by a
   double-cover property test rather than by a PDF.
+
+## Note on stories 15–16 (the Numerical Recipes rewrite)
+
+These two serve the chapter roadmap in
+[../research/numerical-recipes-rewrite/ROADMAP.md](../research/numerical-recipes-rewrite/ROADMAP.md)
+and the reading guide artifact linked from it. Story 15 fixes the
+first-principles protocol (physics, then mathematics, then named types, then
+tests that follow from the mathematics, then citation, then a ledger entry) and
+forbids transliterating the non-redistributable NR code. Story 16 fixes the
+language policy: Rust primary in `Cosmos/Rust`, C++ twins only where the C++
+stack consumes them and always with a golden-vector test, CUDA only for
+data-parallel work with a measured CPU baseline. The first module under both
+stories exists: `Cosmos/Rust/cosmos_numerical` holds the PI step-size controller
+checked against 1560 vectors emitted by `ComputePIStepSize.h`, and a Cholesky
+factorization type derived in `documents/derivations/CholeskyFactorization.md`.
+Both stories plan as `characterize_then_adopt`; the characterization for 16 is
+the existing 188-test Cosmos C++ suite, which must stay green.
 
 ## Note on stories 9–14 (the physics-ML bet)
 

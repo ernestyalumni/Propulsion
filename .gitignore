@@ -44,3 +44,7 @@ T1000/FunctionalBoilerplate/FunctionalBoilerplate/static/css/bootstrap.min*
 
 # LiteLLM on-disk response cache
 litellm_cache.sqlite/
+
+# Rust build output
+Cosmos/Rust/target/
+Stunticons/wildrider/target/
