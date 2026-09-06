@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Reading Room · Propulsion</title>
+  <link rel="stylesheet" href="/vendor/katex/dist/katex.min.css">
+  <link rel="stylesheet" href="/vendor/pdfjs-dist/web/pdf_viewer.css">
+  <link rel="stylesheet" href="/style.css">
+  <script defer src="/vendor/marked/lib/marked.umd.js"></script>
+  <script defer src="/vendor/dompurify/dist/purify.min.js"></script>
+  <script defer src="/vendor/katex/dist/katex.min.js"></script>
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="#library" aria-label="Propulsion home"><span class="brand-mark">↗</span> PROPULSION</a>
+    <div class="workspace-label">THE STUDY WORKSPACE</div>
+    <nav aria-label="Main navigation">
+      <a href="#library" data-nav="library"><span>▤</span> Reading room</a>
+      <a href="#roadmap" data-nav="roadmap"><span>⌘</span> Learning roadmap</a>
+      <a href="#labs" data-nav="labs"><span>◇</span> Simulation labs</a>
+    </nav>
+    <div class="side-rule"></div>
+    <div class="workspace-label">ON YOUR SHELF</div>
+    <div id="shelf-nav"></div>
+    <div class="sidebar-bottom"><span class="online-dot"></span> LOCAL WORKSPACE<p>Three books.<br>One growing body of work.</p><a href="/api/handoff" download="Propulsion-reading-session.md">Export session ↗</a></div>
+  </aside>
+  <main>
+    <header class="topbar"><div>PERSONAL LIBRARY <span>/</span> <strong id="breadcrumb">Reading room</strong></div><span class="edition-label">PHYSICS → UNDERSTANDING → CODE</span></header>
+    <div id="notice" role="alert" hidden></div>
+    <div id="app"><div class="empty">Opening your reading room…</div></div>
+  </main>
+  <dialog id="document-dialog"><div class="dialog-toolbar"><h2 id="document-title">Reading notes</h2><button id="close-dialog" aria-label="Close document">Close ×</button></div><article id="document-body" class="prose"></article></dialog>
+</body>
+</html>
