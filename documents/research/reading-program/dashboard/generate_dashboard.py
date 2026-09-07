@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build dashboard.html from repository state.
 
-Reads: the three progress.json files, the reading ledgers, the parsed-corpus
+Reads: the four progress.json files, the reading ledgers, the parsed-corpus
 directories (to detect OCR phases), `cargo test` on Cosmos/Rust, the gtest
 binary if built, and `git log`. Writes dashboard.html next to this script.
 Publish it with the Artifact tool to the URL in DASHBOARD-URL.md.
@@ -14,11 +14,13 @@ BOOKS = [
     os.path.join(REPO, "documents/research/numerical-recipes-rewrite/progress.json"),
     os.path.join(REPO, "documents/research/reading-program/Wie-SpaceVehicleDynamicsControl-2e/progress.json"),
     os.path.join(REPO, "documents/research/reading-program/Sutton-RocketPropulsionElements-9e/progress.json"),
+    os.path.join(REPO, "documents/research/reading-program/HillPeterson-MechanicsThermodynamicsPropulsion-2e/progress.json"),
 ]
 LEDGERS = {
     "NumericalRecipes-3e": "documents/research/numerical-recipes-rewrite/READING-LEDGER.md",
     "Wie-SpaceVehicleDynamicsControl-2e": "documents/research/reading-program/Wie-SpaceVehicleDynamicsControl-2e/READING-LEDGER.md",
     "Sutton-RocketPropulsionElements-9e": "documents/research/reading-program/Sutton-RocketPropulsionElements-9e/READING-LEDGER.md",
+    "HillPeterson-MechanicsThermodynamicsPropulsion-2e": "documents/research/reading-program/HillPeterson-MechanicsThermodynamicsPropulsion-2e/READING-LEDGER.md",
 }
 
 def sh(cmd, cwd=None, timeout=600):
@@ -31,12 +33,15 @@ def ocr_state(book):
     d, stem = book["corpus_dir"], book["pdf_stem"]
     oc = os.path.join(d, "ocr-compare")
     def exists(p): return os.path.exists(p) and os.path.getsize(p) > 0
-    marker = exists(os.path.join(oc, f"{stem}.marker.md")) or bool(glob.glob(os.path.join(oc, "*.marker.md")))
+    marker = (exists(os.path.join(oc, f"{stem}.marker.md"))
+              or bool(glob.glob(os.path.join(oc, "*.marker.md")))
+              or exists(os.path.join(oc, "marker", "book.md")))
     nougat = bool(glob.glob(os.path.join(oc, "nougat_out", "*.mmd")))
     reconciled = exists(os.path.join(oc, "reconciled", "equations.json"))
     resolved = exists(os.path.join(oc, "reconciled", "equations_resolved.json"))
     running = False
-    for log in ("marker.log", "nougat.log", "run_ocr_large.log"):
+    for log in ("marker.log", "nougat.log", "run_ocr_large.log",
+                os.path.join("marker", "marker_book.log")):
         p = os.path.join(oc, log)
         if os.path.exists(p) and (datetime.datetime.now().timestamp() - os.path.getmtime(p)) < 900:
             running = True
@@ -219,7 +224,7 @@ h3{{font-size:.95rem;font-weight:600;margin:0 0 10px}}
     <div class="tscroll"><table style="min-width:0"><thead><tr><th>Module</th><th>Tests</th><th>Evidence</th></tr></thead><tbody>{mod_rows}</tbody></table></div></section>
   <section><h3>Recent commits</h3><ul class="log">{recent}</ul></section>
 </div>
-<footer>How this page updates: an agent runs <code>documents/research/reading-program/dashboard/generate_dashboard.py</code>, which reads the three <code>progress.json</code> files, the reading ledgers, the parsed-corpus directories, <code>cargo test</code>, the gtest binary, and <code>git log</code>, then republishes <code>dashboard.html</code> to this URL. Status vocabulary: not started · in progress · read · module built · read only. OCR phases: index · marker · nougat · reconcile · vision.</footer>
+<footer>How this page updates: an agent runs <code>documents/research/reading-program/dashboard/generate_dashboard.py</code>, which reads the four <code>progress.json</code> files, the reading ledgers, the parsed-corpus directories, <code>cargo test</code>, the gtest binary, and <code>git log</code>, then republishes <code>dashboard.html</code> to this URL. Status vocabulary: not started · in progress · read · module built · read only. OCR phases: index · marker · nougat · reconcile · vision.</footer>
 </div>
 '''
     open(os.path.join(HERE, "dashboard.html"), "w").write(page)

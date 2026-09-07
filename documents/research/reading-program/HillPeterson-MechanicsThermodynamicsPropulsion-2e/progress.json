@@ -1,0 +1,29 @@
+{
+  "slug": "HillPeterson-MechanicsThermodynamicsPropulsion-2e",
+  "short": "Hill & Peterson 2e",
+  "title": "Mechanics and Thermodynamics of Propulsion, 2nd ed.",
+  "authors": "Philip G. Hill and Carl R. Peterson",
+  "publisher": "Addison-Wesley, 1992",
+  "pages": 766,
+  "page_offset": "PDF = printed + 12",
+  "corpus_dir": "/media/propdev/Expansion/openclaw/.openclaw/workspace/Data/Public/books/EngineeringPhysics/HillPeterson-MechanicsThermodynamicsPropulsion-2e",
+  "pdf_stem": "Hill Peterson 1992 Mechanics and thermodynamics of propulsion",
+  "roadmap": "documents/research/reading-program/HillPeterson-MechanicsThermodynamicsPropulsion-2e/ROADMAP.md",
+  "pairing": "documents/research/reading-program/HillPeterson-MechanicsThermodynamicsPropulsion-2e/PAIRING-SUTTON.md",
+  "chapters": [
+    {"rank": 1, "number": "3", "title": "Steady One-Dimensional Flow of a Perfect Gas", "printed_page": 65, "why": "isentropic, Rayleigh, Fanno and normal-shock relations derived as one family, each with its assumptions", "module": "gasdynamics::quasi1d", "language": "Rust; C++ twin via golden vectors", "status": "todo", "notes": "pairs Sutton 3; the foundation for everything downstream in both books"},
+    {"rank": 2, "number": "11", "title": "Chemical Rocket Thrust Chambers", "printed_page": 513, "why": "C_F, c*, Isp, two-dimensional and divergence losses, contour design, rocket heat transfer", "module": "propulsion::nozzle, propulsion::rocket_heat_transfer", "language": "Rust (port NozzleTheory.py)", "status": "todo", "notes": "pairs Sutton 3 and 8; do not implement 11.4 before chapter 4 is read"},
+    {"rank": 3, "number": "2", "title": "Mechanics and Thermodynamics of Fluid Flow", "printed_page": 23, "why": "the control-volume conservation laws the whole book stands on; equilibrium combustion from Gibbs free energy", "module": "thermo::control_volume, thermo::equilibrium", "language": "Rust; Cantera as emitter", "status": "todo", "notes": "2.4 pairs Sutton 5; cantera_stuff/ exists"},
+    {"rank": 4, "number": "4", "title": "Boundary Layer Mechanics and Heat Transfer", "printed_page": 93, "why": "the boundary layer that the Bartz correlation is a correlation of: Thwaites, separation, turbulent profile, Reynolds analogy", "module": "fluids::boundary_layer", "language": "Rust", "status": "todo", "notes": "keystone pairing with Sutton 8.5; the single biggest gain over Sutton alone"},
+    {"rank": 5, "number": "10", "title": "Performance of Rocket Vehicles", "printed_page": 469, "why": "vehicle acceleration with losses, mission delta-v, optimum Isp for a power-limited vehicle", "module": "flight::rocket_performance, flight::staging", "language": "Rust", "status": "todo", "notes": "Appendix VIII (729) derives the multistage optimum; pairs Sutton 4"},
+    {"rank": 6, "number": "13", "title": "Turbomachinery for Liquid-Propellant Rockets", "printed_page": 615, "why": "centrifugal pump stage, inducers and the cavitation/NPSH limit, drive turbine", "module": "propulsion::turbopump", "language": "Rust", "status": "todo", "notes": "pairs Sutton 10; built on ranks 8-10"},
+    {"rank": 7, "number": "12", "title": "Chemical Rocket Propellants: Combustion and Expansion", "printed_page": 569, "why": "equilibrium composition, frozen vs shifting expansion as a rate problem, solid burning-rate law and pressure stability", "module": "propulsion::thermochemistry, propulsion::solid_ballistics", "language": "Rust; Cantera as emitter", "status": "todo", "notes": "pairs Sutton 5, 9, 12; feeds Surrogates/"},
+    {"rank": 8, "number": "7", "title": "Axial Compressors", "printed_page": 275, "why": "Euler work equation, velocity triangles, diffusion limits and stall, degree of reaction, radial equilibrium", "module": "turbomachinery::axial_compressor", "language": "Rust", "status": "todo", "notes": "Appendices IV (705) and V (713) are executable design procedures"},
+    {"rank": 9, "number": "8", "title": "Axial Turbines", "printed_page": 367, "why": "turbine stage and efficiency, blade and disc stresses, blade cooling, compressor matching", "module": "turbomachinery::axial_turbine", "language": "Rust", "status": "todo", "notes": "Appendix VI (717) is the design procedure"},
+    {"rank": 10, "number": "9", "title": "The Centrifugal Compressor", "printed_page": 425, "why": "stage dynamics, inducer and impeller, diffuser; the direct ancestor of the rocket centrifugal pump", "module": "turbomachinery::centrifugal", "language": "Rust", "status": "todo", "notes": "Appendix VII (723) is the design procedure"},
+    {"rank": 11, "number": "14", "title": "Electrical Rocket Propulsion", "printed_page": 651, "why": "the plane diode and the space-charge (Child-Langmuir) limit, bombardment ionization, arcjet, PMA", "module": "propulsion::electric", "language": "Rust", "status": "todo", "notes": "pairs Sutton 17; Appendix IX (733); 10.5 sets the mission-level optimum"},
+    {"rank": 12, "number": "5", "title": "Thermodynamics of Aircraft Jet Engines", "printed_page": 141, "why": "ramjet, turbojet, turbofan and turboprop cycle analysis; engine-aircraft matching", "module": "propulsion::airbreathing_cycle", "language": "Rust", "status": "todo", "notes": "no counterpart in Sutton"},
+    {"rank": 13, "number": "6", "title": "Aerothermodynamics of Inlets, Combustors, and Nozzles", "printed_page": 217, "why": "supersonic inlet shock systems exercise quasi-1-D flow harder than anything else in either book", "module": "", "language": "", "status": "read-only", "notes": "6.3 is the best test case for gasdynamics::quasi1d"},
+    {"rank": 14, "number": "1", "title": "The Jet Propulsion Principle", "printed_page": 3, "why": "thrust derived from the momentum theorem on a control volume", "module": "", "language": "", "status": "read-only", "notes": "vocabulary; pairs Sutton 2"}
+  ]
+}

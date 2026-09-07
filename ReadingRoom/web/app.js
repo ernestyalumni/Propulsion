@@ -2,8 +2,8 @@ import {BookReader} from './reader.js';
 
 const $ = (selector) => document.querySelector(selector);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const palette = {nr: ['#525d84','#ecedf4'], wie: ['#346c64','#e7eee8'], sutton: ['#a46b45','#f2e9de']};
-const names = {nr: 'Numerical Recipes', wie: 'Space Vehicle Dynamics & Control', sutton: 'Rocket Propulsion Elements'};
+const palette = {nr: ['#525d84','#ecedf4'], wie: ['#346c64','#e7eee8'], sutton: ['#a46b45','#f2e9de'], hp: ['#8a4a5c','#f4e8ec']};
+const names = {nr: 'Numerical Recipes', wie: 'Space Vehicle Dynamics & Control', sutton: 'Rocket Propulsion Elements', hp: 'Mechanics & Thermodynamics of Propulsion'};
 let data, active, reader, saveTimer, dirty = false, saving = false, rendering = false;
 let editVersion = 0, saveChain = Promise.resolve(), routeGeneration = 0;
 let currentHash = location.hash || '#library';
@@ -24,6 +24,8 @@ function art(book = 'wie', large = false) {
     ? '<path d="M20 112 Q40 32 61 84 T105 54 T155 26"/><path d="M20 112 L155 112 M20 112 L20 20" opacity=".35"/><circle cx="61" cy="84" r="4"/><circle cx="105" cy="54" r="4"/><path d="M20 100 Q65 105 94 65 T155 35" stroke-dasharray="3 5" opacity=".4"/>'
     : book === 'sutton'
       ? '<path d="M25 25 Q55 29 70 65 Q82 79 98 70 L150 29 M25 117 Q55 113 70 77 Q82 63 98 72 L150 113"/><path d="M20 71 H166" stroke-dasharray="3 5" opacity=".5"/><path d="M32 43 Q63 46 73 68 Q85 76 146 48 M32 100 Q63 97 73 76 Q85 67 146 97" opacity=".35"/><path d="M29 57 Q66 59 73 70 L155 63 M29 86 Q66 82 73 74 L155 81" opacity=".35"/>'
+      : book === 'hp'
+        ? '<path d="M14 71 H166" stroke-dasharray="3 6" opacity=".4"/><path d="M50 20 Q64 38 52 54 M50 50 Q64 68 52 84 M50 80 Q64 98 52 114"/><path d="M110 30 Q96 48 108 64 M110 60 Q96 78 108 94 M110 90 Q96 108 108 124" opacity=".75"/><path d="M22 34 H36 M22 64 H36 M22 94 H36" opacity=".45"/><path d="M140 42 H156 M140 72 H156 M140 102 H156" opacity=".45"/>'
       : '<ellipse cx="90" cy="71" rx="69" ry="29" transform="rotate(-27 90 71)"/><ellipse cx="90" cy="71" rx="69" ry="29" transform="rotate(45 90 71)" opacity=".5"/><circle cx="90" cy="71" r="46" opacity=".3"/><path d="M90 18 V125 M32 71 H149" stroke-dasharray="3 6" opacity=".4"/><circle cx="145" cy="47" r="4" fill="'+stroke+'"/><circle cx="90" cy="71" r="5"/>';
   return `<svg ${large ? 'class="orbit-art"' : ''} viewBox="0 0 180 142" fill="none" stroke="${stroke}" stroke-width="1.2" aria-hidden="true">${inside}</svg>`;
 }
@@ -55,12 +57,13 @@ function library() {
 const milestones = {
   nr: [['01 · NUMERICAL FOUNDATION','17.1','Propagate the state','Runge–Kutta methods and error control support both orbit and attitude propagation.'],['02 · FIND THE SOLUTION','9.3','Solve an implicit relation','Root finding connects nozzle area ratios, Kepler’s equation, and targeting.'],['03 · EXPLORE UNCERTAINTY','7.4','Disperse the inputs','Random variables and covariance turn one simulation into an ensemble.']],
   wie: [['01 · REPRESENT ATTITUDE','5.4','Get the conventions right','Connect quaternions to the existing convention lab before integrating rotations.'],['02 · FOLLOW THE MOTION','6.2','A freely rotating body','Build from Euler’s equations; compare energy and angular momentum.'],['03 · CLOSE THE LOOP','7.3','Control the attitude','Study feedback, then explore how gains affect the response.']],
-  sutton: [['01 · UNDERSTAND THRUST','3.3','From chamber to nozzle','Read the ideal flow relations alongside your symbolic nozzle code.'],['02 · FLY THE VEHICLE','4.1','Turn thrust into ascent','Connect propulsion performance with mass change and an ODE solver.'],['03 · CONNECT THE SYSTEMS','18.1','Point the thrust','Link propulsion and attitude through thrust-vector control.']]
+  sutton: [['01 · UNDERSTAND THRUST','3.3','From chamber to nozzle','Read the ideal flow relations alongside your symbolic nozzle code.'],['02 · FLY THE VEHICLE','4.1','Turn thrust into ascent','Connect propulsion performance with mass change and an ODE solver.'],['03 · CONNECT THE SYSTEMS','18.1','Point the thrust','Link propulsion and attitude through thrust-vector control.']],
+  hp: [['01 · DERIVE THE FLOW','3.2','One-dimensional gas dynamics','Isentropic, Rayleigh, Fanno and shocks from one set of equations — what Sutton’s nozzle chapter assumes.'],['02 · GROW THE LAYER','4.3','Boundary layers before Bartz','Read this before Sutton §8.5. It is the physics that heat-transfer correlation summarizes.'],['03 · SPIN THE PUMP','13.2','Turbomachinery for real','Euler work and velocity triangles behind the turbopump Sutton covers in a single handbook chapter.']]
 };
 
 function roadmap() {
-  app.innerHTML = intro('THREE THREADS, ONE DIRECTION','A roadmap into the physics.',
-    'A proposed route through the books, organized around things we can build.<br>Use the full ranked lists below whenever you want to take a different path.') +
+  app.innerHTML = intro('FOUR THREADS, ONE DIRECTION','A roadmap into the physics.',
+    'A proposed route through the books, organized around things we can build.<br>Hill &amp; Peterson and Sutton are one thread read together: the first derives what the second states.<br>Use the full ranked lists below whenever you want to take a different path.') +
     '<div class="roadmap-grid">' + data.books.map(b => `<section class="roadmap-track" style="${style(b.id)}"><h3>${esc(b.short)} / ${esc(b.domain)}</h3>` + milestones[b.id].map(([step,sid,title,description]) => {
       const s = b.sections.find(s => s.id === sid);
       const read = saved(b).sections?.[sid]?.checks?.read;

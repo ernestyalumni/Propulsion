@@ -22,6 +22,7 @@ SPECS = [
     ("nr", "NumericalRecipes3e-AgentContext", "NumericalRecipes-3e", "17.1", "Numerical methods", "24"),
     ("wie", "Wie-SpaceVehicleDynamicsControl-2e-AgentContext", "Wie-SpaceVehicleDynamicsControl-2e", "5.4", "Dynamics & control", "18"),
     ("sutton", "Sutton-RocketPropulsionElements-9e-AgentContext", "Sutton-RocketPropulsionElements-9e", "3.3", "Rocket propulsion", "24"),
+    ("hp", "HillPeterson-MechanicsThermodynamicsPropulsion-2e-AgentContext", "HillPeterson-MechanicsThermodynamicsPropulsion-2e", "3.2", "Propulsion fundamentals", "12"),
 ]
 LABS = [
     {"id": "quaternion", "title": "Quaternion Convention Lab", "kind": "Interactive lab", "book": "wie", "section": "5.4", "path": "Cosmos/QuaternionConventionLab/web/index.html", "description": "Explore q versus −q, scalar layout, and active/passive rotations.", "url": "/lab/Cosmos/QuaternionConventionLab/web/index.html"},

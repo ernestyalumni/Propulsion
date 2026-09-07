@@ -55,7 +55,7 @@ class ReadingRoomTests(unittest.TestCase):
         status, _, body = self.request("/api/bootstrap")
         self.assertEqual(status, 200)
         result = json.loads(body)
-        self.assertEqual({b["id"] for b in result["books"]}, {"nr", "wie", "sutton"})
+        self.assertEqual({b["id"] for b in result["books"]}, {"nr", "wie", "sutton", "hp"})
         self.assertEqual(result["warnings"], [])
         wie = self.server.catalog.section("wie", "5.4")
         sutton = self.server.catalog.section("sutton", "3.3")
@@ -70,7 +70,7 @@ class ReadingRoomTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             catalog = Catalog(Path(directory))
             self.assertEqual(catalog.books, {})
-            self.assertEqual(len(catalog.warnings), 3)
+            self.assertEqual(len(catalog.warnings), 4)
 
     def test_disk_resume_and_handoff_preserve_section_notes(self):
         status, _, body = self.request("/api/progress", self.payload())
@@ -135,7 +135,7 @@ class ReadingRoomTests(unittest.TestCase):
                 contained(root, root / "escape/Propulsion/README.md")
 
     def test_pdf_ranges_and_documents_are_available(self):
-        for ident in ("nr", "wie", "sutton"):
+        for ident in ("nr", "wie", "sutton", "hp"):
             status, headers, body = self.request("/book/" + ident + "/pdf", headers={"Range": "bytes=0-4"})
             self.assertEqual(status, 206)
             self.assertEqual(body, b"%PDF-")
