@@ -1,0 +1,1 @@
+{"timestamp": "2026-09-06T16:44:34.867839", "operation": "test", "reason": "Manual invocation via CLI", "invocation_mode": "manual", "estimated_cost": 0.0, "confidence": 0.0, "decision_type": "unknown", "success": true, "duration": 32.43465280532837, "actual_cost": 0.0, "model": "qwen38-9b-q5-k-m", "error": null}

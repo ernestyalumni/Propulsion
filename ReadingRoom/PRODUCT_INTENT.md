@@ -1,5 +1,32 @@
 # Propulsion reading room — accepted 2026-09-06
 
+## Approved extension — notes, worked solutions and computation
+
+Ernest approved the proposed structure and requested implementation on
+2026-09-06. Add a searchable notes collection with book/section navigation,
+LaTeX source and compiled companions/master, SageMath symbolic code, numerical
+implementations, and dated verification evidence. Three initial studies cover
+an oscillator, torque-free rigid body and isentropic nozzle. Mathematical
+rigor has no engineering-imposed ceiling: assumptions, domains, conventions,
+derivations and limits of evidence must be explicit.
+
+Shared topic sources MUST feed the three book companions and thematic master,
+in portrait and screen editions. Historical manuscripts MUST remain intact;
+available legacy sources MUST NOT be called verified merely because linked.
+Sage MUST use an existing prebuilt image and MUST NOT be built from source.
+Reading progress MUST remain separate from symbolic/numerical evidence.
+Changed inputs MUST invalidate verification/build currency. Missing optional
+reference repositories MUST NOT break reading. Only registered assets may be
+served; browser requests MUST NOT execute code or compile LaTeX. Generated
+artifacts and private book bundles remain outside the repository.
+
+The approved intent event is recorded under `docs/intents/`. PDD apply captured
+the request but provider-backed architecture generation did not complete;
+automatic approval review rejected the external-provider retry. The bounded
+specifications under `prompts/` and implementation were prepared directly in
+the coding session. They are not claimed as successfully PDD-generated or
+synchronized outputs. Existing first-version acceptance below remains binding.
+
 Ernest requested: “Can you implement your recommendation for modest first version?”
 The accepted recommendation is a local dashboard with three book cards, a visual
 reading roadmap, a PDF reader, durable bookmarks and notes, and links to existing

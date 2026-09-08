@@ -41,6 +41,7 @@ T1000/FunctionalBoilerplate/FunctionalBoilerplate/static/css/bootstrap.min*
 
 # pdd debug snapshots
 .pdd/core_dumps/
+ReadingRoom/.pdd/core_dumps/
 
 # LiteLLM on-disk response cache
 litellm_cache.sqlite/

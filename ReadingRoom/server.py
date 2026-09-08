@@ -14,6 +14,7 @@ import webbrowser
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import unquote, urlsplit, parse_qs
+from notes import NotesCatalog
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent
@@ -211,8 +212,9 @@ class Conflict(ValueError):
 class ReadingServer(ThreadingHTTPServer):
     daemon_threads = True
 
-    def __init__(self, port, exports, state_dir):
+    def __init__(self, port, exports, state_dir, artifacts=None, references=None):
         self.catalog = Catalog(exports)
+        self.notes = NotesCatalog(REPO, artifacts or WORKSPACE / 'Data/ReadingRoom/propulsion/artifacts', references)
         self.store = StateStore(state_dir, self.catalog)
         self.token = secrets.token_urlsafe(32)
         super().__init__(("127.0.0.1", port), Handler)
@@ -254,7 +256,7 @@ class Handler(BaseHTTPRequestHandler):
         content_type = mimetypes.guess_type(str(path))[0] or "application/octet-stream"
         if path.suffix in (".js", ".mjs"):
             content_type = "text/javascript"
-        if path.suffix in (".md", ".py", ".h", ".txt"):
+        if path.suffix in (".md", ".py", ".h", ".txt", ".tex", ".bib", ".sage", ".json"):
             content_type = "text/plain; charset=utf-8"
         data = path.read_bytes()
         byte_range = self.headers.get("Range")
@@ -288,6 +290,10 @@ class Handler(BaseHTTPRequestHandler):
                               "state": self.server.store.read(), "token": self.server.token,
                               "state_path": str(self.server.store.path),
                               "labs": [dict(lab, available=(REPO / lab["path"]).is_file()) for lab in LABS]})
+            elif path == '/api/notes':
+                self.respond(self.server.notes.public(self.server.catalog))
+            elif len(parts) == 2 and parts[0] == 'note-asset':
+                self.file(self.server.notes.resolve(parts[1]))
             elif path == "/api/handoff":
                 self.respond(self.server.store.handoff(), "text/markdown; charset=utf-8")
             elif len(parts) == 3 and parts[0] == "book":
@@ -309,11 +315,11 @@ class Handler(BaseHTTPRequestHandler):
                 self.file(candidate)
             elif parts[0] == "vendor":
                 relative = "/".join(parts[1:])
-                allowed = ("pdfjs-dist/build/", "pdfjs-dist/cmaps/", "pdfjs-dist/standard_fonts/", "pdfjs-dist/wasm/", "pdfjs-dist/web/", "katex/dist/", "marked/lib/", "dompurify/dist/")
+                allowed = ("pdfjs-dist/build/", "pdfjs-dist/legacy/build/", "pdfjs-dist/cmaps/", "pdfjs-dist/standard_fonts/", "pdfjs-dist/wasm/", "pdfjs-dist/web/", "katex/dist/", "marked/lib/", "dompurify/dist/")
                 if not relative.startswith(allowed) or ".." in parts:
                     raise ValueError("Asset not allowed")
                 self.file(contained(HERE / "node_modules", HERE / "node_modules" / relative))
-            elif path in ("/", "/index.html", "/app.js", "/reader.js", "/style.css"):
+            elif path in ("/", "/index.html", "/app.js", "/reader.js", "/notes.js", "/style.css", "/notes.css"):
                 self.file(HERE / "web" / ("index.html" if path == "/" else path[1:]))
             elif path == "/favicon.ico":
                 self.respond(b"", "image/x-icon", 204)
@@ -350,6 +356,8 @@ class Handler(BaseHTTPRequestHandler):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--port", type=int, default=8876)
+    parser.add_argument('--artifacts-dir', type=Path, default=WORKSPACE / 'Data/ReadingRoom/propulsion/artifacts', help='Compiled notes and verification evidence outside the repository')
+    parser.add_argument('--reference-root', action='append', default=[], metavar='NAME=PATH', help='Optional mathphysics, Monoclaw or CompPhys checkout')
     parser.add_argument("--exports", type=Path, default=WORKSPACE / "Data/Exports/ForPropulsion")
     parser.add_argument("--state-dir", type=Path, default=WORKSPACE / "Data/ReadingRoom/propulsion")
     parser.add_argument("--open-browser", action="store_true")
@@ -361,7 +369,13 @@ def main():
             parser.error("--state-dir must be outside the repository and exported bundles")
     if not (HERE / "node_modules/pdfjs-dist/build/pdf.mjs").is_file():
         parser.error("Browser assets missing. Run npm ci --ignore-scripts --omit=optional in ReadingRoom first.")
-    server = ReadingServer(args.port, args.exports, args.state_dir)
+    references = {}
+    for item in args.reference_root:
+        name, separator, path = item.partition('=')
+        if not separator or not path or name not in ('mathphysics', 'Monoclaw', 'CompPhys'):
+            parser.error('--reference-root requires mathphysics, Monoclaw or CompPhys followed by =PATH')
+        references[name] = Path(path)
+    server = ReadingServer(args.port, args.exports, args.state_dir, args.artifacts_dir, references)
     print("Propulsion reading room: http://127.0.0.1:%d" % server.server_address[1], flush=True)
     print("Progress: " + str(server.store.path), flush=True)
     if args.open_browser:

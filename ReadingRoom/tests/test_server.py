@@ -62,7 +62,7 @@ class ReadingRoomTests(unittest.TestCase):
         self.assertEqual((wie["pdf_page"], wie["printed_page"], wie["exact"]), (352, 334, True))
         self.assertEqual((sutton["pdf_page"], sutton["exact"]), (75, False))
         for book in result["books"]:
-            self.assertNotIn("/media/", book["pdf_path"])
+            Path(book['pdf_path']).resolve().relative_to(self.exports.resolve())
             self.assertTrue(Path(book["pdf_path"]).is_file())
             self.assertIn("historical_status", book["chapters"][0])
 

@@ -1,9 +1,13 @@
 import {BookReader} from './reader.js';
+import {notesMarkup, attachNotesSearch} from './notes.js';
 
 const $ = (selector) => document.querySelector(selector);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const palette = {nr: ['#525d84','#ecedf4'], wie: ['#346c64','#e7eee8'], sutton: ['#a46b45','#f2e9de'], hp: ['#8a4a5c','#f4e8ec']};
 const names = {nr: 'Numerical Recipes', wie: 'Space Vehicle Dynamics & Control', sutton: 'Rocket Propulsion Elements', hp: 'Mechanics & Thermodynamics of Propulsion'};
+const shelfNames = {nr: 'Numerical Recipes', wie: 'Space Vehicle Dynamics', sutton: 'Rocket Propulsion', hp: 'Mechanics & Thermodynamics'};
+const spines = {nr: 'Numerical<br>Recipes', wie: 'Space Vehicle<br>Dynamics', sutton: 'Rocket<br>Propulsion', hp: 'Mechanics &<br>Thermodynamics'};
+const editions = {nr: 'THIRD EDITION', wie: 'SECOND EDITION', sutton: 'NINTH EDITION', hp: 'SECOND EDITION'};
 let data, active, reader, saveTimer, dirty = false, saving = false, rendering = false;
 let editVersion = 0, saveChain = Promise.resolve(), routeGeneration = 0;
 let currentHash = location.hash || '#library';
@@ -49,9 +53,10 @@ function library() {
     `<div class="section-heading"><h2>On your shelf</h2><span>${books.length} books · Original PDFs + indexed text</span></div><div class="books-grid">` + books.map(book => {
       const n = checkedCount(book), total = book.sections.length;
       const record = saved(book), resume = section(book, record.bookmark?.section || book.start);
-      return `<article class="book-card" style="${style(book.id)}"><div class="book-visual"><div class="book-spine">${book.id==='nr'?'Numerical<br>Recipes':book.id==='wie'?'Space Vehicle<br>Dynamics':'Rocket<br>Propulsion'}<small>${book.id==='nr'?'THIRD EDITION':book.id==='wie'?'SECOND EDITION':'NINTH EDITION'}</small></div>${art(book.id)}</div><div class="book-content"><div class="eyebrow">${esc(book.domain)}</div><h3>${names[book.id]}</h3><div class="author">${esc(book.authors)}</div><div class="progress-line"><span>${n} / ${total} indexed entries read</span><span>${Math.round(n/total*100)}%</span></div><div class="progress-track"><span style="width:${n/total*100}%"></span></div><div class="book-footer"><span>§${esc(resume.number)} · ${record.bookmark?'Your bookmark':'Suggested start'}</span>${openButton(book.id,'',record.bookmark?'Continue ↗':'Open book ↗')}</div><div class="mini-history">Historical ledger: ${book.snapshot} · tracked separately</div></div></article>`;
+      return `<article class="book-card" style="${style(book.id)}"><div class="book-visual"><div class="book-spine">${spines[book.id]}<small>${editions[book.id]}</small></div>${art(book.id)}</div><div class="book-content"><div class="eyebrow">${esc(book.domain)}</div><h3>${names[book.id]}</h3><div class="author">${esc(book.authors)}</div><div class="progress-line"><span>${n} / ${total} indexed entries read</span><span>${Math.round(n/total*100)}%</span></div><div class="progress-track"><span style="width:${n/total*100}%"></span></div><div class="book-footer"><span>§${esc(resume.number)} · ${record.bookmark?'Your bookmark':'Suggested start'}</span>${openButton(book.id,'',record.bookmark?'Continue ↗':'Open book ↗')}</div><div class="mini-history">Historical ledger: ${book.snapshot} · tracked separately</div></div></article>`;
     }).join('') + '</div>' +
-    '<div class="bottom-strip"><p><strong>Read a little. Make it tangible.</strong><br>Understand an assumption, work through a derivation, then put it to the test.</p><a href="#labs">Visit the simulation labs ↗</a></div>';
+    '<div class="bottom-strip"><p><strong>Read a little. Make it tangible.</strong><br>Understand an assumption, work through a derivation, then put it to the test.</p><a href="#notes">Notes & worked solutions ↗</a></div>';
+  document.querySelectorAll('.book-card').forEach((card,i)=>card.insertAdjacentHTML('beforeend',`<a class="book-notes-link" href="#notes/${books[i].id}">Companion, derivations & code ↗</a>`));
 }
 
 const milestones = {
@@ -126,6 +131,7 @@ async function openReader(book, requested, generation) {
   active = {book,section:sec.id,page:mark.page,zoom:mark.zoom,scroll:mark.scroll,mode:'pdf'};
   app.innerHTML = `<div class="reader-shell"><div class="reader-header"><div><div class="eyebrow">${esc(book.short)} / ${esc(book.domain)}</div><h1>${esc(sec.title)}</h1><p>§${esc(sec.number)} · Section starts at printed p. ${sec.printed_page} / ${sec.exact?'':'≈ '}PDF p. ${sec.pdf_page}</p></div><span class="pill green">Your local reading session</span></div><div class="reader-layout"><aside class="toc-panel"><div class="panel-title">CONTENTS</div><input id="section-search" type="search" placeholder="Find a topic or section…" aria-label="Find a section"><div id="toc-items" class="toc-items"></div></aside><section class="reader-center"><div class="reader-toolbar"><button id="previous-page" aria-label="Previous PDF page">←</button><label>PDF <input id="page-number" type="number" min="1" max="${book.pages}" value="${mark.page}" aria-label="PDF page"></label><span class="muted" id="page-total" style="font-size:10px">/ ${book.pages}</span><button id="next-page" aria-label="Next PDF page">→</button><select id="zoom" aria-label="Page zoom"><option value="0.75">75%</option><option value="1">Fit width</option><option value="1.25">125%</option><option value="1.5">150%</option><option value="2">200%</option></select><button id="text-toggle">Parsed text</button></div><div id="reader-viewport" class="reader-viewport"><div class="loading">Opening the original PDF…</div></div><div class="reader-status"><span id="page-description">Original source · selectable text</span><span id="bookmark-status">Opening…</span></div><div class="reader-links"><a href="/book/${book.id}/pdf#page=${mark.page}" id="original-pdf" target="_blank" rel="noopener">Open original PDF ↗</a><button data-doc="${book.id}/roadmap" data-title="${esc(book.short)} · Roadmap">Roadmap</button><button data-doc="${book.id}/ledger" data-title="${esc(book.short)} · Historical ledger">Historical ledger</button></div><p class="reader-help">${esc(book.ocr_note)}</p></section><aside class="notes-panel"><h3>Make it your own.</h3><p class="note-section">Notes for §${esc(sec.number)} · ${esc(sec.title)}</p><div class="learning-checks">${Object.keys(checks).map(key=>`<label><input type="checkbox" data-check="${key}" ${record.checks[key]?'checked':''}>${key==='implemented'?'Implemented':key[0].toUpperCase()+key.slice(1)}</label>`).join('')}</div><label class="field">What clicked?<textarea id="notes" maxlength="40000" placeholder="An insight, an assumption, a derivation…">${esc(record.notes)}</textarea></label><label class="field">Still wondering<textarea class="short" id="questions" maxlength="40000" placeholder="Questions to work through together…">${esc(record.questions)}</textarea></label><label class="field">Next experiment<textarea class="short" id="next" maxlength="40000" placeholder="What would make this idea tangible?">${esc(record.next)}</textarea></label><div class="save-row"><span id="save-status" role="status">No unsaved changes</span><button id="save-notes">Save notes</button></div><p class="reader-help">Checks are your record of learning, not automatic test results. Notes save after you pause typing.</p><div class="reader-links"><button id="copy-session">Copy session context ↗</button></div></aside></div></div>`;
   $('#zoom').value = String(mark.zoom);
+  document.querySelector('.reader-links').insertAdjacentHTML('afterbegin', `<a class="related-notes" href="#notes/${book.id}/${encodeURIComponent(sec.id)}">Related notes & worked solutions ↗</a>`);
   toc(book);
   const selectedToc = $('#toc-items .active');
   if (selectedToc) $('.toc-panel').scrollTop = selectedToc.offsetTop - $('.toc-panel').offsetTop - 100;
@@ -290,9 +296,18 @@ async function route() {
   reader?.destroy();reader=null;active=null;dirty=false;
   const [view,id,sec] = requested.slice(1).split('/');
   document.querySelectorAll('[data-nav]').forEach(el=>el.classList.toggle('active',el.dataset.nav===(view==='read'?'library':view)));
-  $('#breadcrumb').textContent={library:'Reading room',roadmap:'Learning roadmap',labs:'Simulation labs',read:'At the reading desk'}[view]||'Reading room';
+  $('#breadcrumb').textContent={library:'Reading room',roadmap:'Learning roadmap',labs:'Simulation labs',notes:'Notes & solutions',read:'At the reading desk'}[view]||'Reading room';
   if(view==='roadmap')roadmap();
   else if(view==='labs')labs();
+  else if(view==='notes') {
+    app.innerHTML='<div class="empty">Opening the notes collection…</div>';
+    const response=await fetch('/api/notes');
+    if(!response.ok)throw Error('The notes collection could not be loaded.');
+    const catalog=await response.json();
+    if(generation!==routeGeneration)return;
+    app.innerHTML=notesMarkup(catalog,id,sec?decodeURIComponent(sec):null);
+    attachNotesSearch();
+  }
   else if(view==='read') {
     const book=data.books.find(b=>b.id===id);
     if(!book){app.innerHTML='<div class="empty">This book is unavailable. Return to the reading room to choose another.</div>';return;}
@@ -323,7 +338,7 @@ try {
   const response=await fetch('/api/bootstrap');
   if(!response.ok)throw Error('The local reading server could not load your library.');
   data=await response.json();
-  $('#shelf-nav').innerHTML=data.books.map(b=>`<a class="shelf-link" href="${readLink(b.id)}" style="${style(b.id)}"><span class="dot"></span>${b.id==='nr'?'Numerical Recipes':b.id==='wie'?'Space Vehicle Dynamics':'Rocket Propulsion'}</a>`).join('');
+  $('#shelf-nav').innerHTML=data.books.map(b=>`<a class="shelf-link" href="${readLink(b.id)}" style="${style(b.id)}"><span class="dot"></span>${shelfNames[b.id]}</a>`).join('');
   if(data.warnings.length)notice(data.warnings.map(w=>w.book+': '+w.message).join('\n'));
   await route();
 } catch(error) {notice(error.message);app.innerHTML='<div class="empty">The reading room could not start. Check the local server and reload.</div>';}

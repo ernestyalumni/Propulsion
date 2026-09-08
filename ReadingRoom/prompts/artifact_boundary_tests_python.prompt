@@ -1,0 +1,31 @@
+Generate a Python standard-library unittest module, not application code.
+Output filename is tests/test_artifact_boundary_generated.py. Return only code.
+These are independent regression tests for an existing Reading Room helper.
+Use pathlib.Path, tempfile.TemporaryDirectory, unittest, sys (explicit imports).
+Import the real function as follows, never mock or reimplement it:
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from notes import outside_repo
+
+Contract: outside_repo(repo: Path, path: Path) resolves both paths, returns the
+resolved output Path if it is neither the repo itself nor a descendant of it;
+otherwise raises ValueError. Resolving symlinks is mandatory. Nonexistent output
+files are permitted. The function MUST NOT create files or directories.
+
+Each test uses a fresh temporary parent and a real directory parent/'repo'.
+Exactly these six independent cases, with unittest assertions:
+1. Reject repo itself with assertRaises(ValueError): call outside_repo(repo, repo),
+   NOT a child path. The exact equality branch must be tested.
+2. Reject repo/'documents'/'unbuilt.pdf' even though it does not exist.
+3. Accept parent/'artifacts'/'unbuilt.pdf', equal to its resolve(); assert that
+   neither artifacts directory nor output file exists afterwards. Do NOT call
+   artifacts.mkdir() or create its parent before the assertion: that would
+   invalidate the test fixture. Only the repo directory exists for this case.
+4. Accept parent/'repo-other'/'unbuilt.pdf' (prefix matching is not containment).
+5. A parent/'alias' symlink to repo: reject alias/'unbuilt.pdf'.
+6. Create parent/'outside'; create repo/'output-link' symlink to outside;
+   accept repo/'output-link'/'unbuilt.pdf' and return outside/'unbuilt.pdf'
+   resolved. The policy concerns physical destination, not lexical spelling.
+
+Use self.addCleanup(temp.cleanup) or context managers for temporary directories.
+Never open network sockets, Docker, external repositories or real user data.
+Do not inspect source strings. Include unittest.main() under the main guard.

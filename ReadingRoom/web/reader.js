@@ -1,6 +1,7 @@
-import {getDocument, GlobalWorkerOptions, TextLayer} from '/vendor/pdfjs-dist/build/pdf.mjs';
+// The pinned legacy build supplies polyfills for browsers missing newer Map APIs.
+import {getDocument, GlobalWorkerOptions, TextLayer} from '/vendor/pdfjs-dist/legacy/build/pdf.mjs';
 
-GlobalWorkerOptions.workerSrc = '/vendor/pdfjs-dist/build/pdf.worker.mjs';
+GlobalWorkerOptions.workerSrc = '/vendor/pdfjs-dist/legacy/build/pdf.worker.mjs';
 
 export class BookReader {
   constructor(viewport) {

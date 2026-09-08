@@ -1,0 +1,420 @@
+{
+  "schema": 1,
+  "documents": [
+    "master-portrait",
+    "master-screen",
+    "master-source",
+    "numerical-recipes-portrait",
+    "numerical-recipes-screen",
+    "numerical-recipes-source",
+    "wie-portrait",
+    "wie-screen",
+    "wie-source",
+    "sutton-portrait",
+    "sutton-screen",
+    "sutton-source"
+  ],
+  "assets": [
+    {
+      "id": "master-portrait",
+      "title": "Propulsion — master · portrait",
+      "root": "artifacts",
+      "path": "master-portrait.pdf",
+      "kind": "PDF"
+    },
+    {
+      "id": "master-screen",
+      "title": "Propulsion — master · screen",
+      "root": "artifacts",
+      "path": "master-screen.pdf",
+      "kind": "PDF"
+    },
+    {
+      "id": "master-source",
+      "title": "Propulsion — master · source",
+      "root": "propulsion",
+      "path": "documents/notes/master.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "numerical-recipes-portrait",
+      "title": "Numerical Recipes companion · portrait",
+      "root": "artifacts",
+      "path": "numerical-recipes-portrait.pdf",
+      "kind": "PDF"
+    },
+    {
+      "id": "numerical-recipes-screen",
+      "title": "Numerical Recipes companion · screen",
+      "root": "artifacts",
+      "path": "numerical-recipes-screen.pdf",
+      "kind": "PDF"
+    },
+    {
+      "id": "numerical-recipes-source",
+      "title": "Numerical Recipes companion · source",
+      "root": "propulsion",
+      "path": "documents/notes/companions/numerical-recipes.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "wie-portrait",
+      "title": "Wie companion · portrait",
+      "root": "artifacts",
+      "path": "wie-portrait.pdf",
+      "kind": "PDF"
+    },
+    {
+      "id": "wie-screen",
+      "title": "Wie companion · screen",
+      "root": "artifacts",
+      "path": "wie-screen.pdf",
+      "kind": "PDF"
+    },
+    {
+      "id": "wie-source",
+      "title": "Wie companion · source",
+      "root": "propulsion",
+      "path": "documents/notes/companions/wie.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "sutton-portrait",
+      "title": "Sutton companion · portrait",
+      "root": "artifacts",
+      "path": "sutton-portrait.pdf",
+      "kind": "PDF"
+    },
+    {
+      "id": "sutton-screen",
+      "title": "Sutton companion · screen",
+      "root": "artifacts",
+      "path": "sutton-screen.pdf",
+      "kind": "PDF"
+    },
+    {
+      "id": "sutton-source",
+      "title": "Sutton companion · source",
+      "root": "propulsion",
+      "path": "documents/notes/companions/sutton.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "verification",
+      "title": "Computation evidence",
+      "root": "artifacts",
+      "path": "verification.json",
+      "kind": "Verification record"
+    },
+    {
+      "id": "mechanics",
+      "title": "Numerical implementations",
+      "root": "propulsion",
+      "path": "Studies/mechanics.py",
+      "kind": "Numerical code"
+    },
+    {
+      "id": "symbolic",
+      "title": "Exact Sage checks",
+      "root": "propulsion",
+      "path": "Studies/symbolic.py",
+      "kind": "SageMath code"
+    },
+    {
+      "id": "study-guide",
+      "title": "Run and reproduce the studies",
+      "root": "propulsion",
+      "path": "Studies/README.md",
+      "kind": "Run instructions"
+    },
+    {
+      "id": "legacy-propulsion",
+      "title": "Ernest’s Propulsion manuscript",
+      "root": "propulsion",
+      "path": "LaTeXandpdfs/Propulsion.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "legacy-fluid",
+      "title": "Geometric fluid mechanics",
+      "root": "propulsion",
+      "path": "LaTeXandpdfs/FluidMechanics.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "rotations",
+      "title": "SO(3), SU(2) and quaternions",
+      "root": "propulsion",
+      "path": "LaTeXandpdfs/SO3_SU2_Quaternions.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "stormer",
+      "title": "Störmer, Numerov and gravitational potential",
+      "root": "propulsion",
+      "path": "documents/StormerRule.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "dgdt",
+      "title": "Differential geometry and rigid-body notes",
+      "root": "mathphysics",
+      "path": "LaTeX_and_pdfs/DGDT_dump.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "lee",
+      "title": "Lee — symplectic manifolds",
+      "root": "mathphysics",
+      "path": "LeeJM/22SymplecticManifolds.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "sage-gravity",
+      "title": "Existing Sage gravitational potential",
+      "root": "Monoclaw",
+      "path": "Python/SageMath/GravitationalPotential/02_gravitational_potential_symbolic.sage",
+      "kind": "SageMath code"
+    },
+    {
+      "id": "compphys",
+      "title": "Computational physics and CFD notes",
+      "root": "CompPhys",
+      "path": "LaTeXandpdfs/CompPhys.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "existing-integrator",
+      "title": "Existing C++ adaptive-step controller",
+      "root": "propulsion",
+      "path": "Cosmos/Source/Numerical/ODE/RKMethods/ComputePIStepSize.h",
+      "kind": "Existing code"
+    },
+    {
+      "id": "existing-nozzle",
+      "title": "Existing symbolic nozzle code (legacy SymPy)",
+      "root": "propulsion",
+      "path": "NozzleTheory.py",
+      "kind": "Existing code"
+    },
+    {
+      "id": "oscillator-source",
+      "title": "Harmonic oscillator: Störmer–Verlet · derivation",
+      "root": "propulsion",
+      "path": "documents/notes/topics/oscillator.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "oscillator-pdf",
+      "title": "Harmonic oscillator: Störmer–Verlet · PDF",
+      "root": "artifacts",
+      "path": "master-portrait.pdf",
+      "kind": "PDF",
+      "anchor": "topic-oscillator"
+    },
+    {
+      "id": "rigid-body-source",
+      "title": "Torque-free motion on SO(3) · derivation",
+      "root": "propulsion",
+      "path": "documents/notes/topics/rigid-body.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "rigid-body-pdf",
+      "title": "Torque-free motion on SO(3) · PDF",
+      "root": "artifacts",
+      "path": "master-portrait.pdf",
+      "kind": "PDF",
+      "anchor": "topic-rigid-body"
+    },
+    {
+      "id": "nozzle-source",
+      "title": "Isentropic nozzle: both Mach branches · derivation",
+      "root": "propulsion",
+      "path": "documents/notes/topics/nozzle.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "nozzle-pdf",
+      "title": "Isentropic nozzle: both Mach branches · PDF",
+      "root": "artifacts",
+      "path": "master-portrait.pdf",
+      "kind": "PDF",
+      "anchor": "topic-nozzle"
+    },
+    {
+      "id": "foundations-source",
+      "title": "Mathematical and physical foundations · derivation",
+      "root": "propulsion",
+      "path": "documents/notes/topics/foundations.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "foundations-pdf",
+      "title": "Mathematical and physical foundations · PDF",
+      "root": "artifacts",
+      "path": "master-portrait.pdf",
+      "kind": "PDF",
+      "anchor": "topic-foundations"
+    },
+    {
+      "id": "legacy-map-source",
+      "title": "Earlier notes and the growing master · derivation",
+      "root": "propulsion",
+      "path": "documents/notes/topics/legacy-map.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "legacy-map-pdf",
+      "title": "Earlier notes and the growing master · PDF",
+      "root": "artifacts",
+      "path": "master-portrait.pdf",
+      "kind": "PDF",
+      "anchor": "topic-legacy-map"
+    }
+  ],
+  "topics": [
+    {
+      "id": "oscillator",
+      "title": "Harmonic oscillator: Störmer–Verlet",
+      "summary": "Second-order convergence, symplectic structure and bounded energy error.",
+      "authorship": "New synthesis; historical references retain Ernest Yeung’s authorship.",
+      "status": "Derived teaching example; see independent execution evidence.",
+      "locators": [
+        {
+          "book": "nr",
+          "section": "17.4"
+        },
+        {
+          "book": "nr",
+          "section": "17.1"
+        }
+      ],
+      "assets": [
+        "oscillator-pdf",
+        "oscillator-source",
+        "symbolic",
+        "mechanics",
+        "study-guide",
+        "verification",
+        "stormer",
+        "existing-integrator"
+      ]
+    },
+    {
+      "id": "rigid-body",
+      "title": "Torque-free motion on SO(3)",
+      "summary": "Inertia, body/inertial frames, Euler’s equations and conserved momentum.",
+      "authorship": "New synthesis; historical references retain Ernest Yeung’s authorship.",
+      "status": "Derived teaching example; see independent execution evidence.",
+      "locators": [
+        {
+          "book": "wie",
+          "section": "6.4"
+        },
+        {
+          "book": "wie",
+          "section": "6.5"
+        },
+        {
+          "book": "wie",
+          "section": "5.4"
+        }
+      ],
+      "assets": [
+        "rigid-body-pdf",
+        "rigid-body-source",
+        "symbolic",
+        "mechanics",
+        "study-guide",
+        "verification",
+        "dgdt",
+        "rotations"
+      ]
+    },
+    {
+      "id": "nozzle",
+      "title": "Isentropic nozzle: both Mach branches",
+      "summary": "From mass conservation and stagnation relations to a bracketed engineering calculation.",
+      "authorship": "New synthesis; historical references retain Ernest Yeung’s authorship.",
+      "status": "Derived teaching example; see independent execution evidence.",
+      "locators": [
+        {
+          "book": "sutton",
+          "section": "3.3"
+        },
+        {
+          "book": "nr",
+          "section": "9.3"
+        }
+      ],
+      "assets": [
+        "nozzle-pdf",
+        "nozzle-source",
+        "symbolic",
+        "mechanics",
+        "study-guide",
+        "verification",
+        "legacy-propulsion",
+        "legacy-fluid",
+        "existing-nozzle"
+      ]
+    },
+    {
+      "id": "foundations",
+      "title": "Mathematical and physical foundations",
+      "summary": "Spaces, regularity, conventions, balance laws, and the limits of a model.",
+      "authorship": "New synthesis; historical references retain Ernest Yeung’s authorship.",
+      "status": "Reference and foundations; no computation claimed.",
+      "locators": [
+        {
+          "book": "wie",
+          "section": "6.1"
+        },
+        {
+          "book": "sutton",
+          "section": "3.2"
+        }
+      ],
+      "assets": [
+        "foundations-pdf",
+        "foundations-source",
+        "dgdt",
+        "lee",
+        "legacy-fluid"
+      ]
+    },
+    {
+      "id": "legacy-map",
+      "title": "Earlier notes and the growing master",
+      "summary": "An index of useful manuscripts; historical notes and code remain unreviewed.",
+      "authorship": "New synthesis; historical references retain Ernest Yeung’s authorship.",
+      "status": "Reference and foundations; no computation claimed.",
+      "locators": [
+        {
+          "book": "nr",
+          "section": "17.4"
+        },
+        {
+          "book": "wie",
+          "section": "3.6"
+        },
+        {
+          "book": "sutton",
+          "section": "3.3"
+        }
+      ],
+      "assets": [
+        "legacy-map-pdf",
+        "legacy-map-source",
+        "legacy-propulsion",
+        "legacy-fluid",
+        "rotations",
+        "stormer",
+        "dgdt",
+        "sage-gravity",
+        "compphys"
+      ]
+    }
+  ]
+}

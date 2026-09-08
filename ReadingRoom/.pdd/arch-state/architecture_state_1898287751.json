@@ -1,0 +1,10 @@
+{
+  "step_outputs": {
+    "1": "FAILED: All agent providers failed: openai: Exit code 1: WARNING: proceeding, even though we could not create PATH aliases: Read-only file system (os error 30)\nError: failed to initialize in-process app-server client: Read-only file system (os error 30)\n",
+    "2": "FAILED: All agent providers failed: openai: Exit code 1: WARNING: proceeding, even though we could not create PATH aliases: Read-only file system (os error 30)\nError: failed to initialize in-process app-server client: Read-only file system (os error 30)\n",
+    "3": "FAILED: All agent providers failed: openai: Exit code 1: WARNING: proceeding, even though we could not create PATH aliases: Read-only file system (os error 30)\nError: failed to initialize in-process app-server client: Read-only file system (os error 30)\n"
+  },
+  "last_completed_step": 0,
+  "total_cost": 0.0,
+  "model_used": ""
+}

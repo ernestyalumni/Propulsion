@@ -131,6 +131,32 @@ async function rendered(page) {
   await popup.waitForSelector('canvas');
   await popup.close();
 
+  // Notes connect books, compiled derivations, sources and execution evidence.
+  await page.goto(base+'/#notes');await page.waitForSelector('.topic-card');
+  assert.equal(await page.locator('.topic-card').count(),5);
+  assert.equal(await page.locator('.document-grid .resource-link').count(),12);
+  const notesResponse=await context.request.get(base+'/api/notes');
+  const notesCatalog=await notesResponse.json();
+  assert.equal(notesCatalog.topics.length,5);
+  for(const topic of notesCatalog.topics){
+    assert.ok(topic.locators.every(l=>l.available));
+    for(const asset of topic.assets.filter(a=>a.available)){
+      const response=await context.request.get(base+asset.url.split('#')[0]);
+      assert.equal(response.status(),200,asset.id);
+    }
+  }
+  await page.screenshot({path:path.join(state,'notes.png'),fullPage:true});
+  await page.locator('#topic-search').fill('nozzle');
+  assert.equal(await page.locator('.topic-card:visible').count(),1);
+  await page.goto(base+'/#notes/wie/6.4');await page.waitForSelector('.topic-card');
+  assert.equal(await page.locator('.topic-card').count(),1);
+  assert.equal(await page.locator('.topic-card').getAttribute('id'),'rigid-body');
+  await page.getByRole('link',{name:'Return to the book ↗',exact:true}).click();await rendered(page);
+  assert.equal(await page.locator('#page-number').inputValue(),'377');
+  await page.getByRole('link',{name:'Related notes & worked solutions ↗',exact:true}).click();
+  await page.waitForSelector('#rigid-body');
+  assert.equal(await page.locator('.topic-card').count(),1);
+
   // A second tab cannot overwrite a newer section note silently.
   await page.goto(base+'/#read/wie/5.4');await rendered(page);
   const second=await context.newPage();await second.goto(base+'/#read/wie/5.4');await rendered(second);
@@ -150,10 +176,22 @@ async function rendered(page) {
   await mobile.screenshot({path:path.join(state,'mobile.png'),fullPage:true});
   await mobile.goto(base+'/#read/wie/5.4');await rendered(mobile);
   assert.ok(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+  await mobile.goto(base+'/#notes');await mobile.waitForSelector('.topic-card');
+  assert.ok(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+  await mobile.screenshot({path:path.join(state,'notes-mobile.png'),fullPage:true});
   assert.deepEqual(errors,[]);
   assert.deepEqual(external,[]);
-  console.log('PASS: bookshelf, three PDFs, math text, bookmarks, scroll/zoom resume, notes, server restart, roadmap, lab, conflict protection, mobile, no external requests.');
+  console.log('PASS: bookshelf, three PDFs, math text, bookmarks, scroll/zoom resume, notes, server restart, roadmap, lab, worked-solution links, resource access, search, book round trip, conflict protection, mobile, no external requests.');
   console.log('Screenshots and isolated test state: '+state);
-})().catch(error=>{console.error(error);process.exitCode=1;}).finally(async()=>{
+})().catch(async error=>{
+  console.error(error);console.error('Browser errors:',errors);
+  const failedPage=browser?.contexts()[0]?.pages()[0];
+  if(failedPage){
+    console.error('Page text:',(await failedPage.locator('body').innerText()).slice(-4000));
+    await failedPage.screenshot({path:path.join(state,'failure.png'),fullPage:true});
+    console.error('Failure screenshot:',path.join(state,'failure.png'));
+  }
+  process.exitCode=1;
+}).finally(async()=>{
   await browser?.close();await stopServer();
 });

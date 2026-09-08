@@ -1,0 +1,54 @@
+{
+  "context": {
+    "includes": [],
+    "query_snapshots": [],
+    "shell_snapshots": [],
+    "web_snapshots": []
+  },
+  "contracts": {
+    "rules": {},
+    "status": "not_applicable"
+  },
+  "generation": {
+    "cost_usd": 0.0,
+    "grounding": {
+      "excluded": [],
+      "mode": "unavailable",
+      "pinned": [],
+      "reviewed": false,
+      "selected_examples": []
+    },
+    "grounding_examples": [],
+    "model": "qwen38-9b-q5-k-m",
+    "temperature": null
+  },
+  "logs": {
+    "core_dump": null,
+    "cost_csv": null,
+    "verify_results": null
+  },
+  "outputs": [
+    {
+      "path": "/home/propdev/.openclaw/workspace/reviews/pdd-local-workflows-2026-09-06/test_artifact_paths.py",
+      "sha256": "04574918ca6e55fc4ee90c6f422a69e4aa85733e43a6eb6e690fde78fd385252"
+    }
+  ],
+  "prompt": {
+    "expanded_sha256": "f03c13041c2c88ab3229b8783b55021c1c28dc6468f2d0f4c989c5a7d8a8937c",
+    "path": "/home/propdev/.openclaw/workspace/reviews/pdd-local-workflows-2026-09-06/artifact_paths_python.prompt",
+    "sha256": "f03c13041c2c88ab3229b8783b55021c1c28dc6468f2d0f4c989c5a7d8a8937c",
+    "uses_nondeterministic_tags": false
+  },
+  "run": {
+    "command": "pdd test",
+    "id": "20260906T234507256032Z-artifact_paths",
+    "pdd_version": "0.0.310.dev0",
+    "timestamp": "2026-09-06T23:45:07.256032Z"
+  },
+  "schema_version": 2,
+  "validation": {
+    "detect_stories": "not_available",
+    "unit_tests": "not_available",
+    "verify": "not_available"
+  }
+}

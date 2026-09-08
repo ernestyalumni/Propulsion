@@ -1,0 +1,54 @@
+\topic{oscillator}{A harmonic oscillator from Hamiltonian flow to St\"ormer--Verlet}
+\study{oscillator}
+Reading anchor: Numerical Recipes, third edition, Section 17.4, printed
+p.~928 / PDF p.~952; Section 17.1 begins at printed p.~907 / PDF p.~931
+\cite{nr}. The indices give exact page mappings. This is an independent
+worked example; no supplied Numerical Recipes implementation is reproduced.
+
+\subsection{Model and derivation}
+For unit mass and constant $\omega>0$, let
+$H(q,v)=\tfrac12(v^2+\omega^2q^2)$ on $T^*\R\simeq\R^2$.
+Hamilton's equations are $\dot q=v$, $\dot v=-\omega^2q$.
+Splitting the potential and kinetic flows symmetrically gives
+\begin{align}
+ v_{n+1/2}&=v_n-\tfrac h2\omega^2q_n,\\
+ q_{n+1}&=q_n+h v_{n+1/2},\\
+ v_{n+1}&=v_{n+1/2}-\tfrac h2\omega^2q_{n+1}.
+\end{align}
+Eliminating velocity yields
+$q_{n+1}-2q_n+q_{n-1}=-h^2\omega^2q_n$.
+Taylor expansion of a smooth solution makes the residual in this recurrence
+$\tfrac1{12}h^4q^{(4)}+O(h^6)$; after division by $h^2$ it is $O(h^2)$.
+The associated one-step method has local state error $O(h^3)$ and global
+error $O(h^2)$ on a fixed finite interval.
+
+\subsection{Exact discrete structure}
+Writing $(q_{n+1},v_{n+1})^T=A_h(q_n,v_n)^T$ gives
+\[
+ A_h=\begin{pmatrix}
+ 1-\tfrac12h^2\omega^2&h\\
+ -h\omega^2(1-\tfrac14h^2\omega^2)&1-\tfrac12h^2\omega^2
+ \end{pmatrix}.
+\]
+Direct algebra gives $\det A_h=1$, which in two dimensions is equivalent to
+symplecticity. For $0<h\omega<2$, its eigenvalues lie on the unit circle and
+\[
+ \widetilde H_h=\tfrac12\left[v^2+\omega^2(1-\tfrac14h^2\omega^2)q^2\right]
+\]
+is positive definite and exactly preserved in exact arithmetic: substitute
+$A_h$ and verify $A_h^T G_h A_h=G_h$ for the displayed quadratic form.
+The physical $H$ is generally not exactly conserved. At $h\omega=2$ the
+matrix has a defective repeated eigenvalue and generic solutions grow;
+the strict step restriction matters.
+
+\subsection{Worked numerical check}
+Choose nondimensional $\omega=1$, $(q_0,v_0)=(1,0)$, so the analytic solution
+is $(\cos t,-\sin t)$. At $t=4$ compare 80, 160 and 320 steps: halving $h$
+must reduce state error by approximately four (accepted ratio 3.8--4.2).
+A second run takes 10,000 steps of $h=0.05$ and requires relative physical
+energy error below $10^{-3}$. This bounded-error example does not establish
+uniform long-time accuracy for all Hamiltonian systems.
+
+Sage verifies the determinant and modified invariant exactly. See also
+Ernest's \path{documents/StormerRule.tex} for the broader St\"ormer/Numerov
+discussion and \path{LaTeXandpdfs/Propulsion.tex} for RK order conditions.

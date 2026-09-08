@@ -4,6 +4,51 @@ A local study workspace for Numerical Recipes 3e, Wie 2e, and Sutton 9e.
 The bookshelf, linked roadmap, original PDF reader, section notes, and existing
 simulation labs work offline after the browser dependencies are installed.
 
+The **Notes & solutions** collection links book sections to shared LaTeX
+derivations, portrait/screen PDFs, SageMath checks, numerical implementations,
+and dated evidence. Each book card and reader section links to related work.
+Search by topic or manuscript; follow a locator to return to the book. Missing
+optional repositories are labeled unavailable. Existing personal progress is
+independent of scientific verification.
+
+## Build the companions and run their studies
+
+From the repository root, choose an absolute artifacts directory outside Git:
+
+```sh
+python3 -B ReadingRoom/build_notes.py --output /absolute/path/to/artifacts
+python3 -B Studies/verify.py --output /absolute/path/to/artifacts/verification.json --sage-image YOUR_INSTALLED_IMAGE_ID
+python3 -B ReadingRoom/server.py --artifacts-dir /absolute/path/to/artifacts --open-browser
+```
+
+The default artifacts directory is `workspace/Data/ReadingRoom/propulsion/artifacts`.
+There are three complete starter studies (oscillator, rigid body, nozzle), plus
+a foundations chapter and a legacy manuscript index. All four documents share
+topic sources. Eight PDFs are built with citations checked and LaTeX shell
+execution disabled. Sage runs in an existing prebuilt image with no pull,
+source build or container network. Omit `--sage-image` for numerical-only
+evidence, which is labeled accordingly. See [the studies](../Studies/README.md)
+and [document authoring](../documents/notes/README.md).
+
+For local model-assisted development, see [PDD with llama.cpp](docs/LOCAL_PDD.md).
+`bash ReadingRoom/pdd-local.sh ...` (from the repo root) uses the saved localhost
+configuration without provider keys. It is separate from the reader UI.
+
+PDF build hashes and computation input hashes distinguish current artifacts
+from stale ones. Evidence is a reproducible local record, not an independent
+review certificate. Historical notes and code do not inherit verification
+from the starter studies. No browser endpoint executes code or edits LaTeX.
+
+Optional references are discovered as sibling repositories, then under the
+same workspace's `workspace2/repos/`. Override any root explicitly:
+
+```sh
+python3 -B ReadingRoom/server.py --reference-root mathphysics=/path/to/mathphysics --reference-root Monoclaw=/path/to/Monoclaw --reference-root CompPhys=/path/to/CompPhys
+```
+
+Only individual files registered in `resources.json` are served from those
+roots; symlinks escaping their resolved roots are rejected.
+
 ## Open it
 
 On this Mac, double-click `Open Reading Room.command`, or from the repo root:
@@ -28,6 +73,10 @@ Dependencies are pinned in `package-lock.json`. PDF.js (Apache-2.0), KaTeX,
 Marked, and DOMPurify (MIT; DOMPurify also offers Apache-2.0) are served from
 local `node_modules`, never a CDN. Package licenses remain in their installed
 directories. No build or Python packages are required.
+
+The reader uses PDF.js's bundled `legacy/build` compatibility entry points so
+Chrome 144 can open PDFs without the newer `Map.getOrInsertComputed` API.
+This does not change the pinned package or add browser network requests.
 
 ## Reading together
 

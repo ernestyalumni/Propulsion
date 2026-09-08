@@ -1,0 +1,53 @@
+\topic{foundations}{Mathematical structure and physical assumptions}
+
+These notes develop engineering models with the mathematical depth their claims
+require. A successful computation is evidence about a specified model, initial
+data and discretization; it is not a general existence theorem or experimental
+validation of that model. Book sections are reading anchors, not claims that the
+textbook states every extension developed here.
+
+\subsection{Configuration, state and conventions}
+A rigid body's configuration is a point of $\SO(3)$, or of $\operatorname{SE}(3)$
+when translation is included. Its dynamical state additionally needs velocities
+or momenta: configuration alone is not a complete six-degree-of-freedom state.
+For $R:\R^3_{\rm body}\to\R^3_{\rm inertial}$, define
+$\widehat\omega x=\omega\times x$. Then $\dot R=R\widehat\omega$ uses
+\emph{body} angular velocity, whereas $\dot RR^T$ is its inertial representation.
+Units, active/passive interpretation and multiplication order must accompany a
+rotation API. Read Wie's inertia and angular-momentum development
+\cite[Sections 6.1--6.4]{wie} alongside Ernest's geometric notes.
+
+\subsection{From geometry to conservation}
+On an oriented Riemannian manifold with metric $g$ and volume form $\mu_g$,
+define divergence by
+\[
+ \mathcal L_u\mu_g=(\operatorname{div}_g u)\mu_g,
+ \qquad
+ \operatorname{div}_g u=\frac{1}{\sqrt{\det g}}
+   \partial_i\!\left(\sqrt{\det g}\,u^i\right).
+\]
+For smooth density $\rho$ and velocity $u$, conservation of mass on every
+material region $V_t$ transported by $u$ gives
+\[
+ 0=\frac{d}{dt}\int_{V_t}\rho\,\mu_g
+   =\int_{V_t}\bigl(\partial_t\rho+\operatorname{div}_g(\rho u)\bigr)\mu_g.
+\]
+Localization yields the continuity equation. In a thin duct, integrating over
+cross sections and assuming stationary, effectively uniform section data gives
+$\rho u A=\dot m$. Those reductions are physical assumptions, not consequences
+of differential geometry alone. The nozzle study uses them explicitly
+\cite[Sections 3.2--3.3]{sutton}.
+
+\subsection{Regularity, shocks and honest evidence}
+The pointwise argument presumes enough differentiability to apply transport
+and localization. For shocks, formulate conservation weakly and impose an
+appropriate entropy/admissibility condition. The smooth isentropic nozzle model
+does not describe entropy production across a shock. Boundary data, constitutive
+closure and any viscosity/heat-transfer approximation belong to the model.
+Nothing here proves global smoothness of three-dimensional Navier--Stokes.
+
+In each executable study distinguish: a mathematical identity and its domain;
+a physical modeling assumption; a symbolic check; a numerical test at declared
+resolution; and agreement with measurement. Numerical order and energy drift
+are different properties \cite[Chapter 17]{nr}. Personal Reading Room checkboxes
+record study progress independently of computation evidence.

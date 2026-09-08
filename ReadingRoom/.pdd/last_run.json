@@ -1,0 +1,17 @@
+{
+  "cb2714aea76b26ad": {
+    "argv": [
+      "--no-core-dump",
+      "generate",
+      "prompts/artifact_boundary_tests_python.prompt",
+      "--output",
+      "tests/test_artifact_boundary_generated.py",
+      "--evidence"
+    ],
+    "project_root": "/home/propdev/.openclaw/workspace/repos/Propulsion-reading-room/ReadingRoom",
+    "fingerprint": "958b1635bad50f7a6bbe13b17bba30bd6d1fbfd928d7754c19a2c5466bd02c58",
+    "git_head": "1976675f6f95598c5521159209af410b2d45be3d",
+    "subcommand": "generate",
+    "timestamp": 1788737855.1128407
+  }
+}

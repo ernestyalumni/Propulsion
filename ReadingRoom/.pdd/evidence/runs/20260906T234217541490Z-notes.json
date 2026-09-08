@@ -1,0 +1,49 @@
+{
+  "context": {
+    "includes": [],
+    "query_snapshots": [],
+    "shell_snapshots": [],
+    "web_snapshots": []
+  },
+  "contracts": {
+    "rules": {},
+    "status": "not_applicable"
+  },
+  "generation": {
+    "cost_usd": 0.0,
+    "grounding": {
+      "excluded": [],
+      "mode": "unavailable",
+      "pinned": [],
+      "reviewed": false,
+      "selected_examples": []
+    },
+    "grounding_examples": [],
+    "model": "Error: Local LLM output was truncated; increase max_tokens or adjust the model's thinking budget. No partial output accepted.",
+    "temperature": null
+  },
+  "logs": {
+    "core_dump": null,
+    "cost_csv": null,
+    "verify_results": null
+  },
+  "outputs": [],
+  "prompt": {
+    "expanded_sha256": "10d20df8780fb1fe8104dc9d54c66563b52326155b0393d7eeb7e69c42722374",
+    "path": "prompts/notes_python.prompt",
+    "sha256": "10d20df8780fb1fe8104dc9d54c66563b52326155b0393d7eeb7e69c42722374",
+    "uses_nondeterministic_tags": false
+  },
+  "run": {
+    "command": "pdd test",
+    "id": "20260906T234217541490Z-notes",
+    "pdd_version": "0.0.310.dev0",
+    "timestamp": "2026-09-06T23:42:17.541490Z"
+  },
+  "schema_version": 2,
+  "validation": {
+    "detect_stories": "not_available",
+    "unit_tests": "not_available",
+    "verify": "not_available"
+  }
+}

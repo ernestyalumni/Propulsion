@@ -1,0 +1,50 @@
+\topic{rigid-body}{Torque-free rigid-body dynamics on SO(3)}
+\study{rigid-body}
+Reading anchors: Wie, second edition, Section 6.4, printed p.~359 / PDF
+p.~377, and Section 6.5, printed p.~363 / PDF p.~381 \cite{wie}.
+These are exact indexed mappings. Section 6.2 concerns inertia, not Euler's
+equations. Ernest's DGDT and quaternion notes provide the geometric bridge.
+
+\subsection{Inertia and Euler's equations}
+Let $R$ map body to inertial coordinates and let
+$I=\operatorname{diag}(I_1,I_2,I_3)$ be a constant positive-definite inertia
+tensor in body principal axes. Body angular momentum is $\Pi=I\omega$;
+inertial angular momentum is $L=R\Pi$. In absence of external torque,
+\[
+ 0=\dot L=R(\dot\Pi+\omega\times\Pi),\qquad
+ I\dot\omega+\omega\times I\omega=0.
+\]
+Thus $\dot\omega_1=(I_2-I_3)\omega_2\omega_3/I_1$, with cyclic analogues.
+Multiplying by $\omega$ gives
+$\dot E=\omega\cdot I\dot\omega=-\omega\cdot(\omega\times\Pi)=0$.
+Likewise $\tfrac{d}{dt}|\Pi|^2=-2\Pi\cdot(\omega\times\Pi)=0$.
+These conservation statements require no choice of Euler-angle chart.
+
+\subsection{A solvable axisymmetric case}
+For $I_1=I_2=I_\perp$, the third component is constant, $\omega_3=c$.
+Writing $\nu=(I_3-I_\perp)c/I_\perp$, the transverse equations are
+$\dot\omega_1=-\nu\omega_2$, $\dot\omega_2=\nu\omega_1$, hence
+\[
+ \begin{pmatrix}\omega_1(t)\\\omega_2(t)\end{pmatrix}
+ =\begin{pmatrix}\cos\nu t&-\sin\nu t\\\sin\nu t&\cos\nu t\end{pmatrix}
+ \begin{pmatrix}a\\b\end{pmatrix}.
+\]
+The worked data are $(I_1,I_2,I_3)=(2,2,3)\,\mathrm{kg\,m^2}$,
+$(a,b,c)=(0.4,0.2,0.7)\,\mathrm{rad/s}$, $R(0)=1$, and $t=10\,\mathrm{s}$.
+These are explicitly chosen synthetic inputs, not textbook or spacecraft data.
+
+\subsection{What the executable check establishes}
+The teaching implementation integrates $(\omega,R)$ using classical RK4,
+with $\dot R=R\widehat\omega$. It compares body spin to the analytic solution
+at 200 and 400 steps, requiring an error ratio between 14 and 18.
+At the finer resolution it requires maximum component error in $R^TR-1$
+below $10^{-7}$, determinant error below $10^{-7}$, energy error below
+$10^{-8}\,\mathrm{J}$, and inertial momentum error below
+$10^{-7}\,\mathrm{kg\,m^2/s}$.
+
+Ordinary RK4 does not preserve $\SO(3)$ exactly; the rotation constraints are
+measured errors here. A future Lie-group integrator should preserve membership
+by construction and still face independent accuracy checks. Sage proves the
+energy and momentum-norm derivative identities symbolically for nonzero
+principal moments. Neither those identities nor this one axisymmetric test
+constitutes verification of arbitrary torque models.

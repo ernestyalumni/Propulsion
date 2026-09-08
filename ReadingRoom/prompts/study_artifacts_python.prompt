@@ -1,0 +1,31 @@
+% Approved cross-component contract: build_notes.py, ../Studies, ../documents/notes.
+% Scope is the three worked examples and their document/evidence tooling only.
+% Direct implementation; no completed PDD generation/sync is claimed.
+
+Build a shared-source thematic LaTeX master and Numerical Recipes/Wie/Sutton
+companions in portrait and 1200x700pt two-column screen editions. Run LaTeX
+without shell escape, resolve bibliographies and cross-references, and reject
+overfull boxes. Keep all intermediates and published results outside tracked
+source. Record source/output hashes and build time; publish only after all
+eight documents compile successfully.
+
+Each study states mathematical spaces, assumptions, frames, units, chosen
+synthetic data and evidence limits. Numerical implementations are independent
+of proprietary textbook distributions. Sage is the primary symbolic system.
+Use only an installed prebuilt Docker image, with no pull/build and no network
+for batch checks; record immutable image ID and actual runtime versions.
+
+Oscillator: derive velocity Verlet and its modified invariant; exact symplectic
+and invariant checks; analytic finite-time convergence and bounded energy test.
+Rigid body: derive Euler equations for body spin and body-to-inertial R;
+symbolically verify energy/momentum-norm derivatives; compare axisymmetric
+solution and test energy, inertial momentum, R^TR and determinant numerically.
+Nozzle: derive area–Mach relation with perfect-gas/isentrope assumptions;
+check sonic/Mach-2 cases and derivative in Sage, solve both physical branches,
+and verify mass flux independently. Reject invalid domains and branch names.
+
+MUST NOT equate finite numerical tests with general mathematical proof,
+physical validation, exact SO(3) preservation by RK4, or verification of linked
+legacy code. Reports include inputs, thresholds, measured metrics, timestamps,
+versions and hashes; failed runs preserve prior evidence and changed inputs
+make old evidence stale.

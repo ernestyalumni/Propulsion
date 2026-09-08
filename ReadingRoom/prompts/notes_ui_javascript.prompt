@@ -1,0 +1,23 @@
+% Approved notes UI integration: web/notes.js, web/notes.css, existing app.js/index.html.
+% Direct implementation; future PDD synchronization has not run.
+
+Add Notes & solutions navigation to the existing Reading Room. Book cards and
+selected reader sections link to matching topics. Render master and all three
+companions with portrait PDF, screen PDF and source links. Topic cards expose
+derivation, legacy references, Sage code, numerical code and evidence. Search
+topic/manuscript text and support book/section filters and a return-to-book link.
+
+Consume GET /api/notes; source/PDF downloads use registered /note-asset/<id>.
+Render untrusted strings as escaped text. Do not execute downloaded sources.
+Use existing navigation/save protection so drafts survive failed/conflicting
+saves before following internal notes links. No browser CDN, telemetry or
+remote model dependency. Notes remain usable when book bundles are missing.
+
+MUST NOT turn visiting a derivation or seeing a passing check into completion
+of a personal reading/derivation/implementation checkbox. Explain stale or
+absent evidence and missing optional assets without displaying verified badges.
+Maintain responsive layouts with no horizontal overflow at 390px width.
+
+Evidence: tests/browser.cjs exercises original reading persistence plus topic
+search, asset access, book/derivation round trips and mobile layout; reject
+unexpected external requests and browser errors.

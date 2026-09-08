@@ -1,0 +1,29 @@
+% Approved behavior specification for notes.py and resources.json.
+% Prepared directly after PDD provider startup was blocked. No completed sync is claimed.
+
+Implement NotesCatalog for the existing Python standard-library Reading Room.
+The versioned registry identifies shared LaTeX topics, PDF/source/code assets,
+and edition-specific book-section locators. Human-authored mathematical content
+and historical files remain authoritative; never regenerate them incidentally.
+
+Public interface: NotesCatalog(repo: Path, artifacts: Path, references: dict | None),
+resolve(asset_id) -> Path, evidence() -> dict, public(book_catalog) -> dict;
+input_hashes(repo) -> dict[path, sha256]; outside_repo(repo, path) -> Path.
+
+R1 MUST resolve only registered asset IDs beneath their configured resolved
+repository/artifacts roots. Reject traversal and symlink escapes. Missing
+optional repositories, PDFs and reports are visibly unavailable.
+R2 MUST return valid indexed book locators with exact/estimated page labels.
+Missing books must not make the notes catalog unusable or fabricate a locator.
+R3 MUST distinguish source availability, build currency, numerical evidence,
+symbolic evidence and personal learning progress. A current execution record
+needs matching code/derivation/registry hashes. A current PDF additionally needs
+its matching output hash. Missing, corrupt or stale reports never imply success.
+R4 MUST NOT execute code, launch containers, compile LaTeX, write personal state,
+or expose arbitrary repository files through catalog reads.
+R5 MUST retain original manuscripts and attribution; topic chapters are shared
+by a thematic master and three companions, with portrait and screen outputs.
+
+Acceptance: tests/test_notes.py and the existing tests/test_server.py. Exercise
+actual HTTP/source responses, book mappings, missing external roots, modified
+code invalidating evidence, replaced PDFs and registered symlink escapes.
