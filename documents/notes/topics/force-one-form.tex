@@ -1,0 +1,351 @@
+\topic{force-one-form}{Force as a one-form, and what that makes impulse}
+
+Reading anchor: Sutton and Biblarz, ninth edition, Section 2.1, printed
+p.~26 / PDF p.~50 \cite{sutton}; Frankel, Overview Section O.f, ``Line
+Integrals'', printed p.~xxxix \cite{frankel}; Hill and Peterson, Sections 1.2
+and 7.2, printed pp.~4 and 277 \cite{hillpeterson}. The claim developed here is
+that force is naturally a covector, that impulse inherits that status, and that
+Sutton's Eqs.~2--1 through 2--6 are the flat-space, fixed-direction,
+constant-rate specialisation of a statement that does not need a metric.
+
+\subsection{Work is a pairing, not a dot product}
+Let $M$ be a smooth manifold, the configuration space of the mechanical system.
+At each $x\in M$ the tangent space $T_xM$ holds velocities and the cotangent
+space $T^*_xM$ holds linear functionals on them. The evaluation
+$T^*_xM\times T_xM\to\R$, $(\alpha,v)\mapsto\alpha(v)$, is canonical: it is
+defined by the manifold structure alone and requires \emph{no} metric.
+
+A force is specified by the work it does along a path. For a curve
+$C:[a,b]\to M$ with $t\mapsto x(t)$,
+\[
+ W=\int_C f=\int_a^b f\bigl(\dot x(t)\bigr)\,dt
+  =\int_a^b f_k\bigl(x(t)\bigr)\frac{dx^k}{dt}\,dt ,
+\]
+which is the ordinary integral of the pullback $C^*f$ over $[a,b]$. The
+integrand is a $1$-form $f=f_k\,dx^k\in\Omega^1(M)$, and the value is
+independent of the parameterisation at fixed orientation. Frankel states the
+conclusion directly: the integrand of a line integral is naturally a $1$-form,
+not a vector, and the work integral ``does not require a metric''
+\cite[Section O.f]{frankel}.
+
+The familiar $W=\int\mathbf F\cdot d\mathbf r$ is therefore \emph{not} the
+primitive statement. It presupposes a metric $g$ (to form the dot product) and
+usually also Cartesian components (so that $g_{ij}=\delta_{ij}$ makes the
+distinction invisible). Both are extra structure, and both are available in the
+rocket problem --- which is precisely why the shortcut is safe there and unsafe
+elsewhere.
+
+\subsection{Why the index is down: the Legendre transform}
+The covector status of force is not a convention; it follows from the
+variational formulation. Take kinetic energy
+$T=\tfrac12 m\,g_{ij}\dot x^i\dot x^j$ and a potential $V$ independent of
+$\dot x$, with $L=T-V$.
+
+\begin{proposition}\label{prop:momentum-covector}
+The momentum conjugate to $x^k$ is
+$p_k=\partial L/\partial\dot x^k=m\,g_{kj}\dot x^j$; that is,
+$p=m\,v^\flat$, the metric dual of $m$ times the velocity.
+\end{proposition}
+
+\noindent The computation is immediate:
+$\partial_{\dot x^k}\bigl(\tfrac12 m g_{ij}\dot x^i\dot x^j\bigr)
+ =\tfrac12 m\bigl(g_{kj}\dot x^j+g_{ik}\dot x^i\bigr)=m g_{kj}\dot x^j$
+by symmetry of $g$. Frankel performs exactly this calculation and concludes that
+$p$ ``is $m$ times the covariant version of the velocity vector''
+\cite[Section O.f]{frankel}.
+
+The Legendre transform $\mathbb FL:TM\to T^*M$, $v\mapsto\partial L/\partial v$,
+lands in the cotangent bundle by construction. The Euler--Lagrange equations,
+augmented by a non-potential force,
+\[
+ \frac{d}{dt}\frac{\partial L}{\partial\dot x^k}
+   -\frac{\partial L}{\partial x^k}=f_k ,
+\]
+place $f_k$ on the same footing as $\dot p_k$: both are components of elements
+of $T^*_xM$. Momentum and force carry a lower index for the same structural
+reason.
+
+\subsection{Promotion and demotion: the musical isomorphisms}
+A metric $g$ supplies --- and is exactly what supplies --- the identification
+between the two spaces.
+
+\begin{definition}
+For a Riemannian metric $g$, define
+$\flat:T_xM\to T^*_xM$ by $v^\flat=g(v,\cdot)$, so
+$(v^\flat)_i=g_{ij}v^j$, and $\sharp:T^*_xM\to T_xM$ by
+$(\alpha^\sharp)^i=g^{ij}\alpha_j$, where $g^{ij}g_{jk}=\delta^i_k$. The two are
+mutually inverse.
+\end{definition}
+
+So one may always ``promote'' the force $1$-form to a vector field
+$f^\sharp\in\mathfrak X(M)$, with $(f^\sharp)^i=g^{ij}f_j$, and Newton's second
+law takes either the covector form $m(\nabla_{\dot x}\dot x)^\flat=f$ or the
+vector form $m\nabla_{\dot x}\dot x=f^\sharp$. Nothing is lost --- but the
+promotion is a choice that consumes the metric, and the two objects transform
+differently under a change of coordinates.
+
+In Cartesian coordinates on Euclidean $\R^3$, $g_{ij}=\delta_{ij}$ and the
+components of $f$ and $f^\sharp$ are numerically equal. That coincidence is the
+whole reason engineering mechanics can treat force as a vector without ever
+being wrong. It stops being a coincidence in curvilinear coordinates. In
+cylindrical coordinates $(r,\theta,z)$ on flat space,
+\[
+ g=\operatorname{diag}(1,\;r^2,\;1),\qquad
+ f_\theta=r^2f^\theta,
+\]
+so the covariant, contravariant and \emph{physical} components
+$f_{(\theta)}=f_\theta/r=r f^\theta$ are three different numbers. This is not
+pedantry for turbomachinery: Hill and Peterson's angular-momentum balance,
+$rF_\theta=\delta m\,\tfrac{d}{dt}(rc_\theta)$ \cite[Eq.~7.5]{hillpeterson},
+carries exactly these $r$ weightings, and stating which component is meant is
+what keeps a torque bookkeeping consistent.
+
+\subsection{Impulse is the increment of a covector}
+Write the impulse of $f$ over $[t_0,t_1]$ as
+$J=\int_{t_0}^{t_1}f(t)\,dt$. There is an obstruction hiding in that
+expression: $f(t)\in T^*_{x(t)}M$, and covectors at \emph{different} points lie
+in different vector spaces, so the integrand cannot simply be summed. Making
+$J$ well defined requires one of
+
+\begin{itemize}\itemsep2pt
+\item a flat space with a globally parallel (inertial Cartesian) frame, so all
+      fibres are canonically identified; or
+\item a connection, integrating the parallel-transported covector; or
+\item contraction with a covariantly constant vector field first, reducing the
+      integrand to a scalar.
+\end{itemize}
+
+\noindent Rocket performance uses the first, and the third is what the scalar
+total impulse actually is.
+
+\begin{proposition}\label{prop:impulse-momentum}
+In Cartesian coordinates on Euclidean $\R^3$, $g$ is constant, hence
+$\partial T/\partial x^k=0$ and the Euler--Lagrange equation reduces to
+$\dot p_k=f_k$. Integrating,
+$J=\int_{t_0}^{t_1}f\,dt=p(t_1)-p(t_0)$, an identity in $T^*\R^3$.
+\end{proposition}
+
+\noindent The hypothesis is doing real work, and it is worth seeing exactly
+where the second term comes from, because it is easy to mistake it for a
+product rule when it is really just Euler--Lagrange rearranged.
+
+Since $V$ does not depend on $\dot x$, we have $p_k=\partial L/\partial\dot
+x^k=\partial T/\partial\dot x^k$ and $\partial L/\partial x^k=\partial
+T/\partial x^k-\partial V/\partial x^k$. Substituting both into the
+Euler--Lagrange equation and absorbing the potential force into $f_k$,
+\begin{equation}\label{eq:two-terms}
+ \dot p_k=f_k+\frac{\partial T}{\partial x^k}.
+\end{equation}
+The extra term exists because $T=\tfrac12 m\,g_{ij}(x)\dot x^i\dot x^j$
+depends on \emph{position}, through the metric. In Cartesian coordinates
+$g_{ij}=\delta_{ij}$ is constant, $\partial T/\partial x^k=0$, and
+\eqref{eq:two-terms} collapses to $\dot p_k=f_k$.
+
+The product and chain rules appear one level down, in expanding the left side:
+\[
+ \dot p_k=\frac{d}{dt}\bigl(m\,g_{kj}(x)\dot x^j\bigr)
+  =m\bigl(\partial_ig_{kj}\,\dot x^i\dot x^j+g_{kj}\ddot x^j\bigr),
+\]
+the first term by the product rule on $g_{kj}\dot x^j$ and then the chain rule
+on $g_{kj}(x(t))$. With
+$\partial T/\partial x^k=\tfrac12m\,\partial_kg_{ij}\dot x^i\dot x^j$,
+equation~\eqref{eq:two-terms} becomes
+\[
+ m\,g_{kj}\ddot x^j
+ +m\Bigl(\partial_ig_{kj}-\tfrac12\partial_kg_{ij}\Bigr)\dot x^i\dot x^j
+ =f_k .
+\]
+Because $\dot x^i\dot x^j$ is symmetric in $i,j$, only the symmetric part of
+$\partial_ig_{kj}$ survives, so $\partial_ig_{kj}\dot x^i\dot x^j
+=\tfrac12(\partial_ig_{kj}+\partial_jg_{ki})\dot x^i\dot x^j$, and
+\[
+ m\,g_{kj}\ddot x^j+m\,\Gamma_{k,ij}\dot x^i\dot x^j=f_k,
+ \quad
+ \Gamma_{k,ij}=\tfrac12\bigl(\partial_ig_{kj}+\partial_jg_{ki}
+   -\partial_kg_{ij}\bigr),
+\]
+the Christoffel symbol of the first kind. Raising the index recovers
+$m(\ddot x^l+\Gamma^l_{ij}\dot x^i\dot x^j)=f^l$: the forced geodesic
+equation, which is Newton's second law written covariantly.
+
+\subsubsection*{The cylindrical case, explicitly}
+Take $(r,\theta,z)$ with $g=\operatorname{diag}(1,r^2,1)$, so
+$T=\tfrac12m(\dot r^2+r^2\dot\theta^2+\dot z^2)$. Then
+\[
+ p_r=m\dot r,\qquad p_\theta=mr^2\dot\theta,\qquad p_z=m\dot z,
+\]
+\[
+ \frac{\partial T}{\partial r}=mr\dot\theta^2,\qquad
+ \frac{\partial T}{\partial\theta}=0,\qquad
+ \frac{\partial T}{\partial z}=0 .
+\]
+Equation~\eqref{eq:two-terms} in the radial slot gives
+$m\ddot r=f_r+mr\dot\theta^2$, i.e.\ $f_r=m(\ddot r-r\dot\theta^2)$ --- the
+centrifugal term is the $\partial T/\partial r$ contribution, not a fictitious
+force added by hand. In the angular slot $\partial T/\partial\theta=0$, so
+\[
+ \dot p_\theta=f_\theta
+ \;\Longleftrightarrow\;
+ \frac{d}{dt}\bigl(mr^2\dot\theta\bigr)=f_\theta ,
+\]
+and expanding gives $m(r^2\ddot\theta+2r\dot r\dot\theta)=f_\theta$, whose
+$2r\dot r\dot\theta$ is the Coriolis term.
+
+Note what the lower index bought: $p_\theta=mr^2\dot\theta$ is the angular
+momentum and $f_\theta$ is the torque, both with an extra factor of $r$
+relative to the physical components $c_\theta=r\dot\theta$ and
+$f_{(\theta)}=f_\theta/r$. Hill and Peterson's
+$rF_\theta=\delta m\,\tfrac{d}{dt}(rc_\theta)$
+\cite[Eq.~7.5]{hillpeterson} is exactly $\dot p_\theta=f_\theta$ written in
+physical components, since $r\,c_\theta=r^2\dot\theta=p_\theta/m$ and their
+$rF_\theta$ is our $f_\theta$. The covariant components are the ones an
+engineer already calls angular momentum and torque; the index position is
+telling you which quantity you are holding.
+
+Because $\partial T/\partial x^k\neq0$ here, the naive componentwise
+$\int f\,dt=\Delta p$ is false in these coordinates.
+
+\subsection{From the covector to Sutton's total impulse}
+Sutton defines total impulse by
+$I_t=\int_0^t F\,dt$ \cite[Eq.~2--1]{sutton}, where $F$ is a scalar. The
+geometric content is the third bullet above: if $\hat e$ is a fixed unit
+direction (the thrust axis) and $F=f(\hat e)$, then
+\[
+ I_t=\int_0^{t}f(\hat e)\,dt=J(\hat e),
+\]
+one component of the impulse covector. Four assumptions separate this from the
+general statement.
+
+\begin{description}\itemsep2pt
+\item[A1] Flat space, inertial Cartesian frame --- so $J$ exists
+  (Prop.~\ref{prop:impulse-momentum}).
+\item[A2] The thrust direction $\hat e$ is constant over $[0,t]$.
+\item[A3] $F\ge0$, the thrust magnitude along that axis.
+\item[A4] Start and stop transients are negligible, where Eq.~2--2 is used.
+\end{description}
+
+\begin{proposition}\label{prop:scalar-bound}
+$\lVert J\rVert\le\int_0^t\lVert f\rVert\,dt$, with equality if and only if the
+direction of $f$ is constant. Hence Sutton's scalar $I_t$ equals the magnitude
+of the delivered vector impulse only under A2; for a gimbaled or attitude-slewing
+burn it is a strict over-estimate.
+\end{proposition}
+
+\noindent That is the engineering content of insisting on the covector: a
+quoted total impulse is a bound, not a delivered $\Delta v$ budget, unless the
+thrust direction held still.
+
+Sutton's Eq.~2--2, $I_t=Ft$, follows by additionally holding $F$ constant: with
+$F$ constant the integral $\int_0^tF\,dt$ is just $Ft$, and A4 is what allows
+the start and stop transients --- during which $F$ is emphatically not constant
+--- to be left out of the integral rather than modelled. For specific impulse Sutton writes
+\[
+ I_s=\frac{\int_0^t F\,dt}{g_0\int_0^t\dot m\,dt}
+ \qquad\text{\cite[Eq.~2--3]{sutton}},
+\]
+a ratio of two integrals. It is worth being explicit about what average that is.
+
+\begin{proposition}\label{prop:weighted-mean}
+With the instantaneous value $I_s(t)=F/(\dot m g_0)$,
+\[
+ \frac{\int F\,dt}{g_0\int\dot m\,dt}
+ =\frac{\int I_s(t)\,\dot m\,dt}{\int \dot m\,dt},
+\]
+the \emph{mass-flow-weighted} mean of $I_s$, not its time average. The two
+coincide only when $\dot m$ is constant.
+\end{proposition}
+
+\noindent Sutton's Eq.~2--5, $I_s=F/(\dot m g_0)$, is then the constant-$F$,
+constant-$\dot m$ case, and Eq.~2--4, $I_s=I_t/(m_pg_0)$, follows from
+$\int\dot m\,dt=m_p$.
+
+Two further points of hygiene. First, $g_0$ is a \emph{defined} constant,
+$9.80665\,\mathrm{m/s^2}$, not the local gravitational acceleration; Sutton says
+so, and notes that in orbit $m_pg_0$ ``does not represent the weight''
+\cite[Section 2.1]{sutton}. Consequently $I_s$ measured in seconds is not a
+duration --- it is a velocity divided by a conventional constant, and the unit
+is an artefact of that convention.
+
+Second, and this is where the metric re-enters, Sutton's effective exhaust
+velocity
+\[
+ c=I_sg_0=F/\dot m \qquad\text{\cite[Eq.~2--6]{sutton}}
+\]
+divides a force by a mass flow rate and calls the result a velocity. Force is a
+covector and velocity is a vector, so the equality is really
+$c\,\hat e=(f/\dot m)^\sharp$: the identification is the musical isomorphism,
+performed silently. In Cartesian components on Euclidean space the two sides
+have equal numbers, so nothing goes wrong. The statement to carry forward is
+that $c$ is a metric-dependent object in a way that $I_t$, as a pairing, is not.
+
+\subsection{Where the thrust covector comes from}
+$f$ in the vehicle equation of motion is not primitive either: it is the
+resultant of surface tractions --- pressure and viscous --- over the wetted
+boundary. Traction is naturally a covector-valued $2$-form, the object Frankel
+uses for stress and which pairs with a deformation $1$-form to give a scalar
+$3$-form of work \cite[Section on Elasticity and Stresses]{frankel}. Sutton's
+momentum-flux expression for thrust is a consequence of a control-volume
+balance, not a definition of force, and the rocket's variable mass means the
+vehicle-only $F=d(mv)/dt$ is \emph{not} a correct starting point. That
+derivation belongs with Sutton Section 2.2 and is not attempted here.
+
+\subsection{Notation: the symbol \texorpdfstring{$c$}{c}}
+Reading Sutton and Hill and Peterson together creates a live collision.
+
+\begin{description}\itemsep2pt
+\item[Sutton] $c$ is the effective exhaust velocity \cite[Eq.~2--6]{sutton};
+  $c^*$ is characteristic velocity. Sutton notes the Russian literature uses
+  $c$ in place of $I_s$.
+\item[Hill and Peterson] $c$ (and $\mathbf c$) is the \emph{absolute fluid
+  velocity}, with components $c_r,c_\theta,c_z$ throughout the turbomachinery
+  chapters; $c$ also denotes duct circumference, specific heat of a liquid and
+  the speed of light. Speed of sound is $a$, and $c^*$ is again characteristic
+  velocity \cite[Appendix X]{hillpeterson}.
+\end{description}
+
+\noindent So $c$ \emph{is} the propulsion convention for effective exhaust
+velocity, and it is worth keeping rather than inventing a private symbol. The
+collision is with Hill and Peterson's fluid velocity, not with the speed of
+sound --- these notes already write $a$ for the latter, as in the nozzle topic.
+The rule adopted here: $c$ denotes effective exhaust velocity in
+rocket-performance contexts; subscripted $c_r,c_\theta,c_z$ denote absolute
+fluid velocity components in turbomachinery contexts, following Hill and
+Peterson; and where both appear in one derivation, the exhaust velocity is
+written $v_e$ and said to equal $c$.
+
+\subsection{Scope of what is claimed}
+Propositions~\ref{prop:momentum-covector}--\ref{prop:weighted-mean} are
+mathematical identities under their stated hypotheses, verifiable by direct
+computation; they are not physical claims. A1--A4 are modelling assumptions
+about a particular burn, and whether they hold is an engineering question about
+the vehicle, not something the geometry decides. No numerical or symbolic study
+accompanies this topic yet, so no executable evidence is claimed here; the
+natural first check is Proposition~\ref{prop:scalar-bound} on a slewing burn,
+comparing $\int\lVert f\rVert\,dt$ against $\lVert\int f\,dt\rVert$.
+
+\subsection{An erratum, and why it is the relevant kind}
+Sutton's worked Example~2--1 (printed p.~31 / PDF p.~55) prints
+\[
+ F=I_sg_0=23.3\times2354.4=54{,}936\ \mathrm{N},
+\]
+which was checked here against the source PDF's own text layer, not merely
+against OCR. Two defects sit in that line. First, $I_sg_0=2354.4\
+\mathrm{m/s}$ is the effective exhaust velocity $c$ --- the book computes it as
+$c$ one sentence earlier --- so the equation sets a force equal to a velocity.
+Eq.~2--6 rearranges to $F=\dot mc=\dot mI_sg_0$; the factor $\dot m$ is
+missing. Second, the displayed multiplicand does not reproduce the stated
+result: $23.3\times2354.4=54{,}857.5$, whereas the printed $54{,}936$ follows
+from the unrounded $\dot m=70/3$, since $2354.4\times70/3=54{,}936$ exactly.
+
+Every downstream quantity in the example is nevertheless correct, including
+$I_t=164{,}808\ \mathrm{N\,s}$ --- independently confirmed by
+$I_sm_pg_0=240\times70\times9.81$ --- and the final acceleration
+$422.58\ \mathrm{m/s^2}=43.08\,g_0$. Only the symbolic statement is wrong, and
+it survives into the ninth edition.
+
+The erratum is worth recording because of \emph{what kind} of error it is: a
+force and a velocity have been identified. That is exactly the confusion the
+distinction between $f\in T^*M$ and $c\,\hat e=(f/\dot m)^\sharp\in TM$ is
+there to prevent, and it is invisible to a reader who has already accepted that
+force ``is a vector'' and that the metric may be applied silently. Carrying the
+index position makes the line fail to typecheck on sight.
