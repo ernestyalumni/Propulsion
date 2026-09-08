@@ -19,9 +19,13 @@ onboarding material for an agent reading the package):
     corpus/Public/books/<subject>/<slug>/chapters/NNN-*.md
     corpus/Public/books/<subject>/<pdf_stem>.pdf   the original, beside the slug
 
+Paths come from the configured corpus root, never from a hardcoded absolute
+path (documents/stories/02-corpus-root.md): <CORPUS_ROOT>/Public/books/<subject>
+for the parsed slugs and <CORPUS_ROOT>/Exports/ForPropulsion for the bundles.
+
 Usage:
-    build_agent_context_bundle.py SLUG \
-        [--corpus DIR] [--reading-program DIR] [--template BUNDLE] [--out DIR]
+    PROPULSION_CORPUS_ROOT=<CORPUS_ROOT> \
+        build_agent_context_bundle.py SLUG [--subject NAME] [--template-slug SLUG]
 """
 
 import argparse
@@ -67,17 +71,43 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("slug")
-    parser.add_argument("--corpus", default="/media/propdev/Expansion/openclaw/"
-                        ".openclaw/workspace/Data/Public/books/EngineeringPhysics")
+    parser.add_argument("--corpus-root", default=os.environ.get("PROPULSION_CORPUS_ROOT"),
+                        help="corpus root holding Public/books and Exports; "
+                             "defaults to $PROPULSION_CORPUS_ROOT")
+    parser.add_argument("--subject", default="EngineeringPhysics",
+                        help="subject directory under <CORPUS_ROOT>/Public/books")
     parser.add_argument("--reading-program",
                         default=os.path.dirname(os.path.abspath(__file__)))
-    parser.add_argument("--template", default="/media/propdev/Expansion/openclaw/"
-                        ".openclaw/workspace/Data/Exports/ForPropulsion/"
-                        "Sutton-RocketPropulsionElements-9e-AgentContext",
-                        help="existing bundle to take the shared context and tools from")
-    parser.add_argument("--out", default="/media/propdev/Expansion/openclaw/"
-                        ".openclaw/workspace/Data/Exports/ForPropulsion")
+    parser.add_argument("--template-slug",
+                        default="Sutton-RocketPropulsionElements-9e",
+                        help="slug whose existing bundle supplies the shared "
+                             "context and tools")
+    parser.add_argument("--corpus", default=None,
+                        help="override the derived <CORPUS_ROOT>/Public/books/<subject>")
+    parser.add_argument("--template", default=None,
+                        help="override the derived template bundle path")
+    parser.add_argument("--out", default=None,
+                        help="override the derived <CORPUS_ROOT>/Exports/ForPropulsion")
     args = parser.parse_args()
+
+    # Story 02 (documents/stories/02-corpus-root.md): resolve the corpus from a
+    # single configured value, never a hardcoded absolute path, and fail with
+    # the missing setting named rather than falling back to somewhere inside
+    # the repository.
+    if not args.corpus_root and not (args.corpus and args.out and args.template):
+        parser.error("PROPULSION_CORPUS_ROOT is not set; export it or pass "
+                     "--corpus-root (or all of --corpus/--out/--template)")
+    if args.corpus_root:
+        root = os.path.abspath(args.corpus_root)
+        if not os.path.isdir(root):
+            parser.error(f"corpus root is not mounted: {root}")
+        args.corpus = args.corpus or os.path.join(root, "Public", "books", args.subject)
+        args.out = args.out or os.path.join(root, "Exports", "ForPropulsion")
+        args.template = args.template or os.path.join(
+            args.out, f"{args.template_slug}-AgentContext")
+    for label, path in (("corpus", args.corpus), ("template", args.template)):
+        if not os.path.isdir(path):
+            parser.error(f"{label} directory does not exist: {path}")
 
     slug_dir = os.path.join(args.corpus, args.slug)
     spec = json.load(open(os.path.join(slug_dir, "book_spec.json")))

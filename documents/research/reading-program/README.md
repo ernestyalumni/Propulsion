@@ -1,5 +1,10 @@
 # Reading program — four books, one library
 
+> **Resuming after a break, or starting a fresh agent session?** Read
+> [`SESSION-HANDOFF.md`](SESSION-HANDOFF.md) first. It records what is
+> committed versus merely written to disk, which branch holds what, the open
+> decisions awaiting Ernest, and the gotchas that cost the last session time.
+
 The endeavor: read the classical texts that underpin spacecraft simulation,
 GNC, and propulsion, and rewrite their methods from the physics and the
 equations into a multi-physics library that is Rust first, C++ where the

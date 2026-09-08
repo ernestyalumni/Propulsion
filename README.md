@@ -4,10 +4,16 @@ Propulsion - Numerical recipes for (rocket) propulsion, including notes and solu
 ## Reading room
 
 [Open the local Reading Room](ReadingRoom/README.md) for Numerical Recipes 3e,
-Wie 2e, and Sutton 9e: a linked learning roadmap, PDF reader, saved bookmarks
-and section notes, and existing simulation labs. Start with
-`python3 -B ReadingRoom/server.py --open-browser` after installing its local
-browser assets. Book bundles and study progress stay outside this repository.
+Wie 2e, Sutton 9e, and Hill & Peterson 2e: a linked learning roadmap, PDF
+reader, saved bookmarks and section notes, and existing simulation labs. Start
+with `python3 -B ReadingRoom/server.py --open-browser` after installing its
+local browser assets. Book bundles and study progress stay outside this
+repository.
+
+Agents resuming this work should start from
+[the reading-program session handoff](documents/research/reading-program/SESSION-HANDOFF.md),
+which records committed-versus-uncommitted state, branch layout, and open
+decisions.
 
 ## Python virtual environment setup
 
