@@ -1,0 +1,655 @@
+\topic{sutton-definitions}{Sutton Section 2.1: the definitions, and the shorthand behind them}
+
+Reading anchor: Sutton and Biblarz, ninth edition, Section 2.1,
+``Definitions'', printed pp.~26--31 / PDF pp.~50--55, Eqs.~2--1 to 2--11 and
+Example~2--1 \cite{sutton}. The text reproduced below is Ernest's own
+section on the same material from \path{LaTeXandpdfs/Propulsion.tex}, written
+against the seventh edition \cite{GSuttonOBiblarz2001}; the equation numbering
+of Section 2.1 and the placement of Example~2--1 are unchanged between the two
+editions, so its citations resolve in either. (The book's authors are Sutton
+and Biblarz in that order; the manuscript's ``Biblarz and Sutton'' is kept as
+written.)
+
+The point of carrying this section is the bridge it builds. The previous topic,
+Section~\ref{topic:force-one-form}, is the rigorous end: force is a covector,
+impulse is its increment, and Sutton's scalars are components taken under
+stated assumptions. The manuscript below is the engineering end: definitions
+boxed, the practical formulas recovered, the mass bookkeeping made explicit
+with ``imaginary boxes''. What is added here sits between them. Each block of
+the manuscript is followed by run-in paragraphs headed \textbf{Annotation},
+which do one of three things: name the assumption a shortcut is silently
+using, check a claim, or connect a formula to the covector picture. The
+manuscript text itself is not altered except for the transcription fixes
+listed at the end; every correction of substance is made in an annotation,
+where the reader can see it.
+
+\subsection{Definitions}
+
+Section 2.1. ``Definitions'', Ch. 2 Definitions and Fundamentals of Biblarz
+and Sutton (2001) \cite{GSuttonOBiblarz2001}
+
+The \textbf{total impulse} $I_t$ is the thrust force
+$F_{\text{thrust}} = F_{\text{thrust}}(t)$ integrated over the burning time
+$T$, i.e.
+
+total impulse $I_t = \int_0^T F_{\text{thrust}} dt $ \\
+$t\equiv $ burning time $ \equiv t_p$
+
+specific impulse $I_s$, total impulse per unit weight of propellant
+
+\[
+I_s = \frac{ \int_0^t F_{\text{thrust}} dt }{ g_0 \int \dot{m} dt }
+ = \frac{I_t}{ m_p g_0}
+\]
+\[
+I_s = \frac{ \dot{m} u_e t_p }{ \dot{m} g_0 t_p } = \frac{u_e}{g_0}
+\]
+If $F_{\text{thrust}} = \dot{m} u_e$, and constant propellant mass flow,
+$u_e$.
+
+Instead, define
+\begin{definition}[total impulse]
+\begin{equation}\label{Eq:TotalImpulseDefinition}
+\boxed{ I_{\text{tot}} \equiv I_t = \int_0^t dt F_{\text{thrust}}(t)    }
+\end{equation}
+\end{definition}
+
+\paragraph*{Annotation: what the quick lines assume.}
+The two displayed lines before the boxed definition are Sutton's Eqs.~2--3
+and 2--5 with the route between them compressed. Written out, the second line
+uses four things at once: $\dot m$ constant, $u_e$ constant, no start or stop
+transients, and $F=\dot m u_e$ with nothing else --- that is, no pressure
+thrust. The first three are A2--A4 of Section~\ref{topic:force-one-form}; the
+fourth is discussed under the exhaust-velocity annotation below, and it is why
+Sutton's $u_e$ in this role is the \emph{effective} exhaust velocity $c$, not
+the nozzle-exit velocity $v_2$. The $g$ that divides is the defined constant
+$g_0=9.80665\ \mathrm{m/s^2}$, never the local gravitational acceleration ---
+Sutton says so explicitly, and it is why $I_s$ ``in seconds'' is not a
+duration. Three names for the burn time ($T$, $t$, $t_p$) are in use;
+Sutton uses $t$ inside the integrals of Chapter~2 and $t_p$ in Chapter~4.
+
+\paragraph*{Annotation: the box is a component of a covector.}
+Equation~\ref{Eq:TotalImpulseDefinition} is a scalar. In the language of
+Section~\ref{topic:force-one-form}, it is $J(\hat e)$, the impulse covector
+$J=\int f\,dt$ paired with the fixed thrust axis $\hat e$, and the pairing is
+what makes it a number rather than an object living in different cotangent
+spaces at different instants. It equals the magnitude of the delivered
+momentum change only when the thrust direction holds still
+(Proposition~\ref{prop:scalar-bound}); for a gimballed or slewing burn the
+boxed number is an upper bound on $\lVert\Delta p\rVert$, not the $\Delta v$
+budget.
+
+Let $m_{p, \text{exp}} = m_{p, \text{exp}}(t) = $ mass of propellant already
+expelled by time $t$. $m_{p, \text{exp}}(t) \in C^{\infty}(\mathbb{R})$.
+
+Biblarz and Sutton (2001) \cite{GSuttonOBiblarz2001} defined \emph{specific
+impulse} to be the total impulse per unit weight of propellant as such:
+\begin{definition}[Specific Impulse]
+\begin{equation}\label{Eq:SpecificImpulseDefinition}
+\boxed{ I_s := \frac{  \int_0^t dt F_{\text{thrust}}(t) }{ W_{p, \text{total expelled} }} }
+\end{equation}
+and so
+\begin{equation}\label{Eq:SpecificImpulseIntegralForm}
+I_s = \frac{\int_0^t dt F_{\text{thrust}}(t) }{ g_0 \int dt \dot{m}_{p, \text{exp}}(t)}
+\end{equation}
+For practical calculations,
+\begin{equation}\label{Eq:SpecificImpulsePractical}
+I_s = \frac{ \overline{F}_{\text{thrust} } }{ g_0 \overline{\dot{m}}_{p, \text{expelled}}  }
+\end{equation}
+\end{definition}
+so it's more honest to say that it's the time-averaged specific impulse.
+
+Note that $\int dt \dot{m}_{p, \text{exp}}(t) = m_{p, \text{exp}} = $ total
+effective propellant mass expelled through the nozzle.
+
+\paragraph*{Annotation: which average it is.}
+Two separate points. First,
+Eq.~\ref{Eq:SpecificImpulsePractical} is not an approximation to
+Eq.~\ref{Eq:SpecificImpulseIntegralForm}; it is the same number, provided both
+bars average over the same window $[0,t]$:
+\[
+ \frac{\overline F}{g_0\,\overline{\dot m}}
+ =\frac{\frac1t\int_0^tF\,dt}{g_0\,\frac1t\int_0^t\dot m\,dt}
+ =\frac{\int_0^tF\,dt}{g_0\int_0^t\dot m\,dt},
+\]
+the $1/t$ cancelling. Second, and this is where ``time-averaged'' misleads,
+the number is \emph{not} the time average of the instantaneous specific
+impulse $I_s(t):=F(t)/(\dot m(t)g_0)$. Substituting $F=I_s(t)\,\dot m\,g_0$
+into the numerator,
+\[
+ \frac{\int_0^tF\,dt}{g_0\int_0^t\dot m\,dt}
+ =\frac{\int_0^tI_s(t)\,\dot m(t)\,dt}{\int_0^t\dot m(t)\,dt}
+ \;\ne\;\frac1t\int_0^tI_s(t)\,dt
+ \quad\text{unless $\dot m$ (or $I_s$) is constant,}
+\]
+which is Proposition~\ref{prop:weighted-mean}: the definition is the
+mass-flow-weighted mean of $I_s(t)$, the average that weights each second of
+burn by how much propellant it spent. Sutton's own phrase for Eq.~2--3,
+``a time-averaged specific impulse value'', is loose in exactly this way. The
+honest sentence is: $I_s$ as defined is the ratio of two totals, and equals
+the time average of $I_s(t)$ only for constant mass flow. For a
+boost--sustain motor with $(F_1,\dot m_1)$ over $t_1$ and $(F_2,\dot m_2)$
+over $t_2$, the two averages are
+$\frac{I_{s,1}\dot m_1t_1+I_{s,2}\dot m_2t_2}{\dot m_1t_1+\dot m_2t_2}$ and
+$\frac{I_{s,1}t_1+I_{s,2}t_2}{t_1+t_2}$, and the first is the one that
+predicts $\Delta v$.
+
+\paragraph*{Annotation: weight, and regularity.}
+$W_{p,\text{total expelled}}=g_0\,m_{p,\text{exp}}$ is a mass multiplied by a
+conventional constant. At sea level it is a weight; in orbit Sutton notes it
+``does not represent the weight'' \cite[Section 2.1]{sutton}. Nothing in the
+definition uses a gravitational field. On regularity: a real burn has an
+ignition transient and a shutdown transient, and $m_{p,\text{exp}}$ is
+honestly piecewise $C^1$, with $\dot m_{p,\text{exp}}\ge0$ everywhere and
+$=0$ outside the burn. Assuming $C^\infty$ is a convenience (mollify the
+transients), and it is harmless for every formula here, all of which are
+integrals. The one place it bites is the strict inequality
+$\dot m_{p,\text{exp}}>0$ written below: with $m_{p,\text{exp}}(0)=0$ and the
+expelled mass nonnegative, the derivative must vanish for $t\le0$, so the
+correct statement is $\ge0$ with equality before ignition and after burnout.
+
+If we are equipped with the exterior covariant derivative
+$D: \Omega^{d-1}(N; TN) \to \Omega^d(N; TN)$, then the force on a fluid over
+any general manifold is
+\[
+F = \int_B \dot{m} \otimes \mathbf{u} + m \otimes \left( \frac{\partial \mathbf{u}}{ \partial t} + \nabla_{\mathbf{u}} \mathbf{u} \right)
+\]
+
+If $\frac{\partial \mathbf{u}}{ \partial t} = 0$,
+$\nabla_{\mathbf{u}} \mathbf{u} = 0$ (no curved space),
+\[
+F = \int_B \dot{m} \otimes \mathbf{u}
+\]
+If $\mathbf{u}$ constant over $B$, call the \emph{effective exhaust velocity}
+$c \equiv u$ to be
+\begin{equation}\label{Eq:ConstantEffectiveExhaustVelocity}
+\begin{gathered}
+F = \dot{m} u  \\
+u = \frac{F}{\dot{m}} = I_s g_0
+\end{gathered}
+\end{equation}
+cf. Eq. 2-6 of Biblarz and Sutton (2001) \cite{GSuttonOBiblarz2001}
+
+\paragraph*{Annotation: what that expression is, and what replaces it.}
+The displayed $F$ is the product rule applied to ``$m\mathbf u$'' and
+integrated: $\dot m\,\mathbf u$ plus $m$ times the material acceleration
+$\frac{\partial\mathbf u}{\partial t}+\nabla_{\mathbf u}\mathbf u$. It is a schematic, not a
+derivation, and it should be read as a signpost to the right object rather
+than as a formula to evaluate. Three remarks make it precise.
+
+First, the notation $D:\Omega^{d-1}(N;TN)\to\Omega^d(N;TN)$ names the correct
+tool: a momentum flux through a surface is a vector-valued $(d-1)$-form, and
+its exterior covariant derivative is the coordinate-free way to state a
+momentum balance on a volume. That machinery is what
+Section~\ref{topic:force-one-form} defers to a Sutton~2.2 topic; the
+displayed formula does not actually use it.
+
+Second, the reduction ``$\nabla_{\mathbf u}\mathbf u=0$ (no curved space)''
+mislabels a flow assumption as a geometric one. In flat space
+$\nabla_{\mathbf u}\mathbf u=(\mathbf u\cdot\nabla)\mathbf u$ is the
+convective acceleration, and it vanishes only when streamlines are straight
+and the speed is constant along them. That is precisely the assumption Sutton
+attaches to Eq.~2--12: ``the exit gas velocity is assumed constant, uniform,
+and purely axial.'' Curvature of space is not in play anywhere in this
+chapter.
+
+Third, the surviving term $\int_B\dot m\otimes\mathbf u$ is a momentum
+\emph{flux through a surface}, not a derivative of a vehicle's momentum, and
+Section~\ref{topic:force-one-form} already warns that the vehicle-only
+$F=d(mv)/dt$ is not a correct starting point for a variable-mass body. The
+manuscript's later remark that ``$\dot m_S$ is the mass per unit (surface)
+area'' is the right instinct with the wrong units: the integrand is the mass
+\emph{flow rate} per unit area, $\dot m_S=\rho\,\mathbf u\cdot\mathbf n$ in
+$\mathrm{kg\,m^{-2}\,s^{-1}}$, and $\int_S\dot m_S\,dA=\dot m$. The honest
+flat-space statement is the control-volume momentum balance, which for a fixed
+control volume $B$ with outward normal $\mathbf n$, Cauchy traction
+$\mathbf t=\boldsymbol\sigma\mathbf n$ and body force $\mathbf b$ reads, in
+Cartesian components,
+\begin{equation}\label{Eq:ControlVolumeMomentumBalance}
+ \frac{d}{dt}\int_B\rho\,u^i\,dV
+ +\oint_{\partial B}\rho\,u^i\,(u^jn_j)\,dA
+ =\oint_{\partial B}t^i\,dA+\int_B\rho\,b^i\,dV .
+\end{equation}
+Both terms of the manuscript's schematic are inside the left side: by the
+transport theorem and continuity, for a steady flow
+$\int_B\rho\,(\mathbf u\cdot\nabla)u^i\,dV=\oint_{\partial B}\rho u^i(u^jn_j)\,dA$,
+so ``$\dot m\otimes\mathbf u$'' and ``$m\otimes\nabla_{\mathbf u}\mathbf u$''
+are the same quantity in two forms, and adding them would count it twice.
+
+\paragraph*{Annotation: from the balance to the thrust equation.}
+Sutton's ninth edition quotes rather than derives its thrust equation
+(``a derivation can be found in earlier editions''), so here is the
+control-volume derivation in full, for the test-stand case that his Eq.~2--13
+describes. Let $\hat e$ be the forward unit vector. Take $B$ to be the region
+bounded by a surface $\Sigma$ that hugs the outside of the vehicle and cuts
+straight across the nozzle exit plane $A_2$, so the contents of $B$ are the
+vehicle, the propellant aboard, and the gas in the chamber and nozzle. Assume:
+steady flow in the vehicle frame, which is inertial on a test stand
+(A\textsubscript{s}); exit velocity uniform, axial, of magnitude $v_2$
+(A\textsubscript{u}); uniform ambient pressure $p_3$ on the outside of
+$\Sigma$ and uniform gas pressure $p_2$ across $A_2$ (A\textsubscript{p});
+inviscid traction on $\Sigma$, $t^i=-p\,n^i$ (A\textsubscript{v}); and no body
+force, gravity being balanced separately or absent (A\textsubscript{g}). Under
+A\textsubscript{s} the first term of
+Eq.~\ref{Eq:ControlVolumeMomentumBalance} vanishes. Mass crosses $\Sigma$ only
+through $A_2$, where $\mathbf u=-v_2\hat e$ and $\mathbf n=-\hat e$, so with
+A\textsubscript{u} the flux term is
+\[
+ \oint_{\partial B}\rho\,\mathbf u\,(\mathbf u\cdot\mathbf n)\,dA
+ =\int_{A_2}\rho_2\,(-v_2\hat e)\,(v_2)\,dA
+ =-\rho_2v_2^2A_2\,\hat e=-\dot m\,v_2\,\hat e,
+ \qquad \dot m=\rho_2v_2A_2 .
+\]
+The external forces on the contents are the stand's reaction $\mathbf R$ and
+the pressure over $\Sigma$. Write the pressure as $p_3$ everywhere on $\Sigma$
+except on $A_2$, where it is $p_2$, and use A\textsubscript{v}:
+\[
+ \oint_{\partial B}\mathbf t\,dA
+ =-\oint_{\Sigma}p\,\mathbf n\,dA
+ =-\underbrace{\oint_{\Sigma}p_3\,\mathbf n\,dA}_{=\,0\ \text{(closed surface)}}
+  -\int_{A_2}(p_2-p_3)\,\mathbf n\,dA
+ =(p_2-p_3)A_2\,\hat e .
+\]
+Equation~\ref{Eq:ControlVolumeMomentumBalance} then reads
+$-\dot m v_2\hat e=\mathbf R+(p_2-p_3)A_2\hat e$, i.e.
+\[
+ \mathbf R=-\bigl[\dot m\,v_2+(p_2-p_3)A_2\bigr]\hat e ,
+\]
+the stand pushes backward with exactly the thrust, and by Newton's third law
+the vehicle pushes forward with
+\begin{equation}\label{Eq:ThrustEquation}
+ F=\dot m\,v_2+(p_2-p_3)A_2 ,
+\end{equation}
+Sutton's Eq.~2--13. The momentum thrust is the flux term; the pressure thrust
+is the one place where the closed-surface cancellation of $p_3$ fails, namely
+on the cut where the pressure is $p_2$ instead. Dropping the pressure term
+requires $p_2=p_3$ (optimum expansion, Chapter~3), which is the additional
+assumption hidden in the manuscript's $F=\dot m u$.
+
+\paragraph*{Annotation: why the boxed equation is nevertheless exact.}
+The subtlety is that Eq.~\ref{Eq:ConstantEffectiveExhaustVelocity} is true
+\emph{by construction}, with no flow assumption at all. Sutton does not
+measure $c$; he defines it, Eq.~2--6, as the number $F/\dot m$, and then
+observes, Eq.~2--15, that Eq.~\ref{Eq:ThrustEquation} gives it the value
+\[
+ c=\frac{F}{\dot m}=v_2+\frac{(p_2-p_3)A_2}{\dot m}=I_sg_0 .
+\]
+So $F=\dot mc$ holds whenever $\dot m$ is constant, full stop, and
+A\textsubscript{u}, A\textsubscript{p} and $p_2=p_3$ are needed only to
+identify the defined $c$ with the physical exit velocity $v_2$. This is the
+engineering shorthand at its most honest: $c$ is the velocity that
+\emph{would} produce the measured thrust if all of it were momentum thrust.
+What the covector picture adds is that even this is a metric statement ---
+$F/\dot m$ is a covector divided by a scalar, and calling it a velocity is
+$c\,\hat e=(f/\dot m)^\sharp$, the musical isomorphism applied silently, as
+Section~\ref{topic:force-one-form} spells out.
+
+\textbf{Mass ratio} $\mathbf{MR}$ of a vehicle or \emph{particular vehicle
+stage} is defined as
+\[
+\mathbf{MR} := \frac{m_f}{m_0}
+\]
+where, using Biblarz and Sutton (2001)'s notation, \\
+$m_f \equiv $ final mass (after rocket operation has consumed all usable
+propellant), and \\
+$m_0$ (before rocket operation).
+
+$\mathbf{MR}$ applies to a single, or multistage vehicle.
+\begin{itemize}
+	\item Overall mass ratio is the product of the individual vehicle stage
+	mass ratios
+	\item Final mass $m_f$ is mass of vehicle after rocket has ceased to
+	operate when all useful propellant mass $m_p$ has been consumed and
+	ejected.
+	\item $m_f$ includes all components not useful propellant and may include
+	guidance devices, navigation gear, \textbf{payload}
+	\end{itemize}
+
+\paragraph*{Annotation: the product of stage mass ratios.}
+The first bullet is Sutton's sentence, and it is true in the sense that
+matters for velocity, not literally for masses. Take $N$ stages burned in
+series; stage $i$ starts at $m_{0,i}$ and ends at $m_{f,i}$, then jettisons
+its inert hardware $s_i$, so $m_{0,i+1}=m_{f,i}-s_i$. Telescoping,
+\[
+ \frac{m_{f,N}}{m_{0,1}}
+ =\prod_{i=1}^{N}\frac{m_{f,i}}{m_{0,i}}\;
+  \prod_{i=1}^{N-1}\frac{m_{0,i+1}}{m_{f,i}}
+ =\Bigl(\prod_{i=1}^{N}\mathbf{MR}_i\Bigr)
+  \prod_{i=1}^{N-1}\Bigl(1-\frac{s_i}{m_{f,i}}\Bigr),
+\]
+so the literal ratio of final to initial mass equals the product of the stage
+ratios only when nothing is dropped. What \emph{is} multiplicative is the
+quantity the mass ratio is for: in gravity-free, drag-free flight each stage
+contributes $\Delta u_i=c_i\ln(1/\mathbf{MR}_i)$ (Sutton Eq.~4--6), and with
+equal $c$ the total is $c\ln\prod_i(1/\mathbf{MR}_i)$. Sutton's ``overall
+mass ratio'' is the product in that sense, made precise in his Section~4.7,
+and this is the first place the manuscript's imaginary boxes earn their keep:
+each $\mathbf{MR}_i$ is computed in the box of stage $i$ with everything above
+it counted as payload, and the boxes for successive stages are not nested
+copies of one another.
+
+\subsubsection{Mass definitions for rockets, vehicles, propellants}
+
+Instead, let the mass of the rocket $+$ remaining propellant be
+$M = M(t) \in C^{\infty}(\mathbb{R})$, such that $M \geq 0$,
+$\forall \, t \in \mathbb{R}$, always.
+
+Let $M_f \in \mathbb{R}^+$ be a constant, what Biblarz and Sutton calls the
+final or inert propulsion mass, and denote as $m_f$.
+
+Let $m_p = m_p(t) = $ propellant remaining on vehicle or stage. Thus,
+\begin{equation}
+\dot{m}_p \leq 0
+\end{equation}
+which is expected by physical considerations.
+
+Let
+\begin{equation}\label{Eq:PropellantRemainingBookkeeping}
+m_p(t)  = m_p(0) - m_{p,\text{exp}}(t)
+\end{equation}
+where $m_{p,\text{exp}}(t) = $ total propellant that had been expelled.
+Clearly
+\begin{equation}
+\dot{m}_{p, \text{exp}}(t) \geq 0, \, m_{p,\text{exp}}(0) = 0
+\end{equation}
+
+Thus
+\begin{equation}\label{Eq:MassBookkeeping}
+\begin{aligned}
+& M(t) = M_f + m_p(t)  \\
+& M(0) = M_f + m_p(0)
+\end{aligned}
+\end{equation}
+and so define
+\begin{definition}[Mass ratio]
+\begin{equation}\label{Eq:MassRatioDefinition}
+\mathbf{MR} := \frac{M_f}{M(0)}	= \frac{M_f}{ M_f + m_p(0)}
+\end{equation}
+	\end{definition}
+and
+\begin{definition}[propellant mass fraction $\zeta$]
+	\begin{equation}\label{Eq:PropellantMassFractionDefinition}
+	\zeta := \frac{m_p(0)}{ M(0)} = \frac{M(0) - M_f}{M(0)}
+	 = \frac{m_p(0)}{M_f + m_p(0)}
+	\end{equation}
+	\end{definition}
+Biblarz and Sutton (2001) uses a different notation for the masses.
+
+e.g. $\zeta = \frac{m_p(0)}{ M(0)} = 0.91$ means only 9 percent of mass is
+inert rocket hardware, and this small fraction contains, feeds, burns a
+substantially larger mass of propellant: a high value of $\zeta$ is
+desirable.
+
+\paragraph*{Annotation: the dictionary, and one identity.}
+The manuscript's time-dependent bookkeeping and Sutton's static symbols
+correspond as follows, with the box always to be stated:
+\[
+ M(0)\leftrightarrow m_0,\qquad
+ M_f\leftrightarrow m_f,\qquad
+ m_p(0)\leftrightarrow m_p,\qquad
+ M(t_p)=M_f .
+\]
+For the whole vehicle $M_f=M_r+M_{\text{pay}}$; for the propulsion system
+alone $M_f=M_r$ (the manuscript's notation for Example~2--1, below). Sutton's
+Eqs.~2--7 to 2--10 are, in this notation,
+Eq.~\ref{Eq:MassRatioDefinition}, Eq.~\ref{Eq:PropellantMassFractionDefinition}
+and the second line of Eq.~\ref{Eq:MassBookkeeping}; the one identity worth
+keeping in view is that the two definitions are not independent,
+\begin{equation}\label{Eq:ZetaPlusMR}
+ \zeta+\mathbf{MR}
+ =\frac{m_p(0)}{M(0)}+\frac{M_f}{M(0)}
+ =\frac{m_p(0)+M_f}{M(0)}=1 ,
+\end{equation}
+so a ``mass fraction of 0.91'' and a ``mass ratio of 0.09'' are the same
+statement, and $1/\mathbf{MR}=1/(1-\zeta)$ is the number that enters the
+logarithm of the rocket equation. The residual-propellant convention matters
+here: Sutton counts unusable residuals in $m_f$, some manufacturers count
+them in $m_p$, and $\zeta$ moves accordingly.
+
+Impulse to weight ratio of a complete propulsion system:
+
+\[
+\frac{I_t}{w_0}
+\]
+$I_t \equiv $ total impulse, \\
+$w_0 \equiv $ initial or propellant-loaded vehicle weight.
+
+It's reasonable to suppose that
+\begin{equation}\label{Eq:ImpulseToWeight}
+\begin{gathered}
+\frac{I_t}{w_0} = \frac{I_t}{ M(0) g_0}
+ = \frac{I_t}{  (M_f + m_p(0)) g_0}
+ = \frac{I_s m_p(0) g_0}{ (M_f + m_p(0)) g_0}
+ = \frac{ I_s}{ \frac{M_f}{m_p} + 1}
+\end{gathered}
+\end{equation}
+
+thrust-to-weight ratio $F/w_0$
+
+\paragraph*{Annotation: not a supposition, and a cleaner form.}
+Equation~\ref{Eq:ImpulseToWeight} is Sutton's Eq.~2--11, and nothing in it
+needs supposing. The only input beyond the definitions is
+$I_t=I_sm_p(0)g_0$, which is Eq.~\ref{Eq:SpecificImpulseIntegralForm}
+rearranged (Sutton's Eq.~2--4) and is therefore exact for any thrust
+history --- the ``constant thrust, negligible transients'' Sutton attaches to
+Eq.~2--11 is inherited from reading $I_s$ as Eq.~2--5 and is not needed when
+$I_s$ is the integral definition. The last member also has a cleaner name:
+\begin{equation}\label{Eq:ImpulseToWeightIsIsZeta}
+ \frac{I_t}{w_0}
+ =I_s\,\frac{m_p(0)}{M_f+m_p(0)}
+ =I_s\,\zeta ,
+\end{equation}
+by Eq.~\ref{Eq:PropellantMassFractionDefinition}. So the impulse-to-weight
+ratio is the specific impulse discounted by the propellant fraction, it has
+the same conventional unit of seconds, and it satisfies $I_t/w_0\le I_s$ with
+equality only for a vehicle made entirely of propellant. That is the exact
+content of Sutton's remark, in Example~2--1, that a ``good design'' would
+bring $I_t/w_0$ close to $I_s$: it means $\zeta$ close to one.
+
+For the thrust-to-weight ratio, with $F$ constant and gravity and drag
+neglected, $F/w_0=a_0/g_0$ is the initial acceleration in units of $g_0$, and
+because the thrust is unchanged while the mass falls,
+\begin{equation}\label{Eq:BurnoutAcceleration}
+ a_f=\frac{F}{M_f}=\frac{F}{M(0)}\,\frac{M(0)}{M_f}
+ =\frac{a_0}{\mathbf{MR}} ,
+\end{equation}
+the burnout acceleration is the initial one divided by the mass ratio of
+whichever box actually moves together.
+
+Example 2-1 of Biblarz and Sutton (2001) \cite{GSuttonOBiblarz2001} has some
+subtleties about the mass definitions that wasn't covered clearly (at least
+for me) by the discussion.
+
+Let $M_r$ is the mass of the propulsion system, $r$ standing for ``rocket.''
+If there is \emph{no payload}, then
+\[
+\begin{aligned}
+& M(0) = M_r + m_p(0) \\
+& M(t) = M_r + m_p(t)
+\end{aligned}
+\]
+
+\emph{But}, if payload is considered, observe that payload can be considered
+to be part of the whole of the vehicle (imagine an imaginary box surrounding
+the entire system or ``vehicle''), \emph{and also} can be considered to be
+separate and distinct (no overlap) from the propulsion system plus propellant
+(imagine an imaginary box surrounding only the rocket (propulsion system) and
+fuel, and another imaginary box surrounding the payload; the two imaginary
+boxes do not overlap).
+
+\[
+\begin{aligned}
+& M(0) = M_r + M_{\text{pay}} + m_p(0) \\
+& M(t) = M_r + M_{\text{pay}} + m_p(t)
+\end{aligned}
+\]
+
+Recall that mass ratio is defined as $\mathbf{MR} := \frac{M_f}{ M(0)}$. But
+remember that $\mathbf{MR}$ can be considered for different, discrete
+imaginary boxes (subsystems). So for Example 2-1 of Biblarz and Sutton:
+
+\[
+\begin{aligned}
+&	\mathbf{MR}_{\text{tot}} = \frac{M_{f, \text{tot}}}{M(0)}
+ = \frac{M_r + M_{\text{pay}}}{ M(0) } \\
+	& \mathbf{MR}_r = \frac{ M_r }{ M_r+ m_p(0)}
+ = \frac{M_r }{ M(0) - M_{\text{pay}}}
+\end{aligned}
+\]
+Notice how you can not take the payload mass into account; imagine only
+dealing with what's in the imaginary box surrounding only the rocket plus
+propellant.
+
+If $\frac{\partial \mathbf{u}}{ \partial t} = 0$, assuming flat space,
+$F = \int_S \dot{m}_S \otimes \mathbf{u}$. Notice that for the units to make
+sense, $\dot{m}_S$ is the mass per unit (surface) area. If
+$\dot{m}_S , \mathbf{u}$ constant over surface area $S$,
+$F= \dot{m} \mathbf{u}$.  Then, $u = \frac{F}{\dot{m}} = I_s g_0$.
+
+Then $\overline{u} = I_s g_0$. \\
+$I_{\text{tot}} = I_s m_p(0) = I_s(M(0) - (M_r + M_{\text{pay}}))$
+
+Given the burn duration $T$, estimate $\dot{m}_{p, \text{exp}}$ with the
+simplest (linear) approximation:
+$\dot{m}_{p, \text{exp}} = \frac{m_p(0)}{T}$.
+
+$\overline{F}_{\text{thrust}} = \overline{ \dot{m}}_{p, \text{exp}} g_0 I_s$
+
+Consider $\overline{F}_{\text{thrust}}$ on rocket, only. For a horizontal
+trajectory, max. acceleration is found at end of the thrusting schedule, just
+before shutdown (because while thrust is unchanged the mass is now at its
+minimum value). Think of ``Max-Q''.
+
+\[
+\Longrightarrow a_f = \frac{ \overline{F}_{\text{thrust}} }{ M_f}
+\]
+
+\paragraph*{Annotation: the example with numbers, in the box notation.}
+The ninth edition's data (checked against the source text layer) are
+$M(0)=200\ \mathrm{kg}$, $M_{f,\text{tot}}=130\ \mathrm{kg}$,
+$M_{\text{pay}}=110\ \mathrm{kg}$, $T=3.0\ \mathrm{s}$, $I_s=240\ \mathrm{s}$,
+and Sutton rounds $g_0$ to $9.81\ \mathrm{m/s^2}$ throughout the example.
+Then $m_p(0)=200-130=70\ \mathrm{kg}$ and $M_r=130-110=20\ \mathrm{kg}$, and
+the two boxes give
+\[
+\begin{aligned}
+ \mathbf{MR}_{\text{tot}}&=\frac{130}{200}=0.65, &
+ \zeta_{\text{tot}}&=\frac{70}{200}=0.35, \\
+ \mathbf{MR}_r&=\frac{20}{90}=0.222, &
+ \zeta_r&=\frac{70}{90}=0.778,
+\end{aligned}
+\]
+each pair summing to one as Eq.~\ref{Eq:ZetaPlusMR} requires. Sutton
+reports $\mathbf{MR}$ for both boxes but $\zeta$ only for the propulsion
+unit, although the problem statement asks for both. Continuing,
+$c=I_sg_0=240\times9.81=2354.4\ \mathrm{m/s}$
+(with the defined $g_0=9.80665$ it would be $2353.6$; the book's rounding is
+harmless here), $\overline{\dot m}=70/3\ \mathrm{kg/s}$, and
+$\overline F=\overline{\dot m}\,c=(70/3)\times2354.4=54{,}936\ \mathrm{N}$
+--- using the unrounded flow rate, which is what reproduces the printed
+figure; the book's own display of this line is the erratum recorded in
+Section~\ref{topic:force-one-form}. Then $I_t=\overline F\,T=164{,}808\
+\mathrm{N\,s}$, equal to $I_sm_p(0)g_0=240\times70\times9.81$ as it must be,
+and the impulse-to-weight ratio of the propulsion unit is
+\[
+ \frac{I_t}{w_0}=\frac{164{,}808}{90\times9.81}=186.7\ \mathrm{s}
+ =I_s\,\zeta_r=240\times0.778 ,
+\]
+confirming Eq.~\ref{Eq:ImpulseToWeightIsIsZeta} and Sutton's printed
+$187\ \mathrm{s}$. For the acceleration the box is no longer a choice: the
+$35\,g_0$ limit is on the payload's electronics, which ride with the whole
+vehicle, so $M_f$ in the manuscript's last line must be the vehicle's
+$130\ \mathrm{kg}$ and not the propulsion unit's $20\ \mathrm{kg}$. That gives
+$a_f=54{,}936/130=422.6\ \mathrm{m/s^2}=43.08\,g_0$, over the limit, and
+Eq.~\ref{Eq:BurnoutAcceleration} checks it from the other end:
+$a_0=54{,}936/200=274.7\ \mathrm{m/s^2}=28.0\,g_0$ and
+$a_0/\mathbf{MR}_{\text{tot}}=28.0/0.65=43.1\,g_0$. The rule the example
+teaches is therefore: for ratios, choose the box and say which; for
+Newton's law, the box is whatever moves rigidly together.
+
+\paragraph*{Annotation: the linear estimate is exact for the average.}
+``The simplest (linear) approximation'' $\dot m_{p,\text{exp}}=m_p(0)/T$
+understates its own status. By the fundamental theorem of calculus,
+$\frac1T\int_0^T\dot m_{p,\text{exp}}\,dt=m_{p,\text{exp}}(T)/T=m_p(0)/T$
+whatever the flow history, so as a statement about the \emph{average} flow
+rate it is exact. What is an approximation is the next step: using the
+average in place of the instantaneous $\dot m(T^-)$ to obtain the thrust at
+burnout, which is the constant-thrust assumption A3 again. A motor with a
+regressive burn has its lowest thrust at the end, and the true burnout
+acceleration is lower than $\overline F/M_f$; a progressive burn, higher.
+
+\paragraph*{Annotation: not Max-Q.}
+The last sentence before the display should not invoke Max-Q. Maximum dynamic
+pressure, $q=\tfrac12\rho v^2$, occurs where the product of atmospheric
+density and flight speed peaks, typically early in an ascent while the air is
+still dense, and it is a structural-load event, not a peak in acceleration.
+Peak acceleration under constant thrust occurs at burnout because the mass is
+least, which is what the sentence correctly says. The two events are
+unrelated in general, and in Example~2--1 there is no atmosphere modelled at
+all --- gravity is balanced by lift and drag is neglected --- so the example
+has no Max-Q to think of.
+
+\subsection{The card: Section 2.1 on one page}
+Every formula of Sutton's Section~2.1, with the hypothesis under which it is
+exact, so that the shortcut and its price sit side by side.
+
+\begin{center}\small
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}p{0.19\linewidth}p{0.07\linewidth}p{0.30\linewidth}p{0.36\linewidth}@{}}
+\hline
+Impulse and velocity & Sutton & Formula & Exact when \\
+\hline
+Total impulse & 2--1 & $I_t=\int_0^{t}F\,dt$ &
+ Definition. Equals $\lVert\Delta p\rVert$ under A1--A2
+ (Props.~\ref{prop:impulse-momentum}, \ref{prop:scalar-bound}); a bound
+ otherwise. \\
+ & 2--2 & $I_t=Ft$ & $F$ constant, transients negligible (A3--A4). \\
+Specific impulse & 2--3 & $I_s=\dfrac{\int F\,dt}{g_0\int\dot m\,dt}$ &
+ Definition; the mass-flow-weighted mean of $F/(\dot mg_0)$
+ (Prop.~\ref{prop:weighted-mean}). \\
+ & 2--4 & $I_s=I_t/(m_pg_0)$ & Identity from 2--3. \\
+ & 2--5 & $I_s=F/(\dot mg_0)$ & $F$, $\dot m$ constant. \\
+Effective exhaust velocity & 2--6 & $c=I_sg_0=F/\dot m$ &
+ Definition of $c$; equals $v_2$ iff $p_2=p_3$ (Eq.~2--15). \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{center}\small
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}p{0.19\linewidth}p{0.07\linewidth}p{0.30\linewidth}p{0.36\linewidth}@{}}
+\hline
+Masses and ratios & Sutton & Formula & Exact when \\
+\hline
+Mass ratio & 2--7 & $\mathbf{MR}=m_f/m_0$ & Definition; state the box. \\
+Propellant mass fraction & 2--8, 2--9 & $\zeta=m_p/m_0=1-\mathbf{MR}$ &
+ Same box as $\mathbf{MR}$; residual convention stated. \\
+Impulse-to-weight & 2--11 & $\dfrac{I_t}{w_0}=\dfrac{I_s}{m_f/m_p+1}=I_s\zeta$ &
+ Identity given 2--4; $\le I_s$. \\
+Thrust-to-weight & --- & $\dfrac{F}{w_0}=\dfrac{a_0}{g_0}$,\quad
+ $\dfrac{a_f}{g_0}=\dfrac{F/w_0}{\mathbf{MR}}$ &
+ $F$ constant, gravity and drag neglected. \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Scope of what is claimed}
+Everything above is definition, identity or bookkeeping, checkable by hand;
+the control-volume derivation of Eq.~\ref{Eq:ThrustEquation} is exact under
+the five assumptions labelled A\textsubscript{s}--A\textsubscript{g}, and the
+numbers in Example~2--1 were recomputed from the ninth edition's data and
+agree with its printed results. No executable study accompanies this topic.
+The covector-valued-form version of the momentum balance, the object the
+manuscript's $D$ points at, remains deferred to a Sutton~2.2 topic, as in
+Section~\ref{topic:force-one-form}.
+
+\subsubsection*{Transcription notes}
+The manuscript is reproduced as written apart from the following, each a
+typographical fix rather than a change of content: a missing ``$=$'' in
+Eq.~\ref{Eq:SpecificImpulsePractical}; $g\to g_0$ in the second quick line
+and in Eq.~\ref{Eq:ImpulseToWeight}; $M_s\to M_f$ in the last member of
+Eq.~\ref{Eq:ImpulseToWeight}; ``$>0$'' $\to$ ``$\ge0$'' for
+$\dot m_{p,\text{exp}}$, for the reason given in the regularity annotation;
+straight quotation marks set as \LaTeX{} quotes; equation labels added so the
+annotations can cite by number; and trailing forced line breaks removed where
+they preceded a blank line.

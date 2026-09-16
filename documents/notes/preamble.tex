@@ -5,7 +5,8 @@
 \usepackage{geometry,multicol}
 \ifdefined\screenedition
   \geometry{paperwidth=1200pt,paperheight=700pt,margin=35pt}
-  \newenvironment{notesbody}{\begin{multicols}{2}}{\end{multicols}}
+  % Allow unequal column bottoms when long derivations constrain page breaks.
+  \newenvironment{notesbody}{\begin{multicols}{2}\raggedcolumns}{\end{multicols}}
 \else
   \geometry{letterpaper,margin=0.9in}
   \newenvironment{notesbody}{}{}
@@ -13,6 +14,10 @@
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue]{hyperref}
 \newtheorem{proposition}{Proposition}
 \newtheorem{definition}{Definition}
+\theoremstyle{definition}
+% Keep the textbook's identifier in the optional heading.
+\newtheorem*{exercise}{Exercise}
+\theoremstyle{plain}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\SO}{\operatorname{SO}}
 \newcommand{\topic}[2]{\section{#2}\label{topic:#1}\hypertarget{topic-#1}{}}

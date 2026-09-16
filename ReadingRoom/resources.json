@@ -271,9 +271,104 @@
       "path": "master-portrait.pdf",
       "kind": "PDF",
       "anchor": "topic-legacy-map"
+    },
+    {
+      "id": "force-one-form-pdf",
+      "title": "Force as a one-form, and what that makes impulse · PDF",
+      "root": "artifacts",
+      "path": "master-portrait.pdf",
+      "kind": "PDF",
+      "anchor": "topic-force-one-form"
+    },
+    {
+      "id": "force-one-form-source",
+      "title": "Force as a one-form, and what that makes impulse · derivation",
+      "root": "propulsion",
+      "path": "documents/notes/topics/force-one-form.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "sutton-definitions-pdf",
+      "title": "Sutton Section 2.1: the definitions, and the shorthand behind them · PDF",
+      "root": "artifacts",
+      "path": "master-portrait.pdf",
+      "kind": "PDF",
+      "anchor": "topic-sutton-definitions"
+    },
+    {
+      "id": "sutton-definitions-source",
+      "title": "Sutton Section 2.1: the definitions, and the shorthand behind them · derivation",
+      "root": "propulsion",
+      "path": "documents/notes/topics/sutton-definitions.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "runge-kutta-pdf",
+      "title": "Runge–Kutta: formulation and order conditions · PDF",
+      "root": "artifacts",
+      "path": "master-portrait.pdf",
+      "kind": "PDF",
+      "anchor": "topic-runge-kutta"
+    },
+    {
+      "id": "runge-kutta-source",
+      "title": "Runge–Kutta: Ernest’s notes and completed derivations",
+      "root": "propulsion",
+      "path": "documents/notes/topics/runge-kutta.tex",
+      "kind": "LaTeX source"
+    },
+    {
+      "id": "runge-kutta-checks",
+      "title": "Runge–Kutta exact algebra checks",
+      "root": "propulsion",
+      "path": "documents/notes/checks/runge_kutta.sage",
+      "kind": "SageMath code"
+    },
+    {
+      "id": "runge-kutta-evidence",
+      "title": "Runge–Kutta scoped verification record",
+      "root": "artifacts",
+      "path": "runge-kutta-verification.json",
+      "kind": "Verification record"
     }
   ],
   "topics": [
+    {
+      "id": "force-one-form",
+      "title": "Force as a one-form, and what that makes impulse",
+      "summary": "Work as a pairing, momentum and force as covectors via the Legendre transform, the forced geodesic equation, and Sutton's total and specific impulse as its flat-space specialisation.",
+      "authorship": "New synthesis; historical references retain Ernest Yeung's authorship.",
+      "status": "Mathematical identities under stated hypotheses; no computation claimed.",
+      "locators": [
+        {
+          "book": "sutton",
+          "section": "2.1"
+        }
+      ],
+      "assets": [
+        "force-one-form-pdf",
+        "force-one-form-source",
+        "legacy-propulsion"
+      ]
+    },
+    {
+      "id": "sutton-definitions",
+      "title": "Sutton Section 2.1: the definitions, and the shorthand behind them",
+      "summary": "Ernest's Section 2.1 write-up reproduced verbatim, annotated: which assumption each shortcut uses, the control-volume thrust equation in full, Example 2-1 recomputed.",
+      "authorship": "Verbatim from Ernest Yeung's Propulsion manuscript; annotations are new synthesis.",
+      "status": "Definitions, identities and a worked example checked against the source text layer; no computation claimed.",
+      "locators": [
+        {
+          "book": "sutton",
+          "section": "2.1"
+        }
+      ],
+      "assets": [
+        "sutton-definitions-pdf",
+        "sutton-definitions-source",
+        "legacy-propulsion"
+      ]
+    },
     {
       "id": "oscillator",
       "title": "Harmonic oscillator: Störmer–Verlet",
@@ -414,6 +509,26 @@
         "dgdt",
         "sage-gravity",
         "compphys"
+      ]
+    },
+    {
+      "id": "runge-kutta",
+      "title": "Runge–Kutta methods: notation, stages and order",
+      "summary": "Ernest’s general formulation and notation comparisons, with explicit Euler/Heun/midpoint examples, the completed RK4 Taylor derivation, and fourth-order conditions.",
+      "authorship": "Adapted from Ernest Yeung’s Propulsion manuscript, with documented corrections and added derivations prepared with Codex.",
+      "status": "General derivation under stated smoothness and row-sum assumptions; scoped exact Sage checks and one convergence experiment, not validation of every legacy solver.",
+      "locators": [
+        {
+          "book": "nr",
+          "section": "17.1"
+        }
+      ],
+      "assets": [
+        "runge-kutta-pdf",
+        "runge-kutta-source",
+        "runge-kutta-checks",
+        "runge-kutta-evidence",
+        "legacy-propulsion"
       ]
     }
   ]

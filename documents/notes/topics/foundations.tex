@@ -19,18 +19,19 @@ rotation API. Read Wie's inertia and angular-momentum development
 
 \subsection{From geometry to conservation}
 On an oriented Riemannian manifold with metric $g$ and volume form $\mu_g$,
-define divergence by
+write $u^i$ for the velocity components in coordinates $x^i$ and define
+divergence by
 \[
  \mathcal L_u\mu_g=(\operatorname{div}_g u)\mu_g,
  \qquad
  \operatorname{div}_g u=\frac{1}{\sqrt{\det g}}
-   \partial_i\!\left(\sqrt{\det g}\,u^i\right).
+   \frac{\partial}{\partial x^i}\!\left(\sqrt{\det g}\,u^i\right).
 \]
 For smooth density $\rho$ and velocity $u$, conservation of mass on every
 material region $V_t$ transported by $u$ gives
 \[
  0=\frac{d}{dt}\int_{V_t}\rho\,\mu_g
-   =\int_{V_t}\bigl(\partial_t\rho+\operatorname{div}_g(\rho u)\bigr)\mu_g.
+   =\int_{V_t}\bigl(\frac{\partial\rho}{\partial t}+\operatorname{div}_g(\rho u)\bigr)\mu_g.
 \]
 Localization yields the continuity equation. In a thin duct, integrating over
 cross sections and assuming stationary, effectively uniform section data gives

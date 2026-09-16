@@ -24,6 +24,25 @@ Historical notes remain in `LaTeXandpdfs/` and external repos. Reviewed material
 can be extracted into topic chapters incrementally without moving originals
 or duplicating mathematics between companions.
 
+## Current study checkpoint
+
+See [STUDY-HANDOFF.md](STUDY-HANDOFF.md) before continuing the exercises.
+As of 2026-09-15, Ernest has paused Hairer I, Exercise II.1.1 after writing
+the stage representation \(\mathbf k_i=\lambda\mathbf y_nP_i(z)\).
+Next: the degree bound for \(P_i\), the final RK update, and the hint's
+derivative comparison. The handoff records his working style, references,
+and pending cleanup; the solution remains inline in the shared topic.
+
+## Runge–Kutta incorporation
+
+`topics/runge-kutta.tex` incorporates Ernest’s earlier general RK notes into
+both the master and the Numerical Recipes companion, through fourth-order
+conditions and before adaptive stepping. It completes the RK4 derivation.
+See [the source comparison and corrections](reviews/2026-09-12-runge-kutta.md),
+[the mathematical exposition conventions](STYLE.md), and the standalone
+exact checks in `checks/runge_kutta.sage` (`sage checks/runge_kutta.sage`).
+The check report is `runge-kutta-verification.json` beside the built PDFs.
+
 ## Adding a topic
 
 Write a shared `topics/<id>.tex` with `\topic{<id>}{Title}`. State spaces,

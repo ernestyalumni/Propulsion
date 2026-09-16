@@ -1,0 +1,118 @@
+# Mathematical exposition in these notes
+
+Ernest's `LaTeXandpdfs/Propulsion.tex`, especially the Runge–Kutta discussion,
+is a guide to the exposition. These conventions were made explicit by Ernest
+on 2026-09-12 and will be refined with him.
+
+- Preserve his sequence, meaningful equation labels, wording and mathematical
+  work when incorporating an existing passage almost verbatim. Add connected
+  explanations and the missing calculations. Record necessary mathematical
+  corrections with their reasons; do not silently change the meaning.
+- Keep textbook exercises/problems and their solutions inline in the relevant
+  shared topic, rather than creating a separate solutions manuscript.
+- Reproduce exercise/problem statements and supplied hints verbatim, including
+  the source notation and punctuation. Repair OCR artifacts and encode the
+  mathematics correctly in LaTeX; reserve rewording, notation changes, and
+  clarification for the solution. Cite the book, exercise identifier, and
+  printed page, and distinguish any editorial correction from the quotation.
+- Use the shared unnumbered `exercise` environment (amsthm, definition style),
+  with the optional heading in this approved order: book/volume, original
+  exercise/problem identifier, printed page, and bibliography citation.
+  Use the Hairer example as the default template for future insertions:
+  `\begin{exercise}[Hairer I, II.1.1, p.~141 \cite{HNW1993}]`.
+  Follow it with `\paragraph{Solution.}` for an unfinished working solution.
+  A completed proof may use `\begin{proof}[Solution]` and `\end{proof}`.
+- Treat notation translation as part of the mathematics. State each author's
+  symbols, their roles, and the explicit map to our symbols. Keep the original
+  notation long enough to make the comparison checkable. Name the point at
+  which our notation takes over.
+- Prefer explicit partial-derivative fractions, including in prose:
+  `\frac{\partial f^r}{\partial t}` and
+  `\frac{\partial^2 f^r}{\partial t^2}`. Do not routinely replace them
+  with derivative subscripts such as `f_t^r`, `f_{tt}^r`, or operators
+  such as `\partial_t`. Reserve derivative shorthand for sustained algebra
+  extending over several pages, when it materially improves readability.
+  Even then, define each form explicitly **before** first use with `\frac`,
+  and repeat the definitions at new derivations or after a long gap.
+  A distant definition or equation reference alone is not a sufficient reminder.
+- Keep component reminders to one short sentence, for example:
+  `$f^r$ is component $r$ of $\mathbf f$.` Repeat only what the nearby
+  calculation needs; do not reintroduce powers, covariance, metric raising,
+  and stage indices in a paragraph each time.
+- Assume the reader knows Einstein summation convention. Use it without
+  explanations or demonstrations expanding contractions into explicit sums.
+  State an index range when the coordinate space changes.
+- In vector-valued derivative expressions, show contractions with scalar
+  coordinate/component factors:
+  `\frac{\partial\mathbf f}{\partial x^j}f^j`, rather than
+  `\frac{\partial\mathbf f}{\partial\mathbf x}\mathbf f`.
+  This keeps the vector-valued output in bold and makes the contraction
+  explicit. Apply the same convention to other vectors and higher derivatives.
+- State the variables held fixed and the evaluation point of partial derivatives.
+- Choose readable shorthand after defining it: each abbreviation must expand
+  to a specified expression. Distinguish collisions such as stage abscissa
+  versus output weight, derivative versus increment, stage index versus state
+  index, and exact solution versus numerical state.
+- State the equation, spaces, domains and assumptions before deriving a
+  result. Identify additional assumptions at the precise specialization:
+  autonomous/nonautonomous, constant matrix/nonlinear field, exact starting
+  data/computed state, fixed interval/long-time claim.
+- Show the algebra explicitly: apply the product and chain rules term by term,
+  show intermediate substitutions, rename dummy indices visibly, and identify
+  the symmetry or cancellation used. Explain numerical factors such as 2, 3,
+  and factorial denominators rather than merely asserting them.
+- Keep commentary such as “add and subtract,” “iterate,” and “sum the
+  geometric series,” and display the corresponding work. Show the inserted
+  zero before regrouping and applying an inequality; write the first few
+  recurrence substitutions, the induction step where needed, and the terms
+  that cancel in a sum. Handle exceptional cases before dividing by a
+  potentially zero quantity.
+- Define a proof's maps by explicit formulas and identify their arguments.
+  State each assumed estimate separately, explain the role of its constants,
+  and distinguish hypotheses from derived conclusions. Keep dependencies
+  visible when uniformity matters: for example, what is fixed as h varies.
+  Brief notation reminders do not justify omitting the mathematical work.
+- Give reusable equations stable labels and cite those labels where they are
+  actually substituted. Identify external book volume, section, printed page,
+  and equation number where available. Every citation needs a real bibliography
+  entry. A second printing is not a new edition.
+- Complete a TODO with the missing argument. A checked coefficient table is
+  useful evidence after a derivation; it does not replace the derivation.
+- Keep the prose to the point. Explain why the displayed step is being taken
+  and how it follows from the previous one. Avoid rhetorical transitions,
+  vague assurances, or extra generalizations without hypotheses.
+- Separate general proofs from symbolic examples, finite numerical checks,
+  and physical validation. Record the scope of any executable evidence.
+- Preserve readable mathematics in both portrait and screen PDFs. Split long
+  displays at meaningful equalities or terms, and add equation references
+  where page breaks separate an argument. Do not hide overflow by shrinking
+  an entire derivation into unreadable text.
+
+## Worked style reference: Hairer I, Exercise II.1.1
+
+Ernest's partial solution in [topics/runge-kutta.tex](topics/runge-kutta.tex),
+reviewed with him on 2026-09-15, is the current example to follow. Its sequence
+is deliberate: recall and display Eq. (66), specialize the stage formulas,
+substitute the earlier stages explicitly, introduce \(z=h\lambda\), motivate
+the \(P_i\) definition from the worked cases, check the first instances, and
+write the induction substitution.
+
+Preserve the chain of equalities from the original formula through each
+substitution and factoring step. A definition should be connected to the
+cases that motivated it and checked against them. Name the source of each
+starting fact at the point of use. Keep connecting prose short and let the
+displayed work carry the calculation; split long lines without omitting
+intermediate expressions. Retain Ernest's notation and sequence while making
+necessary corrections explicit.
+
+These preferences are evolving through comparison with his writing. An
+AI-written worked answer is a reasoning reference, not a replacement for
+his manuscript or evidence that he has completed the exercise. When he pauses
+to continue working it out himself, record the stopping point and next step;
+do not automatically insert the rest of the answer. See
+[the current study handoff](STUDY-HANDOFF.md).
+
+The shared topic is the mathematical source for both the thematic master and
+the applicable book companion. The historical manuscript retains its original
+content and attribution. See the dated integration review for provenance and
+the correction inventory for a migrated passage.

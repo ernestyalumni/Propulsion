@@ -1,0 +1,1218 @@
+\topic{runge-kutta}{Integration of ODEs: Runge--Kutta Methods}
+
+\subsection{Runge Kutta Methods}
+
+These are Ernest Yeung's earlier notes, with the notation comparisons retained
+and the unfinished calculations completed. The reading anchors are Numerical
+Recipes, Section~17.1 \cite{nr}, and Hairer, N\o rsett, and Wanner,
+Section~II.1, especially ``General Formulation of Runge--Kutta Methods,''
+printed p.~134 \cite{HNW1993}. The earlier notation also follows
+\emph{Appendix A, Runge--Kutta Methods} \cite{RKAppendix}.
+
+\subsubsection{Initial value problem and the first notation}
+
+Consider an initial value problem (IVP):
+\begin{equation}\label{Eq:RKInitialValueProblem}
+ \frac{d\mathbf{x}}{dt}=\mathbf{f}(t,\mathbf{x}(t)),
+ \qquad \mathbf{x}(a)=\mathbf{x}_0,
+\end{equation}
+where
+\[
+ \mathbf{x}(t)=(x_1(t),x_2(t),\dots,x_d(t)),\qquad
+ \mathbf{f}:[a,b]\times U\longrightarrow\mathbb{R}^d,
+ \quad U\subseteq\mathbb{R}^d\text{ open}.
+\]
+We assume a solution exists on the interval of interest and remains in~$U$.
+Local Lipschitz continuity in the state supplies local uniqueness. The Taylor
+calculations below require the indicated derivatives; for the fourth-order
+calculation, take $\mathbf f$ to be $C^4$ on a neighborhood of the solution
+and of the trial stages. Bounds on that neighborhood control the remainders.
+The initial point is~$a$; the notation $\mathbf{x}(0)=\mathbf{x}_0$ is its
+special case $a=0$.
+
+Divide $[a,b]$ into $M$ equal subintervals, select mesh points $t_j$:
+\begin{equation}\label{Eq:RKMesh}
+ t_j=a+jh,\qquad j=0,1,\dots,M,\qquad h=\frac{b-a}{M}.
+\end{equation}
+Here $d$ is the state dimension, $M$ is the number of steps, and $m$ below
+is the number of stages in one step. They are different integers.
+Write $\mathbf{x}_n\approx\mathbf{x}(t_n)$ for a numerical value. In a
+local-error calculation we initialize a single step with
+$\mathbf{x}_n=\mathbf{x}(t_n)$, but its output is still an approximation.
+
+The family of explicit Runge--Kutta (RK) methods with $m$ stages is given by
+\begin{equation}\label{Eq:ERKmethodsMthStage}
+\begin{aligned}
+ k_1&=\mathbf f(t_n,\mathbf x_n),\\
+ k_2&=\mathbf f(t_n+\alpha_2h,\mathbf x_n+h\beta_{21}k_1),\\
+ k_3&=\mathbf f\bigl(t_n+\alpha_3h,
+             \mathbf x_n+h(\beta_{31}k_1+\beta_{32}k_2)\bigr),\\
+ &\ \vdots\\
+ k_m&=\mathbf f\left(t_n+\alpha_mh,
+                  \mathbf x_n+h\sum_{j=1}^{m-1}\beta_{mj}k_j\right),\\
+ \mathbf x_{n+1}&=\mathbf x_n+h\sum_{i=1}^m c_i k_i.
+\end{aligned}
+\end{equation}
+The $k_i$ here are vectors of derivatives, despite the unbold notation of
+the appendix. Their units are state units divided by time. They do not
+already contain a factor of~$h$.
+
+These data are usually arranged in a \emph{Butcher tableau}:
+\begin{equation}\label{Eq:RKAppendixTableau}
+\begin{array}{c|ccccc}
+ 0&&&&&\\
+ \alpha_2&\beta_{21}&&&&\\
+ \alpha_3&\beta_{31}&\beta_{32}&&&\\
+ \vdots&\vdots&&\ddots&&\\
+ \alpha_m&\beta_{m1}&\beta_{m2}&\cdots&\beta_{m,m-1}&\\ \hline
+ &c_1&c_2&\cdots&c_{m-1}&c_m
+\end{array}.
+\end{equation}
+In the notation of Hairer, N\o rsett, and Wanner, Eq.~(1.8$'$)
+\cite[Section~II.1]{HNW1993},
+\begin{equation}\label{Eq:RKHNWTableau}
+\begin{array}{c|ccccc}
+ 0&&&&&\\
+ c_2&a_{21}&&&&\\
+ c_3&a_{31}&a_{32}&&&\\
+ \vdots&\vdots&&\ddots&&\\
+ c_s&a_{s1}&a_{s2}&\cdots&a_{s,s-1}&\\ \hline
+ &b_1&b_2&\cdots&b_{s-1}&b_s
+\end{array}.
+\end{equation}
+
+To specify a method, we need
+\[
+\begin{aligned}
+ m&\equiv\text{number of stages},\\
+ \alpha_i&\quad(i=2,3,\dots,m),\\
+ \beta_{ij}&\quad(1\leq j<i\leq m),\\
+ c_i&\quad(i=1,2,\dots,m).
+\end{aligned}
+\]
+There are $1+2+\cdots+(m-1)=m(m-1)/2$ potentially nonzero
+$\beta_{ij}$, not $m(m-1)$.
+
+In summary, to solve the IVP in Eq.~\ref{Eq:RKInitialValueProblem}, we
+choose these coefficients and the mesh in Eq.~\ref{Eq:RKMesh}. For
+$n=0,1,\dots,M-1$, calculate
+\[
+ k_1=\mathbf f(t_n,\mathbf x_n),\qquad
+ k_l=\mathbf f\left(t_n+\alpha_lh,
+             \mathbf x_n+h\sum_{j=1}^{l-1}\beta_{lj}k_j\right),
+ \quad l=2,\dots,m,
+\]
+to obtain $\mathbf x_{n+1}=\mathbf x_n+h\sum_{i=1}^m c_i k_i$.
+Only earlier stages enter stage~$l$; this is what makes the method explicit.
+
+\subsubsection{Relating the authors' notations to ours}
+
+Compare Eq.~\ref{Eq:ERKmethodsMthStage} with Hairer, N\o rsett, and Wanner.
+The correspondence is
+\begin{equation}\label{Eq:RKNotationDictionary}
+\begin{array}{c|c|c}
+ \text{quantity}&\text{appendix / earlier notation}&\text{Hairer / ours}\\ \hline
+ \text{independent variable}&t&x\\
+ \text{state}&\mathbf x(t)&\mathbf y(x)\\
+ \text{number of stages}&m&s\\
+ \text{stage location}&\alpha_i&c_i\\
+ \text{stage coupling}&\beta_{ij}&a_{ij}\\
+ \text{output weight}&c_i&b_i\\
+ \text{stage derivative}&k_i&\mathbf k_i
+\end{array}.
+\end{equation}
+The two uses of $c_i$ are especially easy to confuse: the appendix's
+$c_i$ is Hairer's $b_i$, whereas Hairer's $c_i$ is the appendix's
+$\alpha_i$. The earlier equations keep the appendix's symbols; after
+an explicit change of notation, we use the rightmost column.
+
+Numerical Recipes, Section~17.1, absorbs the step into its stage variables.
+Denote its printed $k_i$ by $K_i^{\rm NR}$ for this comparison. Then
+\begin{equation}\label{Eq:RKNRStages}
+ K_i^{\rm NR}=h\mathbf k_i,\qquad
+ \mathbf y_{n+1}=\mathbf y_n+\sum_i b_i K_i^{\rm NR}
+               =\mathbf y_n+h\sum_i b_i\mathbf k_i.
+\end{equation}
+For example, NR's classical-RK4 expression
+$K_2^{\rm NR}=h\mathbf f(x_n+h/2,\mathbf y_n+K_1^{\rm NR}/2)$
+becomes $\mathbf k_2=\mathbf f(x_n+h/2,\mathbf y_n+h\mathbf k_1/2)$.
+This distinction is about the definition of a stage, not a different method.
+
+\begin{definition}[1.1, Hairer, N\o rsett, and Wanner \cite{HNW1993}]
+Let $s\geq1$ be an integer, $s\equiv$ number of stages, and let
+\[
+\begin{aligned}
+ &a_{21},a_{31},a_{32},\dots,a_{s1},a_{s2},\dots,a_{s,s-1},\\
+ &b_1,\dots,b_s,\qquad c_2,\dots,c_s
+\end{aligned}
+\]
+be real coefficients. Then
+\begin{equation}\label{Eq:ERKmethodsSthStage}
+\begin{aligned}
+ k_1&=f(x_0,y_0),\\
+ k_2&=f(x_0+c_2h,y_0+ha_{21}k_1),\\
+ k_3&=f\bigl(x_0+c_3h,y_0+h(a_{31}k_1+a_{32}k_2)\bigr),\\
+ &\ \vdots\\
+ k_s&=f\left(x_0+c_sh,y_0+h\sum_{j=1}^{s-1}a_{sj}k_j\right),\\
+ y_1&=y_0+h(b_1k_1+\cdots+b_sk_s)
+\end{aligned}
+\end{equation}
+is called an $s$-stage explicit Runge--Kutta method (ERK) for
+$y'=f(x,y)$, $y(x_0)=y_0$, Eq.~(1.1) of \cite{HNW1993}.
+Usually, the $c_i$ satisfy
+\begin{equation}\label{Eq:RKRowSums}
+ c_1=0,\quad c_2=a_{21},\quad c_3=a_{31}+a_{32},\quad\dots,
+ \qquad c_i=\sum_{j=1}^{i-1}a_{ij}.
+\end{equation}
+\end{definition}
+
+Eq.~\ref{Eq:RKRowSums} is an additional convention used in the order
+calculation below, not part of the unrestricted definition of an ERK method.
+It makes each stage state a first-order approximation at its stated time:
+\begin{equation}\label{Eq:RKRowSumStageMatch}
+\begin{aligned}
+ \mathbf y_n+h\sum_{j<i}a_{ij}\mathbf k_j
+   &=\mathbf y_n+h\left(\sum_{j<i}a_{ij}\right)
+                       \mathbf f(x_n,\mathbf y_n)+O(h^2),\\
+ \mathbf y(x_n+c_ih)
+   &=\mathbf y_n+hc_i\mathbf f(x_n,\mathbf y_n)+O(h^2).
+\end{aligned}
+\end{equation}
+The two expansions agree through $h$ when Eq.~\ref{Eq:RKRowSums} holds,
+assuming an exact starting state. This is the interpretation following
+Hairer's Eqs.~(1.9)--(1.9$'$), printed p.~134.
+
+The notation I will use is the following, replacing the single-step indices
+in Eq.~\ref{Eq:ERKmethodsSthStage}:
+\begin{equation}\label{Eq:ERKmethodsSthStageMyNotation}
+\begin{aligned}
+ \mathbf k_1&=\mathbf f(x_n,\mathbf y_n),\\
+ \mathbf k_2&=\mathbf f(x_n+c_2h,\mathbf y_n+ha_{21}\mathbf k_1),\\
+ \mathbf k_3&=\mathbf f\bigl(x_n+c_3h,
+              \mathbf y_n+h(a_{31}\mathbf k_1+a_{32}\mathbf k_2)\bigr),\\
+ &\ \vdots\\
+ \mathbf k_s&=\mathbf f\left(x_n+c_sh,
+                  \mathbf y_n+h\sum_{j=1}^{s-1}a_{sj}\mathbf k_j\right),\\
+ \mathbf y_{n+1}&=\mathbf y_n+h\sum_{i=1}^s b_i\mathbf k_i,
+ \qquad \mathbf y_n\approx\mathbf y(x_n).
+\end{aligned}
+\end{equation}
+All stages in this display belong to the step \emph{starting} at $x_n$.
+Consequently the output index is $n+1$. Writing $\mathbf y_n$ on the left
+while computing stages from $(x_n,\mathbf y_n)$ mixes two different steps.
+The equality with the exact value $\mathbf y(x_n)$ is imposed only when
+initializing the local-error analysis.
+
+\begin{definition}[1.2, Hairer, N\o rsett, and Wanner \cite{HNW1993}]
+The Runge--Kutta method in Eq.~\ref{Eq:ERKmethodsSthStage} has order at
+least $p$ if, for sufficiently smooth problems and an exact starting value,
+\begin{equation}\label{Eq:RungeKuttaMethodOrderpConditionDefinition}
+ \|y(x_0+h)-y_1\|\leq K|h|^{p+1}
+\end{equation}
+for small enough $|h|$, with $K$ independent of~$h$. Compare Eq.~(1.10)
+of \cite{HNW1993}. Equivalently, the Taylor expansions of the exact solution
+and of the numerical one-step value agree through the term $h^p$.
+In our notation this becomes
+\begin{equation}\label{Eq:RKLocalErrorOurNotation}
+ \|\mathbf y(x_n+h)-\mathbf y_{n+1}\|\leq K|h|^{p+1},
+ \qquad \mathbf y_n=\mathbf y(x_n).
+\end{equation}
+\end{definition}
+The stage count $s$ and the order $p$ are different properties. Also,
+Eq.~\ref{Eq:RKLocalErrorOurNotation} bounds a \emph{one-step} error from
+exact initial data; a fixed-interval global error is typically $O(h^p)$
+under stability and uniform smoothness assumptions. It is not $O(h^{p+1})$.
+
+\subsubsection{Examples}
+
+\paragraph{One stage.} $m=1$. Then
+\[
+ k_1=\mathbf f(t_n,\mathbf x_n),\qquad
+ \mathbf x_{n+1}=\mathbf x_n+hc_1k_1.
+\]
+By Taylor expansion from the exact starting value,
+\[
+ \mathbf x(t_n+h)=\mathbf x_n+h\dot{\mathbf x}(t_n)+O(h^2)
+                =\mathbf x_n+h\mathbf f(t_n,\mathbf x_n)+O(h^2).
+\]
+Matching the coefficient of $h$ gives $c_1=1$. Thus
+$\mathbf x_{n+1}=\mathbf x_n+h\mathbf f(t_n,\mathbf x_n)$.
+Using Hairer's notation, the case $s=1$ is the Euler case, with $b_1=1$:
+\begin{equation}\label{Eq:RKEuler}
+ \mathbf y_{n+1}=\mathbf y_n+h\mathbf k_1
+               =\mathbf y_n+h\mathbf f(x_n,\mathbf y_n).
+\end{equation}
+The derivative is evaluated at the old state. Evaluating at the unknown
+new state instead would give implicit Euler, a different method.
+
+\paragraph{Two stages.} $m=2$. Eq.~\ref{Eq:ERKmethodsMthStage} becomes
+\begin{equation}\label{Eq:RKTwoStage}
+\begin{aligned}
+ k_1&=\mathbf f(t_n,\mathbf x_n),\\
+ k_2&=\mathbf f(t_n+\alpha_2h,\mathbf x_n+h\beta_{21}k_1),\\
+ \mathbf x_{n+1}&=\mathbf x_n+h(c_1k_1+c_2k_2).
+\end{aligned}
+\end{equation}
+Write $x^r$ (previously $x_r$) and $f^r$ for component $r$ of the
+state and vector field, respectively ($r=1,\dots,d$).
+
+For the Taylor expansion of the exact solution, the chain rule gives
+\begin{equation}\label{Eq:RKSecondDerivative}
+\begin{aligned}
+ \frac{d^2x^r}{dt^2}
+ &=\frac{d}{dt}f^r(t,\mathbf x(t))\\
+ &=\frac{\partial f^r}{\partial t}
+   +\frac{\partial f^r}{\partial x^j}\frac{dx^j}{dt}\\
+ &=\frac{\partial f^r}{\partial t}
+   +\frac{\partial f^r}{\partial x^j}f^j.
+\end{aligned}
+\end{equation}
+The partial derivative in $t$ holds the state fixed; the derivative in
+$x^j$ holds $t$ and the other state coordinates fixed. All quantities
+in this equation are evaluated at $(t,\mathbf x(t))$.
+
+Substituting Eq.~\ref{Eq:RKSecondDerivative} into the exact Taylor series,
+\begin{equation}\label{Eq:RKExactSecondOrder}
+ \mathbf x(t_n+h)-\mathbf x_n
+ =h\mathbf f+\frac{h^2}{2}
+       \left(\frac{\partial\mathbf f}{\partial t}
+             +\frac{\partial\mathbf f}{\partial x^j}f^j\right)+O(h^3),
+\end{equation}
+where all unmarked functions and derivatives are evaluated at
+$(t_n,\mathbf x_n)$. Expanding the second stage in Eq.~\ref{Eq:RKTwoStage},
+\begin{equation}\label{Eq:RKSecondStageExpansion}
+ k_2=\mathbf f+h\alpha_2\frac{\partial\mathbf f}{\partial t}
+             +h\beta_{21}\frac{\partial\mathbf f}{\partial x^j}f^j+O(h^2).
+\end{equation}
+Substitute Eq.~\ref{Eq:RKSecondStageExpansion} into the update in
+Eq.~\ref{Eq:RKTwoStage}:
+\begin{equation}\label{Eq:RKTwoStageExpansion}
+\begin{aligned}
+ \mathbf x_{n+1}-\mathbf x_n
+ &=h(c_1+c_2)\mathbf f+h^2c_2\alpha_2\frac{\partial\mathbf f}{\partial t}\\
+ &\quad+h^2c_2\beta_{21}\frac{\partial\mathbf f}{\partial x^j}f^j+O(h^3).
+\end{aligned}
+\end{equation}
+Matching the coefficients of $\mathbf f$, $\frac{\partial\mathbf f}{\partial t}$, and
+$\frac{\partial\mathbf f}{\partial x^j}f^j$ in Eqs.~\ref{Eq:RKExactSecondOrder}
+and~\ref{Eq:RKTwoStageExpansion} gives
+\begin{equation}\label{Eq:RKTwoStageConditions}
+ c_1+c_2=1,\qquad c_2\alpha_2=\frac12,
+ \qquad c_2\beta_{21}=\frac12.
+\end{equation}
+Thus $\beta_{21}=\alpha_2\neq0$ and
+$c_2=1/(2\alpha_2)$, $c_1=1-1/(2\alpha_2)$.
+
+Let $\alpha_2=1$. Then $c_2=1/2$, $c_1=1/2$, and $\beta_{21}=1$.
+\begin{equation}\label{Eq:RKHeun}
+ \mathbf x_{n+1}=\mathbf x_n+\frac h2
+ \left[\mathbf f(t_n,\mathbf x_n)
+ +\mathbf f\bigl(t_n+h,\mathbf x_n+h\mathbf f(t_n,\mathbf x_n)\bigr)\right].
+\end{equation}
+This is called Heun's method.
+
+Let $\alpha_2=1/2$. Then $c_2=1$, $\beta_{21}=1/2$, and $c_1=0$.
+\begin{equation}\label{Eq:RKMidpoint}
+ \mathbf x_{n+1}=\mathbf x_n+h\mathbf f\left(
+ t_n+\frac h2,\mathbf x_n+\frac h2\mathbf f(t_n,\mathbf x_n)\right).
+\end{equation}
+This is the explicit midpoint method, often called RK2. Heun's method also
+has order two, so ``RK2'' alone does not uniquely specify a tableau.
+
+Using Hairer's notation, $s=2$ requires $a_{21}$, $b_1,b_2$, and $c_2$:
+\[
+\begin{aligned}
+ \mathbf k_1&=\mathbf f(x_n,\mathbf y_n),\\
+ \mathbf k_2&=\mathbf f(x_n+c_2h,\mathbf y_n+ha_{21}\mathbf k_1),\\
+ \mathbf y_{n+1}&=\mathbf y_n+h(b_1\mathbf k_1+b_2\mathbf k_2).
+\end{aligned}
+\]
+Eq.~\ref{Eq:RKNotationDictionary} changes
+Eq.~\ref{Eq:RKTwoStageConditions} into
+$b_1+b_2=1$, $b_2c_2=1/2$, and $a_{21}=c_2$.
+The tableaux are
+\[
+ \begin{array}{c|cc}0&&\\1&1&\\\hline&1/2&1/2\end{array}
+ \quad\text{(Heun)},\qquad
+ \begin{array}{c|cc}0&&\\1/2&1/2&\\\hline&0&1\end{array}
+ \quad\text{(midpoint)}.
+\]
+
+\subsubsection{Runge--Kutta 4, RK4 Methods}
+
+$m=4$. By matching coefficients with Taylor series, we will determine
+conditions on
+\begin{equation}\label{Eq:RKFourStagesAppendix}
+\begin{aligned}
+ k_1&=\mathbf f(t_n,\mathbf x_n),\\
+ k_2&=\mathbf f(t_n+\alpha_2h,\mathbf x_n+h\beta_{21}k_1),\\
+ k_3&=\mathbf f\bigl(t_n+\alpha_3h,
+                   \mathbf x_n+h(\beta_{31}k_1+\beta_{32}k_2)\bigr),\\
+ k_4&=\mathbf f\bigl(t_n+\alpha_4h,
+           \mathbf x_n+h(\beta_{41}k_1+\beta_{42}k_2+\beta_{43}k_3)\bigr).
+\end{aligned}
+\end{equation}
+Now consider the Taylor series expansion from an exact starting value:
+\begin{equation}\label{Eq:RKExactFourthOrder}
+\begin{aligned}
+ \mathbf x(t_n+h)=\mathbf x_n
+ &+h\dot{\mathbf x}(t_n)+\frac{h^2}{2}\ddot{\mathbf x}(t_n)\\
+ &+\frac{h^3}{6}\mathbf x^{(3)}(t_n)
+  +\frac{h^4}{24}\mathbf x^{(4)}(t_n)+O(h^5).
+\end{aligned}
+\end{equation}
+The unfinished proof in the earlier notes is completed below: first expand
+the exact derivatives, then the stage derivatives, and compare each term.
+
+\paragraph{The chain rule through fourth order.}
+Recall that $x^r$ and $f^r$ are components, with
+$\frac{dx^r}{dt}=f^r(t,\mathbf x(t))$.
+
+For comparison with derivative-subscript notation in other accounts,
+\begin{equation}\label{Eq:RKPartialDerivativeDictionary}
+\begin{aligned}
+ f_t^r&\equiv\frac{\partial f^r}{\partial t},
+ &f_{tt}^r&\equiv\frac{\partial^2 f^r}{\partial t^2},\\
+ f_j^r&\equiv\frac{\partial f^r}{\partial x^j},
+ &f_{tj}^r&\equiv\frac{\partial^2 f^r}{\partial t\,\partial x^j}.
+\end{aligned}
+\end{equation}
+We use explicit partial derivatives below, evaluated at $(t,\mathbf x(t))$
+or at $(t_n,\mathbf x_n)$ in the step's Taylor expansion. Mixed partial
+derivatives commute by the assumed smoothness.
+
+Along the solution, define the total-derivative operator
+\begin{equation}\label{Eq:RKTotalDerivative}
+ D=\frac{\partial}{\partial t}
+        + f^j\frac{\partial}{\partial x^j},
+ \qquad \frac{d}{dt}q(t,\mathbf x(t))=Dq.
+\end{equation}
+Thus $D$ differentiates a function along the solution, including its
+dependence on the changing state. Apply it to
+Eq.~\ref{Eq:RKSecondDerivative}, using the product rule:
+\begin{equation}\label{Eq:RKThirdDerivativeExpanded}
+\begin{aligned}
+ \frac{d^3x^r}{dt^3}
+ &=D\left(\frac{\partial f^r}{\partial t}
+              +\frac{\partial f^r}{\partial x^j}f^j\right)\\
+ &=\frac{\partial^2f^r}{\partial t^2}
+       +\frac{\partial^2f^r}{\partial t\,\partial x^j}f^j\\
+ &\quad+\left(\frac{\partial^2f^r}{\partial x^j\,\partial t}
+       +\frac{\partial^2f^r}{\partial x^j\,\partial x^k}f^k\right)f^j\\
+ &\quad+\frac{\partial f^r}{\partial x^j}
+       \left(\frac{\partial f^j}{\partial t}
+             +\frac{\partial f^j}{\partial x^k}f^k\right)\\
+ &=\frac{\partial^2f^r}{\partial t^2}
+       +2\frac{\partial^2f^r}{\partial t\,\partial x^j}f^j
+       +\frac{\partial^2f^r}{\partial x^j\,\partial x^k}f^j f^k\\
+ &\quad+\frac{\partial f^r}{\partial x^j}\frac{\partial f^j}{\partial t}
+       +\frac{\partial f^r}{\partial x^j}
+        \frac{\partial f^j}{\partial x^k}f^k.
+\end{aligned}
+\end{equation}
+The factor two comes from
+$\frac{\partial^2f^r}{\partial t\,\partial x^j}
+=\frac{\partial^2f^r}{\partial x^j\,\partial t}$.
+The term
+$\frac{\partial^2f^r}{\partial x^j\,\partial x^k}f^j f^k$
+comes from differentiating the Jacobian in the state direction.
+Both contributions must be kept for a general vector-valued
+nonautonomous problem.
+
+To organize the next derivative, define
+\begin{equation}\label{Eq:RKDerivativeShorthands}
+\begin{aligned}
+ U^r&=\frac{\partial f^r}{\partial t}
+          +\frac{\partial f^r}{\partial x^j}f^j
+          =\frac{d^2x^r}{dt^2},\\
+ B^r&=\frac{\partial^2f^r}{\partial t^2}
+       +2\frac{\partial^2f^r}{\partial t\,\partial x^j}f^j
+       +\frac{\partial^2f^r}{\partial x^j\,\partial x^k}f^j f^k,\\
+ C^r&=\frac{\partial^3f^r}{\partial t^3}
+       +3\frac{\partial^3f^r}{\partial t^2\,\partial x^j}f^j\\
+    &\quad+3\frac{\partial^3f^r}{\partial t\,\partial x^j\,\partial x^k}f^j f^k
+       +\frac{\partial^3f^r}{\partial x^j\,\partial x^k\,\partial x^l}f^j f^k f^l.
+\end{aligned}
+\end{equation}
+Eq.~\ref{Eq:RKThirdDerivativeExpanded} is
+$\frac{d^3x^r}{dt^3}=B^r+\frac{\partial f^r}{\partial x^j}U^j$.
+We calculate the two derivatives separately. For the first,
+\begin{align}
+ D\left(\frac{\partial^2f^r}{\partial t^2}\right)
+ &=\frac{\partial^3f^r}{\partial t^3}
+       +\frac{\partial^3f^r}{\partial t^2\,\partial x^k}f^k,\nonumber\\
+ D\left(2\frac{\partial^2f^r}{\partial t\,\partial x^j}f^j\right)
+ &=2\left(\frac{\partial^3f^r}{\partial t^2\,\partial x^j}
+       +\frac{\partial^3f^r}{\partial t\,\partial x^j\,\partial x^k}f^k\right)f^j
+       \nonumber\\
+ &\quad+2\frac{\partial^2f^r}{\partial t\,\partial x^j}U^j,\nonumber\\
+ D\left(\frac{\partial^2f^r}{\partial x^j\,\partial x^k}f^j f^k\right)
+ &=\left(\frac{\partial^3f^r}{\partial t\,\partial x^j\,\partial x^k}
+       +\frac{\partial^3f^r}{\partial x^j\,\partial x^k\,\partial x^l}f^l\right)
+       f^j f^k\nonumber\\
+ &\quad+\frac{\partial^2f^r}{\partial x^j\,\partial x^k}
+       (U^j f^k+f^j U^k).
+ \label{Eq:RKDerivativeOfBParts}
+\end{align}
+Adding Eq.~\ref{Eq:RKDerivativeOfBParts}, commuting the smooth partial
+derivatives, and renaming dummy indices gives
+\begin{equation}\label{Eq:RKDerivativeOfB}
+ DB^r=C^r+2\left(\frac{\partial^2f^r}{\partial t\,\partial x^j}
+               +\frac{\partial^2f^r}{\partial x^j\,\partial x^k}f^k\right)U^j.
+\end{equation}
+For the second derivative, use
+$DU^j=\frac{d^3x^j}{dt^3}=B^j+\frac{\partial f^j}{\partial x^k}U^k$:
+\begin{equation}\label{Eq:RKDerivativeOfJU}
+\begin{aligned}
+ D\left(\frac{\partial f^r}{\partial x^j}U^j\right)
+ &=\left(\frac{\partial^2f^r}{\partial t\,\partial x^j}
+        +\frac{\partial^2f^r}{\partial x^j\,\partial x^k}f^k\right)U^j
+       +\frac{\partial f^r}{\partial x^j}DU^j\\
+ &=\left(\frac{\partial^2f^r}{\partial t\,\partial x^j}
+        +\frac{\partial^2f^r}{\partial x^j\,\partial x^k}f^k\right)U^j\\
+ &\quad+\frac{\partial f^r}{\partial x^j}B^j
+       +\frac{\partial f^r}{\partial x^j}\frac{\partial f^j}{\partial x^k}U^k.
+\end{aligned}
+\end{equation}
+Combining Eqs.~\ref{Eq:RKDerivativeOfB} and~\ref{Eq:RKDerivativeOfJU},
+and then substituting Eq.~\ref{Eq:RKDerivativeShorthands}, gives the full
+fourth derivative:
+\begin{equation}\label{Eq:RKFourthDerivativeExpanded}
+\begin{aligned}
+ \frac{d^4x^r}{dt^4}
+ ={}&\frac{\partial^3f^r}{\partial t^3}
+       +3\frac{\partial^3f^r}{\partial t^2\,\partial x^j}f^j\\
+ &+3\frac{\partial^3f^r}{\partial t\,\partial x^j\,\partial x^k}f^j f^k
+       +\frac{\partial^3f^r}{\partial x^j\,\partial x^k\,\partial x^l}f^j f^k f^l\\
+ &+3\left(\frac{\partial^2f^r}{\partial t\,\partial x^j}
+          +\frac{\partial^2f^r}{\partial x^j\,\partial x^k}f^k\right)
+       \left(\frac{\partial f^j}{\partial t}
+             +\frac{\partial f^j}{\partial x^l}f^l\right)\\
+ &+\frac{\partial f^r}{\partial x^j}
+       \left(\frac{\partial^2f^j}{\partial t^2}
+          +2\frac{\partial^2f^j}{\partial t\,\partial x^k}f^k
+          +\frac{\partial^2f^j}{\partial x^k\,\partial x^l}f^k f^l\right)\\
+ &+\frac{\partial f^r}{\partial x^j}\frac{\partial f^j}{\partial x^k}
+       \left(\frac{\partial f^k}{\partial t}
+             +\frac{\partial f^k}{\partial x^l}f^l\right).
+\end{aligned}
+\end{equation}
+This replaces the incomplete chain-rule expression in the earlier notes.
+In particular, Eq.~\ref{Eq:RKTotalDerivative} includes
+$ f^j\frac{\partial}{\partial x^j}$ for the changing state.
+
+
+\paragraph{An autonomous notation for the same calculation.}
+The order conditions are more readable if we include time as a state
+coordinate. This is a change of notation, not an assumption that the
+original force is time independent. Define
+\begin{equation}\label{Eq:RKAugmentedSystem}
+ Z=\begin{pmatrix}t\\\mathbf x\end{pmatrix},\qquad
+ F(Z)=\begin{pmatrix}1\\\mathbf f(t,\mathbf x)\end{pmatrix},\qquad
+ Z'=F(Z).
+\end{equation}
+The prime on $Z$ differentiates along the solution. The augmented
+coordinates are $Z^0=t$ and $Z^j=x^j$ for $j=1,\dots,d$, with
+$F^0=1$ and $F^j=f^j$.
+
+The following stage expansions extend over several pages. For these
+expansions we use $F'$, $F''$, and $F'''$ for derivatives
+\emph{with respect to the augmented state}, evaluated at $Z_n$:
+a linear map, a symmetric bilinear map, and a symmetric trilinear map.
+Their explicit component definitions are
+\begin{equation}\label{Eq:RKAugmentedDerivativeDictionary}
+\begin{aligned}
+ (F'v)^r
+   &=\frac{\partial F^r}{\partial Z^j}v^j,\\
+ (F''(v,w))^r
+   &=
+       \frac{\partial^2F^r}{\partial Z^j\,\partial Z^k}v^j w^k,\\
+ (F'''(u,v,w))^r
+   &=
+       \frac{\partial^3F^r}{\partial Z^j\,\partial Z^k\,\partial Z^l}
+       u^j v^k w^l.
+\end{aligned}
+\end{equation}
+In Eq.~\ref{Eq:RKAugmentedDerivativeDictionary}, $r,j,k,l=0,\dots,d$;
+all derivatives hold the other augmented coordinates fixed.
+Thus a prime on $F$ has a different meaning from a time derivative
+on $Z$.
+For compactness, $F'^2F=F'(F'F)$ and $F'^3F=F'(F'(F'F))$;
+these powers compose the Jacobian at the same point.
+
+Using the chain and product rules,
+\begin{align}
+ Z''&=F'F,\nonumber\\
+ Z'''&=\frac{d}{dt}(F'F)=F''(F,F)+F'(F'F),\label{Eq:RKAugmentedDerivatives}
+\end{align}
+and, term by term,
+\begin{align}
+ \frac{d}{dt}F''(F,F)
+ &=F'''(F,F,F)+F''(F'F,F)+F''(F,F'F),\nonumber\\
+ \frac{d}{dt}F'(F'F)
+ &=F''(F,F'F)+F'\bigl(F''(F,F)+F'(F'F)\bigr).
+ \label{Eq:RKAugmentedFourthParts}
+\end{align}
+Symmetry of the second derivative identifies
+$F''(F'F,F)=F''(F,F'F)$, so Eq.~\ref{Eq:RKAugmentedFourthParts} gives
+\begin{equation}\label{Eq:RKAugmentedFourthDerivative}
+ Z^{(4)}=F'''(F,F,F)+3F''(F,F'F)+F'\bigl(F''(F,F)\bigr)+F'^3F.
+\end{equation}
+The physical components of $F'F$, $F''(F,F)$, and $F'''(F,F,F)$ are
+$U$, $B$, and $C$ from Eq.~\ref{Eq:RKDerivativeShorthands}. Hence
+Eq.~\ref{Eq:RKAugmentedFourthDerivative} is exactly
+Eq.~\ref{Eq:RKFourthDerivativeExpanded} in this compact notation.
+
+Inserting Eqs.~\ref{Eq:RKAugmentedDerivatives}
+and~\ref{Eq:RKAugmentedFourthDerivative} into the Taylor series gives
+\begin{equation}\label{Eq:RKExactAugmentedTaylor}
+\begin{aligned}
+ Z(t_n+h)=Z_n&+hF+\frac{h^2}{2}F'F\\
+ &+\frac{h^3}{6}\bigl(F''(F,F)+F'^2F\bigr)\\
+ &+\frac{h^4}{24}\bigl(F'''(F,F,F)+3F''(F,F'F)\bigr)\\
+ &+\frac{h^4}{24}\bigl(F'(F''(F,F))+F'^3F\bigr)+O(h^5).
+\end{aligned}
+\end{equation}
+
+\paragraph{Expansion of the stages.}
+Recall that $F$ is the augmented vector field and that $F'$ differentiates
+with respect to its state argument, not along time:
+$(F'v)^r=\frac{\partial F^r}{\partial Z^j}v^j$.
+The bilinear and trilinear derivatives $F''$ and $F'''$ are defined
+in Eq.~\ref{Eq:RKAugmentedDerivativeDictionary}.
+Use the Hairer coefficients from Eq.~\ref{Eq:RKNotationDictionary}.
+Write $\mathcal K_i$ for the augmented stage derivative, so that
+\begin{equation}\label{Eq:RKAugmentedStages}
+ \mathcal K_i=F(Z_n+\delta_i),\qquad
+ \delta_i=h\sum_{j<i}a_{ij}\mathcal K_j.
+\end{equation}
+The time component of every $\mathcal K_j$ is one. Therefore the time
+component of the stage point is $t_n+h\sum_{j<i}a_{ij}=t_n+c_ih$,
+using Eq.~\ref{Eq:RKRowSums}. This proves that the augmented stages
+reproduce the original nonautonomous stages. The update advances time by
+$h\sum_i b_i$, so we also require $\sum_i b_i=1$.
+
+Define the short sums
+\begin{equation}\label{Eq:RKStageSums}
+ d_i=\sum_{j<i}a_{ij}c_j,\qquad
+ q_i=\sum_{j<i}a_{ij}c_j^2,\qquad
+ e_i=\sum_{j<i}a_{ij}d_j.
+\end{equation}
+These are coefficient combinations, not new free coefficients.
+The state Taylor expansion at $Z_n$ is
+\begin{equation}\label{Eq:RKStageTaylor}
+ \mathcal K_i=F+F'\delta_i+\frac12F''(\delta_i,\delta_i)
+                   +\frac16F'''(\delta_i,\delta_i,\delta_i)+O(h^4).
+\end{equation}
+Starting with $\mathcal K_j=F+O(h)$ in Eq.~\ref{Eq:RKAugmentedStages}
+gives $\delta_i=hc_iF+O(h^2)$ and
+$\mathcal K_i=F+hc_iF'F+O(h^2)$. Substitute this back once:
+\[
+ \delta_i=hc_iF+h^2d_iF'F+O(h^3),\qquad
+ \mathcal K_i=F+hc_iF'F
+     +h^2\left(d_iF'^2F+\frac{c_i^2}{2}F''(F,F)\right)+O(h^3).
+\]
+Substituting that expression back again gives
+\begin{equation}\label{Eq:RKStageDisplacement}
+ \delta_i=hc_iF+h^2d_iF'F
+   +h^3\left(e_iF'^2F+\frac{q_i}{2}F''(F,F)\right)+O(h^4).
+\end{equation}
+Now substitute Eq.~\ref{Eq:RKStageDisplacement} separately into each term
+of Eq.~\ref{Eq:RKStageTaylor}:
+\begin{align}
+ F'\delta_i={}&hc_iF'F+h^2d_iF'^2F
+   +h^3\left(e_iF'^3F+\frac{q_i}{2}F'(F''(F,F))\right)+O(h^4),
+   \nonumber\\
+ \frac12F''(\delta_i,\delta_i)={}&\frac{h^2c_i^2}{2}F''(F,F)
+                  +h^3c_id_iF''(F,F'F)+O(h^4),\nonumber\\
+ \frac16F'''(\delta_i,\delta_i,\delta_i)={}&
+                    \frac{h^3c_i^3}{6}F'''(F,F,F)+O(h^4).
+ \label{Eq:RKStageTaylorParts}
+\end{align}
+The middle line contains two equal cross terms, each with prefactor
+$1/2$, which is why the resulting coefficient is $c_id_i$.
+Adding Eq.~\ref{Eq:RKStageTaylorParts} gives
+\begin{equation}\label{Eq:RKStageExpansionThroughCubic}
+\begin{aligned}
+ \mathcal K_i={}&F+hc_iF'F
+       +h^2\left(d_iF'^2F+\frac{c_i^2}{2}F''(F,F)\right)\\
+ &+h^3\left(e_iF'^3F+\frac{q_i}{2}F'(F''(F,F))\right)\\
+ &+h^3\left(c_id_iF''(F,F'F)
+                         +\frac{c_i^3}{6}F'''(F,F,F)\right)+O(h^4).
+\end{aligned}
+\end{equation}
+
+\paragraph{Matching every coefficient.}
+The numerical update is $Z_{n+1}=Z_n+h\sum_i b_i\mathcal K_i$.
+Multiply Eq.~\ref{Eq:RKStageExpansionThroughCubic} by $hb_i$ and sum:
+\begin{equation}\label{Eq:RKNumericalAugmentedTaylor}
+\begin{aligned}
+ Z_{n+1}-Z_n={}&h\left(\sum_i b_i\right)F
+              +h^2\left(\sum_i b_ic_i\right)F'F\\
+ &+h^3\left[\left(\sum_i b_id_i\right)F'^2F
+                  +\frac12\left(\sum_i b_ic_i^2\right)F''(F,F)\right]\\
+ &+h^4\left[\left(\sum_i b_ie_i\right)F'^3F
+                  +\frac12\left(\sum_i b_iq_i\right)F'(F''(F,F))\right]\\
+ &+h^4\left[\left(\sum_i b_ic_id_i\right)F''(F,F'F)
+                  +\frac16\left(\sum_i b_ic_i^3\right)F'''(F,F,F)\right]
+ +O(h^5).
+\end{aligned}
+\end{equation}
+Comparison with Eq.~\ref{Eq:RKExactAugmentedTaylor} gives the eight
+conditions through order four:
+\begin{equation}\label{Eq:RKOrderFourConditions}
+\begin{aligned}
+ \sum_i b_i&=1,& \sum_i b_ic_i&=\frac12,\\
+ \sum_i b_ic_i^2&=\frac13,& \sum_i b_id_i&=\frac16,\\
+ \sum_i b_ic_i^3&=\frac14,& \sum_i b_ic_id_i&=\frac18,\\
+ \sum_i b_iq_i&=\frac1{12},& \sum_i b_ie_i&=\frac1{24}.
+\end{aligned}
+\end{equation}
+For example, the $F''(F,F'F)$ coefficient must be $3/24=1/8$;
+the $F'(F''(F,F))$ coefficient gives
+$(1/2)\sum_i b_iq_i=1/24$ and hence $\sum_i b_iq_i=1/12$.
+Thus these fractions come from the explicit Taylor calculation, rather than
+being independent rules to memorize. With Eq.~\ref{Eq:RKRowSums}, these
+conditions establish a local error $O(h^5)$ for the general problem.
+
+Return to the original symbols in Eq.~\ref{Eq:RKFourStagesAppendix} using
+Eq.~\ref{Eq:RKNotationDictionary}. The conditions are
+\begin{equation}\label{Eq:RKFourStageConditionsAppendix}
+\begin{aligned}
+ c_1+c_2+c_3+c_4&=1,\\
+ \beta_{21}&=\alpha_2,\\
+ \beta_{31}+\beta_{32}&=\alpha_3,\\
+ \beta_{41}+\beta_{42}+\beta_{43}&=\alpha_4,\\
+ c_2\alpha_2+c_3\alpha_3+c_4\alpha_4&=\frac12,\\
+ c_2\alpha_2^2+c_3\alpha_3^2+c_4\alpha_4^2&=\frac13,\\
+ c_2\alpha_2^3+c_3\alpha_3^3+c_4\alpha_4^3&=\frac14,\\
+ c_3\alpha_2\beta_{32}
+             +c_4(\alpha_2\beta_{42}+\alpha_3\beta_{43})&=\frac16,\\
+ c_3\alpha_2\alpha_3\beta_{32}
+        +c_4\alpha_4(\alpha_2\beta_{42}+\alpha_3\beta_{43})&=\frac18,\\
+ c_3\alpha_2^2\beta_{32}
+           +c_4(\alpha_2^2\beta_{42}+\alpha_3^2\beta_{43})&=\frac1{12},\\
+ c_4\alpha_2\beta_{32}\beta_{43}&=\frac1{24}.
+\end{aligned}
+\end{equation}
+The fourth row, $\beta_{41}+\beta_{42}+\beta_{43}=\alpha_4$, was missing
+from the earlier list. Including it gives eleven equations for the thirteen
+listed coefficients. Counting nonlinear equations alone does not prove
+independence or uniqueness; we must check an actual choice.
+
+\paragraph{Solving for the classical RK4 coefficients.}
+For the choices in the earlier notes,
+\[
+ \alpha_2=\frac12,\qquad \beta_{31}=0,
+\]
+Eq.~\ref{Eq:RKNotationDictionary} gives $c_2=1/2$, $a_{31}=0$ in
+Hairer's notation. We now use that notation throughout the calculation.
+Let $u=c_3$, $v=c_4$. Row sums give $a_{21}=1/2$ and $a_{32}=u$.
+The last condition in Eq.~\ref{Eq:RKOrderFourConditions} gives
+\begin{equation}\label{Eq:RK4ChainConstraint}
+ b_4a_{43}a_{32}a_{21}=\frac1{24}
+ \quad\Longrightarrow\quad b_4a_{43}u=\frac1{12}.
+\end{equation}
+Next subtract half the condition $\sum_i b_id_i=1/6$ from the
+condition $\sum_i b_iq_i=1/12$. Using Eq.~\ref{Eq:RKStageSums},
+\begin{align}
+ 0&=\sum_{i,j}b_i a_{ij}(c_j^2-\tfrac12c_j)\nonumber\\
+  &=b_4a_{43}u(u-\tfrac12),\label{Eq:RK4SolveU}
+\end{align}
+because $c_1=0$ and $c_2=1/2$ annihilate the other terms.
+Eq.~\ref{Eq:RK4ChainConstraint} makes its first factor nonzero, so
+Eq.~\ref{Eq:RK4SolveU} gives $u=1/2$.
+
+Now subtract successive moment conditions in
+Eq.~\ref{Eq:RKOrderFourConditions}:
+\begin{equation}\label{Eq:RK4SolveV}
+\begin{aligned}
+ \sum_i b_ic_i^2-\frac12\sum_i b_ic_i
+   &=b_4v(v-\tfrac12)=\frac13-\frac14=\frac1{12},\\
+ \sum_i b_ic_i^3-\frac12\sum_i b_ic_i^2
+   &=b_4v^2(v-\tfrac12)=\frac14-\frac16=\frac1{12}.
+\end{aligned}
+\end{equation}
+The first line is nonzero, so division of the second by the first gives
+$v=1$. Substitution back gives $b_4=1/6$. Then
+Eq.~\ref{Eq:RK4ChainConstraint} gives $a_{43}=1$.
+
+We have $d_3=a_{32}c_2=1/4$ and
+$d_4=a_{42}c_2+a_{43}c_3=(a_{42}+1)/2$. Consequently the conditions
+$\sum_i b_id_i=1/6$ and $\sum_i b_ic_id_i=1/8$ become
+\begin{equation}\label{Eq:RK4SolveA42}
+ \frac{b_3}{4}+\frac{b_4(a_{42}+1)}2=\frac16,
+ \qquad
+ \frac{b_3}{8}+\frac{b_4(a_{42}+1)}2=\frac18.
+\end{equation}
+Subtract half of the first equality from the second:
+\[
+ \frac{b_4(a_{42}+1)}4=\frac18-\frac1{12}=\frac1{24}.
+\]
+With $b_4=1/6$, this gives $a_{42}=0$. The first equality of
+Eq.~\ref{Eq:RK4SolveA42} now gives $b_3/4+1/12=1/6$, hence $b_3=1/3$.
+The fourth row sum gives $a_{41}=1-a_{42}-a_{43}=0$. Finally,
+\[
+ \frac{b_2+b_3}{2}+b_4=\frac12
+ \ \Longrightarrow\ b_2=\frac13,
+ \qquad b_1=1-b_2-b_3-b_4=\frac16.
+\]
+We obtain the classical RK4 method. In Butcher tableau form,
+\begin{equation}\label{Eq:RK4Tableau}
+\begin{array}{c|cccc}
+ 0&&&&\\
+ \frac12&\frac12&&&\\
+ \frac12&0&\frac12&&\\
+ 1&0&0&1&\\ \hline
+ &\frac16&\frac13&\frac13&\frac16
+\end{array}.
+\end{equation}
+Or, in the original notation,
+\[
+\begin{aligned}
+ &\alpha_2=\alpha_3=\tfrac12,\qquad\alpha_4=1,\\
+ &\beta_{21}=\tfrac12,\qquad\beta_{31}=0,\quad\beta_{32}=\tfrac12,\\
+ &\beta_{41}=\beta_{42}=0,\qquad\beta_{43}=1,\\
+ &c_1=\tfrac16,\qquad c_2=c_3=\tfrac13,\qquad c_4=\tfrac16.
+\end{aligned}
+\]
+If we use our notation in Eq.~\ref{Eq:ERKmethodsSthStageMyNotation},
+substituting Eq.~\ref{Eq:RK4Tableau} gives
+\begin{equation}\label{Eq:RK4ExplicitUpdate}
+\begin{aligned}
+ \mathbf k_1&=\mathbf f(x_n,\mathbf y_n),\\
+ \mathbf k_2&=\mathbf f(x_n+\tfrac h2,\mathbf y_n+\tfrac h2\mathbf k_1),\\
+ \mathbf k_3&=\mathbf f(x_n+\tfrac h2,\mathbf y_n+\tfrac h2\mathbf k_2),\\
+ \mathbf k_4&=\mathbf f(x_n+h,\mathbf y_n+h\mathbf k_3),\\
+ \mathbf y_{n+1}&=\mathbf y_n+\frac h6
+       (\mathbf k_1+2\mathbf k_2+2\mathbf k_3+\mathbf k_4).
+\end{aligned}
+\end{equation}
+As a direct substitution check, the eight left-hand sides of
+Eq.~\ref{Eq:RKOrderFourConditions}, in the order
+$b^T\mathbf1$, $b^Tc$, $b^Tc^{[2]}$, $b^Td$, $b^Tc^{[3]}$,
+$b^T(c\odot d)$, $b^Tq$, $b^Te$, are
+\[
+ 1,\quad \frac12,\quad\frac13,\quad\frac16,\quad
+ \frac14,\quad\frac18,\quad\frac1{12},\quad\frac1{24}.
+\]
+Here $c^{[r]}$ means componentwise powers and $\odot$ componentwise
+multiplication. The individual sums were derived above; this last check
+also confirms the selected tableau satisfies all of them.
+
+\subsubsection{Explicit Runge--Kutta Methods}
+
+Recall Eq.~\ref{Eq:ERKmethodsSthStageMyNotation}:
+\begin{equation}\label{Eq:RKGeneralExplicitAgain}
+ \mathbf k_i=\mathbf f\left(x_n+c_ih,
+                  \mathbf y_n+h\sum_{j<i}a_{ij}\mathbf k_j\right),
+ \qquad
+ \mathbf y_{n+1}=\mathbf y_n+h\sum_{i=1}^s b_i\mathbf k_i.
+\end{equation}
+The earlier notes next rewrite the method using a matrix $J$. That rewrite
+needs an additional hypothesis: specialize to the constant-coefficient
+linear problem
+\begin{equation}\label{Eq:RKLinearTestProblem}
+ \mathbf y'=J\mathbf y,\qquad J\in\mathbb R^{d\times d}\text{ constant}.
+\end{equation}
+It is not an identity for an arbitrary nonlinear $\mathbf f$.
+Let $\mathbf g_i$ denote the stage \emph{state}, so
+$\mathbf k_i=J\mathbf g_i$. Substituting this relation into
+Eq.~\ref{Eq:RKGeneralExplicitAgain},
+\begin{equation}\label{Eq:RKLinearStageStates}
+\begin{aligned}
+ \mathbf g_i&=\mathbf y_n+h\sum_{j<i}a_{ij}\mathbf k_j
+             =\mathbf y_n+hJ\sum_{j<i}a_{ij}\mathbf g_j,\\
+ \mathbf y_{n+1}&=\mathbf y_n+hJ\sum_{i=1}^s b_i\mathbf g_i.
+\end{aligned}
+\end{equation}
+This is Eq.~(2.7) of Hairer and Wanner \cite[Section~IV.2]{HaWa2010},
+with their step index~$m$ replaced by our~$n$. It explains their
+$g_i=y_m+hJ\sum_{j<i}a_{ij}g_j$ without changing the meaning of a stage.
+
+Insert $\mathbf g_j$ from Eq.~\ref{Eq:RKLinearStageStates} back into
+the same equation. Because $a_{ij}$ are scalars, they commute with $J$:
+\begin{align}
+ \mathbf g_i
+ &=\mathbf y_n+hJ\sum_j a_{ij}
+       \left(\mathbf y_n+hJ\sum_k a_{jk}\mathbf g_k\right)\nonumber\\
+ &=\mathbf y_n+h\left(\sum_j a_{ij}\right)J\mathbf y_n
+       +h^2\sum_{j,k}a_{ij}a_{jk}J^2\mathbf g_k.\label{Eq:RKLinearStageSubstitution}
+\end{align}
+Repeating Eq.~\ref{Eq:RKLinearStageSubstitution} terminates: an explicit
+tableau has $a_{ij}=0$ for $j\geq i$, so each nonzero product has strictly
+decreasing stage indices. Substitute these expressions into the update:
+\begin{equation}\label{Eq:RKLinearUpdateExpansion}
+\begin{aligned}
+ \mathbf y_{n+1}={}&\left[I+h\left(\sum_i b_i\right)J
+       +h^2\left(\sum_{i,j}b_i a_{ij}\right)J^2\right]\mathbf y_n\\
+ &+h^3\left(\sum_{i,j,k}b_i a_{ij}a_{jk}\right)J^3\mathbf y_n+\cdots
+ =R(hJ)\mathbf y_n,
+\end{aligned}
+\end{equation}
+where, cf. Eq.~(2.8) of \cite{HaWa2010},
+\begin{equation}\label{Eq:RKStabilityPolynomial}
+ R(z)=1+z\sum_i b_i+z^2\sum_{i,j}b_i a_{ij}
+                    +z^3\sum_{i,j,k}b_i a_{ij}a_{jk}+\cdots
+\end{equation}
+is a polynomial of degree at most~$s$. For matrix arguments, its constant
+term is the identity matrix~$I$.
+
+In matrix notation let $A=(a_{ij})$, $b=(b_i)$,
+$c=(c_i)$, and $\mathbf1=(1,\dots,1)^T$. Since $A$ is strictly lower
+triangular, $A^s=0$, and
+\begin{equation}\label{Eq:RKStabilityPolynomialMatrix}
+\begin{aligned}
+ (I-zA)^{-1}&=I+zA+\cdots+z^{s-1}A^{s-1},\\
+ R(z)&=1+zb^T(I-zA)^{-1}\mathbf1.
+\end{aligned}
+\end{equation}
+Multiplying the first line by $I-zA$ gives $I-z^sA^s=I$, verifying the
+finite inverse directly. Substitution of Eq.~\ref{Eq:RK4Tableau} gives
+\begin{equation}\label{Eq:RK4StabilityPolynomial}
+ R_4(z)=1+z+\frac{z^2}{2}+\frac{z^3}{6}+\frac{z^4}{24}.
+\end{equation}
+For $y'=y$, the exact multiplier is $e^h$, whose $h^5$ coefficient is
+$1/120$, whereas Eq.~\ref{Eq:RK4StabilityPolynomial} has no $h^5$ term.
+Thus classical RK4 has order exactly four, not five. Matching the stability
+polynomial alone would not establish fourth order for nonlinear problems:
+it tests the chain terms, while Eq.~\ref{Eq:RKOrderFourConditions} also
+checks the branching terms containing $F''$ and $F'''$.
+
+\subsection{Order Conditions for Runge--Kutta Methods}
+
+Cf. printed p.~143, II.2, ``Order Conditions for Runge--Kutta Methods,''
+Hairer, N\o rsett, and Wanner \cite{HNW1993}.
+
+Replace $\mathbf k_i$ by stage states $\mathbf g_i$ such that
+$\mathbf k_i=\mathbf f(\mathbf g_i)$ \emph{for an autonomous equation}.
+To spell out that substitution, the general nonautonomous case is
+\begin{equation}\label{Eq:RKGeneralStageStates}
+\begin{aligned}
+ \mathbf g_i&=\mathbf y_n+h\sum_{j<i}a_{ij}\mathbf k_j,\\
+ \mathbf k_i&=\mathbf f(x_n+c_ih,\mathbf g_i),\\
+ \mathbf g_i&=\mathbf y_n+h\sum_{j<i}a_{ij}
+                            \mathbf f(x_n+c_jh,\mathbf g_j),\\
+ \mathbf y_{n+1}&=\mathbf y_n+h\sum_i b_i
+                            \mathbf f(x_n+c_ih,\mathbf g_i).
+\end{aligned}
+\end{equation}
+If $\mathbf f$ is independent of~$x$, the time arguments disappear.
+Alternatively, Eq.~\ref{Eq:RKAugmentedSystem} makes the original equation
+autonomous on the augmented state space, and its stage states are
+$G_i=(x_n+c_ih,\mathbf g_i)$, with $\mathcal K_i=F(G_i)$.
+The distinction is that $\mathbf g_i$ is a \emph{state} and
+$\mathbf k_i$ is a \emph{derivative}. The former belongs inside~$f$.
+
+The short sums in Eq.~\ref{Eq:RKStageSums} have the matrix expressions
+\begin{equation}\label{Eq:RKOrderSumsMatrix}
+ c=A\mathbf1,\qquad d=Ac,\qquad q=Ac^{[2]},\qquad e=A^2c.
+\end{equation}
+Using these relations, Eq.~\ref{Eq:RKOrderFourConditions} becomes
+\begin{equation}\label{Eq:RKOrderConditionsMatrix}
+\begin{aligned}
+ \text{order 1:}\quad &b^T\mathbf1=1,\\
+ \text{order 2:}\quad &b^Tc=\tfrac12,\\
+ \text{order 3:}\quad &b^Tc^{[2]}=\tfrac13,\qquad b^TAc=\tfrac16,\\
+ \text{order 4:}\quad &b^Tc^{[3]}=\tfrac14,\qquad b^T(c\odot Ac)=\tfrac18,\\
+                     &b^TAc^{[2]}=\tfrac1{12},\qquad b^TA^2c=\tfrac1{24}.
+\end{aligned}
+\end{equation}
+Each row lists the additional conditions at that order; the previous rows
+are still required. This is the beginning of the general order-condition
+calculation in Hairer II.2. Its rooted trees organize the different
+compositions already visible here: for example $F'^2F$ and $F''(F,F)$
+are different terms at order three. The table abbreviates the algebra in
+Eqs.~\ref{Eq:RKStageDisplacement}--\ref{Eq:RKOrderFourConditions}; it does
+not replace that derivation.
+
+\paragraph{From one-step order to a fixed-interval error bound.}
+We now propagate the local RK4 error over a fixed interval
+$[x_0,x_0+T]$. We use Hairer's notation
+$\frac{d\mathbf y}{dx}=\mathbf f(x,\mathbf y)$: $x$ is the independent
+variable and $\mathbf y$ is the state. Set $x_n=x_0+nh$, with $nh\leq T$.
+The exact state is $\mathbf y(x_n)$; the computed state is $\mathbf y_n$.
+
+First define the numerical step as a function of its starting point and
+starting state. Let $\mathbf u\in\mathbb R^d$ be a starting state at $x$.
+For classical RK4, the stages are
+\begin{equation}\label{Eq:RKStepMapStages}
+\begin{aligned}
+ \mathbf k_1(x,\mathbf u;h)
+   &\equiv\mathbf f(x,\mathbf u),\\
+ \mathbf k_2(x,\mathbf u;h)
+   &\equiv\mathbf f\left(x+\frac h2,\,
+                   \mathbf u+\frac h2\mathbf k_1(x,\mathbf u;h)\right),\\
+ \mathbf k_3(x,\mathbf u;h)
+   &\equiv\mathbf f\left(x+\frac h2,\,
+                   \mathbf u+\frac h2\mathbf k_2(x,\mathbf u;h)\right),\\
+ \mathbf k_4(x,\mathbf u;h)
+   &\equiv\mathbf f\left(x+h,\,
+                   \mathbf u+h\mathbf k_3(x,\mathbf u;h)\right).
+\end{aligned}
+\end{equation}
+Using the weights in Eq.~\ref{Eq:RK4Tableau}, define
+\begin{equation}\label{Eq:RKStepMapDefinition}
+\begin{aligned}
+ \Phi_h(x,\mathbf u)\equiv\mathbf u+\frac h6\bigl[
+   &\mathbf k_1(x,\mathbf u;h)+2\mathbf k_2(x,\mathbf u;h)\\
+   &+2\mathbf k_3(x,\mathbf u;h)+\mathbf k_4(x,\mathbf u;h)\bigr].
+\end{aligned}
+\end{equation}
+Thus $\Phi_h(x,\mathbf u)$ is the state produced by one RK4 step of
+length $h$, starting at $(x,\mathbf u)$. In particular,
+\begin{equation}\label{Eq:RKStepMapComputedUpdate}
+ \mathbf y_{n+1}=\Phi_h(x_n,\mathbf y_n).
+\end{equation}
+The starting point $x$ is kept as an argument because $\mathbf f$ may
+depend on it. Evaluating $\Phi_h(x_n,\mathbf y(x_n))$ instead means
+recomputing the stages from the \emph{exact} starting state.
+
+For this error-propagation argument, assume \emph{both} of the following
+bounds hold for every step contained in the interval, with
+$0<h\leq h_\ast$ and $h_\ast$ fixed. Use one fixed norm
+on $\mathbb R^d$ throughout. The relevant state neighborhood must contain
+the exact states, computed states, and stage states in these comparisons;
+all constants below are independent of $n$ and $h$ on the fixed interval.
+
+The first assumption controls the effect of changing the starting state.
+For any two starting states $\mathbf u,\mathbf v$ in that neighborhood,
+at the \emph{same} starting point $x_n$ and with the \emph{same} step $h$,
+assume
+\begin{equation}\label{Eq:RKStepMapPerturbationBound}
+ \|\Phi_h(x_n,\mathbf u)-\Phi_h(x_n,\mathbf v)\|
+ \leq(1+Lh)\|\mathbf u-\mathbf v\|,\qquad L\geq0.
+\end{equation}
+Here $\mathbf u$ and $\mathbf v$ are arbitrary state vectors, not stage
+derivatives. The constant $L$ controls how much the numerical step can
+amplify their separation: a separation $\varepsilon$ before the step
+is at most $(1+Lh)\varepsilon$ afterward. This is a bound on the
+\emph{numerical step map}. Its $L$ need not equal a Lipschitz constant
+for the differential equation's right-hand side $\mathbf f$.
+
+The second assumption controls the error introduced by one step started
+from the exact state. Assume
+\begin{equation}\label{Eq:RKUniformLocalErrorBound}
+ \|\mathbf y(x_n+h)-\Phi_h(x_n,\mathbf y(x_n))\|
+ \leq Ch^5,\qquad C\geq0.
+\end{equation}
+The two quantities being compared are the exact state at $x_n+h$ and
+one RK4 step from $(x_n,\mathbf y(x_n))$. Eq.~\ref{Eq:RKUniformLocalErrorBound}
+is the fourth-order local estimate from
+Eq.~\ref{Eq:RKLocalErrorOurNotation}, with $p=4$ and a uniform constant $C$.
+It does not yet bound the error after many computed steps.
+
+These assumptions have different roles. State Lipschitz continuity of
+$\mathbf f$, together with the finite RK stages and a sufficiently small
+fixed upper step bound, supplies a perturbation estimate of the form
+Eq.~\ref{Eq:RKStepMapPerturbationBound}. The smoothness and derivative
+bounds used in the RK4 Taylor calculation supply
+Eq.~\ref{Eq:RKUniformLocalErrorBound}. The following argument uses the two
+displayed estimates as its hypotheses; it does not infer fourth-order
+accuracy from Lipschitz continuity alone.
+
+Define the accumulated error vector and its magnitude by
+\begin{equation}\label{Eq:RKGlobalErrorDefinition}
+ \mathbf e_n\equiv\mathbf y(x_n)-\mathbf y_n,
+ \qquad E_n\equiv\|\mathbf e_n\|
+              =\|\mathbf y(x_n)-\mathbf y_n\|.
+\end{equation}
+To find the error after the next step, substitute $x_{n+1}=x_n+h$ and
+Eq.~\ref{Eq:RKStepMapComputedUpdate}. Then add and subtract the state
+$\Phi_h(x_n,\mathbf y(x_n))$:
+\begin{equation}\label{Eq:RKGlobalErrorDecomposition}
+\begin{aligned}
+ \mathbf e_{n+1}
+ &=\mathbf y(x_{n+1})-\mathbf y_{n+1}\\
+ &=\mathbf y(x_n+h)-\Phi_h(x_n,\mathbf y_n)\\
+ &=\mathbf y(x_n+h)-\Phi_h(x_n,\mathbf y_n)\\
+ &\quad+\underbrace{\Phi_h(x_n,\mathbf y(x_n))
+                    -\Phi_h(x_n,\mathbf y(x_n))}_{0}\\
+ &=\bigl[\mathbf y(x_n+h)-\Phi_h(x_n,\mathbf y(x_n))\bigr]\\
+ &\quad+\bigl[\Phi_h(x_n,\mathbf y(x_n))-\Phi_h(x_n,\mathbf y_n)\bigr].
+\end{aligned}
+\end{equation}
+The first bracket is the new local error. The second is the difference
+between two numerical steps: one starts from the exact state and one from
+the computed state. The new local error is bounded by
+Eq.~\ref{Eq:RKUniformLocalErrorBound}. For the second bracket, substitute
+$\mathbf u=\mathbf y(x_n)$ and $\mathbf v=\mathbf y_n$ into
+Eq.~\ref{Eq:RKStepMapPerturbationBound}:
+\begin{equation}\label{Eq:RKPropagatedErrorBound}
+\begin{aligned}
+ \|\Phi_h(x_n,\mathbf y(x_n))-\Phi_h(x_n,\mathbf y_n)\|
+ &\leq(1+Lh)\|\mathbf y(x_n)-\mathbf y_n\|\\
+ &=(1+Lh)E_n.
+\end{aligned}
+\end{equation}
+Take the norm in Eq.~\ref{Eq:RKGlobalErrorDecomposition} and apply the
+triangle inequality to its two brackets. Applying
+Eqs.~\ref{Eq:RKUniformLocalErrorBound} and~\ref{Eq:RKPropagatedErrorBound}
+then gives
+\begin{equation}\label{Eq:RKGlobalErrorRecurrence}
+\begin{aligned}
+ E_{n+1}
+ &=\|\mathbf e_{n+1}\|\\
+ &\leq\|\mathbf y(x_n+h)-\Phi_h(x_n,\mathbf y(x_n))\|\\
+ &\quad+\|\Phi_h(x_n,\mathbf y(x_n))-\Phi_h(x_n,\mathbf y_n)\|\\
+ &\leq Ch^5+(1+Lh)E_n.
+\end{aligned}
+\end{equation}
+The two terms on the last line therefore account separately for the
+error introduced by this step and the propagation of the existing error.
+
+From exact initial data, $\mathbf y_0=\mathbf y(x_0)$, we have $E_0=0$.
+Iterating Eq.~\ref{Eq:RKGlobalErrorRecurrence}, the first three steps are
+\begin{equation}\label{Eq:RKGlobalErrorFirstIterations}
+\begin{aligned}
+ E_1&\leq Ch^5+(1+Lh)E_0=Ch^5,\\
+ E_2&\leq Ch^5+(1+Lh)E_1\\
+    &\leq Ch^5+(1+Lh)Ch^5\\
+    &=Ch^5\bigl[1+(1+Lh)\bigr],\\
+ E_3&\leq Ch^5+(1+Lh)E_2\\
+    &\leq Ch^5+(1+Lh)Ch^5\bigl[1+(1+Lh)\bigr]\\
+    &=Ch^5\bigl[1+(1+Lh)+(1+Lh)^2\bigr].
+\end{aligned}
+\end{equation}
+This suggests
+\begin{equation}\label{Eq:RKGlobalErrorSum}
+ E_n\leq Ch^5\sum_{j=0}^{n-1}(1+Lh)^j,\qquad n\geq1.
+\end{equation}
+To verify the pattern by induction, suppose
+Eq.~\ref{Eq:RKGlobalErrorSum} holds at step $n$. Substitution into
+Eq.~\ref{Eq:RKGlobalErrorRecurrence} gives
+\begin{equation}\label{Eq:RKGlobalErrorInduction}
+\begin{aligned}
+ E_{n+1}
+ &\leq Ch^5+(1+Lh)Ch^5\sum_{j=0}^{n-1}(1+Lh)^j\\
+ &=Ch^5\left[1+\sum_{j=0}^{n-1}(1+Lh)^{j+1}\right]\\
+ &=Ch^5\left[1+\sum_{j=1}^{n}(1+Lh)^j\right]\\
+ &=Ch^5\sum_{j=0}^{n}(1+Lh)^j.
+\end{aligned}
+\end{equation}
+The base case is the bound for $E_1$ in
+Eq.~\ref{Eq:RKGlobalErrorFirstIterations}, so
+Eq.~\ref{Eq:RKGlobalErrorSum} holds for every computed step.
+
+For $L>0$, evaluate the finite geometric sum by defining
+\[
+ S_n\equiv\sum_{j=0}^{n-1}(1+Lh)^j.
+\]
+Multiplying by $1+Lh$ shifts the powers by one. Subtract the original
+sum from the shifted sum:
+\begin{equation}\label{Eq:RKGlobalErrorGeometricSum}
+\begin{aligned}
+ (1+Lh)S_n-S_n
+ &=\sum_{j=1}^{n}(1+Lh)^j-\sum_{j=0}^{n-1}(1+Lh)^j\\
+ &=\left[\sum_{j=1}^{n-1}(1+Lh)^j+(1+Lh)^n\right]\\
+ &\quad-\left[1+\sum_{j=1}^{n-1}(1+Lh)^j\right]\\
+ &=(1+Lh)^n-1.
+\end{aligned}
+\end{equation}
+The sums with powers $1,\dots,n-1$ cancel. On the left,
+$(1+Lh)S_n-S_n=LhS_n$, hence
+\begin{equation}\label{Eq:RKGlobalErrorGeometricQuotient}
+ LhS_n=(1+Lh)^n-1,
+ \qquad S_n=\frac{(1+Lh)^n-1}{Lh}.
+\end{equation}
+To bound the remaining factor independently of $h$, use
+$1+Lh\leq e^{Lh}$ and $nh\leq T$:
+\begin{equation}\label{Eq:RKGlobalErrorExponentialBound}
+ (1+Lh)^n\leq(e^{Lh})^n=e^{Lnh}\leq e^{LT}.
+\end{equation}
+Substitute Eq.~\ref{Eq:RKGlobalErrorGeometricQuotient} into
+Eq.~\ref{Eq:RKGlobalErrorSum}, and then apply
+Eq.~\ref{Eq:RKGlobalErrorExponentialBound}:
+\begin{equation}\label{Eq:RKGlobalErrorBound}
+\begin{aligned}
+ E_n
+ &\leq Ch^5S_n\\
+ &=Ch^5\frac{(1+Lh)^n-1}{Lh}\\
+ &=\frac{C}{L}h^4\bigl[(1+Lh)^n-1\bigr]\\
+ &\leq\frac{C}{L}(e^{LT}-1)h^4,\qquad nh\leq T.
+\end{aligned}
+\end{equation}
+The factor $\frac{C}{L}(e^{LT}-1)$ is independent of $h$ on the fixed
+interval. Thus $E_n=O(h^4)$ uniformly for $nh\leq T$.
+
+If $L=0$, no division by $Lh$ is needed. Each term in
+Eq.~\ref{Eq:RKGlobalErrorSum} is one, so
+\begin{equation}\label{Eq:RKGlobalErrorZeroGrowth}
+ E_n\leq Ch^5\sum_{j=0}^{n-1}1
+     =Cnh^5=C(nh)h^4\leq CTh^4.
+\end{equation}
+This gives the same fourth-order global bound.
+
+The local $h^5$ error is introduced once per step, and the number of steps
+over the fixed interval grows as $1/h$. The recurrence and its sum show
+explicitly how their accumulation, including propagation by the numerical
+step, produces the global $h^4$ bound. The result concerns truncation error
+in exact arithmetic on a fixed interval; it does not include roundoff.
+
+\begin{exercise}[Hairer I, II.1.1, p.~141 \cite{HNW1993}]
+Show that every $s$-stage explicit RK method of order $s$, when applied to the
+problem $y'=\lambda y$ ($\lambda$ a complex constant), gives
+\[
+ y_1=\left(\sum_{j=0}^{s}\frac{z^j}{j!}\right)y_0,
+ \qquad z=h\lambda.
+\]
+
+\noindent\textit{Hint.} Show first that $y_1/y_0$ must be a polynomial in $z$ of
+degree $s$ and then determine its coefficients by comparing the derivatives
+of $y_1$, with respect to $h$, to those of the true solution.
+\end{exercise}
+
+\paragraph{Solution.}
+
+Recall Eqn. \ref{Eq:ERKmethodsSthStageMyNotation}
+\[
+\begin{aligned}
+       \mathbf k_1&= \mathbf f(x_n, \mathbf y_n),\\
+       \mathbf k_2&= \mathbf f(x_n+c_2h, \mathbf y_n+ha_{21} \mathbf k_1),\\
+      &\ \vdots\\
+      \mathbf k_s&=\mathbf f\left(x_n+c_sh,
+      \mathbf y_n+h\sum_{j=1}^{s-1}a_{sj} \mathbf k_j\right)
+     \end{aligned}
+\]
+And so if we both apply this to our specific problem $\mathbf y'=\lambda \mathbf y$, and we equate $\mathbf y' = \mathbf f(x_n,\mathbf y_n)$, then
+\[
+\begin{gathered}
+\begin{aligned}
+      \mathbf k_1 & = \mathbf f(x_n, \mathbf y_n) = \mathbf y' = \lambda \mathbf y_n \\
+      \mathbf k_2 & = \mathbf f(x_n+c_2h, \mathbf y_n+ha_{21} \mathbf k_1) = \lambda (\mathbf y_n+ha_{21} \mathbf k_1) = \lambda( \mathbf y_n + ha_{21} \lambda \mathbf y_n) = \lambda \mathbf y_n (1 + a_{21} (h \lambda))
+\end{aligned} \\
+\Longrightarrow \mathbf k_s = \lambda ( \mathbf y_n  + h \sum_{j=1}^{s- 1} a_{sj} \mathbf k_j)
+\end{gathered}
+\]
+
+Now if we let $z \equiv h\lambda$, then we have
+\[
+      \mathbf k_2 = \lambda \mathbf y_n (1 + a_{21} z)
+\]
+and
+\[
+\begin{gathered}
+      \mathbf k_3 = \lambda ( \mathbf y_n + h(a_{31} \mathbf k_1 + a_{32}\mathbf k_2)) = \lambda (\mathbf y_n + h(a_{31}\lambda \mathbf y_n + a{32} \lambda \mathbf y_n (1 + a_{21}z)  )) = \\
+= \lambda  \mathbf y_n (1 + (a_{31} + a_{32})z + a_{32}a_{21} z^2)
+\end{gathered}
+\]
+
+This suggests to do the following: define in full generality polynomials $P_i = P_i(z)$, by
+\[
+\begin{gathered}
+P_1(z) = 1, \quad \, P_i(z) = 1 + z \sum_{j=1}^{i-1} a_{ij} P_j(z)
+\end{gathered}
+\]
+Notice then that
+\[
+\begin{aligned}
+& \lambda \mathbf y_n P_1(z) = \lambda \mathbf y_n = \mathbf k_1 \\
+& \lambda \mathbf y_n P_2(z) = \lambda \mathbf (1 + za_{21}P_1(z)) = \lambda \mathbf y_n(1 + za_{21}) = \mathbf{k}_2 \\
+\end{aligned}
+\]
+Then, by induction,
+\[
+\begin{gathered}
+\mathbf{k}_s = \lambda (\mathbf y_n + h \sum_{j=1}^{s-1} a_{sj} \mathbf k_j) = \lambda ( \mathbf y + h \sum_{j=1}^{s-1}a_{sj} \lambda \mathbf y_n P_j(z)) = \lambda \mathbf y_n (1 + z\sum_{j=1}^{s-1} a_{sj} P_j) = \lambda \mathbf y_n P_s
+\end{gathered}
+\]
