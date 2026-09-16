@@ -130,7 +130,7 @@ class HigherOrderStepWithPIControl
 
   private:
 
-    CalculateNewY<S, DerivativeType, Field>& new_y_;
+    CalculateNewY<S, DerivativeType, Field> new_y_;
     CalculateError<S, BHHSize, ContainerT, Field> error_;
     ComputePIStepSize<Field> pi_step_;
     PIStepSizeControl<Field> pi_control_;

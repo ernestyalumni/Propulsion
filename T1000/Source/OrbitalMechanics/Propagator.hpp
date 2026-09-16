@@ -19,8 +19,8 @@
 #include "TwoBody.hpp"
 #include "OrbitalElements.hpp"
 #include "StateVector.hpp"
-#include "../Numerical/ODE/DOPRI5.hpp"
-#include "../Numerical/ODE/ODEDriver.hpp"
+#include "Numerical/ODE/RKMethods/IntegrateWithPIControl.h"
+#include "Numerical/ODE/RKMethods/Coefficients/DOPRI5Coefficients.h"
 
 #include <vector>
 #include <cmath>
@@ -83,11 +83,16 @@ inline PropagatorResult propagate(
   if (h_init <= 0.0)
     h_init = std::abs(tf - t0) / 100.0;
 
-  // Set up stepper
-  Numerical::ODE::DOPRI5<6> stepper{y0, t0, atol, rtol};
-
-  // Set up EOM functor
-  TwoBodyEOM eom{mu};
+  namespace RK = Numerical::ODE::RKMethods;
+  namespace DP = RK::DOPRI5Coefficients;
+  // Cosmos owns the tableau, step calculation, PI controller and driver.
+  // std::array<double, 6> preserves the application's fixed state storage.
+  RK::IntegrateWithPIControl integrate {
+    RK::CalculateNewYAndError<DP::s, TwoBodyEOM>{
+      TwoBodyEOM{mu}, DP::a_coefficients, DP::c_coefficients, DP::delta_coefficients},
+    RK::CalculateScaledError{atol, rtol},
+    RK::ComputePIStepSize{0.7/5.0, 0.4/5.0},
+    1000000};
 
   // Observer
   TrajectoryObserver obs{result, mu};
@@ -101,21 +106,17 @@ inline PropagatorResult propagate(
     result.hmags.push_back(angular_momentum_mag(y0));
   }
 
-  if (record)
+  const auto [final_time, final_state, steps] = integrate.integrate_with_observer<6>(
+    RK::IntegrationInputs{y0, t0, tf, h_init},
+    [&](double t, const StateVector6& y, double) { if (record) obs(t, y); },
+    100, 1.0e-12);
+  result.n_steps = steps;
+  if (!record)
   {
-    result.n_steps = Numerical::ODE::integrate_adaptive(
-      stepper, eom, t0, tf, h_init, 1.0e-12, 1000000, obs);
-  }
-  else
-  {
-    Numerical::ODE::NullObserver null_obs;
-    result.n_steps = Numerical::ODE::integrate_adaptive(
-      stepper, eom, t0, tf, h_init, 1.0e-12, 1000000, null_obs);
-
-    result.times.push_back(stepper.x);
-    result.states.push_back(stepper.y);
-    result.energies.push_back(specific_energy(stepper.y, mu));
-    result.hmags.push_back(angular_momentum_mag(stepper.y));
+    result.times.push_back(final_time);
+    result.states.push_back(final_state);
+    result.energies.push_back(specific_energy(final_state, mu));
+    result.hmags.push_back(angular_momentum_mag(final_state));
   }
 
   return result;

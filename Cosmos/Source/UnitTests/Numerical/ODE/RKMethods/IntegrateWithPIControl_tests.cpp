@@ -134,7 +134,7 @@ TEST(TestIntegrateWithPIControl, IntegrateIntegratesWithStdValarray)
   EXPECT_DOUBLE_EQ(result_x[1], 0.2);
   EXPECT_DOUBLE_EQ(result_x[2], 0.31741001868168683);
   EXPECT_DOUBLE_EQ(result_x[3], 0.49769643876973546);
-  EXPECT_DOUBLE_EQ(result_x[result_x.size() - 1], 2.207196030542153);
+  EXPECT_DOUBLE_EQ(result_x[result_x.size() - 1], 2.0);
 
   for (std::size_t i {0}; i < result_x.size(); ++i)
   {
@@ -173,7 +173,7 @@ TEST(TestIntegrateWithPIControl, IntegrateIntegratesWithNVector)
   EXPECT_DOUBLE_EQ(result_x[2], 0.31741001868168683);
   EXPECT_DOUBLE_EQ(result_x[3], 0.49769643876973546);
   EXPECT_DOUBLE_EQ(result_x[result_x.size() - 2], 1.9331867437502506);
-  EXPECT_DOUBLE_EQ(result_x[result_x.size() - 1], 2.207196030542153);
+  EXPECT_DOUBLE_EQ(result_x[result_x.size() - 1], 2.0);
 
   for (std::size_t i {0}; i < result_x.size(); ++i)
   {
@@ -213,7 +213,7 @@ TEST(TestIntegrateWithPIControl,
   EXPECT_DOUBLE_EQ(result_x[2], 0.29974091152182608);
   EXPECT_DOUBLE_EQ(result_x[3], 0.46072162525238469);
   EXPECT_DOUBLE_EQ(result_x[result_x.size() - 2], 1.9208946571455878);
-  EXPECT_DOUBLE_EQ(result_x[result_x.size() - 1], 2.1671462301581483);
+  EXPECT_DOUBLE_EQ(result_x[result_x.size() - 1], 2.0);
 
   for (std::size_t i {0}; i < result_x.size(); ++i)
   {
@@ -253,7 +253,7 @@ TEST(TestIntegrateWithPIControl,
   EXPECT_DOUBLE_EQ(result_x[2], 0.29974091152182608);
   EXPECT_DOUBLE_EQ(result_x[3], 0.46072162525238469);
   EXPECT_DOUBLE_EQ(result_x[result_x.size() - 2], 1.9208946571455878);
-  EXPECT_DOUBLE_EQ(result_x[result_x.size() - 1], 2.1671462301581483);
+  EXPECT_DOUBLE_EQ(result_x[result_x.size() - 1], 2.0);
 
   for (std::size_t i {0}; i < result_x.size(); ++i)
   {
@@ -293,7 +293,7 @@ TEST(TestIntegrateWithPIControl,
   EXPECT_DOUBLE_EQ(result_x[2], 0.56213736136341397);
   EXPECT_DOUBLE_EQ(result_x[3], 1.0470727466176584);
   EXPECT_DOUBLE_EQ(result_x[result_x.size() - 2], 1.704963733149909);
-  EXPECT_DOUBLE_EQ(result_x[result_x.size() - 1], 2.6693284571058449);
+  EXPECT_DOUBLE_EQ(result_x[result_x.size() - 1], 2.0);
 
   for (std::size_t i {0}; i < result_x.size(); ++i)
   {
@@ -333,7 +333,7 @@ TEST(TestIntegrateWithPIControl,
   EXPECT_DOUBLE_EQ(result_x[2], 0.56213736136341397);
   EXPECT_DOUBLE_EQ(result_x[3], 1.0470727466176584);
   EXPECT_DOUBLE_EQ(result_x[result_x.size() - 2], 1.704963733149909);
-  EXPECT_DOUBLE_EQ(result_x[result_x.size() - 1], 2.6693284571058449);
+  EXPECT_DOUBLE_EQ(result_x[result_x.size() - 1], 2.0);
 
   for (std::size_t i {0}; i < result_x.size(); ++i)
   {

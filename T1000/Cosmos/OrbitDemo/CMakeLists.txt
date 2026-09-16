@@ -22,7 +22,9 @@ include_directories(
 )
 
 # ── Executable ────────────────────────────────────────────────────────────────
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../../Cosmos/Source/Numerical/ODE/RKMethods" cosmos-ode)
 add_executable(OrbitDemo main.cpp)
+target_link_libraries(OrbitDemo PRIVATE CosmosODE)
 
 target_include_directories(OrbitDemo PRIVATE "${SOURCE_DIR}")
 

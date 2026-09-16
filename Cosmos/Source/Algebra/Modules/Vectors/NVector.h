@@ -58,6 +58,8 @@ class NVector
 
     virtual ~NVector() = default;
 
+    std::size_t size() const noexcept { return components_.size(); }
+
     Field& operator[](const std::size_t index)
     {
       return components_[index];

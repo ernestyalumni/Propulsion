@@ -35,9 +35,7 @@ class IntegrationInputs
 
       if (h_0 == static_cast<Field>(0))
       {
-        h_0_ = std::max(
-          (x_2 - x_1) / static_cast<Field>(10),
-          std::numeric_limits<Field>::epsilon());
+        h_0_ = (x_2 - x_1) / static_cast<Field>(10);
       }
     }
 

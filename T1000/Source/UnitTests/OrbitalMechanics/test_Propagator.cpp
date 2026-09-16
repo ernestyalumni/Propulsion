@@ -125,4 +125,38 @@ BOOST_AUTO_TEST_CASE(StepCountPositive)
   BOOST_TEST(result.n_steps > 0);
 }
 
+
+BOOST_AUTO_TEST_CASE(BackwardOrbitAndRecordingContract)
+{
+  const double r = R_EARTH + 400.0e3;
+  const StateVector6 y0{r,0.,0.,0.,circular_speed(r),0.};
+  const double span = orbital_period(r)/4.;
+  const auto recorded = propagate(y0,0.,-span,MU_EARTH,1e-10,1e-11,0.,true);
+  const auto final_only = propagate(y0,0.,-span,MU_EARTH,1e-10,1e-11,0.,false);
+  BOOST_TEST(recorded.times.back() == -span);
+  BOOST_TEST(recorded.times.size() == recorded.n_steps+1);
+  BOOST_TEST(final_only.times.size() == 1u);
+  BOOST_TEST(final_only.n_steps == recorded.n_steps);
+  for(std::size_t i=1;i<recorded.times.size();++i)
+    BOOST_TEST(recorded.times[i] < recorded.times[i-1]);
+  for(std::size_t i=0;i<6;++i)
+    BOOST_TEST(recorded.states.back()[i] == final_only.states.back()[i]);
+  BOOST_TEST(std::abs(recorded.states.back()[0]) < 0.01);
+  BOOST_TEST(std::abs(recorded.states.back()[1]+r) < 0.01);
+}
+
+BOOST_AUTO_TEST_CASE(ZeroDurationReturnsInitialState)
+{
+  const double r = R_EARTH + 400.0e3;
+  const StateVector6 y0{r,0.,0.,0.,circular_speed(r),0.};
+  for(bool record:{false,true})
+  {
+    const auto result = propagate(y0,42.,42.,MU_EARTH,1e-8,1e-9,0.,record);
+    BOOST_TEST(result.n_steps == 0u);
+    BOOST_TEST(result.times.size() == 1u);
+    BOOST_TEST(result.times[0] == 42.);
+    for(std::size_t i=0;i<6;++i) BOOST_TEST(result.states[0][i] == y0[i]);
+  }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

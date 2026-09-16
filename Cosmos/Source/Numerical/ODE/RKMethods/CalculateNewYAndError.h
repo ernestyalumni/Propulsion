@@ -11,6 +11,7 @@
 #include <array>
 #include <cstddef>
 #include <initializer_list>
+#include <type_traits>
 #include <utility> // std::forward
 #include <valarray>
 
@@ -53,12 +54,15 @@ class CalculateNewYAndError
       const Coefficients::CCoefficients<S, Field>& c_coefficients,
       const Coefficients::DeltaCoefficients<S, Field>& delta_coefficients
       ):
-      // Forward lvalues as either lvalues or as rvalues.
-      derivative_{std::forward<DerivativeType>(derivative)},
+      // An lvalue is copied; it must not be silently moved from.
+      derivative_{derivative},
       a_coefficients_{a_coefficients},
       c_coefficients_{c_coefficients},
       delta_coefficients_{delta_coefficients}
     {}
+
+    CalculateNewYAndError(const CalculateNewYAndError&) = default;
+    CalculateNewYAndError(CalculateNewYAndError&&) = default;
 
     virtual ~CalculateNewYAndError() = default;
 
@@ -91,8 +95,40 @@ class CalculateNewYAndError
           std::plus<Field>());
 
         // k_l = f(x + c_l * h, y + h * (a_l1 * k_1 + ... + a_l,l-1 * k_{l-1}))
-        derivative_(x_l, y_out, k_coefficients.ith_coefficient(l));
+        if constexpr (std::is_invocable_v<DerivativeType&, Field,
+          const ContainerT&, ContainerT&>)
+        {
+          derivative_(x_l, y_out, k_coefficients.ith_coefficient(l));
+        }
+        else
+        {
+          k_coefficients.ith_coefficient(l) = derivative_(x_l, y_out);
+        }
       }
+    }
+
+    // Fixed state dimension is independent of the number of RK stages.
+    // Reuse the existing output-parameter kernel without allocating per step.
+    template <std::size_t N>
+    std::array<Field, N> calculate_new_y(
+      const Field h, const Field x, const std::array<Field, N>& y,
+      const std::array<Field, N>& initial_dydx,
+      Coefficients::KCoefficients<S, std::array<Field, N>>& k_coefficients)
+    {
+      std::array<Field, N> out {};
+      calculate_new_y<std::array<Field, N>, N>(
+        h, x, y, initial_dydx, k_coefficients, out);
+      return out;
+    }
+
+    template <std::size_t N>
+    std::array<Field, N> calculate_error(
+      const Field h,
+      const Coefficients::KCoefficients<S, std::array<Field, N>>& k_coefficients)
+    {
+      std::array<Field, N> error {};
+      calculate_error<std::array<Field, N>, N>(h, k_coefficients, error);
+      return error;
     }
 
     std::valarray<Field> calculate_new_y(

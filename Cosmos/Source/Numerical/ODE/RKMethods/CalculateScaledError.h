@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <stdexcept>
 
 namespace Numerical
 {
@@ -21,7 +22,11 @@ class CalculateScaledError
     CalculateScaledError(const Field atol, const Field rtol):
       a_tolerance_{atol},
       r_tolerance_{rtol}
-    {}
+    {
+      if (!std::isfinite(atol) || !std::isfinite(rtol) ||
+          atol < Field(0) || rtol < Field(0) || (atol == Field(0) && rtol == Field(0)))
+        throw std::invalid_argument("ODE tolerances must be finite, nonnegative and not both zero");
+    }
 
     //--------------------------------------------------------------------------
     /// \param y_err Error calculated from the delta coefficients with k
@@ -41,6 +46,8 @@ class CalculateScaledError
           a_tolerance_ +
             r_tolerance_ * std::max(std::abs(y_0[i]), std::abs(y_out[i]))};
 
+        if (!(scale > Field(0)) || !std::isfinite(scale))
+          throw std::domain_error("ODE component error scale must be positive and finite");
         error += (y_err[i] / scale) * (y_err[i] / scale);
       }
 

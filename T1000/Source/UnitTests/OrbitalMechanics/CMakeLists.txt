@@ -8,9 +8,10 @@ ADD_EXECUTABLE(CheckOrbitalMechanics
   test_OrbitalElements.cpp
   test_Propagator.cpp)
 
-TARGET_INCLUDE_DIRECTORIES(CheckOrbitalMechanics PRIVATE ${CMAKE_SOURCE_DIR})
+TARGET_INCLUDE_DIRECTORIES(CheckOrbitalMechanics PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 
 TARGET_LINK_LIBRARIES(CheckOrbitalMechanics
+  CosmosODE
   ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 SET_TARGET_PROPERTIES(CheckOrbitalMechanics PROPERTIES

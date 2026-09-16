@@ -494,14 +494,19 @@ T1000/Source/
   Numerical/ODE/
     StepperBase.hpp      ← Abstract base, error norm
     RKCK.hpp             ← Cash-Karp 4(5), NR3 §17.2 workhorse
-    DOPRI5.hpp           ← Dormand-Prince 5(4), FSAL + PI control
     ODEDriver.hpp        ← integrate_adaptive with observer
   OrbitalMechanics/
     Constants.hpp        ← μ, R_E, AU, etc.
     StateVector.hpp      ← [x,y,z,vx,vy,vz] + helpers
     TwoBody.hpp          ← Cowell EOM functor + period/speed formulas
     OrbitalElements.hpp  ← elements↔state, Kepler solver
-    Propagator.hpp       ← High-level propagate() + conservation tracking
+    Propagator.hpp       ← Cosmos DOPRI5 + orbit diagnostics
+
+Cosmos/Source/Numerical/ODE/RKMethods/
+  CalculateNewYAndError.h       ← Shared RK stage and embedded-error calculation
+  StepWithPIControl.h           ← Adaptive stepper with owned calculation object
+  IntegrateWithPIControl.h      ← Endpoint-clamped driver and accepted-step observer
+  Coefficients/DOPRI5Coefficients.h
 
 T1000/T1000/numerical/  ← Original Python implementations (reference)
   RungeKuttaMethod.py

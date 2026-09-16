@@ -18,6 +18,7 @@ ADD_EXECUTABLE(Check
   Numerical/ODE/RKMethods/ComputePIStepSize_tests.cpp
   Numerical/ODE/RKMethods/HigherOrderIntegrateWithPIControl_tests.cpp
   Numerical/ODE/RKMethods/HigherOrderStepWithPIControl_tests.cpp
+  Numerical/ODE/RKMethods/DriverContract_tests.cpp
   Numerical/ODE/RKMethods/IntegrateWithPIControl_tests.cpp
   Numerical/ODE/RKMethods/RungeKuttaMethod_tests.cpp
   Numerical/ODE/RKMethods/StepWithPIControl_tests.cpp

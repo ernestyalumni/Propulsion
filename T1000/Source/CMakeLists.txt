@@ -79,6 +79,8 @@ set_target_properties(CoolProp PROPERTIES
 # Add_subdirectory adds the source CMakeLists.txt and code files in the
 # directory.
 
+ADD_SUBDIRECTORY("${CMAKE_CURRENT_SOURCE_DIR}/../../Cosmos/Source/Numerical/ODE/RKMethods" cosmos-ode)
+
 ADD_SUBDIRECTORY(UnitTests)
 
 
