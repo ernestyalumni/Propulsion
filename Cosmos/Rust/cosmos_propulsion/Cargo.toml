@@ -1,0 +1,9 @@
+[package]
+name = "cosmos_propulsion"
+version = "0.1.0"
+edition = "2021"
+description = "Rocket propulsion models written from the textbooks' physics; Rust twin of Cosmos/Source/Propulsion"
+license = "MIT"
+
+[dependencies]
+cosmos_numerical = { path = "../cosmos_numerical" }

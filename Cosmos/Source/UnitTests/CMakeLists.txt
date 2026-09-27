@@ -5,6 +5,8 @@ ADD_EXECUTABLE(Check
   Algebra/Modules/Vectors/Vector3_tests.cpp
   Astrodynamics/TwoBodyAcceleration_tests.cpp
   Numerical/ExponentiationBySquaring_tests.cpp
+  Propulsion/SolidRocketMotor/Components_tests.cpp
+  Propulsion/SolidRocketMotor/Systems_tests.cpp
   Numerical/Interpolation/Interpolation_tests.cpp
   Numerical/ODE/ODEIntTestSetup.cpp
   Numerical/ODE/ODEInt_tests.cpp

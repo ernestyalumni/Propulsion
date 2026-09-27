@@ -10,5 +10,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "cosmos_propulsion"
+version = "0.1.0"
+dependencies = [
+ "cosmos_numerical",
+]
+
+[[package]]
 name = "wildrider"
 version = "0.1.0"

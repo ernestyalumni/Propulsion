@@ -2,8 +2,8 @@
 //!
 //! `wildrider::algebra::fields::FieldOperations` is the algebraic spine shared
 //! with the rest of the repository: a type with `+ - * /` and negation. Numerical
-//! methods additionally need an order, square roots, logarithms, powers, and a
-//! machine epsilon, which is what `RealField` adds. Only `f64` and `f32`
+//! methods additionally need an order, square roots, logarithms, exponentials, powers,
+//! and a machine epsilon, which is what `RealField` adds. Only `f64` and `f32`
 //! implement it today.
 
 use wildrider::algebra::fields::FieldOperations;
@@ -16,6 +16,7 @@ pub trait RealField: FieldOperations + PartialOrd + core::fmt::Debug
   fn to_f64(self) -> f64;
   fn square_root(self) -> Self;
   fn natural_logarithm(self) -> Self;
+  fn exponential(self) -> Self;
   fn power(self, exponent: Self) -> Self;
   fn absolute_value(self) -> Self;
   fn machine_epsilon() -> Self;
@@ -44,6 +45,7 @@ macro_rules! implement_real_field
       fn to_f64(self) -> f64 { self as f64 }
       fn square_root(self) -> Self { self.sqrt() }
       fn natural_logarithm(self) -> Self { self.ln() }
+      fn exponential(self) -> Self { self.exp() }
       fn power(self, exponent: Self) -> Self { self.powf(exponent) }
       fn absolute_value(self) -> Self { self.abs() }
       fn machine_epsilon() -> Self { <$t>::EPSILON }

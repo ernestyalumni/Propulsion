@@ -2,7 +2,8 @@
 
 Rust is the primary language for new numerical modules (story 16). This
 workspace mirrors `Cosmos/Source` module for module; `cosmos_numerical` is the
-twin of `Cosmos/Source/Numerical`.
+twin of `Cosmos/Source/Numerical`, and `cosmos_propulsion` is the twin of
+`Cosmos/Source/Propulsion`.
 
 ```bash
 cd Cosmos/Rust
@@ -37,3 +38,17 @@ pin; brace placement is kept by hand.
 |---|---|---|---|---|
 | `ode::runge_kutta::pi_step_size` | 17.2 | `ComputePIStepSize.h` comments; HNW I §II.4 | `Numerical/ODE/RKMethods/ComputePIStepSize.h` | `golden/pi_step_size.tsv` |
 | `linear_algebra::cholesky` | 2.9 | `documents/derivations/CholeskyFactorization.md` | none yet | none yet |
+| `cosmos_propulsion::solid_rocket_motor` (grain, burning rate, erosive burning, compressible flow, pintle valves, motor, gas generator + plenum + N valves) | — (Sutton ch. 12, H&P §12.7, Humble §6.5, Huzel pp. 116/148, Turns §6, Williams ch. 7) | `documents/derivations/SolidRocketMotorGasGenerator.md` | `Propulsion/SolidRocketMotor/*.h` | `golden/solid_rocket_motor_{components,huzel_cartridge,tubular_booster,gas_generator}.tsv` (trajectories bitwise identical to C++ on x86-64 Linux) |
+
+### Solid rocket motor golden vectors
+
+```bash
+# from the repository root
+g++ -std=c++20 -O2 -I Cosmos/Source Cosmos/Rust/tools/emit_solid_rocket_motor_golden.cpp -o /tmp/emit_srm
+for table in components huzel_cartridge tubular_booster gas_generator; do
+  /tmp/emit_srm $table > Cosmos/Rust/golden/solid_rocket_motor_$table.tsv
+done
+# run a scenario from Rust: huzel_cartridge | tubular_booster | gas_generator
+cargo run --release -p cosmos_propulsion --example solid_rocket_motor -- gas_generator
+```
+
