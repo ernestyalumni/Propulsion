@@ -1,0 +1,925 @@
+{
+ "schema": 1,
+ "written": "2026-09-24",
+ "about": "Where Sutton 9e, Hill & Peterson 2e, Huzel & Huang (1992) and Humble (1995) treat the same physics. Rows follow SIMULATION-READING-PLAN.md phases (0 = cross-cutting). Each reference is a section id in the reading-room contents of that book. An empty list means the book does not treat the topic at section level.",
+ "topics": [
+  {
+   "id": "thrust",
+   "phase": 1,
+   "topic": "Thrust, c*, C_F and specific impulse",
+   "read": "Sutton states the definitions; H&P derives thrust from a control volume. Humble and Huzel restate both with design correction factors. Read Sutton → H&P → Humble → Huzel.",
+   "books": {
+    "sutton": [
+     {
+      "section": "2.2"
+     },
+     {
+      "section": "2.3"
+     },
+     {
+      "section": "2.4"
+     }
+    ],
+    "hp": [
+     {
+      "section": "1.2"
+     },
+     {
+      "section": "1.3"
+     }
+    ],
+    "huzel": [
+     {
+      "section": "1.2"
+     },
+     {
+      "section": "1.4"
+     },
+     {
+      "section": "4.2"
+     }
+    ],
+    "humble": [
+     {
+      "section": "3.3"
+     },
+     {
+      "section": "3.3.1"
+     },
+     {
+      "section": "3.3.2"
+     }
+    ]
+   }
+  },
+  {
+   "id": "isentropic",
+   "phase": 1,
+   "topic": "Isentropic nozzle flow and area ratio",
+   "read": "H&P Ch. 3 first: every quasi-1-D relation comes with the assumption that produced it. Then Sutton 3.3 for rocket practice. Humble and Huzel are short summaries.",
+   "books": {
+    "sutton": [
+     {
+      "section": "3.2"
+     },
+     {
+      "section": "3.3"
+     }
+    ],
+    "hp": [
+     {
+      "section": "3.2"
+     },
+     {
+      "section": "3.3"
+     }
+    ],
+    "huzel": [
+     {
+      "section": "1.3"
+     }
+    ],
+    "humble": [
+     {
+      "section": "3.2"
+     },
+     {
+      "section": "3.2.5"
+     }
+    ]
+   }
+  },
+  {
+   "id": "nonisentropic",
+   "phase": 1,
+   "topic": "Heat addition, friction and shocks (Rayleigh, Fanno)",
+   "read": "Only H&P and Humble treat these. H&P is the full account; Humble 3.4 is the short applied version.",
+   "books": {
+    "sutton": [],
+    "hp": [
+     {
+      "section": "3.4"
+     },
+     {
+      "section": "3.5"
+     },
+     {
+      "section": "3.6"
+     },
+     {
+      "section": "3.7"
+     }
+    ],
+    "huzel": [],
+    "humble": [
+     {
+      "section": "3.4"
+     }
+    ]
+   }
+  },
+  {
+   "id": "real-nozzle",
+   "phase": 1,
+   "topic": "Real nozzles: contour, divergence and two-phase losses",
+   "read": "Sutton 3.4–3.5 gives the loss factors; H&P 11.3 derives divergence loss and contour design. Huzel covers bell-nozzle layout; Humble covers solid-motor nozzle sizing.",
+   "books": {
+    "sutton": [
+     {
+      "section": "3.4"
+     },
+     {
+      "section": "3.5"
+     }
+    ],
+    "hp": [
+     {
+      "section": "11.3"
+     }
+    ],
+    "huzel": [
+     {
+      "section": "4.3~nozzle-expansion-area-ratio"
+     },
+     {
+      "section": "4.3~nozzle-shape"
+     }
+    ],
+    "humble": [
+     {
+      "section": "6.3.7"
+     }
+    ]
+   }
+  },
+  {
+   "id": "equilibrium",
+   "phase": 2,
+   "topic": "Equilibrium thermochemistry and flame temperature",
+   "read": "H&P 2.4 builds equilibrium from Gibbs free energy. Humble 4.3 shows both the equilibrium-constant and the free-energy-minimization methods. Sutton Ch. 5 gives the results and the frozen/shifting bracket.",
+   "books": {
+    "sutton": [
+     {
+      "section": "5.1"
+     },
+     {
+      "section": "5.2"
+     }
+    ],
+    "hp": [
+     {
+      "section": "2.4"
+     },
+     {
+      "section": "12.3"
+     }
+    ],
+    "huzel": [],
+    "humble": [
+     {
+      "section": "4.2"
+     },
+     {
+      "section": "4.3"
+     },
+     {
+      "section": "4.4"
+     }
+    ]
+   }
+  },
+  {
+   "id": "nonequilibrium",
+   "phase": 3,
+   "topic": "Frozen versus shifting expansion, and kinetics",
+   "read": "Sutton gives the two bracketing answers. H&P 12.4 turns the choice into a recombination-rate question. Humble 4.5 is a one-page overview. Go to Turns and Williams for depth.",
+   "books": {
+    "sutton": [
+     {
+      "section": "5.3"
+     },
+     {
+      "section": "5.4"
+     }
+    ],
+    "hp": [
+     {
+      "section": "12.4"
+     }
+    ],
+    "huzel": [],
+    "humble": [
+     {
+      "section": "4.5"
+     }
+    ]
+   }
+  },
+  {
+   "id": "propellants-liquid",
+   "phase": 2,
+   "topic": "Liquid propellants and their properties",
+   "read": "Sutton Ch. 7 has the current data. Huzel 1.5 and Humble 4.7 and App. B have the older tables; H&P 12.2 has the chemistry.",
+   "books": {
+    "sutton": [
+     {
+      "section": "7.1"
+     },
+     {
+      "section": "7.2"
+     },
+     {
+      "section": "7.3"
+     },
+     {
+      "section": "7.4"
+     }
+    ],
+    "hp": [
+     {
+      "section": "12.2"
+     }
+    ],
+    "huzel": [
+     {
+      "section": "1.5"
+     }
+    ],
+    "humble": [
+     {
+      "section": "4.7"
+     },
+     {
+      "section": "4.8"
+     },
+     {
+      "section": "B"
+     }
+    ]
+   }
+  },
+  {
+   "id": "vehicle",
+   "phase": 10,
+   "topic": "Vehicle performance, Δv budgets and staging",
+   "read": "Sutton Ch. 4 and Humble 2.6 are the mission-level accounts. H&P Appendix VIII (p. 729) derives the staging optimum. Huzel 2.3 is the engine designer's view of vehicle requirements.",
+   "books": {
+    "sutton": [
+     {
+      "section": "4.1"
+     },
+     {
+      "section": "4.3"
+     },
+     {
+      "section": "4.4"
+     },
+     {
+      "section": "4.7"
+     }
+    ],
+    "hp": [
+     {
+      "section": "10.3"
+     },
+     {
+      "section": "10.4"
+     },
+     {
+      "section": "10.6"
+     }
+    ],
+    "huzel": [
+     {
+      "section": "2.3"
+     }
+    ],
+    "humble": [
+     {
+      "section": "2.6"
+     },
+     {
+      "section": "2.6.1"
+     },
+     {
+      "section": "2.6.2"
+     },
+     {
+      "section": "2.6.3"
+     },
+     {
+      "section": "C"
+     }
+    ]
+   }
+  },
+  {
+   "id": "feed-cycles",
+   "phase": 5,
+   "topic": "Feed systems and engine cycles",
+   "read": "Sutton 6.3–6.6 names the cycles. Huzel Ch. 3's four sample engines make them concrete, with start and cutoff sequences. Humble 5.3 shows how a designer chooses among them. H&P 13.1 only sets context.",
+   "books": {
+    "sutton": [
+     {
+      "section": "6.3"
+     },
+     {
+      "section": "6.6"
+     }
+    ],
+    "hp": [
+     {
+      "section": "13.1"
+     }
+    ],
+    "huzel": [
+     {
+      "section": "2.4~engine-system-and-component-concepts"
+     },
+     {
+      "section": "3"
+     },
+     {
+      "section": "6.1~turbopump-drive-arrangements"
+     }
+    ],
+    "humble": [
+     {
+      "section": "5.3.3"
+     },
+     {
+      "section": "5.3.5"
+     },
+     {
+      "section": "5.4.2"
+     }
+    ]
+   }
+  },
+  {
+   "id": "pressurization",
+   "phase": 5,
+   "topic": "Tank pressurization and gas-pressure feed",
+   "read": "Huzel Ch. 5 is the design procedure with worked pressurant calculations. Sutton 6.4–6.5 and Humble 5.4.5 summarize it.",
+   "books": {
+    "sutton": [
+     {
+      "section": "6.4"
+     },
+     {
+      "section": "6.5"
+     }
+    ],
+    "hp": [],
+    "huzel": [
+     {
+      "section": "5.1"
+     },
+     {
+      "section": "5.2"
+     },
+     {
+      "section": "5.5"
+     }
+    ],
+    "humble": [
+     {
+      "section": "5.4.5"
+     }
+    ]
+   }
+  },
+  {
+   "id": "tanks",
+   "phase": 5,
+   "topic": "Propellant tanks",
+   "read": "Structural and management detail is in Huzel Ch. 8. Sutton 6.2 and Humble 5.3.6 and 5.4.4 cover sizing.",
+   "books": {
+    "sutton": [
+     {
+      "section": "6.2"
+     }
+    ],
+    "hp": [],
+    "huzel": [
+     {
+      "section": "8.2"
+     },
+     {
+      "section": "8.3"
+     },
+     {
+      "section": "8.8"
+     }
+    ],
+    "humble": [
+     {
+      "section": "5.3.6"
+     },
+     {
+      "section": "5.4.4"
+     }
+    ]
+   }
+  },
+  {
+   "id": "chamber-injector",
+   "phase": 4,
+   "topic": "Thrust chamber, L* and injectors",
+   "read": "Huzel 4.3 and 4.5 are the design spine. Sutton 8.1–8.2 is the handbook. H&P 12.5 explains the atomization and vaporization times behind the L* rules. Humble 5.4.1 sizes a chamber end to end.",
+   "books": {
+    "sutton": [
+     {
+      "section": "8.1"
+     },
+     {
+      "section": "8.2"
+     }
+    ],
+    "hp": [
+     {
+      "section": "12.5"
+     }
+    ],
+    "huzel": [
+     {
+      "section": "4.3~combustion-chamber-volume"
+     },
+     {
+      "section": "4.5"
+     },
+     {
+      "section": "4.5~injection-pressure-drop-and-orifice-sizing"
+     }
+    ],
+    "humble": [
+     {
+      "section": "5.4.1"
+     }
+    ]
+   }
+  },
+  {
+   "id": "heat-transfer",
+   "phase": 4,
+   "topic": "Heat transfer and cooling",
+   "read": "Keystone: H&P Ch. 4 (boundary layers) before any correlation. Then Sutton 8.5 (Bartz), Huzel 4.4 (gas side, coolant side, regen passages, film and ablative), and H&P 11.4. Humble 3.5 is a general heat-transfer primer.",
+   "books": {
+    "sutton": [
+     {
+      "section": "8.5"
+     }
+    ],
+    "hp": [
+     {
+      "section": "4.2"
+     },
+     {
+      "section": "4.4"
+     },
+     {
+      "section": "4.5"
+     },
+     {
+      "section": "11.4"
+     }
+    ],
+    "huzel": [
+     {
+      "section": "4.4~gas-side-heat-transfer"
+     },
+     {
+      "section": "4.4~regenerative-cooling"
+     },
+     {
+      "section": "4.4~coolant-side-heat-transfer"
+     },
+     {
+      "section": "4.4~pressure-drop-in-cooling-passages"
+     },
+     {
+      "section": "4.4~film-cooling"
+     },
+     {
+      "section": "4.4~ablative-cooling"
+     }
+    ],
+    "humble": [
+     {
+      "section": "3.5"
+     },
+     {
+      "section": "5.3.4"
+     }
+    ]
+   }
+  },
+  {
+   "id": "turbopumps",
+   "phase": 5,
+   "topic": "Turbopumps: pumps, inducers, turbines",
+   "read": "The biggest overlap. H&P 13.2–13.4 derives it; Huzel Ch. 6 designs it; Sutton Ch. 10 calibrates it; Humble 5.4.3 sizes it. Take H&P first, then Huzel, then Sutton.",
+   "books": {
+    "sutton": [
+     {
+      "section": "10.3"
+     },
+     {
+      "section": "10.4"
+     },
+     {
+      "section": "10.5"
+     },
+     {
+      "section": "10.6"
+     },
+     {
+      "section": "10.7"
+     }
+    ],
+    "hp": [
+     {
+      "section": "13.2"
+     },
+     {
+      "section": "13.3"
+     },
+     {
+      "section": "13.4"
+     }
+    ],
+    "huzel": [
+     {
+      "section": "6.2"
+     },
+     {
+      "section": "6.3"
+     },
+     {
+      "section": "6.4"
+     },
+     {
+      "section": "6.6"
+     },
+     {
+      "section": "6.7"
+     }
+    ],
+    "humble": [
+     {
+      "section": "5.4.3"
+     }
+    ]
+   }
+  },
+  {
+   "id": "gas-generators",
+   "phase": 5,
+   "topic": "Gas generators, preburners and igniters",
+   "read": "Huzel 4.6–4.7 is the detailed account; Sutton 10.8 and 8.6 are summaries. Neither H&P nor Humble treats them separately.",
+   "books": {
+    "sutton": [
+     {
+      "section": "10.8"
+     },
+     {
+      "section": "8.6"
+     }
+    ],
+    "hp": [],
+    "huzel": [
+     {
+      "section": "4.6"
+     },
+     {
+      "section": "4.7"
+     }
+    ],
+    "humble": []
+   }
+  },
+  {
+   "id": "controls",
+   "phase": 6,
+   "topic": "Engine controls, transients and calibration",
+   "read": "Huzel 10.2 is the engine dynamic model; 10.3–10.4 cover calibration and influence coefficients; Ch. 7 covers control laws and monitoring. Sutton Ch. 11 is the shorter modern account. H&P and Humble do not treat it.",
+   "books": {
+    "sutton": [
+     {
+      "section": "11.4"
+     },
+     {
+      "section": "11.5"
+     },
+     {
+      "section": "11.6"
+     }
+    ],
+    "hp": [],
+    "huzel": [
+     {
+      "section": "10.2"
+     },
+     {
+      "section": "10.2~dynamic-analysis-of-engine-system-start-and-shutdown-transients"
+     },
+     {
+      "section": "10.3"
+     },
+     {
+      "section": "10.4~engine-influence-coefficients"
+     },
+     {
+      "section": "7.1~control-law-development"
+     },
+     {
+      "section": "7.4~postflight-data-analysis"
+     }
+    ],
+    "humble": []
+   }
+  },
+  {
+   "id": "instability-liquid",
+   "phase": 7,
+   "topic": "Combustion instability in liquid engines",
+   "read": "Sutton 9.3 and Huzel 4.8 give the types and remedies. H&P 12.8 gives the mechanism. Huzel 10.2 covers low-frequency (chug) coupling. Lieuwen and Natanzon go deeper.",
+   "books": {
+    "sutton": [
+     {
+      "section": "9.1"
+     },
+     {
+      "section": "9.3"
+     }
+    ],
+    "hp": [
+     {
+      "section": "12.8"
+     }
+    ],
+    "huzel": [
+     {
+      "section": "4.8"
+     },
+     {
+      "section": "10.2~low-frequency-combustion-instability"
+     }
+    ],
+    "humble": []
+   }
+  },
+  {
+   "id": "tvc",
+   "phase": 10,
+   "topic": "Thrust vector control and gimbals",
+   "read": "Sutton Ch. 18 is the survey. Huzel covers gimbal mounts and TVC control; Humble sizes TVC for liquids and solids.",
+   "books": {
+    "sutton": [
+     {
+      "section": "18.1"
+     },
+     {
+      "section": "18.2"
+     },
+     {
+      "section": "18.3"
+     }
+    ],
+    "hp": [],
+    "huzel": [
+     {
+      "section": "7.1~thrust-vector-control"
+     },
+     {
+      "section": "9.7"
+     }
+    ],
+    "humble": [
+     {
+      "section": "5.4.6"
+     },
+     {
+      "section": "6.3.8"
+     }
+    ]
+   }
+  },
+  {
+   "id": "srm-ballistics",
+   "phase": 8,
+   "topic": "Solid motors: burning rate and internal ballistics",
+   "read": "Sutton 12.1 states the relations. H&P 12.7 derives the pressure ODE and n < 1 stability. Humble 6.5 predicts performance (lumped, then spatial pressure). The notes topic solid-ballistics.tex ties them together.",
+   "books": {
+    "sutton": [
+     {
+      "section": "12.1"
+     },
+     {
+      "section": "12.2"
+     }
+    ],
+    "hp": [
+     {
+      "section": "12.7"
+     }
+    ],
+    "huzel": [],
+    "humble": [
+     {
+      "section": "6.4.5"
+     },
+     {
+      "section": "6.5"
+     },
+     {
+      "section": "6.5.1"
+     },
+     {
+      "section": "6.5.2"
+     },
+     {
+      "section": "6.5.3"
+     }
+    ]
+   }
+  },
+  {
+   "id": "srm-grain",
+   "phase": 8,
+   "topic": "Solid motors: grain configuration and sizing",
+   "read": "Sutton 12.3–12.4 covers grain geometry and stress; Humble 6.3 sizes the motor end to end; H&P 12.7 shows thrust-time programs of grain shapes.",
+   "books": {
+    "sutton": [
+     {
+      "section": "12.3"
+     },
+     {
+      "section": "12.4"
+     }
+    ],
+    "hp": [
+     {
+      "section": "12.7"
+     }
+    ],
+    "huzel": [],
+    "humble": [
+     {
+      "section": "6.2"
+     },
+     {
+      "section": "6.3"
+     },
+     {
+      "section": "6.3.1"
+     },
+     {
+      "section": "6.3.2"
+     }
+    ]
+   }
+  },
+  {
+   "id": "srm-propellants",
+   "phase": 8,
+   "topic": "Solid propellants and ingredients",
+   "read": "Sutton Ch. 13 is the reference. H&P 12.6 adds the two-phase flow loss. Humble 6.4 is the concise version. Huzel treats solid-propellant gas generators only.",
+   "books": {
+    "sutton": [
+     {
+      "section": "13.1"
+     },
+     {
+      "section": "13.2"
+     },
+     {
+      "section": "13.4"
+     }
+    ],
+    "hp": [
+     {
+      "section": "12.6"
+     }
+    ],
+    "huzel": [
+     {
+      "section": "4.6~solid-propellant-gas-generators"
+     }
+    ],
+    "humble": [
+     {
+      "section": "6.4"
+     },
+     {
+      "section": "6.4.1"
+     },
+     {
+      "section": "6.4.2"
+     },
+     {
+      "section": "6.4.3"
+     }
+    ]
+   }
+  },
+  {
+   "id": "srm-combustion",
+   "phase": 9,
+   "topic": "Solid-motor combustion, ignition and instability",
+   "read": "Sutton Ch. 14 covers the processes; H&P 12.8 covers instability. Humble 6.3.5 sizes igniters. Williams Ch. 7 and 9.1 give the theory.",
+   "books": {
+    "sutton": [
+     {
+      "section": "14.1"
+     },
+     {
+      "section": "14.2"
+     },
+     {
+      "section": "14.3"
+     },
+     {
+      "section": "14.4"
+     }
+    ],
+    "hp": [
+     {
+      "section": "12.8"
+     }
+    ],
+    "huzel": [],
+    "humble": [
+     {
+      "section": "6.3.5"
+     }
+    ]
+   }
+  },
+  {
+   "id": "srm-hardware",
+   "phase": 9,
+   "topic": "Solid-motor case, nozzle, insulation and igniter hardware",
+   "read": "Sutton Ch. 15 is the reference; Humble 6.3.3–6.3.7 gives the sizing methods.",
+   "books": {
+    "sutton": [
+     {
+      "section": "15.1"
+     },
+     {
+      "section": "15.2"
+     },
+     {
+      "section": "15.3"
+     },
+     {
+      "section": "15.4"
+     }
+    ],
+    "hp": [],
+    "huzel": [],
+    "humble": [
+     {
+      "section": "6.3.3"
+     },
+     {
+      "section": "6.3.4"
+     },
+     {
+      "section": "6.3.6"
+     },
+     {
+      "section": "6.3.7"
+     }
+    ]
+   }
+  },
+  {
+   "id": "case-studies",
+   "phase": 0,
+   "topic": "Worked designs to use as test cases",
+   "read": "These are the end-to-end examples to reproduce in code: Sutton 8.9 (a thrust chamber), Huzel Ch. 3 (four reference engines), Humble 5.5 (a liquid system) and 6.6 (a solid motor).",
+   "books": {
+    "sutton": [
+     {
+      "section": "8.9"
+     }
+    ],
+    "hp": [],
+    "huzel": [
+     {
+      "section": "3"
+     }
+    ],
+    "humble": [
+     {
+      "section": "5.5"
+     },
+     {
+      "section": "6.6"
+     }
+    ]
+   }
+  }
+ ]
+}

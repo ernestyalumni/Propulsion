@@ -24,7 +24,11 @@ SPECS = [
     ("wie", "Wie-SpaceVehicleDynamicsControl-2e-AgentContext", "Wie-SpaceVehicleDynamicsControl-2e", "5.4", "Dynamics & control", "18"),
     ("sutton", "Sutton-RocketPropulsionElements-9e-AgentContext", "Sutton-RocketPropulsionElements-9e", "3.3", "Rocket propulsion", "24"),
     ("hp", "HillPeterson-MechanicsThermodynamicsPropulsion-2e-AgentContext", "HillPeterson-MechanicsThermodynamicsPropulsion-2e", "3.2", "Propulsion fundamentals", "12"),
+    ("huzel", "HuzelHuang-ModernEngineeringLiquidPropellantRocketEngines-1992-AgentContext", "HuzelHuang-ModernEngineeringLiquidPropellantRocketEngines-1992", "1.2", "Liquid engine design", "19"),
+    ("humble", "Humble-SpacePropulsionAnalysisDesign-AgentContext", "Humble-SpacePropulsionAnalysisDesign", "3.3", "Propulsion system design", "20"),
 ]
+# Where the four propulsion books treat the same physics; rendered on the roadmap page.
+OVERLAP = REPO / "documents/research/reading-program/FOUR-BOOK-OVERLAP.json"
 LABS = [
     {"id": "quaternion", "title": "Quaternion Convention Lab", "kind": "Interactive lab", "book": "wie", "section": "5.4", "path": "Cosmos/QuaternionConventionLab/web/index.html", "description": "Explore q versus −q, scalar layout, and active/passive rotations.", "url": "/lab/Cosmos/QuaternionConventionLab/web/index.html"},
     {"id": "nozzle", "title": "Nozzle theory", "kind": "Source code", "book": "sutton", "section": "3.3", "path": "NozzleTheory.py", "description": "Existing symbolic nozzle relations. A starting point for our next experiment.", "url": "/source/nozzle"},
@@ -73,7 +77,7 @@ class Catalog:
         for i, row in enumerate(raw):
             if not isinstance(row.get("pdf_page"), int):
                 continue
-            sections.append({"id": row.get("number") or "entry-" + str(i), "number": row.get("number", ""),
+            sections.append({"id": row.get("id") or row.get("number") or "entry-" + str(i), "number": row.get("number", ""),
                              "title": row["title"], "printed_page": row["printed_page"], "pdf_page": row["pdf_page"],
                              "exact": row.get("pdf_page_exact", False), "depth": row.get("depth", 2)})
         paths = {"pdf": pdf, "roadmap": progress_file.parent / "ROADMAP.md",
@@ -94,9 +98,37 @@ class Catalog:
         self.books[ident] = {"id": ident, "title": progress["title"], "short": progress["short"], "domain": domain,
                              "authors": progress["authors"], "publisher": progress["publisher"], "pages": progress["pages"],
                              "offset": offset, "start": start, "sections": sections, "chapters": chapters,
-                             "snapshot": "2026-09-02", "pdf_path": str(pdf),
+                             "snapshot": progress.get("snapshot", "2026-09-02"), "pdf_path": str(pdf),
                              "text_chapters": [key for key in self.files[ident] if key.startswith("chapter-")],
                              "ocr_note": "Parsed text is a reading aid. Check equations against the original PDF; OCR adjudication is incomplete."}
+
+    def overlap(self):
+        """The cross-book topic map, with every reference resolved against the loaded books.
+
+        A reference names a section id, or a printed page that resolves to the last
+        section starting at or before it. Unresolvable references are kept, marked.
+        """
+        try:
+            rows = read_json(OVERLAP)["topics"]
+        except (OSError, ValueError, KeyError):
+            return {"topics": [], "warning": "Overlap map unavailable"}
+        topics = []
+        for row in rows:
+            cells = {}
+            for book, refs in row["books"].items():
+                resolved = []
+                for ref in refs:
+                    sec = None
+                    if book in self.books:
+                        if "section" in ref:
+                            sec = self.section(book, ref["section"])
+                        else:
+                            before = [s for s in self.books[book]["sections"] if s["printed_page"] <= ref["page"]]
+                            sec = max(before, key=lambda s: s["printed_page"]) if before else None
+                    resolved.append(dict(ref, target=sec["id"] if sec else None))
+                cells[book] = resolved
+            topics.append(dict(row, books=cells))
+        return {"topics": topics}
 
     def section(self, book, section):
         return next((s for s in self.books[book]["sections"] if s["id"] == section), None)
@@ -289,7 +321,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.respond({"books": list(self.server.catalog.books.values()), "warnings": self.server.catalog.warnings,
                               "state": self.server.store.read(), "token": self.server.token,
                               "state_path": str(self.server.store.path),
-                              "labs": [dict(lab, available=(REPO / lab["path"]).is_file()) for lab in LABS]})
+                              "labs": [dict(lab, available=(REPO / lab["path"]).is_file()) for lab in LABS],
+                              "overlap": self.server.catalog.overlap()})
             elif path == '/api/notes':
                 self.respond(self.server.notes.public(self.server.catalog))
             elif len(parts) == 2 and parts[0] == 'note-asset':

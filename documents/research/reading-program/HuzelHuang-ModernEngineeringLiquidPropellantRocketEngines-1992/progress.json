@@ -1,0 +1,147 @@
+{
+ "slug": "HuzelHuang-ModernEngineeringLiquidPropellantRocketEngines-1992",
+ "short": "Huzel & Huang",
+ "title": "Modern Engineering for Design of Liquid-Propellant Rocket Engines",
+ "authors": "Dieter K. Huzel and David H. Huang",
+ "publisher": "AIAA (Progress in Astronautics and Aeronautics, vol. 147), 1992",
+ "pages": 467,
+ "page_offset": "per-page map (reference/downloaded-page-map.json); nominally PDF = printed + 19",
+ "corpus_dir": "<CORPUS_ROOT>/Public/books/EngineeringPhysics/HuzelHuang-ModernEngineeringLiquidPropellantRocketEngines-1992",
+ "pdf_stem": "vdoc.pub_modern-engineering-for-design-of-liquid-propellant-rocket-engines",
+ "roadmap": "documents/research/reading-program/HuzelHuang-ModernEngineeringLiquidPropellantRocketEngines-1992/ROADMAP.md",
+ "snapshot": "2026-09-24",
+ "chapters": [
+  {
+   "rank": 1,
+   "number": "4",
+   "title": "Design of Thrust Chambers and Other Combustion Devices",
+   "printed_page": 67,
+   "why": "chamber layout and L*, nozzle shape, gas-side and coolant-side heat transfer, regenerative/film/ablative cooling, injector orifice sizing, gas generators, igniters, instability",
+   "module": "propulsion::thrust_chamber, propulsion::cooling",
+   "language": "Rust",
+   "status": "todo",
+   "notes": "read H&P ch. 4 before 4.4; pairs Sutton ch. 8"
+  },
+  {
+   "rank": 2,
+   "number": "10",
+   "title": "Engine Systems Design Integration",
+   "printed_page": 345,
+   "why": "10.2 is the engine-system dynamic model: equations, start/shutdown transients, engine-vehicle interaction, low-frequency instability; 10.3-10.4 calibration and influence coefficients",
+   "module": "propulsion::engine_dynamics, propulsion::calibration",
+   "language": "Rust",
+   "status": "todo",
+   "notes": "pairs Sutton ch. 11; the closest thing in the library to a transient engine-simulation spec"
+  },
+  {
+   "rank": 3,
+   "number": "6",
+   "title": "Design of Turbopump Propellant Feed Systems",
+   "printed_page": 155,
+   "why": "pump and turbine design parameters, inducers and NPSH, centrifugal and axial pumps, turbine types, rotordynamics",
+   "module": "propulsion::turbopump",
+   "language": "Rust",
+   "status": "todo",
+   "notes": "pairs Sutton ch. 10 and H&P ch. 13"
+  },
+  {
+   "rank": 4,
+   "number": "3",
+   "title": "Introduction to Sample Calculations",
+   "printed_page": 53,
+   "why": "four sample stage engines (A-1 to A-4) with cycles and start/cutoff sequences; the book's worked calculations build on them",
+   "module": "golden vectors for propulsion::cycle",
+   "language": "test fixtures",
+   "status": "todo",
+   "notes": "use as reference cases, not as a module"
+  },
+  {
+   "rank": 5,
+   "number": "7",
+   "title": "Design of Rocket-Engine Control and Condition-Monitoring Systems",
+   "printed_page": 219,
+   "why": "thrust and mixture-ratio control, control laws, valves and regulators, instrumentation, failure detection, post-flight data analysis",
+   "module": "propulsion::engine_control",
+   "language": "Rust",
+   "status": "todo",
+   "notes": "pairs Sutton ch. 11"
+  },
+  {
+   "rank": 6,
+   "number": "5",
+   "title": "Design of Gas-Pressurized Propellant Feed Systems",
+   "printed_page": 135,
+   "why": "pressurant mass calculations, stored-gas, evaporation and chemical-reaction pressurization",
+   "module": "propulsion::pressurization",
+   "language": "Rust",
+   "status": "todo",
+   "notes": "pairs Sutton 6.4-6.5"
+  },
+  {
+   "rank": 7,
+   "number": "1",
+   "title": "Introduction to Liquid-Propellant Rocket Engines",
+   "printed_page": 1,
+   "why": "thrust, chamber and nozzle flow, Is, c*, Cf, correction factors, propellant property tables",
+   "module": "propulsion::performance (cross-check)",
+   "language": "Rust",
+   "status": "todo",
+   "notes": "pairs Sutton ch. 2-3"
+  },
+  {
+   "rank": 8,
+   "number": "2",
+   "title": "Engine Requirements and Preliminary Design Analyses",
+   "printed_page": 23,
+   "why": "design parameters, mission requirements, preliminary design optimization",
+   "module": "none",
+   "language": "—",
+   "status": "read-only",
+   "notes": ""
+  },
+  {
+   "rank": 9,
+   "number": "8",
+   "title": "Design of Propellant Tanks",
+   "printed_page": 285,
+   "why": "tank structure, cryogenic insulation, zero-g expulsion",
+   "module": "none",
+   "language": "—",
+   "status": "read-only",
+   "notes": ""
+  },
+  {
+   "rank": 10,
+   "number": "9",
+   "title": "Design of Interconnecting Components and Mounts",
+   "printed_page": 305,
+   "why": "ducts and pressure drop, pump-inlet line vibration, bellows, gimbal mounts",
+   "module": "none",
+   "language": "—",
+   "status": "read-only",
+   "notes": "9.1 only if modelling line dynamics or pogo"
+  },
+  {
+   "rank": 11,
+   "number": "11",
+   "title": "Design of Liquid-Propellant Space Engines",
+   "printed_page": 373,
+   "why": "spacecraft main propulsion and RCS",
+   "module": "none",
+   "language": "—",
+   "status": "read-only",
+   "notes": ""
+  },
+  {
+   "rank": 12,
+   "number": "A",
+   "title": "Weight, Reliability, Materials (Appendices A-C)",
+   "printed_page": 389,
+   "why": "weight estimation, reliability, materials",
+   "module": "none",
+   "language": "—",
+   "status": "read-only",
+   "notes": ""
+  }
+ ]
+}

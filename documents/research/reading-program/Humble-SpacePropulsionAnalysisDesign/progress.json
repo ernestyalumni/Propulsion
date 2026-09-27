@@ -1,0 +1,158 @@
+{
+ "slug": "Humble-SpacePropulsionAnalysisDesign",
+ "short": "Humble",
+ "title": "Space Propulsion Analysis and Design, 1st ed. (revised)",
+ "authors": "Ronald W. Humble, Gary N. Henry and Wiley J. Larson (eds.)",
+ "publisher": "McGraw-Hill, 1995",
+ "pages": 769,
+ "page_offset": "PDF = printed + 20 (PDF 21-753); + 18 (PDF 754-766)",
+ "corpus_dir": "<CORPUS_ROOT>/Public/books/EngineeringPhysics/Humble-SpacePropulsionAnalysisDesign",
+ "pdf_stem": "Space Propulsion Analysis and Design by Ronald W. Humble (z-lib.org)",
+ "roadmap": "documents/research/reading-program/Humble-SpacePropulsionAnalysisDesign/ROADMAP.md",
+ "snapshot": "2026-09-24",
+ "chapters": [
+  {
+   "rank": 1,
+   "number": "6",
+   "title": "Solid Rocket Motors",
+   "printed_page": 295,
+   "why": "solid-motor design process, sizing of case, igniter, insulation, nozzle and TVC; propellant and burning rate; performance prediction by lumped-parameter and spatial-pressure ballistics; a full case study",
+   "module": "propulsion::solid_ballistics",
+   "language": "Rust; CUDA for grain burn-back",
+   "status": "todo",
+   "notes": "pairs Sutton ch. 12-15 and H&P 12.6-12.7; case study 6.6 is the SRM golden vector"
+  },
+  {
+   "rank": 2,
+   "number": "5",
+   "title": "Liquid Rocket Propulsion Systems",
+   "printed_page": 179,
+   "why": "preliminary design decisions, pressure budget, tank sizing, thrust chamber, feed system, turbomachinery, pressurization; case study",
+   "module": "propulsion::cycle",
+   "language": "Rust",
+   "status": "todo",
+   "notes": "pairs Sutton ch. 6 and Huzel ch. 4-6; case study 5.5 is an LRE golden vector"
+  },
+  {
+   "rank": 3,
+   "number": "4",
+   "title": "Thermochemistry",
+   "printed_page": 149,
+   "why": "heats of formation, equilibrium-constant and free-energy-minimization methods, flame temperature, kinetics overview",
+   "module": "propulsion::thermochemistry",
+   "language": "Rust; Cantera as reference",
+   "status": "todo",
+   "notes": "pairs Sutton ch. 5, H&P 2.4, Turns ch. 2"
+  },
+  {
+   "rank": 4,
+   "number": "3",
+   "title": "Thermodynamics of Fluid Flow",
+   "printed_page": 77,
+   "why": "control-volume first law, isentropic flow, thrust equation, C_F and c*, heat addition, conduction, convection, radiation; cold-gas thruster example",
+   "module": "propulsion::nozzle",
+   "language": "Rust",
+   "status": "todo",
+   "notes": "pairs Sutton ch. 3 and H&P ch. 3"
+  },
+  {
+   "rank": 5,
+   "number": "2",
+   "title": "Mission Analysis",
+   "printed_page": 31,
+   "why": "orbits, perturbations, maneuvers, Earth-to-orbit velocity budget, staging, launch-vehicle steering, flight-simulation programs",
+   "module": "flight::ascent",
+   "language": "Rust",
+   "status": "todo",
+   "notes": "pairs Sutton ch. 4"
+  },
+  {
+   "rank": 6,
+   "number": "C",
+   "title": "Launch Vehicles and Staging (Appendix C)",
+   "printed_page": 715,
+   "why": "launch-vehicle data and staging",
+   "module": "flight::staging",
+   "language": "Rust",
+   "status": "todo",
+   "notes": ""
+  },
+  {
+   "rank": 7,
+   "number": "B",
+   "title": "Thermochemical Data for Selected Propellants (Appendix B)",
+   "printed_page": 695,
+   "why": "tabulated propellant thermochemistry",
+   "module": "propellants::properties",
+   "language": "tables",
+   "status": "todo",
+   "notes": ""
+  },
+  {
+   "rank": 8,
+   "number": "10",
+   "title": "Mission Design Case Study",
+   "printed_page": 599,
+   "why": "end-to-end propulsion selection for a mission",
+   "module": "none",
+   "language": "—",
+   "status": "read-only",
+   "notes": ""
+  },
+  {
+   "rank": 9,
+   "number": "7",
+   "title": "Hybrid Rocket Propulsion Systems",
+   "printed_page": 365,
+   "why": "hybrid regression and design",
+   "module": "none",
+   "language": "—",
+   "status": "read-only",
+   "notes": ""
+  },
+  {
+   "rank": 10,
+   "number": "1",
+   "title": "Introduction to Space Propulsion",
+   "printed_page": 1,
+   "why": "landscape",
+   "module": "none",
+   "language": "—",
+   "status": "read-only",
+   "notes": ""
+  },
+  {
+   "rank": 11,
+   "number": "9",
+   "title": "Electric Rocket Propulsion Systems",
+   "printed_page": 509,
+   "why": "electric propulsion",
+   "module": "none",
+   "language": "—",
+   "status": "read-only",
+   "notes": ""
+  },
+  {
+   "rank": 12,
+   "number": "8",
+   "title": "Nuclear Rocket Propulsion Systems",
+   "printed_page": 443,
+   "why": "nuclear thermal",
+   "module": "none",
+   "language": "—",
+   "status": "read-only",
+   "notes": ""
+  },
+  {
+   "rank": 13,
+   "number": "11",
+   "title": "Advanced Propulsion Systems",
+   "printed_page": 631,
+   "why": "advanced concepts",
+   "module": "none",
+   "language": "—",
+   "status": "read-only",
+   "notes": ""
+  }
+ ]
+}

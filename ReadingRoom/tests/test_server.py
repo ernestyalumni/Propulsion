@@ -55,7 +55,7 @@ class ReadingRoomTests(unittest.TestCase):
         status, _, body = self.request("/api/bootstrap")
         self.assertEqual(status, 200)
         result = json.loads(body)
-        self.assertEqual({b["id"] for b in result["books"]}, {"nr", "wie", "sutton", "hp"})
+        self.assertEqual({b["id"] for b in result["books"]}, {"nr", "wie", "sutton", "hp", "huzel", "humble"})
         self.assertEqual(result["warnings"], [])
         wie = self.server.catalog.section("wie", "5.4")
         sutton = self.server.catalog.section("sutton", "3.3")
@@ -66,11 +66,57 @@ class ReadingRoomTests(unittest.TestCase):
             self.assertTrue(Path(book["pdf_path"]).is_file())
             self.assertIn("historical_status", book["chapters"][0])
 
+    def test_propulsion_books_carry_source_checked_locators(self):
+        humble = self.server.catalog.section("humble", "6.5.1")
+        self.assertEqual((humble["printed_page"], humble["pdf_page"], humble["exact"]), (334, 354, True))
+        huzel = self.server.catalog.section("huzel", "10.2")
+        self.assertEqual((huzel["printed_page"], huzel["pdf_page"], huzel["exact"]), (346, 360, True))
+        # Unnumbered subsections get a parent-scoped id and no invented number.
+        gas = self.server.catalog.section("huzel", "4.4~gas-side-heat-transfer")
+        self.assertEqual((gas["number"], gas["printed_page"]), ("", 85))
+        # The contents misprint (p. 341 among pp. 234-242) is placed approximately, not trusted.
+        seals = self.server.catalog.section("huzel", "7.2~design-of-dynamic-seals-for-fluid-control-components")
+        self.assertEqual((seals["printed_page"], seals["exact"]), (234, False))
+        pages = [s["printed_page"] for s in self.server.catalog.books["huzel"]["sections"]]
+        self.assertEqual(pages, sorted(pages))
+
+    def test_overlap_map_resolves_every_reference_to_a_loaded_section(self):
+        status, _, body = self.request("/api/bootstrap")
+        topics = json.loads(body)["overlap"]["topics"]
+        self.assertGreaterEqual(len(topics), 20)
+        for topic in topics:
+            self.assertEqual(set(topic["books"]), {"sutton", "hp", "huzel", "humble"})
+            self.assertTrue(topic["read"])
+            for book, refs in topic["books"].items():
+                for ref in refs:
+                    self.assertIsNotNone(ref["target"], (topic["id"], book, ref))
+                    self.assertIsNotNone(self.server.catalog.section(book, ref["target"]))
+        solid = next(t for t in topics if t["id"] == "srm-ballistics")
+        self.assertIn("12.7", [r["target"] for r in solid["books"]["hp"]])
+        self.assertEqual(solid["books"]["huzel"], [])
+
+    def test_overlap_page_reference_resolves_to_enclosing_section(self):
+        with patch("server.read_json", side_effect=lambda path: {"topics": [
+                {"id": "x", "phase": 1, "topic": "t", "read": "r",
+                 "books": {"humble": [{"page": 336}], "nosuchbook": [{"section": "1"}]}}]}
+                if path == __import__("server").OVERLAP else json.loads(Path(path).read_text())):
+            topic = self.server.catalog.overlap()["topics"][0]
+        self.assertEqual(topic["books"]["humble"][0]["target"], "6.5.1")
+        self.assertIsNone(topic["books"]["nosuchbook"][0]["target"])
+
+    def test_progress_accepts_unnumbered_huzel_subsection(self):
+        payload = self.payload(book="huzel", patch={
+            "bookmark": {"section": "4.4~gas-side-heat-transfer", "page": 102, "zoom": 1, "scroll": 0},
+            "section": {"id": "4.4~gas-side-heat-transfer", "notes": "Bartz here", "questions": "", "next": "",
+                        "checks": {"read": True, "discussed": False, "derived": False, "implemented": False}}})
+        status, _, body = self.request("/api/progress", payload)
+        self.assertEqual(status, 200, body)
+
     def test_missing_bundles_reported_without_fake_books(self):
         with tempfile.TemporaryDirectory() as directory:
             catalog = Catalog(Path(directory))
             self.assertEqual(catalog.books, {})
-            self.assertEqual(len(catalog.warnings), 4)
+            self.assertEqual(len(catalog.warnings), 6)
 
     def test_disk_resume_and_handoff_preserve_section_notes(self):
         status, _, body = self.request("/api/progress", self.payload())

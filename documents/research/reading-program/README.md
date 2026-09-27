@@ -5,6 +5,12 @@
 > committed versus merely written to disk, which branch holds what, the open
 > decisions awaiting Ernest, and the gotchas that cost the last session time.
 
+> **New, 2026-09-24:** [`SIMULATION-READING-PLAN.md`](SIMULATION-READING-PLAN.md)
+> sequences all six parsed propulsion and combustion books (Sutton, Hill &
+> Peterson, Huzel & Huang, Humble, Turns, Williams) into ten phases, ending
+> in a transient liquid-engine model and a solid-booster internal-ballistics
+> model. It extends the Sutton/H&P pairing below; it does not replace it.
+
 The endeavor: read the classical texts that underpin spacecraft simulation,
 GNC, and propulsion, and rewrite their methods from the physics and the
 equations into a multi-physics library that is Rust first, C++ where the
