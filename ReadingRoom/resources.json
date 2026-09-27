@@ -330,6 +330,21 @@
       "root": "artifacts",
       "path": "runge-kutta-verification.json",
       "kind": "Verification record"
+    },
+    {
+      "id": "solid-ballistics-pdf",
+      "title": "Solid-motor internal ballistics · PDF",
+      "root": "artifacts",
+      "path": "master-portrait.pdf",
+      "kind": "PDF",
+      "anchor": "topic-solid-ballistics"
+    },
+    {
+      "id": "solid-ballistics-source",
+      "title": "Solid-motor internal ballistics · derivation",
+      "root": "propulsion",
+      "path": "documents/notes/topics/solid-ballistics.tex",
+      "kind": "LaTeX source"
     }
   ],
   "topics": [
@@ -529,6 +544,23 @@
         "runge-kutta-checks",
         "runge-kutta-evidence",
         "legacy-propulsion"
+      ]
+    },
+    {
+      "id": "solid-ballistics",
+      "title": "Solid-motor internal ballistics: the lumped chamber, its equilibrium, its stability, and how far the chemistry goes",
+      "summary": "Lumped chamber mass balance (Sutton 12-3, Hill-Peterson 12.28); equilibrium pressure; n<1 stability with a global proof and the time constant L*/((1-n)Gamma^2 c*); temperature sensitivity; port pressure drop and its isothermal choking limit; the solid-versus-liquid chemistry fidelity ladder.",
+      "authorship": "New synthesis; historical references retain Ernest Yeung's authorship.",
+      "status": "Propositions proved under stated hypotheses at frozen geometry; illustrative numbers only; no computation claimed.",
+      "locators": [
+        {
+          "book": "sutton",
+          "section": "12.1"
+        }
+      ],
+      "assets": [
+        "solid-ballistics-pdf",
+        "solid-ballistics-source"
       ]
     }
   ]

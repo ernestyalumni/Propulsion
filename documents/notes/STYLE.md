@@ -53,6 +53,11 @@ on 2026-09-12 and will be refined with him.
   to a specified expression. Distinguish collisions such as stage abscissa
   versus output weight, derivative versus increment, stage index versus state
   index, and exact solution versus numerical state.
+- Organize shared physics topics around the physical question, definitions
+  and derivation. Combine complementary textbook presentations; place their
+  equation numbers and notation translations as parallel source references.
+  Introduce the principal variables on separate lines with definitions and
+  units when setting up a physical model.
 - State the equation, spaces, domains and assumptions before deriving a
   result. Identify additional assumptions at the precise specialization:
   autonomous/nonautonomous, constant matrix/nonlinear field, exact starting
@@ -61,6 +66,16 @@ on 2026-09-12 and will be refined with him.
   show intermediate substitutions, rename dummy indices visibly, and identify
   the symmetry or cancellation used. Explain numerical factors such as 2, 3,
   and factorial denominators rather than merely asserting them.
+- For a physical balance, first display the equation in named rates or
+  inventories. Then display each component formula with its origin, and
+  substitute one component at a time in an explicit chain of equations.
+  Put an author's equation beside our translated equation when comparing
+  notation. Prose should explain the displayed mathematics, not replace it.
+- Keep time-dependent inputs explicit in transient models. State exactly
+  where an input is held fixed for an equilibrium or stability calculation,
+  and distinguish a moving quasi-steady target from the actual solution.
+  Justify neglecting a term by its magnitude relative to retained terms;
+  a small state variable alone does not establish a small time derivative.
 - Keep commentary such as “add and subtract,” “iterate,” and “sum the
   geometric series,” and display the corresponding work. Show the inserted
   zero before regrouping and applying an inequality; write the first few

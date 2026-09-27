@@ -18,8 +18,9 @@ Choose the same artifacts directory for `Studies/verify.py` and the reader's
 `preamble.tex` (a conventional TeX Live installation).
 
 The master begins with mathematical foundations, oscillator integration,
-SO(3) rigid-body mechanics, a nozzle derivation, and an index of earlier
-manuscripts. It is not a claim of complete coverage of the three textbooks.
+SO(3) rigid-body mechanics, a nozzle derivation, solid-motor internal
+ballistics (`topics/solid-ballistics.tex`, in the master and the Sutton
+companion), and an index of earlier manuscripts. It is not a claim of complete coverage of the three textbooks.
 Historical notes remain in `LaTeXandpdfs/` and external repos. Reviewed material
 can be extracted into topic chapters incrementally without moving originals
 or duplicating mathematics between companions.
