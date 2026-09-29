@@ -345,6 +345,21 @@
       "root": "propulsion",
       "path": "documents/notes/topics/solid-ballistics.tex",
       "kind": "LaTeX source"
+    },
+    {
+      "id": "lumped-dacs-pdf",
+      "title": "Humble lumped ballistics and the DACS model · PDF",
+      "root": "artifacts",
+      "path": "master-portrait.pdf",
+      "kind": "PDF",
+      "anchor": "topic-lumped-dacs"
+    },
+    {
+      "id": "lumped-dacs-source",
+      "title": "Humble lumped ballistics and the DACS model · derivation",
+      "root": "propulsion",
+      "path": "documents/notes/topics/lumped-dacs.tex",
+      "kind": "LaTeX source"
     }
   ],
   "topics": [
@@ -561,6 +576,31 @@
       "assets": [
         "solid-ballistics-pdf",
         "solid-ballistics-source"
+      ]
+    },
+    {
+      "id": "lumped-dacs",
+      "title": "Humble's lumped-parameter ballistics, worked through, and the model for a solid divert and attitude control system",
+      "summary": "Humble 6.5.1 step by step with his notation translated: steady Eqs. 6.26-6.32 and the worked example checked exactly; unsteady Eqs. 6.33-6.42 derived, with (6.42) corrected; exact solutions for arbitrary valve schedules; the chamber energy equation from Humble 3.25 and its two linear modes; the DACS model with N valves, directly on the grain or behind an orifice and plenum.",
+      "authorship": "New synthesis.",
+      "status": "Derivations and one proposition under stated hypotheses; closed forms checked against numerical integration (finite checks, recorded in the text); no physical validation.",
+      "locators": [
+        {
+          "book": "humble",
+          "section": "6.5.1"
+        },
+        {
+          "book": "sutton",
+          "section": "12.5"
+        },
+        {
+          "book": "williams",
+          "section": "9.4"
+        }
+      ],
+      "assets": [
+        "lumped-dacs-pdf",
+        "lumped-dacs-source"
       ]
     }
   ]

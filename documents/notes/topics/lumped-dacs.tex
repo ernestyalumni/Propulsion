@@ -1,0 +1,941 @@
+\topic{lumped-dacs}{Humble's lumped-parameter ballistics, worked through, and the model for a solid divert and attitude control system}
+
+Reading anchors: Humble, Section~6.5.1, ``Lumped-Parameter Methods'',
+printed pp.~334--341 / PDF pp.~354--361, Eqs.~(6.26)--(6.42)
+\cite{humble}; Humble, Section~3.2.2, ``First Law for a Control
+Volume'', printed pp.~83--86, Eqs.~(3.11)--(3.25); Hill and Peterson,
+Section~12.7, Eq.~(12.28), printed p.~599 \cite{hillpeterson};
+Williams, Section~9.4, Eqs.~(82)--(86), printed pp.~339--341
+\cite{williams}; Sutton and Biblarz, Section~12.5, printed p.~483,
+and Section~14.3, printed p.~541 \cite{sutton}.
+
+Humble's Section~6.5.1 has two halves. The steady half (printed
+pp.~334--337) sets the storage term to zero. The unsteady half
+(``Unsteady Lumped-Parameter Method'', from printed p.~337) keeps it.
+A divert and attitude control system (DACS) moves valves on the
+time scale on which the chamber fills and empties, so the unsteady half
+is the one we need. We work through both, because the steady half
+supplies the equilibrium that the unsteady solutions approach and a
+worked example we can check exactly.
+
+This topic reuses the lumped chamber of
+Section~\ref{topic:solid-ballistics} and its notation
+(Section~\ref{sec:sb-notation}). It adds four things: the full algebra
+of Humble's equations with his notation translated at each step, closed
+forms for arbitrary valve schedules, the energy equation that Humble's
+isothermal model omits, and the resulting DACS model.
+
+\subsection{Humble's notation against ours}
+\label{sec:ld-notation}
+Humble writes Chapter~6 in the symbols of the first column. The second
+column is our symbol for the same quantity. Parallel symbols of the
+other books are listed in Section~\ref{sec:sb-mass-notation}.
+\begin{center}
+\begin{tabular}{p{2.2cm}p{2.0cm}p{7.6cm}}
+Humble & Ours & Meaning, units, and differences\\ \hline
+$p_c$ & $p_c$ & chamber pressure, Pa; Humble quotes MPa in
+                 the burn law\\
+$r_b$ & $r$ & burning (recession) rate; Humble's example uses cm/s\\
+$a$, $n$ & $a$, $n$ & burn-law coefficient and exponent,
+                 $r=ap_c^n$ (Humble Eq.~6.18); Humble's $a$ is in
+                 cm/s/MPa$^n$\\
+$\rho_p$ & $\rho_p$ & solid propellant density\\
+$A_b$, $A_t$ & $A_b$, $A_t$ & burning area; throat area\\
+$c^*$ & $c^*$ & characteristic velocity\\
+$m$ & $m_c$ & gas mass stored in the chamber, kg\\
+$V$ (also $V_c$) & $V_c$ & gas volume of the chamber, m$^3$\\
+$\rho_g$ & $\rho_g$ & chamber gas density, $m/V$\\
+$\dot m_{\mathrm{in}}$ & $\dot m_g$ & gas generated at the burning
+                 surface, $r\rho_pA_b$\\
+$\dot m_{\mathrm{out}}$ & $\dot m_{\mathrm{out}}$ & gas leaving
+                 through the throat(s)\\
+$T_c$ & $T_0$ & chamber (stagnation) gas temperature, K; Humble's
+                 subscript $c$ means chamber\\
+$\mathcal M$, $\mathcal R_u$ & $R=\mathcal R_u/\mathcal M$ & molecular
+                 mass (kg/kmol) and universal constant
+                 (8314 J/(kmol\,K)); we use only the specific
+                 constant $R$\\
+$\mathcal W$ & $y$ & web distance burned, normal to the surface\\
+$c_p$, $T_{\mathrm{out}}$ & $c_p$, $T$ & specific heat; temperature
+                 of the gas leaving the control volume\\
+$\tau$ & $\tau_H$ & Humble's ``motor time constant''
+                 $\rho_gV/\dot m_i$; it is \emph{not} our $\tau$ of
+                 Eq.~\eqref{eq:sb-tau}\\
+$p'$, $k_b$, $k_t$ & $p'$, $k_b$, $k_t$ & $p_c/p_{c,i}$,
+                 $A_b/A_{b,i}$, $A_t/A_{t,i}$ (dimensionless)\\
+subscript $i$ & subscript $i$ & Humble's reference (``initial'')
+                 state; in the DACS section $i$ also indexes valves,
+                 and we then write the reference state with
+                 subscript $\mathrm{ref}$
+\end{tabular}
+\end{center}
+Two points need care. First, Humble's $T_c$ is our $T_0$, not a
+static temperature: the gas in the lumped chamber is at rest, so static
+and stagnation values coincide there. Second, Humble's $\tau$ is a
+residence time. Our $\tau$ in Eq.~\eqref{eq:sb-tau} is the relaxation
+time of the linearized pressure; Section~\ref{sec:ld-dimensionless}
+shows $\tau=\tau_H/(1-n)$. From here on each Humble equation is
+displayed first in his symbols and then in ours.
+
+\subsection{The steady lumped method, printed pp.~334--337}
+\label{sec:ld-steady}
+\paragraph{Mass balance.} Humble's control volume (his Fig.~6.25)
+is the gas in the chamber, fed by every exposed burning surface. His
+Eqs.~(6.26)--(6.27) are
+\begin{align*}
+ \dot m_{\mathrm{out}}&=\frac{p_cA_t}{c^*},\\
+ \frac{dm}{dt}&=\dot m_{\mathrm{in}}-\dot m_{\mathrm{out}}
+            =r_b\rho_pA_b-p_c\frac{A_t}{c^*}.
+\end{align*}
+In our symbols, with $m\mapsto m_c$, $r_b\mapsto r$ and
+$\dot m_{\mathrm{in}}\mapsto\dot m_g$,
+\begin{equation}\label{eq:ld-mass}
+ \frac{dm_c}{dt}=\dot m_g-\dot m_{\mathrm{out}}
+ =\rho_pA_b r-\frac{p_cA_t}{c^*}.
+\end{equation}
+The outlet term is the choked-nozzle law, Eq.~\eqref{eq:sb-nozzle-flow}.
+Equation~\eqref{eq:ld-mass} is exact under the lumped (B1) and
+choked-outlet (B3) assumptions of Section~\ref{sec:sb-pressure-evolution};
+it needs no assumption about temperature.
+
+\paragraph{Steady state, Eqs.~(6.28)--(6.29).}
+Humble's steady assumption is $dm/dt=0$. He states its meaning:
+``the chamber pressure adjusts instantaneously to any changes in
+burning rate, burning surface area, or other parameters.''
+Setting the left side of \eqref{eq:ld-mass} to zero gives his
+Eq.~(6.28),
+\[
+ r_b\rho_pA_b=p_c\frac{A_t}{c^*}
+ \qquad\Longleftrightarrow\qquad
+ \rho_pA_br=\frac{p_cA_t}{c^*}.
+\]
+Insert the burn law $r=ap_c^n$ (Humble Eq.~6.18, our
+Eq.~\eqref{eq:sb-burn-law}):
+\[
+ \rho_pA_b\,a\,p_c^n=\frac{p_cA_t}{c^*}.
+\]
+Multiply by $c^*/A_t$ and divide by $p_c^n>0$:
+\[
+ p_c^{1-n}=\frac{a\rho_pA_bc^*}{A_t}.
+\]
+For $n\neq1$ raise both sides to the power $1/(1-n)$. This is Humble's
+Eq.~(6.29),
+\begin{equation}\label{eq:ld-psteady}
+ p_c=\left(\frac{a\rho_pA_bc^*}{A_t}\right)^{1/(1-n)},
+\end{equation}
+identical to our Eq.~\eqref{eq:sb-peq} with $K=A_b/A_t$.
+Proposition~\ref{prop:sb-equilibrium} proves that it is the only
+positive equilibrium when $A_b$ and $A_t$ are held fixed.
+
+\paragraph{Units in Eq.~(6.29).} Humble gives $a$ in
+cm/s/MPa$^n$, so $r$ in cm/s when $p_c$ is in MPa. Keep that
+convention and write $p_c=\hat p\ \mathrm{MPa}$ with $\hat p$ a pure
+number. The balance $\rho_pA_ba\hat p^{\,n}=\hat p\,(10^6\
+\mathrm{Pa})A_t/c^*$ then reads
+\[
+ \hat p^{\,1-n}
+ =\frac{\rho_pA_bc^*\,a}{10^6\ \mathrm{Pa}\,A_t},
+\]
+with $a$ in m/s. Every unit on the right cancels: kg\,m$^{-3}$ times
+m/s times m/s over Pa is kg\,m$^{-1}$\,s$^{-2}$ over Pa, which is 1.
+This is Humble's instruction that the group
+$\rho_pA_bc^*/A_t$ be expressed in MPa/(cm/s).
+
+\paragraph{Humble's worked example, Eq.~(6.30).} A cylindrical port
+(his Fig.~6.21) has inner radius $r_i=10$~cm, outer radius
+$r_o=20$~cm, length $L=200$~cm, throat radius 5~cm,
+$c^*=1500$~m/s, $\rho_p=0.0015$~kg/cm$^3=1500$~kg/m$^3$, and
+$r=0.5\,\hat p^{\,n}$~cm/s, i.e.\ $a=0.005$~m/s. Only the port surface
+burns, so after a web distance $\mathcal W$ (our $y$) its area is
+\[
+ A_b=2\pi L\,(r_i+\mathcal W),\qquad
+ A_t=\pi(5\ \mathrm{cm})^2=25\pi\ \mathrm{cm}^2.
+\]
+Their ratio, with $\mathcal W$ in cm, is
+\[
+ \frac{A_b}{A_t}
+ =\frac{2\pi(200)(10+\mathcal W)}{25\pi}
+ =16\,(10+\mathcal W).
+\]
+Substitute into the unit-consistent form above:
+\begin{align*}
+ \hat p^{\,1-n}
+ &=\frac{(1500)(1500)(0.005)}{10^6}\cdot16\,(10+\mathcal W)\\
+ &=0.01125\cdot16\,(10+\mathcal W)\\
+ &=0.18\,(10+\mathcal W).
+\end{align*}
+This is Humble's Eq.~(6.30),
+$p_c=[0.18(10+\mathcal W)]^{1/(1-n)}$, and it confirms his coefficient.
+
+\paragraph{The web history, exactly.} Humble integrates
+$\mathcal W=\int_0^{t}r_b\,dt$ (his Eq.~6.31) by the Euler steps of
+his Fig.~6.26. The quasi-steady equation can be integrated in closed
+form. With $\mathcal W$ in cm and $t$ in s,
+\[
+ \frac{d\mathcal W}{dt}=0.5\,\hat p^{\,n}
+ =0.5\,[0.18\,(10+\mathcal W)]^{q},
+ \qquad q\equiv\frac{n}{1-n}.
+\]
+Separate the variables:
+\[
+ (10+\mathcal W)^{-q}\,d\mathcal W=0.5\,(0.18)^q\,dt .
+\]
+For $q\neq1$ (that is, $n\neq\tfrac12$), integrate from $0$ to
+$\mathcal W$ on the left and from $0$ to $t$ on the right:
+\[
+ \frac{(10+\mathcal W)^{1-q}-10^{1-q}}{1-q}=0.5\,(0.18)^q\,t .
+\]
+For $n=\tfrac12$ ($q=1$) the left side is
+$\ln[(10+\mathcal W)/10]$ instead. The burn ends at $\mathcal W=w$,
+the web thickness. The stated radii give $w=r_o-r_i=10$~cm, so
+\begin{align*}
+ t_b&=\frac{20^{1-q}-10^{1-q}}{0.5\,(1-q)(0.18)^q}
+ \quad(n\neq\tfrac12),\\
+ t_b&=\frac{\ln2}{0.5\cdot0.18}=7.70\ \mathrm s
+ \quad(n=\tfrac12).
+\end{align*}
+The same exponents give the end pressures
+$[0.18\cdot10]^{1/(1-n)}$ and $[0.18\cdot20]^{1/(1-n)}$:
+\begin{center}
+\begin{tabular}{cccc}
+$n$ & $t_b$ (s) & $p_c(0)$ (MPa) & $p_c(t_b^-)$ (MPa)\\ \hline
+0.3 & 13.22 & 2.32 & 6.23\\
+0.4 & 10.54 & 2.66 & 8.46\\
+0.5 & 7.70 & 3.24 & 12.96
+\end{tabular}
+\end{center}
+These agree with the curves of Humble's Fig.~6.27 (burnout near
+13.2, 10.5 and 7.7~s). The text on printed p.~336 says the total web is
+40~cm. That is inconsistent with $r_o-r_i=10$~cm and with his own
+figure; a 40~cm web would give $t_b\approx41$~s for $n=0.3$. We use
+10~cm.
+
+\paragraph{Why the pressure integral does not depend on $n$.}
+Humble notes under Fig.~6.27 that the area under each curve is the
+same. Integrate \eqref{eq:ld-mass} with $dm_c/dt=0$ over the burn:
+the throat passes the whole propellant mass $m_p$,
+\[
+ \int_0^{t_b}\frac{p_cA_t}{c^*}\,dt=m_p
+ \quad\Longrightarrow\quad
+ \int_0^{t_b}p_c\,dt=\frac{c^*m_p}{A_t},
+\]
+which contains no $n$. In the example
+$m_p=\rho_p\pi L(r_o^2-r_i^2)=282.7$~kg, so
+$\int p_c\,dt=1500\cdot282.7/(7.854\times10^{-3})\ \mathrm{Pa\,s}
+=54.0$~MPa\,s. The same number follows from the web variable,
+using $dt=d\mathcal W/r$ and $\hat p/r=\hat p^{\,1-n}/0.5$:
+\[
+ \int\hat p\,dt=\int_0^{10}\frac{0.18(10+\mathcal W)}{0.5}\,d\mathcal W
+ =0.36\left[10\mathcal W+\frac{\mathcal W^2}{2}\right]_0^{10}=54.0 .
+\]
+
+\paragraph{Energy in the steady method, Eq.~(6.32).}
+Humble asks how the steady problem is solved without an energy
+equation. For an adiabatic, calorically perfect gas he writes
+$\dot m_{\mathrm{in}}c_pT_c-\dot m_{\mathrm{out}}c_pT_{\mathrm{out}}=0$;
+with $\dot m_{\mathrm{in}}=\dot m_{\mathrm{out}}$ this gives
+$T_{\mathrm{out}}=T_c$. In our symbols, the gas leaves at the
+chamber stagnation temperature $T_0$. Section~\ref{sec:ld-energy}
+derives the unsteady energy equation and shows when $T=T_0$ may be
+kept during transients.
+
+\subsection{The unsteady lumped method, printed pp.~337--341}
+\label{sec:ld-unsteady}
+\paragraph{Accumulation, Eq.~(6.33).} Humble writes the stored mass
+from the perfect-gas law,
+\[
+ m=\frac{p_cV\mathcal M}{\mathcal R_uT_c}
+ \qquad\Longleftrightarrow\qquad
+ m_c=\frac{p_cV_c}{RT_0}.
+\]
+Take logarithms, $\ln m_c=\ln p_c+\ln V_c-\ln R-\ln T_0$, and
+differentiate in time. If all four factors may vary,
+\begin{equation}\label{eq:ld-logdiff-full}
+ \frac1{m_c}\frac{dm_c}{dt}
+ =\frac1{p_c}\frac{dp_c}{dt}+\frac1{V_c}\frac{dV_c}{dt}
+  -\frac1R\frac{dR}{dt}-\frac1{T_0}\frac{dT_0}{dt}.
+\end{equation}
+Humble's Eq.~(6.34) keeps only the first two terms on the right:
+\[
+ \frac1m\frac{dm}{dt}=\frac1{p_c}\frac{dp_c}{dt}+\frac1V\frac{dV}{dt}.
+\]
+Dropping the last two terms of \eqref{eq:ld-logdiff-full} is his
+assumption that $\mathcal M$ and $T_c$ stay fixed while $p_c$ changes.
+He cites Heister and Landsbaum \cite{heisterlandsbaum1991}: these
+variations may be neglected ``unless a very rapid and large pressure
+disturbance is present,'' because ``the energy of adiabatic compression
+\ldots is balanced by an increase in energy flux through the throat.''
+Section~\ref{sec:ld-energy} tests this statement.
+
+\paragraph{Volume growth, Eq.~(6.35), and the pressure equation,
+Eq.~(6.36).} The receding surface uncovers volume at the rate
+$dV/dt=r_bA_b$, our Eq.~\eqref{eq:sb-volume-rate} times $dy/dt=r$.
+Solve Humble's (6.34) for the pressure derivative and substitute
+(6.27) and (6.35), one term at a time:
+\begin{align*}
+ \frac1{p_c}\frac{dp_c}{dt}
+ &=\frac1m\frac{dm}{dt}-\frac1V\frac{dV}{dt}\\
+ &=\frac1m\left(r_b\rho_pA_b-\frac{p_cA_t}{c^*}\right)
+   -\frac{r_bA_b}{V}\\
+ &=\frac1m\left(r_b\rho_pA_b-\frac{p_cA_t}{c^*}
+   -\frac mV\,r_bA_b\right)\\
+ &=\frac1m\left[r_bA_b(\rho_p-\rho_g)-p_c\frac{A_t}{c^*}\right].
+\end{align*}
+The third line factors out $1/m$; the fourth uses $\rho_g=m/V$.
+The last line is Humble's Eq.~(6.36). In our symbols, and multiplying
+by $p_c/m_c=RT_0/V_c$,
+\begin{equation}\label{eq:ld-pressure}
+ \frac{dp_c}{dt}
+ =\frac{RT_0}{V_c}
+  \left[(\rho_p-\rho_g)A_b\,a\,p_c^n-\frac{p_cA_t}{c^*}\right],
+\end{equation}
+which is our Eq.~\eqref{eq:sb-pressure-ode} and Hill and Peterson's
+Eq.~(12.28). Humble adds that $\rho_p/\rho_g\approx300$, so the
+$\rho_g$ correction is usually dropped. Section~\ref{topic:solid-ballistics}
+estimates it at about 0.6\% of the equilibrium pressure.
+
+\subsection{Dimensionless form and the motor time constant}
+\label{sec:ld-dimensionless}
+\paragraph{Deriving Eq.~(6.37).} Humble states the dimensionless form
+and refers to Heister and Landsbaum for the derivation; here it is.
+Drop $\rho_g$ in \eqref{eq:ld-pressure}, keep $V_c$ and $T_0$ fixed over
+the interval considered, and let $A_b(t)$ and $A_t(t)$ vary. Choose a
+reference equilibrium state, Humble's subscript $i$, where
+\begin{equation}\label{eq:ld-ref-flow}
+ \dot m_i=a\,p_{c,i}^{\,n}A_{b,i}\rho_p=\frac{p_{c,i}A_{t,i}}{c^*}.
+\end{equation}
+Define $p'=p_c/p_{c,i}$, $k_b=A_b/A_{b,i}$ and $k_t=A_t/A_{t,i}$.
+Substitute $p_c=p_{c,i}p'$, $A_b=A_{b,i}k_b$ and $A_t=A_{t,i}k_t$
+into the bracket of \eqref{eq:ld-pressure}:
+\begin{align*}
+ \rho_pA_bap_c^n-\frac{p_cA_t}{c^*}
+ &=\rho_pA_{b,i}k_b\,a\,p_{c,i}^{\,n}p'^{\,n}
+   -\frac{p_{c,i}A_{t,i}}{c^*}k_tp'\\
+ &=\dot m_i\,k_bp'^{\,n}-\dot m_i\,k_tp'
+   \qquad\text{by \eqref{eq:ld-ref-flow}}.
+\end{align*}
+The left side of \eqref{eq:ld-pressure} is
+$dp_c/dt=p_{c,i}\,dp'/dt$. Divide by $p_{c,i}$:
+\[
+ \frac{dp'}{dt}=\frac{RT_0\,\dot m_i}{V_cp_{c,i}}
+   \left(k_bp'^{\,n}-k_tp'\right).
+\]
+The reference gas density is $\rho_{g,i}=p_{c,i}/(RT_0)$, so the
+prefactor is $\dot m_i/(\rho_{g,i}V_c)$. Define
+\begin{equation}\label{eq:ld-tauH}
+ \tau_H\equiv\frac{\rho_{g,i}V_c}{\dot m_i}
+ =\frac{m_{c,i}}{\dot m_i}.
+\end{equation}
+Then
+\begin{equation}\label{eq:ld-dimensionless}
+ \boxed{\tau_H\frac{dp'}{dt}=k_b(t)\,p'^{\,n}-k_t(t)\,p'.}
+\end{equation}
+This is Humble's Eq.~(6.37). We have written $k_b(t)$ and $k_t(t)$
+as functions of time: nothing in the derivation required them to be
+constant. For a DACS, $k_t(t)$ is the valve command.
+
+\paragraph{What $\tau_H$ is.} Equation~\eqref{eq:ld-tauH} is the time
+to empty the reference gas inventory at the reference flow: a
+residence time (Turns calls the same ratio $t_R=\rho V/\dot m$, his
+Eq.~(6.37), p.~196 \cite{turns}). Substitute
+$\dot m_i=p_{c,i}A_{t,i}/c^*$ and $RT_0=(\Gamma c^*)^2$ from
+Eq.~\eqref{eq:sb-nozzle-flow}:
+\[
+ \tau_H=\frac{p_{c,i}}{RT_0}\,V_c\,\frac{c^*}{p_{c,i}A_{t,i}}
+ =\frac{V_c\,c^*}{RT_0A_{t,i}}
+ =\frac{L^*}{\Gamma^2c^*},
+ \qquad L^*=\frac{V_c}{A_{t,i}} .
+\]
+The pressure cancels, so $\tau_H$ depends only on $L^*$ and the gas.
+Our relaxation time, Eq.~\eqref{eq:sb-tau}, is
+$\tau=L^*/[(1-n)\Gamma^2c^*]$, hence
+\begin{equation}\label{eq:ld-tau-relation}
+ \tau=\frac{\tau_H}{1-n}.
+\end{equation}
+Humble quotes $0.01<\tau_H<0.5$~s for most solid motors.
+
+\subsection{Closed-form solutions of Eq.~(6.37)}
+\label{sec:ld-closed}
+\paragraph{The substitution that linearizes it.} Equation
+\eqref{eq:ld-dimensionless} is a Bernoulli equation. Let
+\[
+ u\equiv p'^{\,1-n}>0 .
+\]
+By the chain rule,
+$du/dt=(1-n)\,p'^{\,-n}\,dp'/dt$. Multiply
+\eqref{eq:ld-dimensionless} by $(1-n)p'^{\,-n}/\tau_H$:
+\begin{align}
+ \frac{du}{dt}
+ &=\frac{1-n}{\tau_H}\,p'^{\,-n}\left(k_bp'^{\,n}-k_tp'\right)
+ \notag\\
+ &=\frac{1-n}{\tau_H}\left(k_b-k_t\,p'^{\,1-n}\right)
+ \notag\\
+ &=\frac{1-n}{\tau_H}\left(k_b(t)-k_t(t)\,u\right).
+ \label{eq:ld-linear}
+\end{align}
+This is \emph{linear} in $u$, for any time histories $k_b(t)$ and
+$k_t(t)$. Every solution below follows from it.
+
+\paragraph{Constant $k_b$ and $k_t$: Eq.~(6.40).} With constant
+coefficients, \eqref{eq:ld-linear} has the equilibrium $u_\infty=k_b/k_t$,
+and $u-u_\infty$ obeys
+$d(u-u_\infty)/dt=-(1-n)k_t(u-u_\infty)/\tau_H$. With $u(0)=1$
+(the reference state),
+\[
+ u(t)=\frac{k_b}{k_t}
+      +\left(1-\frac{k_b}{k_t}\right)e^{-(1-n)k_tt/\tau_H}
+     =\frac{k_b}{k_t}-\frac{k_b-k_t}{k_t}\,e^{-(1-n)k_tt/\tau_H}.
+\]
+Undo the substitution, $p'=u^{1/(1-n)}$:
+\begin{equation}\label{eq:ld-640}
+ p'(t)=\left[\frac{k_b}{k_t}
+       -\frac{k_b-k_t}{k_t}\,e^{-(1-n)k_tt/\tau_H}\right]^{1/(1-n)},
+\end{equation}
+Humble's Eq.~(6.40). It approaches
+$p'_\infty=(k_b/k_t)^{1/(1-n)}$, which is
+\eqref{eq:ld-psteady} at the new areas divided by its reference value.
+
+\paragraph{A step in burning area: Eq.~(6.41).} Put $k_t=1$:
+\[
+ p'=\left[k_b-(k_b-1)\,e^{-(1-n)t/\tau_H}\right]^{1/(1-n)}.
+\]
+The effective time constant is $\tau_H/(1-n)=\tau$, as in
+Proposition~\ref{prop:sb-stability}.
+
+\paragraph{A step in throat area: Eq.~(6.42), corrected.} Put
+$k_b=1$ in \eqref{eq:ld-640} and factor $1/k_t$ out of the bracket:
+\begin{align}
+ p'&=\left[\frac1{k_t}-\frac{1-k_t}{k_t}\,e^{-(1-n)k_tt/\tau_H}
+     \right]^{1/(1-n)}\notag\\
+   &=\left(\frac1{k_t}\right)^{1/(1-n)}
+     \left[1-(1-k_t)\,e^{-(1-n)k_tt/\tau_H}\right]^{1/(1-n)}.
+ \label{eq:ld-642}
+\end{align}
+Humble prints Eq.~(6.42) without the exponent $1/(1-n)$ on the second
+bracket, and introduces it with ``Eq.~(6.41) gives'' where Eq.~(6.40)
+is meant (we checked the page image, PDF p.~361). The printed form
+fails at $t=0$: it gives $k_t^{-1/(1-n)}\cdot k_t=k_t^{-n/(1-n)}$
+instead of $p'(0)=1$. For $k_t=0.75$ and $n=0.35$ that is 1.168
+instead of 1. Equation~\eqref{eq:ld-642} satisfies $p'(0)=1$ and agrees
+with direct numerical integration of \eqref{eq:ld-dimensionless} to
+$3\times10^{-12}$ (a finite check with $\tau_H=0.02$~s and
+$k_t\in\{0.5,0.75,1.1\}$). Humble's text and final value
+$k_t^{-1/(1-n)}$ are correct.
+
+The effective time constant is $\tau_H/[k_t(1-n)]$: it depends on the
+\emph{new} throat area. Closing valves ($k_t<1$) makes the pressure
+settle more slowly; opening them makes it settle faster.
+
+\paragraph{Blowdown, Eqs.~(6.38)--(6.39).} After burnout
+$k_b=0$. With $k_t=1$, Eq.~\eqref{eq:ld-dimensionless} is
+$\tau_H\,dp'/dt=-p'$, so
+\[
+ \frac{dp'}{p'}=-\frac{dt}{\tau_H},\qquad
+ \frac{p_c}{p_{c,i}}=e^{-t/\tau_H}.
+\]
+There is no factor $1-n$: without generation the burn law plays no
+part. Humble calls this ``isothermal blowdown'' and says that for an
+adiabatic, reversible blowdown one should use $T\propto
+p^{(\gamma-1)/\gamma}$ in Eq.~(6.37). We carry that out. With no
+generation and fixed $V_c$, $dm_c/dt=V_c\,d\rho_g/dt=-\dot m_{\mathrm{out}}$.
+Isentropic expansion gives
+$\rho_g=\rho_{g,i}\,p'^{\,1/\gamma}$ and
+$T=T_{0,i}\,p'^{\,(\gamma-1)/\gamma}$. The choked flow is
+$\dot m_{\mathrm{out}}=\Gamma p_cA_t/\sqrt{RT}$, so
+\[
+ \dot m_{\mathrm{out}}
+ =\frac{\Gamma p_{c,i}A_t}{\sqrt{RT_{0,i}}}\,
+  p'\,p'^{\,-(\gamma-1)/(2\gamma)}
+ =\dot m_i\,p'^{\,(\gamma+1)/(2\gamma)} .
+\]
+The storage term is
+$V_c\,d\rho_g/dt=V_c\rho_{g,i}\,\gamma^{-1}p'^{\,(1-\gamma)/\gamma}\,dp'/dt$.
+Equate the two and divide by $\dot m_i$, using
+$\tau_H=\rho_{g,i}V_c/\dot m_i$:
+\[
+ \frac{\tau_H}{\gamma}\,p'^{\,(1-\gamma)/\gamma}\frac{dp'}{dt}
+ =-p'^{\,(\gamma+1)/(2\gamma)}
+ \quad\Longrightarrow\quad
+ \frac{dp'}{dt}=-\frac{\gamma}{\tau_H}\,p'^{\,(3\gamma-1)/(2\gamma)} .
+\]
+The exponents combine as
+$(\gamma+1)/(2\gamma)-(1-\gamma)/\gamma=(3\gamma-1)/(2\gamma)$.
+Separate variables; since $1-(3\gamma-1)/(2\gamma)=-(\gamma-1)/(2\gamma)$,
+\[
+ p'^{\,-(\gamma-1)/(2\gamma)}-1=\frac{\gamma-1}{2\gamma}\cdot
+ \frac{\gamma t}{\tau_H},
+\]
+so
+\begin{equation}\label{eq:ld-adiabatic-blowdown}
+ p'(t)=\left[1+\frac{(\gamma-1)\,t}{2\tau_H}\right]^{-2\gamma/(\gamma-1)}.
+\end{equation}
+For small $t$, $p'\approx1-\gamma t/\tau_H$: the adiabatic pressure
+first falls $\gamma$ times faster than the isothermal one, because
+the gas also cools. With $\gamma=1.2$ at $t=\tau_H$ the two give 0.319
+(adiabatic) and 0.368 (isothermal). Equation
+\eqref{eq:ld-adiabatic-blowdown} agrees with direct integration of the
+mass and energy equations of Section~\ref{sec:ld-energy} to
+$2\times10^{-12}$.
+
+\paragraph{Arbitrary valve schedules.} Return to the linear equation
+\eqref{eq:ld-linear} with $k_t(t)$ an arbitrary piecewise-continuous
+command. Define
+\[
+ \Phi(t)\equiv\frac{1-n}{\tau_H}\int_0^tk_t(s)\,ds .
+\]
+Multiply \eqref{eq:ld-linear} by $e^{\Phi(t)}$. The left side becomes
+$d(e^{\Phi}u)/dt$, because $d\Phi/dt=(1-n)k_t/\tau_H$:
+\[
+ \frac{d}{dt}\left(e^{\Phi}u\right)
+ =e^{\Phi}\frac{du}{dt}+e^{\Phi}\frac{1-n}{\tau_H}k_tu
+ =e^{\Phi}\frac{1-n}{\tau_H}k_b .
+\]
+Integrate from 0 to $t$ with $u(0)=u_0$:
+\begin{equation}\label{eq:ld-integrating-factor}
+ u(t)=e^{-\Phi(t)}\left[u_0+\frac{1-n}{\tau_H}
+      \int_0^tk_b(s)\,e^{\Phi(s)}\,ds\right],
+ \qquad p'=u^{1/(1-n)} .
+\end{equation}
+For piecewise-constant commands, as when valves are pulsed, apply
+\eqref{eq:ld-640} on each interval with the value of $u$ at the end of
+the previous interval as its starting value:
+\[
+ u(t_{j}+s)=\frac{k_b}{k_{t,j}}
+ +\left(u(t_j)-\frac{k_b}{k_{t,j}}\right)e^{-(1-n)k_{t,j}s/\tau_H},
+ \quad 0\le s\le t_{j+1}-t_j .
+\]
+This is exact under the hypotheses of \eqref{eq:ld-dimensionless}.
+For a square wave with $k_t=1$ for 4~ms and $0.6$ for 6~ms,
+$\tau_H=0.02$~s and $n=0.35$, it agrees with a numerical solution to
+$3\times10^{-8}$ over 20 periods. It is the golden vector for a pulsed
+valve.
+
+\paragraph{Fast pulsing: average and ripple.} Let $k_t$ alternate
+between $k_1$ for a fraction $D$ of each period $T_p$ and $k_0$ for
+the rest, with $k_b$ fixed. Suppose $T_p$ is short compared with
+$\tau_H/[(1-n)k_t]$, so $u$ changes little within a period; call its
+period average $\bar u$. In the periodic state, the rise of $u$ during
+the $k_0$ phase equals the fall during the $k_1$ phase. By
+\eqref{eq:ld-linear},
+\[
+ \frac{1-n}{\tau_H}(k_b-k_0\bar u)(1-D)T_p
+ =\frac{1-n}{\tau_H}(k_1\bar u-k_b)DT_p .
+\]
+Collect the $\bar u$ terms:
+$k_b(1-D)+k_bD=\bar u\,[Dk_1+(1-D)k_0]$, so
+\[
+ \bar u=\frac{k_b}{\bar k_t},\qquad
+ \bar k_t\equiv Dk_1+(1-D)k_0 .
+\]
+The mean pressure is set by the time-averaged area,
+$\bar p'\approx(k_b/\bar k_t)^{1/(1-n)}$. The peak-to-peak change of
+$u$ is the rise during the $k_0$ phase. Substitute
+$k_b=\bar k_t\bar u$ and $\bar k_t-k_0=D(k_1-k_0)$:
+\[
+ \delta u=\frac{1-n}{\tau_H}\,\bar u\,(\bar k_t-k_0)(1-D)T_p
+ =\frac{1-n}{\tau_H}\,\bar u\,(k_1-k_0)\,D(1-D)\,T_p .
+\]
+Since $\delta p'/p'\approx\delta u/[(1-n)u]$, the relative pressure
+ripple is
+\begin{equation}\label{eq:ld-ripple}
+ \frac{\delta p'}{\bar p'}\approx
+ (k_1-k_0)\,D(1-D)\,\frac{T_p}{\tau_H},
+\end{equation}
+independent of $n$. For the square wave above,
+$\bar p'=(1/0.76)^{1/0.65}=1.5253$ against a period mean of 1.5255
+from the numerical solution, and \eqref{eq:ld-ripple} predicts a
+peak-to-peak ripple of 4.8\% against 4.79\% computed.
+
+\subsection{The energy equation Humble omits, and when isothermal is enough}
+\label{sec:ld-energy}
+\paragraph{Humble's first law for a control volume.} Humble's
+Eq.~(3.25), printed p.~86, is
+\[
+ \dot Q=P_s+\frac{\partial}{\partial t}\int_{cv}e\rho\,dV
+ +\int_{cs}\left(h+pe+\frac{v^2}{2}\right)\rho\,
+   (\vec v\cdot\hat n)\,dA ,
+\]
+where $\dot Q$ is heat added, $P_s$ shaft and shear power, $e$ the
+specific stored energy, $h=u+p\upsilon$ the enthalpy (his Eq.~3.24,
+$\upsilon$ the specific volume), $pe$ the specific potential energy,
+$\vec v$ the velocity and $\hat n$ the outward normal. His control
+volume is fixed in space.
+
+\paragraph{Choosing a fixed control volume.} Take the whole interior
+of the case: gas plus remaining solid. It is fixed, as Eq.~(3.25)
+requires, and its only open boundary is the throat. The solid is at
+rest; its volume $V_s$ and the gas volume satisfy $V_s+V_c=$ const.
+Neglect $P_s$ and potential energy. Assume a single gas of fixed
+composition with constant $c_p$, $c_v$, $R=c_p-c_v$ and
+$\gamma=c_p/c_v$. Measure energies from the reference at which $h=c_pT$
+and $u=c_vT$ for the gas, and give the solid the specific enthalpy
+$h_s=c_pT_f$, where $T_f$ is the adiabatic flame temperature at
+constant pressure: burning a unit of solid at constant pressure and
+without heat loss produces a unit of gas at $T_f$. This is the
+definition of $T_f$ (Humble Section~4.4; Turns Chapter~2), and $T_f$
+is the $T_0$ of the steady model. The solid's specific internal
+energy is $u_s=h_s-p/\rho_p$.
+
+Evaluate each term of Eq.~(3.25). The gas stores $m_cc_vT$; the solid
+stores $\rho_pV_su_s$, which changes only through $V_s$ because $u_s$
+is fixed (we neglect the small $p$-dependence of $u_s$). Hence
+\[
+ \frac{\partial}{\partial t}\int_{cv}e\rho\,dV
+ =\frac{d}{dt}(m_cc_vT)+\rho_pu_s\frac{dV_s}{dt}
+ =\frac{d}{dt}(m_cc_vT)-\rho_pu_s\frac{dV_c}{dt}.
+\]
+At the throat the gas leaves with stagnation enthalpy
+$h+v^2/2=c_pT$, where $T$ is the chamber temperature, so the surface
+integral is $c_pT\,\dot m_{\mathrm{out}}$. With
+$\rho_p\,dV_c/dt=\rho_pA_br=\dot m_g$,
+\[
+ \dot Q=\frac{d}{dt}(m_cc_vT)-\dot m_g\left(c_pT_f-\frac{p_c}{\rho_p}\right)
+        +c_pT\,\dot m_{\mathrm{out}} .
+\]
+Since $\dot m_gp_c/\rho_p=p_c\,dV_c/dt$, write
+$E\equiv m_cc_vT$ and rearrange:
+\begin{equation}\label{eq:ld-energy}
+ \boxed{\frac{dE}{dt}=c_pT_f\,\dot m_g-p_c\frac{dV_c}{dt}
+        -c_pT\,\dot m_{\mathrm{out}}+\dot Q .}
+\end{equation}
+Generated gas enters with enthalpy $c_pT_f$; the term $-p_c\,dV_c/dt$
+is the flow work spent filling the volume the grain uncovers. With
+\eqref{eq:ld-mass} and $p_cV_c=m_cRT=(\gamma-1)E$, the state $(m_c,E)$
+closes the model. This is the chamber counterpart of the plenum
+equations already used in \path{GasGeneratorValveSystem.h}.
+
+\paragraph{Temperature and pressure forms.} Expand
+$dE/dt=c_vT\,dm_c/dt+m_cc_v\,dT/dt$ and use \eqref{eq:ld-mass}:
+\[
+ m_cc_v\frac{dT}{dt}
+ =\dot m_g(c_pT_f-c_vT)-p_c\frac{dV_c}{dt}
+  -\dot m_{\mathrm{out}}(c_pT-c_vT)+\dot Q .
+\]
+Write $c_pT_f-c_vT=c_p(T_f-T)+RT$ and $c_pT-c_vT=RT$, and use
+$p_c=\rho_gRT$:
+\begin{align*}
+ m_cc_v\frac{dT}{dt}
+ &=\dot m_gc_p(T_f-T)
+   +RT\left(\dot m_g-\dot m_{\mathrm{out}}-\rho_g\frac{dV_c}{dt}\right)
+   +\dot Q\\
+ &=\dot m_gc_p(T_f-T)+RT\,V_c\frac{d\rho_g}{dt}+\dot Q .
+\end{align*}
+The second line uses
+$dm_c/dt=V_c\,d\rho_g/dt+\rho_g\,dV_c/dt$. So the temperature relaxes
+toward $T_f$ through new gas, and rises when the gas is compressed
+($d\rho_g/dt>0$). For the pressure, differentiate
+$p_cV_c=(\gamma-1)E$ and substitute \eqref{eq:ld-energy}, using
+$(\gamma-1)c_p=\gamma R$:
+\begin{equation}\label{eq:ld-pressure-energy}
+ V_c\frac{dp_c}{dt}
+ =\gamma R\left(T_f\dot m_g-T\dot m_{\mathrm{out}}\right)
+  -\gamma p_c\frac{dV_c}{dt}+(\gamma-1)\dot Q .
+\end{equation}
+Compare the isothermal Eq.~\eqref{eq:sb-general-pressure-outlet}
+with $T=T_0=T_f$:
+$V_c\,dp_c/dt=RT_f(\dot m_g-\dot m_{\mathrm{out}})-p_c\,dV_c/dt$.
+The adiabatic form has an extra factor $\gamma$. Setting $T=T_f$ in
+the temperature equation shows why: $T$ stays at $T_f$ without heat
+exchange only if $d\rho_g/dt=0$, that is, at constant pressure. An
+isothermal transient implicitly assumes heat exchange with the walls.
+
+\paragraph{Linearization with the energy equation.} Freeze $V_c$,
+$A_b$ and $A_t$, set $\dot Q=0$, neglect $dV_c/dt$, and write
+$\dot m_{\mathrm{out}}=\Gamma p_cA_t/\sqrt{RT}$ so that the outflow
+depends on temperature. The equilibrium is $T=T_f$,
+$\dot m_g=\dot m_{\mathrm{out}}=\dot m_i$. Perturb with
+$P=\delta p_c/p_{c,i}$, $\Theta=\delta T/T_f$ and $s=t/\tau_H$.
+To first order,
+\[
+ \frac{\delta\dot m_g}{\dot m_i}=nP,\qquad
+ \frac{\delta\dot m_{\mathrm{out}}}{\dot m_i}=P-\frac{\Theta}{2}.
+\]
+Insert these into \eqref{eq:ld-pressure-energy}, whose equilibrium
+part cancels, and use $\gamma RT_f\dot m_i/(V_cp_{c,i})=\gamma/\tau_H$:
+\[
+ \frac{dP}{ds}
+ =\gamma\left[nP-\left(P-\frac\Theta2\right)-\Theta\right]
+ =-\gamma(1-n)P-\frac{\gamma}{2}\Theta .
+\]
+The term $-\Theta$ comes from $-T\dot m_{\mathrm{out}}$ with
+$\delta T$. For the temperature, $\ln T=\ln p_c+\ln V_c-\ln R-\ln m_c$
+gives $d\Theta/ds=dP/ds-\delta(dm_c/ds)/m_{c,i}$, and by
+\eqref{eq:ld-mass}
+$\delta(dm_c/ds)/m_{c,i}=nP-P+\Theta/2$. Therefore
+\[
+ \frac{d\Theta}{ds}
+ =-\gamma(1-n)P-\frac\gamma2\Theta+(1-n)P-\frac\Theta2
+ =-(\gamma-1)(1-n)P-\frac{\gamma+1}{2}\Theta .
+\]
+The system is $d(P,\Theta)^{\mathsf T}/ds=J(P,\Theta)^{\mathsf T}$ with
+\[
+ J=\begin{pmatrix}
+ -\gamma(1-n) & -\gamma/2\\
+ -(\gamma-1)(1-n) & -(\gamma+1)/2
+ \end{pmatrix}.
+\]
+Its determinant and trace are
+\begin{align*}
+ \det J&=\frac{\gamma(1-n)(\gamma+1)}{2}-\frac{\gamma(\gamma-1)(1-n)}{2}
+        =\gamma(1-n),\\
+ \operatorname{tr}J&=-\gamma(1-n)-\frac{\gamma+1}{2}.
+\end{align*}
+The discriminant is
+$\Delta=(\operatorname{tr}J)^2-4\det J
+=\tfrac14\left[(3-2n)^2\gamma^2-2(5-6n)\gamma+1\right]$.
+
+\begin{proposition}[energy-equation modes]\label{prop:ld-modes}
+For $\gamma>1$ and $0\le n<1$ both eigenvalues of $J$ are real and
+negative. Their product is $\gamma(1-n)$.
+\end{proposition}
+\begin{proof}
+Negativity: $\det J>0$ and $\operatorname{tr}J<0$, so if the
+eigenvalues are real both are negative, and if complex their real
+part $\tfrac12\operatorname{tr}J$ is negative. Reality: $4\Delta$ is a
+quadratic in $\gamma$ with positive leading coefficient $(3-2n)^2$. Its
+own discriminant is
+\[
+ 4(5-6n)^2-4(3-2n)^2=4\,(2-4n)(8-8n)=64\,(1-2n)(1-n).
+\]
+If $\tfrac12<n<1$ this is negative, so $4\Delta>0$ for every $\gamma$.
+If $n=\tfrac12$ the only root is $\gamma=\tfrac12<1$. If
+$0\le n<\tfrac12$ the larger root is
+$\gamma_+=[(5-6n)+4s]/(3-2n)^2$ with $s=\sqrt{(1-2n)(1-n)}$. Then
+$\gamma_+\le1$ is equivalent to $4s\le(3-2n)^2-(5-6n)=4-6n+4n^2$,
+whose right side is positive (its discriminant $36-64$ is negative).
+Squaring,
+\[
+ (4-6n+4n^2)^2-16(1-2n)(1-n)
+ =4n^2(9-12n+4n^2)=4n^2(3-2n)^2\ge0 .
+\]
+So $\gamma_+\le1<\gamma$, and $4\Delta>0$.
+\end{proof}
+For $\gamma=1.2$ and $n=0.35$ the eigenvalues are $-0.618$ and $-1.262$
+(in units of $1/\tau_H$); a finite-difference Jacobian of the full
+$(m_c,E)$ equations reproduces them. Compare three models:
+\begin{center}
+\begin{tabular}{lll}
+Model & Pressure decay rate $\times\tau_H$ & Source\\ \hline
+isothermal & $1-n=0.65$ & Humble (6.37)\\
+isentropic chamber, $\Theta$ ignored & $\gamma(1-n)=0.78$ &
+  Williams (83)--(84)\\
+mass and energy & $0.618$ and $1.262$ & \eqref{eq:ld-energy}
+\end{tabular}
+\end{center}
+Williams writes $\omega_L=a^2C_D/L^*$ with $a^2=\gamma RT$ and
+$C_D=\dot m_{\mathrm{out}}/(A_tp_c)=1/c^*$; his linearized Eq.~(83)
+decays at $\omega_L(1-n)=\gamma(1-n)/\tau_H$ for a quasi-steady burn
+law. The slow mode of the full model is within 5\% of Humble's
+isothermal rate. The fast mode is temperature relaxation. This
+quantifies Heister and Landsbaum's statement: the pressure transient
+is nearly isothermal because hot new gas and the throat flow carry
+away the compression energy, but a disturbance on the scale of
+$\tau_H$ also excites a temperature mode. For a DACS, whose valves move
+on that scale, carry $E$; it costs one extra state per volume.
+
+\subsection{The model for a solid DACS}
+\label{sec:ld-dacs}
+\paragraph{Two architectures.} Sutton's Fig.~12--27 (printed p.~483)
+feeds hot-gas valves directly from the grain's gas volume through
+insulated manifolds; Fig.~12--28 does the same for an interceptor, with
+divert nozzles through the centre of gravity and a separate attitude
+set. Call this \emph{architecture~A}: one lumped volume, $N$ valves.
+Huzel and Huang's gas generator (their p.~116) and our code put a
+fixed orifice and a plenum between the grain and the valves:
+\emph{architecture~B}. Both valve arrangements are normally open;
+Sutton: ``the chamber pressure rises when any valve is closed.''
+
+\paragraph{Valve flow and the valve command.} Valve $j$ has opening
+$x_j(t)\in[0,1]$, geometric flow area $A_j(x_j)$ and discharge
+coefficient $C_{D,j}$. (Our pintle law is
+$A_j=\pi R_j^2[1-(1-x_j)^2]$, Section~6 of
+\path{documents/derivations/SolidRocketMotorGasGenerator.md}; none of the six textbooks gives a pintle area law.) While
+the valve is choked it passes $C_{D,j}A_jp_{\mathrm{up}}/c^*$, with
+$p_{\mathrm{up}}$ the pressure of the volume it drains. For a vacuum
+or high-altitude exit it stays choked. Define the effective total
+\[
+ A_v(t)\equiv\sum_{j=1}^{N}C_{D,j}A_j\bigl(x_j(t)\bigr).
+\]
+All choked valves on one volume share one upstream state, so their
+outflows add to $A_v\,p_{\mathrm{up}}/c^*$ (Eq.~\eqref{eq:sb-general-outlets}).
+Thrust and moment follow per valve:
+\[
+ \mathbf F=\sum_jF_j\,\hat{\mathbf e}_j,\qquad
+ \mathbf M=\sum_j(\mathbf r_j-\mathbf r_{\mathrm{cg}})\times
+           F_j\,\hat{\mathbf e}_j,\qquad
+ F_j=C_{F,j}\,p_{\mathrm{up}}\,C_{D,j}A_j ,
+\]
+with $\hat{\mathbf e}_j$ the thrust direction and $C_{F,j}$ the
+thrust coefficient at that valve's current area ratio and pressure
+ratio.
+
+\paragraph{Architecture A: Eq.~(6.37) with $k_t=A_v/A_{v,\mathrm{ref}}$.}
+With the valves on the grain volume, Section~\ref{sec:ld-dimensionless}
+applies directly with $A_t\mapsto A_v$. Four consequences follow.
+
+\emph{Pressure amplification and valve cross-coupling.} Closing
+valves raises the pressure to $k_t^{-1/(1-n)}$. With four equal valves
+and $n=0.35$, closing one gives $k_t=3/4$ and $p'_\infty=1.557$;
+closing two gives $k_t=1/2$ and $p'_\infty=2.905$. Every open valve's
+thrust scales with $p_{\mathrm{up}}$, so each valve command changes
+every other valve's thrust. The side force from closing valve 1 of an
+opposed pair is the full thrust of valve 2 at the raised pressure.
+
+\emph{Asymmetric response.} By \eqref{eq:ld-642} the settling time
+after a step is $\tau_H/[k_t(1-n)]$ at the new $k_t$: closing is slower
+than opening. For pulsed commands use the exact piecewise solution and
+\eqref{eq:ld-ripple}.
+
+\emph{An admissible band of total valve area.} The case limits
+$p_c\le p_{\max}$. Sutton Section~14.3 gives a low-pressure
+deflagration limit of 0.05--0.15~MPa, so we also need
+$p_c\ge p_{\min}$. At equilibrium, \eqref{eq:ld-psteady} with
+$A_t\mapsto A_v$ is decreasing in $A_v$ for $n<1$, so
+\[
+ p_{\min}\le p_{c,\infty}\le p_{\max}
+ \iff
+ a\rho_pA_bc^*\,p_{\max}^{\,n-1}\le A_v\le
+ a\rho_pA_bc^*\,p_{\min}^{\,n-1}.
+\]
+The ratio of the bounds is $(p_{\max}/p_{\min})^{1-n}$. The
+controller may not command total areas outside this band for longer
+than the transient allows. All valves shut is outside it: $A_v=0$ has
+no equilibrium, and the pressure grows until the case fails. Sutton
+also notes (Section~14.3) that fast depressurization extinguishes a
+propellant, with higher pressures needing faster $dp/dt$; this bounds
+how fast valves may open. The book gives no threshold values.
+
+\emph{$L^*$ instability at large opening.} $L^*=V_c/A_v$ falls as
+valves open. Williams' stability limit (his Eq.~86, printed p.~341)
+is a critical value of $L^*\bar p^{\,2n}$, below which the chamber
+oscillates at low frequency and can turn into chuffing. Opening
+valves lowers both $L^*$ and $\bar p$, so the fully open state is the
+one to check. The critical value needs the burning-rate response of
+Williams Section~9.1.5.4, which a quasi-steady $r=ap^n$ cannot supply.
+
+\paragraph{Architecture B: grain, orifice, plenum, valves.} Each volume
+carries mass and energy. With subscripts $c$ (grain chamber) and
+$\mathrm{pl}$ (plenum), and $\dot m_{\mathrm{link}}$ the orifice flow,
+\begin{align*}
+ \frac{dm_c}{dt}&=\dot m_g-\dot m_{\mathrm{link}},\\
+ \frac{dE_c}{dt}&=c_pT_f\dot m_g-p_c\frac{dV_c}{dt}
+                -c_pT_c\,\dot m_{\mathrm{link}},\\
+ \frac{dm_{\mathrm{pl}}}{dt}&=\dot m_{\mathrm{link}}-\sum_j\dot m_j,\\
+ \frac{dE_{\mathrm{pl}}}{dt}&=c_pT_c\,\dot m_{\mathrm{link}}
+   -c_pT_{\mathrm{pl}}\sum_j\dot m_j-\dot Q_{\mathrm{wall}} .
+\end{align*}
+The first and third are Eq.~\eqref{eq:sb-two-chamber-mass}; the
+second is \eqref{eq:ld-energy}; the fourth applies Humble's Eq.~(3.25)
+to the rigid plenum, whose inflow carries the grain chamber's
+stagnation enthalpy (for reverse flow use the plenum's). Here $T_c$
+is the grain-chamber gas temperature, $T_0$ of the isothermal model.
+
+\emph{Choked orifice: the grain is decoupled.} While the orifice
+(effective area $C_oA_o$) is choked,
+$\dot m_{\mathrm{link}}=C_oA_op_c/c^*$ depends only on the grain
+chamber, so valve motion does not reach the grain. The plenum then
+obeys, isothermally,
+\[
+ \frac{V_{\mathrm{pl}}}{RT}\frac{dp_{\mathrm{pl}}}{dt}
+ =\dot m_{\mathrm{link}}-\frac{A_v(t)\,p_{\mathrm{pl}}}{c^*},
+\]
+which is \emph{linear} in $p_{\mathrm{pl}}$: Eq.~\eqref{eq:ld-dimensionless}
+with $n=0$. Its equilibrium is
+$p_{\mathrm{pl},\infty}=c^*\dot m_{\mathrm{link}}/A_v$. In steady
+state the plenum gas is at the grain temperature, so the two $c^*$
+values agree and
+\begin{equation}\label{eq:ld-plenum-ratio}
+ \frac{p_{\mathrm{pl},\infty}}{p_c}=\frac{C_oA_o}{A_v}.
+\end{equation}
+Its time constant is $\tau_{H,\mathrm{pl}}=V_{\mathrm{pl}}c^*/(RTA_v)$
+with no $1-n$ factor.
+
+\emph{When the orifice unchokes.} The orifice stays choked while
+$p_{\mathrm{pl}}/p_c\le\pi_{\mathrm{cr}}
+=[2/(\gamma+1)]^{\gamma/(\gamma-1)}$, the isentropic throat pressure
+ratio of Section~\ref{sec:sb-pressure-evolution}. With
+\eqref{eq:ld-plenum-ratio}, it stays choked while
+\[
+ A_v\ \ge\ \frac{C_oA_o}{\pi_{\mathrm{cr}}}.
+\]
+Below that, the link flow depends on both pressures. For isentropic
+flow from $(p_c,T_c)$ to a throat at $p_{\mathrm{pl}}$, the exit
+temperature is $T_c\,\pi^{(\gamma-1)/\gamma}$ with
+$\pi=p_{\mathrm{pl}}/p_c$, the speed is
+$\sqrt{2c_pT_c(1-\pi^{(\gamma-1)/\gamma})}$ and the density is
+$p_{\mathrm{pl}}/(RT_c\pi^{(\gamma-1)/\gamma})$. Their product gives
+\[
+ \dot m_{\mathrm{link}}
+ =C_oA_o\,p_c\sqrt{\frac{2\gamma}{(\gamma-1)RT_c}
+   \left(\pi^{2/\gamma}-\pi^{(\gamma+1)/\gamma}\right)} .
+\]
+The grain chamber then feels the valves again.
+
+\emph{Check against our simulation.} In the scenario
+\texttt{CartridgeWithFourPintleValves} ($\gamma=1.25$,
+$\pi_{\mathrm{cr}}=0.555$, $C_oA_o=4.015\times10^{-4}$~m$^2$, four
+valves of $C_{D}A=2.985\times10^{-4}$~m$^2$), Eq.~\eqref{eq:ld-plenum-ratio}
+predicts $p_{\mathrm{pl}}/p_c=0.33631$ with four valves open. The
+simulation gives $2.2962/6.8277=0.33631$ at $t=0.375$~s. The choking
+bound is $A_v\ge7.23\times10^{-4}$~m$^2$: four open valves
+($1.19\times10^{-3}$) satisfy it and two ($5.97\times10^{-4}$) do not.
+That is why, after two valves close, the orifice unchokes and the
+grain pressure, steady at 6.83~MPa before the closure, rises to
+7.11~MPa by $t=0.575$~s in the simulation. Architecture~B
+buys isolation of the grain from valve commands for exactly the range
+$A_v\ge C_oA_o/\pi_{\mathrm{cr}}$, at the cost of the pressure drop
+across the orifice.
+
+\paragraph{What to model.} The state, inputs and outputs are:
+\begin{itemize}
+\item[D1] \emph{State}: web $y$; grain chamber $(m_c,E_c)$; for
+architecture~B also plenum $(m_{\mathrm{pl}},E_{\mathrm{pl}})$;
+optionally actuator states for $x_j$.
+\item[D2] \emph{Geometry}: $A_b(y)$ and $V_c(y)$ with
+$dV_c/dy=A_b$ (Eq.~\eqref{eq:sb-volume-rate}); $V_{\mathrm{pl}}$ fixed.
+\item[D3] \emph{Generation}: $\dot m_g=\rho_pA_b\,a(T_b)\,p_c^n$,
+entering with enthalpy $c_pT_f$.
+\item[D4] \emph{Links}: orifice flow choked or unchoked as above; each
+valve choked at $C_{D,j}A_j(x_j)p_{\mathrm{up}}/c^*$ with $c^*$ at the
+upstream temperature.
+\item[D5] \emph{Inputs}: valve commands $x_j(t)$, prescribed or from a
+controller; grain temperature $T_b$; ambient pressure.
+\item[D6] \emph{Outputs}: $p_c$, $p_{\mathrm{pl}}$, $T_c$,
+$T_{\mathrm{pl}}$, per-valve thrust, $\mathbf F$ and $\mathbf M$,
+expelled mass, and a mass residual.
+\item[D7] \emph{Constraints to monitor}: $p_{\max}$, $p_{\min}$, the
+area band above, the choking bound, the opening rate, and $L^*$ at
+full opening.
+\end{itemize}
+The existing code has D1 without $E_c$ (the grain chamber is
+isothermal at $T_0$), D2--D4 for tubular and end-burning grains, D5
+as prescribed schedules, and a plenum energy equation. It lacks the
+grain-chamber energy equation, valve thrust directions and moments,
+constraint monitors, and closed-loop control.
+
+\paragraph{Golden vectors from this topic.} Each is a finite check on
+a specialization, not physical validation:
+\begin{enumerate}
+\item Humble's Eq.~(6.30) and the burn times in the table of
+Section~\ref{sec:ld-steady}; $\int p_c\,dt=c^*m_p/A_t$.
+\item Eqs.~\eqref{eq:ld-640} and \eqref{eq:ld-642} for steps in
+$k_b$ and $k_t$ (single volume, fixed $V_c$, isothermal,
+$\rho_g$ neglected).
+\item The piecewise solution for pulsed valves, and
+Eq.~\eqref{eq:ld-ripple} as a fast-pulsing limit.
+\item Isothermal blowdown $e^{-t/\tau_H}$ and adiabatic blowdown
+\eqref{eq:ld-adiabatic-blowdown} ($k_b=0$).
+\item The eigenvalues of Proposition~\ref{prop:ld-modes} for the
+linearized mass and energy equations.
+\item Eq.~\eqref{eq:ld-plenum-ratio} and the choking bound for
+architecture~B.
+\end{enumerate}
+
+\paragraph{What these books do not give.} A pintle area law and a
+hot-gas valve discharge coefficient as functions of stroke; valve
+actuator dynamics; a non-quasi-steady burning rate for fast pressure
+changes beyond Williams' linear response (his Section~9.1.5.4);
+extinction thresholds for $dp/dt$ (Sutton cites his Ref.~14--1); wall
+heat loss in the plenum and manifolds; and two-phase flow through the
+valves. Each needs outside data before the model can claim more than
+the specializations above.
