@@ -1,0 +1,168 @@
+{
+  "schema": 1,
+  "written": "2026-09-29",
+  "about": "The solid-rocket-motor simulation track. Rows are simulation steps, in build order, for the solid booster in Cosmos (C++ and Rust twins; SIMULATION-READING-PLAN.md Phases 8-9). status is built, next or later; built rows describe what the code on master already does. Each reference is a section id in the reading-room contents of that book, or a printed page that resolves to the section containing it. The read note gives the order across books. An empty list means the book does not treat the step.",
+  "code": "Cosmos/Source/Propulsion/SolidRocketMotor/ (C++), Cosmos/Rust/cosmos_propulsion (Rust); derivation documents/derivations/SolidRocketMotorGasGenerator.md",
+  "topics": [
+    {
+      "id": "srm-chamber-state",
+      "step": 1,
+      "status": "built",
+      "topic": "Chamber state: T₀, 𝓜, γ and c*",
+      "build": "CombustionProducts takes T₀, 𝓜, γ as inputs and gives c*, C_F. A Cantera equilibrium with condensed Al₂O₃ would compute them.",
+      "read": "Turns Ch. 2 is the cleanest derivation of adiabatic flame temperature and equilibrium products. Sutton Ch. 5 and Humble Ch. 4 apply it to propellants. Williams §4.2.2 gives I_sp from the reacting nozzle equations. Read Turns → Sutton → Humble → Williams.",
+      "books": {
+        "sutton": [{"section": "5.1"}, {"section": "5.2"}, {"section": "5.5"}],
+        "hp": [{"section": "12.3"}],
+        "humble": [{"section": "4.2"}, {"section": "4.3"}, {"section": "4.4"}],
+        "huzel": [],
+        "williams": [{"section": "4.2.2"}],
+        "turns": [{"section": "2~adiabatic-flame-temperatures"}, {"section": "2~equilibrium-products-of-combustion"}]
+      }
+    },
+    {
+      "id": "srm-burning-rate",
+      "step": 2,
+      "status": "built",
+      "topic": "Burning rate r = a pⁿ and temperature sensitivity",
+      "build": "Both temperature laws: Sutton (12-12), and Williams (7-41) on p. 250.",
+      "read": "Sutton §12.1 and Humble §6.4.5 give the law and the measured (a, n). Williams Ch. 7 explains it: §7.1 the deflagration wave, §7.5 why gas-phase control gives n < 1, §7.6 Eq. (7-41), §7.7 how AP composites burn. Read Sutton → Humble → Williams 7.1, 7.5, 7.6, 7.7. Turns has no propellant burning.",
+      "books": {
+        "sutton": [{"section": "12.1"}, {"section": "14.1"}],
+        "hp": [{"section": "12.6"}],
+        "humble": [{"section": "6.4.5"}],
+        "huzel": [],
+        "williams": [{"section": "7.1"}, {"section": "7.5"}, {"section": "7.6"}, {"section": "7.7"}],
+        "turns": []
+      }
+    },
+    {
+      "id": "srm-lumped-ballistics",
+      "step": 3,
+      "status": "built",
+      "topic": "Lumped internal ballistics: the chamber ODE",
+      "build": "Conservative (y, m_c) state with RK4 that lands exactly on burnout; equilibrium p and the n < 1 stability proof are in solid-ballistics.tex.",
+      "read": "H&P §12.7 derives the chamber-pressure ODE and its stability. Humble §6.5.1 is the same model as a design procedure. Turns §6 well-stirred reactor is the open control-volume balance with the reaction turned off. Read H&P → Humble → Sutton §12.2 → Turns §6.",
+      "books": {
+        "sutton": [{"section": "12.2"}],
+        "hp": [{"section": "12.7"}],
+        "humble": [{"section": "6.5"}, {"section": "6.5.1"}],
+        "huzel": [],
+        "williams": [],
+        "turns": [{"section": "6~constant-volume-fixed-mass-reactor"}, {"section": "6~well-stirred-reactor"}]
+      }
+    },
+    {
+      "id": "srm-gas-generator",
+      "step": 4,
+      "status": "built",
+      "topic": "Solid gas generator → plenum → N pintle valves",
+      "build": "Gas-generator mode. Closed-loop valve or pressure control is still open.",
+      "read": "Huzel p. 116 is the cartridge used as the test case. Turns §6 gives the plenum balance. Sutton §12.5 covers solid-propellant attitude control and side thrusters.",
+      "books": {
+        "sutton": [{"section": "12.5"}],
+        "hp": [],
+        "humble": [],
+        "huzel": [{"section": "4.6~solid-propellant-gas-generators"}],
+        "williams": [],
+        "turns": [{"section": "6~well-stirred-reactor"}]
+      }
+    },
+    {
+      "id": "srm-grain-burnback",
+      "step": 5,
+      "status": "next",
+      "topic": "Grain burn-back: A_b(y) and V(y) for star and finocyl grains",
+      "build": "Analytic star-grain A_b(y) first, then level-set or fast marching for arbitrary 2-D ports. Only tubular and end-burning grains exist now.",
+      "read": "Sutton §12.3 has the grain shapes and their thrust-curve families. Humble p. 332 has the approximate burning-surface formulas, and §6.3.1 does propellant-mass sizing. Neither combustion book covers geometry.",
+      "books": {
+        "sutton": [{"section": "12.3"}],
+        "hp": [],
+        "humble": [{"page": 332}, {"section": "6.3.1"}, {"section": "6.3.2"}],
+        "huzel": [],
+        "williams": [],
+        "turns": []
+      }
+    },
+    {
+      "id": "srm-case-study",
+      "step": 6,
+      "status": "next",
+      "topic": "Golden vector: the Humble §6.6 case study",
+      "build": "Reproduce §6.6.6–6.6.7: pressure and thrust curves from the preliminary ballistics. This is milestone M7.",
+      "read": "Read §6.6 straight through after steps 3 and 5. Its inputs come from §6.3 sizing.",
+      "books": {
+        "sutton": [{"section": "15.4"}],
+        "hp": [],
+        "humble": [{"section": "6.6"}, {"section": "6.6.6"}, {"section": "6.6.7"}],
+        "huzel": [],
+        "williams": [],
+        "turns": []
+      }
+    },
+    {
+      "id": "srm-port-flow",
+      "step": 7,
+      "status": "later",
+      "topic": "Quasi-1-D port flow and erosive burning",
+      "build": "An axial march with mass addition, per Humble §6.5.2. Erosive burning is local, from Sutton (12-17) or Williams (45)–(46); it replaces the lumped aft-end bound. This is milestone M8.",
+      "read": "H&P §3.4–3.5 derive the 1-D flow with mass and heat addition. H&P §12.7 gives the port pressure drop and its choking limit. Humble §6.5.2 is the station-by-station march. Williams §7.8 covers the erosive-burning correlations and their threshold. Read H&P 3.4 → H&P 12.7 → Humble 6.5.2 → Sutton 12.1 (erosive part) → Williams 7.8.",
+      "books": {
+        "sutton": [{"section": "12.1"}],
+        "hp": [{"section": "3.4"}, {"section": "3.5"}, {"section": "12.7"}],
+        "humble": [{"page": 331}, {"section": "6.5.2"}, {"section": "6.5.3"}],
+        "huzel": [],
+        "williams": [{"section": "7.8"}],
+        "turns": []
+      }
+    },
+    {
+      "id": "srm-nozzle-losses",
+      "step": 8,
+      "status": "later",
+      "topic": "Nozzle: two-phase (Al₂O₃) loss and throat erosion",
+      "build": "Two-phase and throat-erosion corrections to C_F and A_t(t).",
+      "read": "Sutton §3.5 covers multiphase nozzle flow and §15.2 throat erosion. Williams §4.2.6 is the two-phase theory. Humble §6.3.7 is the sizing view. Turns §10 d² law is the first model for aluminium-droplet burning time; Turns does not cover aluminium itself.",
+      "books": {
+        "sutton": [{"section": "3.5"}, {"section": "15.2"}],
+        "hp": [{"section": "12.6"}],
+        "humble": [{"section": "6.3.7"}],
+        "huzel": [],
+        "williams": [{"section": "4.2.6"}],
+        "turns": [{"section": "10~simple-model-of-droplet-burning"}]
+      }
+    },
+    {
+      "id": "srm-ignition-lstar",
+      "step": 9,
+      "status": "later",
+      "topic": "Ignition transient, chuffing and L* (bulk-mode) instability",
+      "build": "Ignition transient from the full pressure ODE with an igniter mass source. Add a burning-rate lag to show the L* instability.",
+      "read": "Sutton §14.2–14.3 cover ignition and extinction. Humble §6.3.5 sizes the igniter. Williams §9.4 is the bulk-mode (Helmholtz) oscillation, which is the one the lumped ODE can show, and §9.2 covers intrinsic oscillations and chuffing. Read Sutton → Humble → Williams 9.4 → 9.2.",
+      "books": {
+        "sutton": [{"section": "14.2"}, {"section": "14.3"}, {"section": "15.3"}],
+        "hp": [{"section": "12.8"}],
+        "humble": [{"section": "6.3.5"}],
+        "huzel": [],
+        "williams": [{"section": "9.4"}, {"section": "9.2"}],
+        "turns": []
+      }
+    },
+    {
+      "id": "srm-acoustic",
+      "step": 10,
+      "status": "later",
+      "topic": "Acoustic combustion instability",
+      "build": "Chamber acoustic modes with a pressure-coupled response function, and particle damping.",
+      "read": "Sutton §14.4 is the engineering account. H&P §12.8 is the derivation. Williams §9.1 covers modes, admittance, damping (particle damping §9.1.4.7) and combustion response (§9.1.5.4). Read Sutton → H&P → Williams 9.1.",
+      "books": {
+        "sutton": [{"section": "14.4"}],
+        "hp": [{"section": "12.8"}],
+        "humble": [],
+        "huzel": [],
+        "williams": [{"section": "9.1"}, {"section": "9.1.4.7"}, {"section": "9.1.5.4"}],
+        "turns": []
+      }
+    }
+  ]
+}

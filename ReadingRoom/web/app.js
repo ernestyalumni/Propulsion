@@ -3,11 +3,11 @@ import {notesMarkup, attachNotesSearch} from './notes.js';
 
 const $ = (selector) => document.querySelector(selector);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const palette = {nr: ['#525d84','#ecedf4'], wie: ['#346c64','#e7eee8'], sutton: ['#a46b45','#f2e9de'], hp: ['#8a4a5c','#f4e8ec'], huzel: ['#5f6b2e','#eef0e0'], humble: ['#2f6a8a','#e3eef3']};
-const names = {nr: 'Numerical Recipes', wie: 'Space Vehicle Dynamics & Control', sutton: 'Rocket Propulsion Elements', hp: 'Mechanics & Thermodynamics of Propulsion', huzel: 'Design of Liquid-Propellant Rocket Engines', humble: 'Space Propulsion Analysis and Design'};
-const shelfNames = {nr: 'Numerical Recipes', wie: 'Space Vehicle Dynamics', sutton: 'Rocket Propulsion', hp: 'Mechanics & Thermodynamics', huzel: 'Liquid Rocket Engines', humble: 'Space Propulsion Design'};
-const spines = {nr: 'Numerical<br>Recipes', wie: 'Space Vehicle<br>Dynamics', sutton: 'Rocket<br>Propulsion', hp: 'Mechanics &<br>Thermodynamics', huzel: 'Liquid Rocket<br>Engines', humble: 'Space Propulsion<br>Design'};
-const editions = {nr: 'THIRD EDITION', wie: 'SECOND EDITION', sutton: 'NINTH EDITION', hp: 'SECOND EDITION', huzel: 'AIAA · 1992', humble: 'REVISED FIRST EDITION'};
+const palette = {nr: ['#525d84','#ecedf4'], wie: ['#346c64','#e7eee8'], sutton: ['#a46b45','#f2e9de'], hp: ['#8a4a5c','#f4e8ec'], huzel: ['#5f6b2e','#eef0e0'], humble: ['#2f6a8a','#e3eef3'], williams: ['#9a4a2c','#f5e7df'], turns: ['#5d5486','#ebe8f3']};
+const names = {nr: 'Numerical Recipes', wie: 'Space Vehicle Dynamics & Control', sutton: 'Rocket Propulsion Elements', hp: 'Mechanics & Thermodynamics of Propulsion', huzel: 'Design of Liquid-Propellant Rocket Engines', humble: 'Space Propulsion Analysis and Design', williams: 'Combustion Theory', turns: 'An Introduction to Combustion'};
+const shelfNames = {nr: 'Numerical Recipes', wie: 'Space Vehicle Dynamics', sutton: 'Rocket Propulsion', hp: 'Mechanics & Thermodynamics', huzel: 'Liquid Rocket Engines', humble: 'Space Propulsion Design', williams: 'Combustion Theory', turns: 'Intro to Combustion'};
+const spines = {nr: 'Numerical<br>Recipes', wie: 'Space Vehicle<br>Dynamics', sutton: 'Rocket<br>Propulsion', hp: 'Mechanics &<br>Thermodynamics', huzel: 'Liquid Rocket<br>Engines', humble: 'Space Propulsion<br>Design', williams: 'Combustion<br>Theory', turns: 'Introduction to<br>Combustion'};
+const editions = {nr: 'THIRD EDITION', wie: 'SECOND EDITION', sutton: 'NINTH EDITION', hp: 'SECOND EDITION', huzel: 'AIAA · 1992', humble: 'REVISED FIRST EDITION', williams: 'SECOND EDITION', turns: 'THIRD EDITION'};
 let data, active, reader, saveTimer, dirty = false, saving = false, rendering = false;
 let editVersion = 0, saveChain = Promise.resolve(), routeGeneration = 0;
 let currentHash = location.hash || '#library';
@@ -32,6 +32,10 @@ function art(book = 'wie', large = false) {
         ? '<path d="M30 30 H70 V50 Q70 62 82 66 L150 30 M30 112 H70 V92 Q70 80 82 76 L150 112"/><path d="M30 30 V112" opacity=".5"/><path d="M36 42 H64 M36 71 H64 M36 100 H64" stroke-dasharray="2 4" opacity=".5"/><path d="M40 20 V30 M52 20 V30 M40 112 V122 M52 112 V122" opacity=".5"/><path d="M20 71 H166" stroke-dasharray="3 5" opacity=".4"/>'
       : book === 'humble'
         ? '<rect x="28" y="40" width="98" height="62" rx="8"/><path d="M126 50 L156 34 V108 L126 92"/><path d="M38 71 H116" opacity=".5"/><path d="M38 71 L54 52 L70 71 L86 52 L102 71 L116 56" opacity=".6"/><path d="M38 71 L54 90 L70 71 L86 90 L102 71 L116 86" opacity=".6"/>'
+      : book === 'williams'
+        ? '<rect x="22" y="82" width="136" height="36" rx="2"/><path d="M22 82 Q40 76 58 82 T94 82 T130 82 T158 82" opacity=".7"/><path d="M40 72 V44 M40 44 l-5 8 M40 44 l5 8 M90 72 V34 M90 34 l-5 8 M90 34 l5 8 M140 72 V44 M140 44 l-5 8 M140 44 l5 8" opacity=".55"/><path d="M22 128 H158" stroke-dasharray="3 5" opacity=".4"/>'
+      : book === 'turns'
+        ? '<circle cx="90" cy="71" r="14"/><ellipse cx="90" cy="64" rx="38" ry="44" opacity=".6"/><ellipse cx="90" cy="60" rx="56" ry="58" stroke-dasharray="3 5" opacity=".35"/><path d="M90 57 V40 M104 71 H122 M76 71 H58" opacity=".45"/>'
       : book === 'hp'
         ? '<path d="M14 71 H166" stroke-dasharray="3 6" opacity=".4"/><path d="M50 20 Q64 38 52 54 M50 50 Q64 68 52 84 M50 80 Q64 98 52 114"/><path d="M110 30 Q96 48 108 64 M110 60 Q96 78 108 94 M110 90 Q96 108 108 124" opacity=".75"/><path d="M22 34 H36 M22 64 H36 M22 94 H36" opacity=".45"/><path d="M140 42 H156 M140 72 H156 M140 102 H156" opacity=".45"/>'
       : '<ellipse cx="90" cy="71" rx="69" ry="29" transform="rotate(-27 90 71)"/><ellipse cx="90" cy="71" rx="69" ry="29" transform="rotate(45 90 71)" opacity=".5"/><circle cx="90" cy="71" r="46" opacity=".3"/><path d="M90 18 V125 M32 71 H149" stroke-dasharray="3 6" opacity=".4"/><circle cx="145" cy="47" r="4" fill="'+stroke+'"/><circle cx="90" cy="71" r="5"/>';
@@ -69,10 +73,15 @@ const milestones = {
   sutton: [['01 · UNDERSTAND THRUST','3.3','From chamber to nozzle','Read the ideal flow relations alongside your symbolic nozzle code.'],['02 · FLY THE VEHICLE','4.1','Turn thrust into ascent','Connect propulsion performance with mass change and an ODE solver.'],['03 · CONNECT THE SYSTEMS','18.1','Point the thrust','Link propulsion and attitude through thrust-vector control.']],
   huzel: [['01 · SHAPE THE CHAMBER','4.3','Chamber volume, L* and the bell','The design procedure behind Sutton’s chamber chapter, before the cooling problem it creates.'],['02 · KEEP THE WALL ALIVE','4.4','Regenerative and film cooling','Gas-side and coolant-side heat transfer and passage pressure drop. Take H&amp;P Ch. 4 first.'],['03 · RUN THE ENGINE','10.2','The engine as a dynamic system','Start and shutdown transients, influence coefficients, chug: the spec for a transient engine model.']],
   humble: [['01 · SIZE THE SYSTEM','5.3','Preliminary design decisions','Cycle, cooling approach and the pressure budget, chosen from requirements. The liquid case study follows in 5.5.'],['02 · BURN THE GRAIN','6.5','Solid-motor performance prediction','Lumped, then spatial-pressure ballistics: the second half of the booster model.'],['03 · CLOSE THE LOOP','6.6','A solid motor, end to end','Reproduce the case study in code: the solid booster’s first test case.']],
+  williams: [['01 · WHY r = a pⁿ','7.5','Gas-phase-controlled deflagration','Why the pressure exponent sits below one, and what the stable-burning condition means physically.'],['02 · ACROSS THE PORT','7.8','Erosive burning','Crossflow correlations and the threshold mass flux: the local law for the quasi-1-D port march.'],['03 · WHEN IT RINGS','9.4','Bulk-mode (L*) instability','The oscillation a lumped chamber ODE can show, before the acoustic modes of §9.1.']],
+  turns: [['01 · SET THE CHAMBER STATE','2~adiabatic-flame-temperatures','Adiabatic flame temperature','T₀, molar mass and γ from the first law and equilibrium: the inputs that fix c*.'],['02 · THE CONTROL VOLUME','6~well-stirred-reactor','The well-stirred reactor','Open mass and energy balances. With the reaction off, it is the chamber free volume and the gas-generator plenum.'],['03 · A BURNING PARTICLE','10~simple-model-of-droplet-burning','The d² law','The first model for an aluminium droplet burning in the port, and for liquid-engine sprays.']],
   hp: [['01 · DERIVE THE FLOW','3.2','One-dimensional gas dynamics','Isentropic, Rayleigh, Fanno and shocks from one set of equations — what Sutton’s nozzle chapter assumes.'],['02 · GROW THE LAYER','4.3','Boundary layers before Bartz','Read this before Sutton §8.5. It is the physics that heat-transfer correlation summarizes.'],['03 · SPIN THE PUMP','13.2','Turbomachinery for real','Euler work and velocity triangles behind the turbopump Sutton covers in a single handbook chapter.']]
 };
 
 const overlapBooks = ['sutton','hp','huzel','humble'];
+const combustionBooks = ['williams','turns'];
+const solidMotorBooks = ['sutton','hp','humble','williams','turns','huzel'];
+const statusLabels = {built:'Built', next:'Next to build', later:'Later'};
 const phaseNames = {0:'Test cases',1:'Thrust & nozzles',2:'Thermochemistry',3:'Kinetics',4:'Chamber & cooling',5:'Feed & turbomachinery',6:'Dynamics & control',7:'Stability',8:'Solid ballistics',9:'Solid combustion',10:'On the vehicle'};
 
 function overlapChip(book, ref) {
@@ -83,9 +92,8 @@ function overlapChip(book, ref) {
   return `<button class="overlap-chip${read?' read':''}" data-read="${book.id}" data-section="${esc(sec.id)}" title="${esc(label)} · printed p. ${sec.printed_page}">${read?'✓ ':''}${esc(label)}<small>p. ${sec.printed_page}</small></button>`;
 }
 
-function overlapMap() {
-  const books = overlapBooks.map(id => data.books.find(b => b.id === id)).filter(Boolean);
-  const topics = [...(data.overlap?.topics || [])].sort((a,b) => (a.phase||99) - (b.phase||99));
+function crossBookTable(topics, bookIds, rowHead, firstColumn) {
+  const books = bookIds.map(id => data.books.find(b => b.id === id)).filter(Boolean);
   if (!topics.length || books.length < 2) return '';
   const head = books.map(b => `<th style="${style(b.id)}"><span class="dot"></span>${esc(b.short)}</th>`).join('');
   const rows = topics.map(t => {
@@ -94,11 +102,28 @@ function overlapMap() {
       const refs = t.books[b.id] || [];
       return `<td style="${style(b.id)}" data-label="${esc(b.short)}">${refs.length ? refs.map(r => overlapChip(b, r)).join('') : '<span class="overlap-none">—</span>'}</td>`;
     }).join('');
-    return `<tr><th scope="row"><div class="step">${t.phase ? 'PHASE '+t.phase+' · ' : ''}${esc(phaseNames[t.phase] || '').toUpperCase()}</div><h4>${esc(t.topic)}</h4><span class="overlap-count">${count} of ${books.length} books</span><p>${esc(t.read)}</p></th>${cells}</tr>`;
+    return `<tr${t.status ? ` class="status-${esc(t.status)}"` : ''}><th scope="row">${rowHead(t)}<h4>${esc(t.topic)}</h4><span class="overlap-count">${count} of ${books.length} books</span><p>${esc(t.read)}</p></th>${cells}</tr>`;
   }).join('');
+  return `<div class="overlap-scroll"><table class="overlap-table"><thead><tr><th>${firstColumn}</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function overlapMap() {
+  const topics = [...(data.overlap?.topics || [])].sort((a,b) => (a.phase||99) - (b.phase||99));
+  const table = crossBookTable(topics, overlapBooks, t => `<div class="step">${t.phase ? 'PHASE '+t.phase+' · ' : ''}${esc(phaseNames[t.phase] || '').toUpperCase()}</div>`, 'Topic');
+  if (!table) return '';
   return `<section class="overlap"><div class="section-heading"><div><div class="eyebrow">FOUR BOOKS, READ TOGETHER</div><h2>Where the propulsion books overlap</h2></div><span>Rows follow the simulation reading plan · ✓ = marked read</span></div>` +
-    `<p class="overlap-intro">Each row is one piece of physics. The cells show the sections in each book that treat it; click one to open it at the reading desk. The note under each topic says what each book adds and the order to read them in.</p>` +
-    `<div class="overlap-scroll"><table class="overlap-table"><thead><tr><th>Topic</th>${head}</tr></thead><tbody>${rows}</tbody></table></div></section>`;
+    `<p class="overlap-intro">Each row is one piece of physics. The cells show the sections in each book that treat it; click one to open it at the reading desk. The note under each topic says what each book adds and the order to read them in.</p>` + table + '</section>';
+}
+
+function solidMotorTrack() {
+  const topics = [...(data.solid_motor?.topics || [])].sort((a,b) => a.step - b.step);
+  const table = crossBookTable(topics, solidMotorBooks, t => `<div class="step">STEP ${t.step} · <span class="track-status ${esc(t.status)}">${esc(statusLabels[t.status] || t.status).toUpperCase()}</span></div>`, 'Simulation step');
+  if (!table) return '';
+  const next = topics.filter(t => t.status === 'next');
+  return `<section class="overlap solid-track"><div class="section-heading"><div><div class="eyebrow">CURRENT FOCUS · SOLID ROCKET MOTOR</div><h2>From the page to a thrust curve</h2></div><span>Rows are simulation steps in build order · ✓ = marked read</span></div>` +
+    `<p class="overlap-intro">Each row is one step of the solid-booster simulation in Cosmos. Its cells show the sections of six books behind it, Williams and Turns included. <strong>Built</strong> steps are already in the code, so read those to check the model. <strong>Next</strong> steps are what to read before writing the next piece of code.</p>` +
+    (next.length ? `<div class="track-next">${next.map(t => `<div><span class="track-status next">NEXT · STEP ${t.step}</span><b>${esc(t.topic)}</b><p>${esc(t.build)}</p></div>`).join('')}</div>` : '') +
+    table + '</section>';
 }
 
 function tracks(books, cls) {
@@ -110,12 +135,15 @@ function tracks(books, cls) {
 }
 
 function roadmap() {
-  app.innerHTML = intro('SIX BOOKS, ONE DIRECTION','A roadmap into the physics.',
-    'A proposed route through the books, organized around things we can build.<br>Sutton, Hill &amp; Peterson, Huzel &amp; Huang and Humble are one propulsion thread read together: the overlap map below shows where they meet.<br>Use the full ranked lists at the bottom whenever you want to take a different path.') +
+  app.innerHTML = intro('EIGHT BOOKS, ONE DIRECTION','A roadmap into the physics.',
+    'A proposed route through the books, organized around things we can build.<br>The solid rocket motor comes first: its track below follows the simulation step by step. Sutton, Hill &amp; Peterson, Huzel &amp; Huang and Humble are one propulsion thread read together; Williams and Turns supply the combustion.<br>Use the full ranked lists at the bottom whenever you want to take a different path.') +
+    solidMotorTrack() +
     tracks(data.books.filter(b => overlapBooks.includes(b.id)), 'roadmap-grid four') +
     overlapMap() +
+    '<div class="section-heading"><div><div class="eyebrow">COMBUSTION</div><h2>The chemistry and the flame</h2></div></div>' +
+    tracks(data.books.filter(b => combustionBooks.includes(b.id)), 'roadmap-grid') +
     '<div class="section-heading"><div><div class="eyebrow">SUPPORTING THREADS</div><h2>Numerical methods and vehicle dynamics</h2></div></div>' +
-    tracks(data.books.filter(b => !overlapBooks.includes(b.id)), 'roadmap-grid') +
+    tracks(data.books.filter(b => !overlapBooks.includes(b.id) && !combustionBooks.includes(b.id)), 'roadmap-grid') +
     '<div class="convergence"><div class="eyebrow">WHERE THE THREADS MEET · FUTURE LAB</div><h2>A liquid engine and a solid booster, on a vehicle</h2><p>Numerical integration + thermochemistry + engine dynamics + internal ballistics + ascent<br>Each connection earns its place through a derivation and a check.</p></div>' +
     data.books.map(b => `<details class="ranked-list"><summary>${esc(b.short)} — full ranked reading list (${b.chapters.length} entries)</summary>` + b.chapters.map(ch => {
       const numbers = String(ch.number).match(/\d+|^[A-Z]$/g) || [];
@@ -257,7 +285,7 @@ async function toggleText() {
       if(!response.ok)throw Error('Page text unavailable');
       html='<pre>'+esc(await response.text())+'</pre>';
     } else {
-      const chapter=String(Number(active.section.split('.')[0])).padStart(3,'0');
+      const chapter=String(Number(active.section.split(/[.~]/)[0])).padStart(3,'0');
       const key='chapter-'+chapter;
       if(!book.text_chapters.includes(key))throw Error('No chapter text for this entry; use the original PDF.');
       const response=await fetch(`/book/${book.id}/${key}`);

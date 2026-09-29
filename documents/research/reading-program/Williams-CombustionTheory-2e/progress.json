@@ -1,0 +1,202 @@
+{
+  "slug": "Williams-CombustionTheory-2e",
+  "short": "Williams",
+  "title": "Combustion Theory, 2nd ed.",
+  "authors": "Forman A. Williams",
+  "publisher": "Benjamin/Cummings, 1985",
+  "pages": 699,
+  "page_offset": "PDF = printed + 23 (PDF 24-399); + 22 (PDF 400-541); + 21 (PDF 542-670)",
+  "corpus_dir": "<CORPUS_ROOT>/Public/books/EngineeringPhysics/Williams-CombustionTheory-2e",
+  "pdf_stem": "[Forman_A._Williams]_Combustion_Theory(BookSee.org)",
+  "roadmap": "documents/research/reading-program/Williams-CombustionTheory-2e/ROADMAP.md",
+  "snapshot": "2026-09-29",
+  "chapters": [
+    {
+      "rank": 1,
+      "number": "7",
+      "title": "Combustion of Solid Propellants",
+      "printed_page": 229,
+      "why": "homogeneous deflagration (7.1); condensed- vs gas-phase control (7.4, 7.5) — why n < 1; Eq. (7-41) temperature law (p. 250); heterogeneous AP composites (7.7); erosive burning, Eqs. (45)-(46) (7.8)",
+      "module": "propulsion::solid_ballistics",
+      "language": "Rust; C++ twin via golden vectors",
+      "status": "todo",
+      "notes": "read 7.1, 7.5, 7.7, 7.8 first; 7.2-7.4 and 7.6 when a model needs them. Sutton p. 445: a and n are still measured, not computed"
+    },
+    {
+      "rank": 2,
+      "number": "9",
+      "title": "Combustion Instabilities",
+      "printed_page": 294,
+      "why": "SRM acoustic modes, admittance, damping incl. particle damping (9.1); intrinsic oscillations of burning solids and chuffing (9.2); bulk-mode / L* instability (9.4)",
+      "module": "propulsion::stability",
+      "language": "Rust; C++ twin via golden vectors",
+      "status": "todo",
+      "notes": "9.4 first: it is the instability the lumped chamber ODE can show"
+    },
+    {
+      "rank": 3,
+      "number": "4",
+      "title": "Reactions in Flows with Negligible Molecular Transport",
+      "printed_page": 92,
+      "why": "ignition delay and the well-stirred reactor (4.1); reacting quasi-1-D nozzle flow, rocket Isp, freezing (4.2); two-phase nozzle flow (4.2.6)",
+      "module": "propulsion::nozzle",
+      "language": "Rust; C++ twin via golden vectors",
+      "status": "todo",
+      "notes": "4.2.6 is the Al2O3 two-phase loss for the solid nozzle"
+    },
+    {
+      "rank": 4,
+      "number": "A",
+      "title": "Summary of Applicable Results of Thermodynamics and Statistical Mechanics",
+      "printed_page": 521,
+      "why": "equilibrium thermodynamics behind the chamber state",
+      "module": "propulsion::thermochemistry",
+      "language": "Rust; C++ twin via golden vectors",
+      "status": "todo",
+      "notes": "pairs Turns ch. 2, Sutton ch. 5"
+    },
+    {
+      "rank": 5,
+      "number": "B",
+      "title": "Review of Chemical Kinetics",
+      "printed_page": 554,
+      "why": "mass action, chain reactions, rate theory",
+      "module": "propulsion::kinetics",
+      "language": "Rust; C++ twin via golden vectors",
+      "status": "todo",
+      "notes": "liquid-track Phase 3"
+    },
+    {
+      "rank": 6,
+      "number": "8",
+      "title": "Ignition, Extinction, and Flammability Limits",
+      "printed_page": 265,
+      "why": "minimum ignition energy, heat-loss flames, activation-energy asymptotics",
+      "module": "read-only",
+      "language": "read-only",
+      "status": "todo",
+      "notes": "take with Sutton 14.2 only if the ignition transient becomes a focus"
+    },
+    {
+      "rank": 7,
+      "number": "11",
+      "title": "Spray Combustion",
+      "printed_page": 446,
+      "why": "spray combustion theory",
+      "module": "read-only",
+      "language": "read-only",
+      "status": "todo",
+      "notes": "liquid-track Phase 7"
+    },
+    {
+      "rank": 8,
+      "number": "3",
+      "title": "Diffusion Flames and Droplet Burning",
+      "printed_page": 38,
+      "why": "Burke-Schumann, droplet burning",
+      "module": "read-only",
+      "language": "read-only",
+      "status": "todo",
+      "notes": "liquid-track Phase 7; aluminium-droplet analog"
+    },
+    {
+      "rank": 9,
+      "number": "5",
+      "title": "Theory of Laminar Flames",
+      "printed_page": 130,
+      "why": "premixed flame structure and speed",
+      "module": "read-only",
+      "language": "read-only",
+      "status": "todo",
+      "notes": "background for 7.5 gas-phase flames"
+    },
+    {
+      "rank": 10,
+      "number": "1",
+      "title": "Summary of Relevant Aspects of Fluid Dynamics and Chemical Kinetics",
+      "printed_page": 1,
+      "why": "conservation equations and kinetics summary",
+      "module": "read-only",
+      "language": "read-only",
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "rank": 11,
+      "number": "2",
+      "title": "Rankine-Hugoniot Relations",
+      "printed_page": 19,
+      "why": "deflagration and detonation jump conditions",
+      "module": "read-only",
+      "language": "read-only",
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "rank": 12,
+      "number": "6",
+      "title": "Detonation Phenomena",
+      "printed_page": 182,
+      "why": "detonations",
+      "module": "read-only",
+      "language": "read-only",
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "rank": 13,
+      "number": "10",
+      "title": "Theory of Turbulent Flames",
+      "printed_page": 373,
+      "why": "turbulent flames",
+      "module": "read-only",
+      "language": "read-only",
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "rank": 14,
+      "number": "12",
+      "title": "Flame Attachment and Flame Spread",
+      "printed_page": 485,
+      "why": "flame attachment and spread",
+      "module": "read-only",
+      "language": "read-only",
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "rank": 15,
+      "number": "C",
+      "title": "Continuum Derivation of the Conservation Equations",
+      "printed_page": 604,
+      "why": "conservation-equation derivation",
+      "module": "read-only",
+      "language": "read-only",
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "rank": 16,
+      "number": "D",
+      "title": "Molecular Derivation of the Conservation Equations",
+      "printed_page": 618,
+      "why": "kinetic-theory derivation",
+      "module": "read-only",
+      "language": "read-only",
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "rank": 17,
+      "number": "E",
+      "title": "Transport Properties",
+      "printed_page": 628,
+      "why": "transport coefficients",
+      "module": "read-only",
+      "language": "read-only",
+      "status": "todo",
+      "notes": ""
+    }
+  ]
+}

@@ -51,7 +51,7 @@ async function rendered(page) {
   const page=await context.newPage();
   await page.goto(base);
   await page.waitForSelector('.book-card');
-  assert.equal(await page.locator('.book-card').count(),3);
+  assert.equal(await page.locator('.book-card').count(),8);
   assert.equal(await page.locator('.counter b').innerText(),'00');
   await page.screenshot({path:path.join(state,'home.png'),fullPage:true});
   await page.getByRole('button',{name:'Start reading ↗',exact:true}).click();
@@ -116,7 +116,7 @@ async function rendered(page) {
   assert.ok((await page.locator('.text-page pre').innerText()).length>100);
 
   await page.goto(base+'/#roadmap');await page.waitForSelector('.milestone');
-  assert.equal(await page.locator('.milestone').count(),9);
+  assert.equal(await page.locator('.milestone').count(),24);
   await page.locator('.ranked-list summary').first().click();
   assert.ok(await page.locator('.rank-row').count()>30);
   await page.screenshot({path:path.join(state,'roadmap.png'),fullPage:true});

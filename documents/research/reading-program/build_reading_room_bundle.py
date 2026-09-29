@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Build a reading-room `<Slug>-AgentContext` bundle for Huzel & Huang or Humble.
+"""Build a reading-room `<Slug>-AgentContext` bundle for Huzel & Huang, Humble,
+Williams or Turns.
 
 `build_agent_context_bundle.py` copies a whole parsed corpus, which suits the
 Sutton and Hill & Peterson corpora. The Huzel & Huang and Humble corpora carry
@@ -13,16 +14,23 @@ requires:
     corpus/Public/books/<subject>/<slug>/chapters/NNN-*.md
     corpus/Public/books/<subject>/<pdf_stem>.pdf
 
-The section contents come from each corpus's source-checked contents record,
-not from OCR headings: Humble `curated/contents-index.json`; Huzel & Huang the
+The section contents come from each corpus's source-checked contents record
+where one exists: Humble `curated/contents-index.json`; Huzel & Huang the
 seven transcribed contents pages plus `reference/downloaded-page-map.json`
-(printed folio -> downloaded PDF page).
+(printed folio -> downloaded PDF page). Williams and Turns have chapter-level
+contents only (`toc.json`), so their sections come from the parsed headings
+(`parsed/headings.json`), placed by `curated/folio-rules.json`: Williams's
+numbered sections (7.8, 9.1.4.7, ...), Turns's unnumbered all-caps headings.
 
-Unnumbered Huzel & Huang subsections get the id `<parent>~<slug>`, never an
-invented section number; their displayed number stays empty.
+Unnumbered Huzel & Huang and Turns sections get the id `<parent>~<slug>`,
+never an invented section number; their displayed number stays empty.
+
+Williams and Turns chapter files are built by joining the reconciled
+(source-checked) page transcriptions, because their `parsed/chapters/*.md`
+are page link lists.
 
 Usage:
-    PROPULSION_CORPUS_ROOT=<CORPUS_ROOT> build_reading_room_bundle.py {huzel,humble}
+    PROPULSION_CORPUS_ROOT=<CORPUS_ROOT> build_reading_room_bundle.py {huzel,humble,williams,turns}
 """
 
 import argparse
@@ -43,7 +51,20 @@ BOOKS = {
         "slug": "HuzelHuang-ModernEngineeringLiquidPropellantRocketEngines-1992",
         "pdf": "vdoc.pub_modern-engineering-for-design-of-liquid-propellant-rocket-engines.pdf",
     },
+    "williams": {
+        "slug": "Williams-CombustionTheory-2e",
+        "pdf": "[Forman_A._Williams]_Combustion_Theory(BookSee.org).pdf",
+    },
+    "turns": {
+        "slug": "Turns-IntroductionToCombustion-3e",
+        "pdf": "dokumen.pub_an-introduction-to-combustion-concepts-and-applications-3rd-ed-978-0-07-338019-3-0-07-338019-9.pdf",
+    },
 }
+
+SMALL_WORDS = {"a", "an", "and", "as", "at", "by", "for", "in", "of", "on", "or", "the", "to", "vs", "with"}
+# Turns back-matter headings that are not reading-program entries.
+TURNS_SKIP = {"OVERVIEW", "SUMMARY", "NOMENCLATURE", "REFERENCES", "REFERENCE", "PROBLEMS", "PROJECTS",
+              "REVIEW QUESTIONS", "QUESTIONS AND PROBLEMS", "PROBLEMS AND PROJECTS"}
 
 
 def slugify(text):
@@ -144,6 +165,96 @@ def huzel_toc(corpus):
     return toc, notes
 
 
+def title_case(text):
+    """Title-case an all-caps heading; keep chemical formulas and roman numerals."""
+    words = []
+    for i, word in enumerate(text.split()):
+        lower = word.lower()
+        if any(c.isdigit() for c in word) or re.fullmatch(r"[IVX]+", word):
+            words.append(word)
+        elif i and lower in SMALL_WORDS:
+            words.append(lower)
+        else:
+            words.append("-".join(part[:1].upper() + part[1:].lower() for part in word.split("-")))
+    return " ".join(words)
+
+
+def clean_heading(text):
+    text = re.sub(r"\\[a-zA-Z]+", "", text).replace("{", "").replace("}", "").replace("$", "")
+    text = re.sub(r"\s+", " ", text).replace("Simplifi ed", "Simplified").strip().rstrip(".")
+    return title_case(text) if text.isupper() else text
+
+
+def printed_folio(corpus):
+    """PDF page -> printed folio (int), from curated/folio-rules.json; None off the arabic body."""
+    rules = [r for r in json.load(open(os.path.join(corpus, "curated/folio-rules.json")))["rules"]
+             if r.get("style") != "roman" and "blank" not in r["printed_equals"]]
+
+    def folio(pdf):
+        rule = next((r for r in rules if r["pdf_from"] <= pdf <= r["pdf_to"]), None)
+        return pdf - rule["offset"] if rule else None
+    return folio
+
+
+def heading_toc(book, corpus):
+    """Chapters from toc.json plus sections from parsed/headings.json (Williams, Turns)."""
+    folio = printed_folio(corpus)
+    chapters = json.load(open(os.path.join(corpus, "toc.json")))
+    headings = json.load(open(os.path.join(corpus, "parsed/headings.json")))
+    toc, seen = [], set()
+    for ch in chapters:
+        number = ch["chapter"]
+        if not re.fullmatch(r"\d+|[A-F]", number):
+            continue  # indexes
+        toc.append({"number": number, "title": ch["title"], "printed_page": ch["printed_start"],
+                    "pdf_page": ch["pdf_start"], "depth": 1, "pdf_page_exact": True, "kind": "chapter"})
+        seen.add(number)
+        for h in headings:
+            pdf = h["pdf_page"]
+            if not ch["pdf_start"] <= pdf <= ch["pdf_end"] or folio(pdf) is None:
+                continue
+            raw = h["title"].strip()
+            row = {"printed_page": folio(pdf), "pdf_page": pdf, "pdf_page_exact": True, "parent": number}
+            if book == "williams":
+                m = re.match(r"((?:\d+|[A-E])(?:\.\d+)+)\.?\s+(.+)", raw)
+                if not m or m.group(1).split(".")[0] != number:
+                    continue
+                row.update(number=m.group(1), title=clean_heading(m.group(2)),
+                           depth=m.group(1).count(".") + 1, kind="section")
+                ident = row["number"]
+            else:
+                if not raw.isupper() or len(raw) < 4 or raw in TURNS_SKIP or raw.startswith(("APPENDIX", "AN INTRODUCTION")):
+                    continue
+                title = clean_heading(raw)
+                ident = f"{number}~{slugify(title)}"
+                row.update(number="", title=title, depth=2, kind="section", id=ident)
+            if ident in seen:
+                continue
+            seen.add(ident)
+            toc.append(row)
+    return toc
+
+
+def page_chapter_texts(corpus):
+    """Chapter file name -> Markdown joined from the reconciled page transcriptions."""
+    pages = os.path.join(corpus, "parsed/reconciled-pages")
+    texts = {}
+    for ch in json.load(open(os.path.join(corpus, "toc.json"))):
+        if not ch["chapter"].isdigit():
+            continue
+        parts = []
+        for pdf in range(ch["pdf_start"], ch["pdf_end"] + 1):
+            path = os.path.join(pages, f"{pdf:04d}.md")
+            if not os.path.exists(path):
+                continue
+            lines = [line for line in open(path).read().splitlines()
+                     if not line.startswith(("[Source image]", "Reading transcription with"))]
+            parts.append("\n".join(lines).strip())
+        texts[f"{int(ch['chapter']):03d}-{slugify(ch['title'])}.md"] = (
+            f"# {ch['chapter']}. {ch['title']}\n\n" + "\n\n".join(parts) + "\n")
+    return texts
+
+
 def chapter_files(book, corpus):
     """Map chapter number -> source Markdown, named NNN-*.md for the reader."""
     if book == "humble":
@@ -182,8 +293,10 @@ def main():
 
     if args.book == "humble":
         toc, notes = humble_toc(corpus), []
-    else:
+    elif args.book == "huzel":
         toc, notes = huzel_toc(corpus)
+    else:
+        toc, notes = heading_toc(args.book, corpus), []
 
     bundle = os.path.join(root, "Exports/ForPropulsion", f"{slug}-AgentContext")
     staging = bundle + ".partial"
@@ -195,8 +308,13 @@ def main():
     with open(os.path.join(target, "toc.json"), "w") as f:
         json.dump(toc, f, indent=1, ensure_ascii=False)
     shutil.copy2(os.path.join(corpus, "INDEX.md"), os.path.join(target, "INDEX.md"))
-    for name, source in chapter_files(args.book, corpus).items():
-        shutil.copy2(source, os.path.join(target, "chapters", name))
+    if args.book in ("williams", "turns"):
+        for name, text in page_chapter_texts(corpus).items():
+            with open(os.path.join(target, "chapters", name), "w") as f:
+                f.write(text)
+    else:
+        for name, source in chapter_files(args.book, corpus).items():
+            shutil.copy2(source, os.path.join(target, "chapters", name))
     shutil.copy2(pdf, os.path.join(staging, "corpus/Public/books", args.subject, spec["pdf"]))
     with open(os.path.join(staging, "README.md"), "w") as f:
         f.write(f"# {slug}-AgentContext\n\nReading-room bundle built by "

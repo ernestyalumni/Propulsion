@@ -1,9 +1,12 @@
 # Propulsion Reading Room
 
 A local study workspace for Numerical Recipes 3e, Wie 2e, Sutton 9e, Hill & Peterson 2e,
-Huzel & Huang (1992) and Humble (1995). The roadmap page maps where the four
-propulsion books overlap (`documents/research/reading-program/FOUR-BOOK-OVERLAP.json`).
-The Huzel & Huang and Humble bundles are built by
+Huzel & Huang (1992), Humble (1995), Williams 2e and Turns 3e. The roadmap page opens
+with the solid-rocket-motor track: simulation steps in build order, with the sections
+of six books behind each (`documents/research/reading-program/SOLID-MOTOR-TRACK.json`).
+Below it, a map shows where the four propulsion books overlap
+(`documents/research/reading-program/FOUR-BOOK-OVERLAP.json`).
+The Huzel & Huang, Humble, Williams and Turns bundles are built by
 `documents/research/reading-program/build_reading_room_bundle.py`.
 The bookshelf, linked roadmap, original PDF reader, section notes, and existing
 simulation labs work offline after the browser dependencies are installed.

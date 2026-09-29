@@ -55,7 +55,7 @@ class ReadingRoomTests(unittest.TestCase):
         status, _, body = self.request("/api/bootstrap")
         self.assertEqual(status, 200)
         result = json.loads(body)
-        self.assertEqual({b["id"] for b in result["books"]}, {"nr", "wie", "sutton", "hp", "huzel", "humble"})
+        self.assertEqual({b["id"] for b in result["books"]}, {"nr", "wie", "sutton", "hp", "huzel", "humble", "williams", "turns"})
         self.assertEqual(result["warnings"], [])
         wie = self.server.catalog.section("wie", "5.4")
         sutton = self.server.catalog.section("sutton", "3.3")
@@ -95,6 +95,34 @@ class ReadingRoomTests(unittest.TestCase):
         self.assertIn("12.7", [r["target"] for r in solid["books"]["hp"]])
         self.assertEqual(solid["books"]["huzel"], [])
 
+    def test_solid_motor_track_resolves_every_reference_in_build_order(self):
+        status, _, body = self.request("/api/bootstrap")
+        topics = json.loads(body)["solid_motor"]["topics"]
+        self.assertEqual([t["step"] for t in topics], list(range(1, len(topics) + 1)))
+        self.assertIn("next", {t["status"] for t in topics})
+        for topic in topics:
+            self.assertIn(topic["status"], {"built", "next", "later"})
+            self.assertEqual(set(topic["books"]), {"sutton", "hp", "humble", "huzel", "williams", "turns"})
+            self.assertTrue(topic["read"] and topic["build"])
+            for book, refs in topic["books"].items():
+                for ref in refs:
+                    self.assertIsNotNone(ref["target"], (topic["id"], book, ref))
+        port = next(t for t in topics if t["id"] == "srm-port-flow")
+        self.assertEqual([r["target"] for r in port["books"]["williams"]], ["7.8"])
+        self.assertEqual(port["books"]["humble"][0]["target"], "6.5")  # p. 331 erosive burning
+
+    def test_williams_and_turns_contents_are_ordered_and_placed(self):
+        williams = self.server.catalog.books["williams"]
+        self.assertEqual(williams["title"], "Combustion Theory, 2nd ed.")
+        erosive = self.server.catalog.section("williams", "7.8")
+        self.assertEqual((erosive["printed_page"], erosive["pdf_page"]), (258, 281))
+        reactor = self.server.catalog.section("turns", "6~well-stirred-reactor")
+        self.assertEqual((reactor["printed_page"], reactor["pdf_page"]), (194, 213))
+        for book in ("williams", "turns"):
+            pages = [s["printed_page"] for s in self.server.catalog.books[book]["sections"]]
+            self.assertEqual(pages, sorted(pages))
+            self.assertIn("chapter-007", self.server.catalog.books[book]["text_chapters"])
+
     def test_overlap_page_reference_resolves_to_enclosing_section(self):
         with patch("server.read_json", side_effect=lambda path: {"topics": [
                 {"id": "x", "phase": 1, "topic": "t", "read": "r",
@@ -116,7 +144,7 @@ class ReadingRoomTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             catalog = Catalog(Path(directory))
             self.assertEqual(catalog.books, {})
-            self.assertEqual(len(catalog.warnings), 6)
+            self.assertEqual(len(catalog.warnings), 8)
 
     def test_disk_resume_and_handoff_preserve_section_notes(self):
         status, _, body = self.request("/api/progress", self.payload())

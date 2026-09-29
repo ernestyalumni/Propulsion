@@ -26,9 +26,13 @@ SPECS = [
     ("hp", "HillPeterson-MechanicsThermodynamicsPropulsion-2e-AgentContext", "HillPeterson-MechanicsThermodynamicsPropulsion-2e", "3.2", "Propulsion fundamentals", "12"),
     ("huzel", "HuzelHuang-ModernEngineeringLiquidPropellantRocketEngines-1992-AgentContext", "HuzelHuang-ModernEngineeringLiquidPropellantRocketEngines-1992", "1.2", "Liquid engine design", "19"),
     ("humble", "Humble-SpacePropulsionAnalysisDesign-AgentContext", "Humble-SpacePropulsionAnalysisDesign", "3.3", "Propulsion system design", "20"),
+    ("williams", "Williams-CombustionTheory-2e-AgentContext", "Williams-CombustionTheory-2e", "7", "Combustion theory", "23"),
+    ("turns", "Turns-IntroductionToCombustion-3e-AgentContext", "Turns-IntroductionToCombustion-3e", "2", "Combustion fundamentals", "19"),
 ]
 # Where the four propulsion books treat the same physics; rendered on the roadmap page.
 OVERLAP = REPO / "documents/research/reading-program/FOUR-BOOK-OVERLAP.json"
+# The solid-motor simulation steps and the sections of six books behind each; roadmap page.
+SOLID_MOTOR = REPO / "documents/research/reading-program/SOLID-MOTOR-TRACK.json"
 LABS = [
     {"id": "quaternion", "title": "Quaternion Convention Lab", "kind": "Interactive lab", "book": "wie", "section": "5.4", "path": "Cosmos/QuaternionConventionLab/web/index.html", "description": "Explore q versus −q, scalar layout, and active/passive rotations.", "url": "/lab/Cosmos/QuaternionConventionLab/web/index.html"},
     {"id": "nozzle", "title": "Nozzle theory", "kind": "Source code", "book": "sutton", "section": "3.3", "path": "NozzleTheory.py", "description": "Existing symbolic nozzle relations. A starting point for our next experiment.", "url": "/source/nozzle"},
@@ -102,14 +106,14 @@ class Catalog:
                              "text_chapters": [key for key in self.files[ident] if key.startswith("chapter-")],
                              "ocr_note": "Parsed text is a reading aid. Check equations against the original PDF; OCR adjudication is incomplete."}
 
-    def overlap(self):
-        """The cross-book topic map, with every reference resolved against the loaded books.
+    def overlap(self, path=None):
+        """A cross-book topic map, with every reference resolved against the loaded books.
 
         A reference names a section id, or a printed page that resolves to the last
         section starting at or before it. Unresolvable references are kept, marked.
         """
         try:
-            rows = read_json(OVERLAP)["topics"]
+            rows = read_json(path or OVERLAP)["topics"]
         except (OSError, ValueError, KeyError):
             return {"topics": [], "warning": "Overlap map unavailable"}
         topics = []
@@ -322,7 +326,8 @@ class Handler(BaseHTTPRequestHandler):
                               "state": self.server.store.read(), "token": self.server.token,
                               "state_path": str(self.server.store.path),
                               "labs": [dict(lab, available=(REPO / lab["path"]).is_file()) for lab in LABS],
-                              "overlap": self.server.catalog.overlap()})
+                              "overlap": self.server.catalog.overlap(),
+                              "solid_motor": self.server.catalog.overlap(SOLID_MOTOR)})
             elif path == '/api/notes':
                 self.respond(self.server.notes.public(self.server.catalog))
             elif len(parts) == 2 and parts[0] == 'note-asset':

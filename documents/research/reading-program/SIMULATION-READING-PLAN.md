@@ -14,6 +14,12 @@ module names and ranks in
 **In the reading room:** the roadmap page (`#roadmap`) shows the section-level overlap of
 Sutton, Hill & Peterson, Huzel & Huang and Humble, from
 [`FOUR-BOOK-OVERLAP.json`](FOUR-BOOK-OVERLAP.json). Edit that file to change the map.
+Above it, the **solid-motor track** (current focus, 2026-09-29) lists the Phase 8–9
+simulation steps in build order, each marked built, next or later, with the sections of
+Sutton, H&P, Humble, Huzel, **Williams and Turns** behind it. Its source is
+[`SOLID-MOTOR-TRACK.json`](SOLID-MOTOR-TRACK.json). Williams and Turns are now reading-room
+books; their ranked roadmaps are in `Williams-CombustionTheory-2e/` and
+`Turns-IntroductionToCombustion-3e/`.
 
 ## 0. What we are building, and what each book is for
 
