@@ -62,9 +62,10 @@ $\mathcal R_u/\mathcal M$ & $R_s$ & specific gas constant,
                  $R_s=k_B/M=R/(N_0M)$, J/(kg\,K); Humble's Chapter~3
                  calls this $R$ (his Eq.~3.27)\\
 $\mathcal W$ & $y$ & web distance burned, normal to the surface\\
-$\tau$ & $\tau_H$ & Humble's ``motor time constant''
-                 $\rho_gV/\dot m_i$; it is \emph{not} our $\tau$ of
-                 Eq.~\eqref{eq:sb-tau}\\
+$\tau$ & $t_R$ & Humble's ``motor time constant''
+                 $\rho_gV/\dot m_i$, a residence time (Turns' $t_R$);
+                 our $\tau$ is $k_BT$, and our relaxation time is
+                 $t_{\mathrm{rel}}$, Eq.~\eqref{eq:sb-tau}\\
 $p'$, $k_b$, $k_t$ & $p'$, $k_b$, $k_t$ & $p_c/p_{c,i}$,
                  $A_b/A_{b,i}$, $A_t/A_{t,i}$ (dimensionless)\\
 subscript $i$ & subscript $i$ & Humble's reference (``initial'')
@@ -82,9 +83,10 @@ Two points need care. First, $T_c$ is not a static temperature: the
 gas in the lumped chamber is at rest, so static and stagnation values
 coincide there, and its outlets carry $T_{\mathrm{out}}=T_c$.
 Second, Humble's $\tau$ is a
-residence time. Our $\tau$ in Eq.~\eqref{eq:sb-tau} is the relaxation
+residence time, our $t_R$; we reserve $\tau=k_BT$ for temperature in
+energy units. Our $t_{\mathrm{rel}}$ in Eq.~\eqref{eq:sb-tau} is the relaxation
 time of the linearized pressure; Section~\ref{sec:ld-dimensionless}
-shows $\tau=\tau_H/(1-n)$. From here on each Humble equation is
+shows $t_{\mathrm{rel}}=t_R/(1-n)$. From here on each Humble equation is
 displayed first in his symbols and then in ours.
 
 \subsection{The steady lumped method, printed pp.~334--337}
@@ -335,36 +337,38 @@ $dp_c/dt=p_{c,i}\,dp'/dt$. Divide by $p_{c,i}$:
 The reference gas density is $\rho_{g,i}=p_{c,i}/(R_sT_c)$, so the
 prefactor is $\dot m_i/(\rho_{g,i}V_c)$. Define
 \begin{equation}\label{eq:ld-tauH}
- \tau_H\equiv\frac{\rho_{g,i}V_c}{\dot m_i}
+ t_R\equiv\frac{\rho_{g,i}V_c}{\dot m_i}
  =\frac{m_{c,i}}{\dot m_i}.
 \end{equation}
 Then
 \begin{equation}\label{eq:ld-dimensionless}
- \boxed{\tau_H\frac{dp'}{dt}=k_b(t)\,p'^{\,n}-k_t(t)\,p'.}
+ \boxed{t_R\frac{dp'}{dt}=k_b(t)\,p'^{\,n}-k_t(t)\,p'.}
 \end{equation}
 This is Humble's Eq.~(6.37). We have written $k_b(t)$ and $k_t(t)$
 as functions of time: nothing in the derivation required them to be
 constant. For a DACS, $k_t(t)$ is the valve command.
 
-\paragraph{What $\tau_H$ is.} Equation~\eqref{eq:ld-tauH} is the time
+\paragraph{What $t_R$ is.} Equation~\eqref{eq:ld-tauH} is the time
 to empty the reference gas inventory at the reference flow: a
 residence time (Turns calls the same ratio $t_R=\rho V/\dot m$, his
 Eq.~(6.37), p.~196 \cite{turns}). Substitute
 $\dot m_i=p_{c,i}A_{t,i}/c^*$ and $R_sT_c=(\Gamma c^*)^2$ from
 Eq.~\eqref{eq:sb-nozzle-flow}:
 \[
- \tau_H=\frac{p_{c,i}}{R_sT_c}\,V_c\,\frac{c^*}{p_{c,i}A_{t,i}}
+ t_R=\frac{p_{c,i}}{R_sT_c}\,V_c\,\frac{c^*}{p_{c,i}A_{t,i}}
  =\frac{V_c\,c^*}{R_sT_cA_{t,i}}
  =\frac{L^*}{\Gamma^2c^*},
  \qquad L^*=\frac{V_c}{A_{t,i}} .
 \]
-The pressure cancels, so $\tau_H$ depends only on $L^*$ and the gas.
+The pressure cancels, so $t_R$ depends only on $L^*$ and the gas.
+In energy units the gas enters through $(\Gamma c^*)^2=R_sT_c=\tau_c/M$,
+with $\tau_c=k_BT_c$.
 Our relaxation time, Eq.~\eqref{eq:sb-tau}, is
-$\tau=L^*/[(1-n)\Gamma^2c^*]$, hence
+$t_{\mathrm{rel}}=L^*/[(1-n)\Gamma^2c^*]$, hence
 \begin{equation}\label{eq:ld-tau-relation}
- \tau=\frac{\tau_H}{1-n}.
+ t_{\mathrm{rel}}=\frac{t_R}{1-n}.
 \end{equation}
-Humble quotes $0.01<\tau_H<0.5$~s for most solid motors.
+Humble quotes $0.01<t_R<0.5$~s for most solid motors.
 
 \subsection{Closed-form solutions of Eq.~(6.37)}
 \label{sec:ld-closed}
@@ -375,14 +379,14 @@ Humble quotes $0.01<\tau_H<0.5$~s for most solid motors.
 \]
 By the chain rule,
 $du/dt=(1-n)\,p'^{\,-n}\,dp'/dt$. Multiply
-\eqref{eq:ld-dimensionless} by $(1-n)p'^{\,-n}/\tau_H$:
+\eqref{eq:ld-dimensionless} by $(1-n)p'^{\,-n}/t_R$:
 \begin{align}
  \frac{du}{dt}
- &=\frac{1-n}{\tau_H}\,p'^{\,-n}\left(k_bp'^{\,n}-k_tp'\right)
+ &=\frac{1-n}{t_R}\,p'^{\,-n}\left(k_bp'^{\,n}-k_tp'\right)
  \notag\\
- &=\frac{1-n}{\tau_H}\left(k_b-k_t\,p'^{\,1-n}\right)
+ &=\frac{1-n}{t_R}\left(k_b-k_t\,p'^{\,1-n}\right)
  \notag\\
- &=\frac{1-n}{\tau_H}\left(k_b(t)-k_t(t)\,u\right).
+ &=\frac{1-n}{t_R}\left(k_b(t)-k_t(t)\,u\right).
  \label{eq:ld-linear}
 \end{align}
 This is \emph{linear} in $u$, for any time histories $k_b(t)$ and
@@ -391,17 +395,17 @@ $k_t(t)$. Every solution below follows from it.
 \paragraph{Constant $k_b$ and $k_t$: Eq.~(6.40).} With constant
 coefficients, \eqref{eq:ld-linear} has the equilibrium $u_\infty=k_b/k_t$,
 and $u-u_\infty$ obeys
-$d(u-u_\infty)/dt=-(1-n)k_t(u-u_\infty)/\tau_H$. With $u(0)=1$
+$d(u-u_\infty)/dt=-(1-n)k_t(u-u_\infty)/t_R$. With $u(0)=1$
 (the reference state),
 \[
  u(t)=\frac{k_b}{k_t}
-      +\left(1-\frac{k_b}{k_t}\right)e^{-(1-n)k_tt/\tau_H}
-     =\frac{k_b}{k_t}-\frac{k_b-k_t}{k_t}\,e^{-(1-n)k_tt/\tau_H}.
+      +\left(1-\frac{k_b}{k_t}\right)e^{-(1-n)k_tt/t_R}
+     =\frac{k_b}{k_t}-\frac{k_b-k_t}{k_t}\,e^{-(1-n)k_tt/t_R}.
 \]
 Undo the substitution, $p'=u^{1/(1-n)}$:
 \begin{equation}\label{eq:ld-640}
  p'(t)=\left[\frac{k_b}{k_t}
-       -\frac{k_b-k_t}{k_t}\,e^{-(1-n)k_tt/\tau_H}\right]^{1/(1-n)},
+       -\frac{k_b-k_t}{k_t}\,e^{-(1-n)k_tt/t_R}\right]^{1/(1-n)},
 \end{equation}
 Humble's Eq.~(6.40). It approaches
 $p'_\infty=(k_b/k_t)^{1/(1-n)}$, which is
@@ -409,18 +413,18 @@ $p'_\infty=(k_b/k_t)^{1/(1-n)}$, which is
 
 \paragraph{A step in burning area: Eq.~(6.41).} Put $k_t=1$:
 \[
- p'=\left[k_b-(k_b-1)\,e^{-(1-n)t/\tau_H}\right]^{1/(1-n)}.
+ p'=\left[k_b-(k_b-1)\,e^{-(1-n)t/t_R}\right]^{1/(1-n)}.
 \]
-The effective time constant is $\tau_H/(1-n)=\tau$, as in
+The effective time constant is $t_R/(1-n)=t_{\mathrm{rel}}$, as in
 Proposition~\ref{prop:sb-stability}.
 
 \paragraph{A step in throat area: Eq.~(6.42), corrected.} Put
 $k_b=1$ in \eqref{eq:ld-640} and factor $1/k_t$ out of the bracket:
 \begin{align}
- p'&=\left[\frac1{k_t}-\frac{1-k_t}{k_t}\,e^{-(1-n)k_tt/\tau_H}
+ p'&=\left[\frac1{k_t}-\frac{1-k_t}{k_t}\,e^{-(1-n)k_tt/t_R}
      \right]^{1/(1-n)}\notag\\
    &=\left(\frac1{k_t}\right)^{1/(1-n)}
-     \left[1-(1-k_t)\,e^{-(1-n)k_tt/\tau_H}\right]^{1/(1-n)}.
+     \left[1-(1-k_t)\,e^{-(1-n)k_tt/t_R}\right]^{1/(1-n)}.
  \label{eq:ld-642}
 \end{align}
 Humble prints Eq.~(6.42) without the exponent $1/(1-n)$ on the second
@@ -430,20 +434,20 @@ fails at $t=0$: it gives $k_t^{-1/(1-n)}\cdot k_t=k_t^{-n/(1-n)}$
 instead of $p'(0)=1$. For $k_t=0.75$ and $n=0.35$ that is 1.168
 instead of 1. Equation~\eqref{eq:ld-642} satisfies $p'(0)=1$ and agrees
 with direct numerical integration of \eqref{eq:ld-dimensionless} to
-$3\times10^{-12}$ (a finite check with $\tau_H=0.02$~s and
+$3\times10^{-12}$ (a finite check with $t_R=0.02$~s and
 $k_t\in\{0.5,0.75,1.1\}$). Humble's text and final value
 $k_t^{-1/(1-n)}$ are correct.
 
-The effective time constant is $\tau_H/[k_t(1-n)]$: it depends on the
+The effective time constant is $t_R/[k_t(1-n)]$: it depends on the
 \emph{new} throat area. Closing valves ($k_t<1$) makes the pressure
 settle more slowly; opening them makes it settle faster.
 
 \paragraph{Blowdown, Eqs.~(6.38)--(6.39).} After burnout
 $k_b=0$. With $k_t=1$, Eq.~\eqref{eq:ld-dimensionless} is
-$\tau_H\,dp'/dt=-p'$, so
+$t_R\,dp'/dt=-p'$, so
 \[
- \frac{dp'}{p'}=-\frac{dt}{\tau_H},\qquad
- \frac{p_c}{p_{c,i}}=e^{-t/\tau_H}.
+ \frac{dp'}{p'}=-\frac{dt}{t_R},\qquad
+ \frac{p_c}{p_{c,i}}=e^{-t/t_R}.
 \]
 There is no factor $1-n$: without generation the burn law plays no
 part. Humble calls this ``isothermal blowdown'' and says that for an
@@ -463,27 +467,27 @@ $\dot m_{\mathrm{out}}=\Gamma p_cA_t/\sqrt{R_sT}$, so
 The storage term is
 $V_c\,d\rho_g/dt=V_c\rho_{g,i}\,\gamma^{-1}p'^{\,(1-\gamma)/\gamma}\,dp'/dt$.
 Equate the two and divide by $\dot m_i$, using
-$\tau_H=\rho_{g,i}V_c/\dot m_i$:
+$t_R=\rho_{g,i}V_c/\dot m_i$:
 \[
- \frac{\tau_H}{\gamma}\,p'^{\,(1-\gamma)/\gamma}\frac{dp'}{dt}
+ \frac{t_R}{\gamma}\,p'^{\,(1-\gamma)/\gamma}\frac{dp'}{dt}
  =-p'^{\,(\gamma+1)/(2\gamma)}
  \quad\Longrightarrow\quad
- \frac{dp'}{dt}=-\frac{\gamma}{\tau_H}\,p'^{\,(3\gamma-1)/(2\gamma)} .
+ \frac{dp'}{dt}=-\frac{\gamma}{t_R}\,p'^{\,(3\gamma-1)/(2\gamma)} .
 \]
 The exponents combine as
 $(\gamma+1)/(2\gamma)-(1-\gamma)/\gamma=(3\gamma-1)/(2\gamma)$.
 Separate variables; since $1-(3\gamma-1)/(2\gamma)=-(\gamma-1)/(2\gamma)$,
 \[
  p'^{\,-(\gamma-1)/(2\gamma)}-1=\frac{\gamma-1}{2\gamma}\cdot
- \frac{\gamma t}{\tau_H},
+ \frac{\gamma t}{t_R},
 \]
 so
 \begin{equation}\label{eq:ld-adiabatic-blowdown}
- p'(t)=\left[1+\frac{(\gamma-1)\,t}{2\tau_H}\right]^{-2\gamma/(\gamma-1)}.
+ p'(t)=\left[1+\frac{(\gamma-1)\,t}{2t_R}\right]^{-2\gamma/(\gamma-1)}.
 \end{equation}
-For small $t$, $p'\approx1-\gamma t/\tau_H$: the adiabatic pressure
+For small $t$, $p'\approx1-\gamma t/t_R$: the adiabatic pressure
 first falls $\gamma$ times faster than the isothermal one, because
-the gas also cools. With $\gamma=1.2$ at $t=\tau_H$ the two give 0.319
+the gas also cools. With $\gamma=1.2$ at $t=t_R$ the two give 0.319
 (adiabatic) and 0.368 (isothermal). Equation
 \eqref{eq:ld-adiabatic-blowdown} agrees with direct integration of the
 mass and energy equations of Section~\ref{sec:ld-energy} to
@@ -493,18 +497,18 @@ $2\times10^{-12}$.
 \eqref{eq:ld-linear} with $k_t(t)$ an arbitrary piecewise-continuous
 command. Define
 \[
- \Phi(t)\equiv\frac{1-n}{\tau_H}\int_0^tk_t(s)\,ds .
+ \Phi(t)\equiv\frac{1-n}{t_R}\int_0^tk_t(s)\,ds .
 \]
 Multiply \eqref{eq:ld-linear} by $e^{\Phi(t)}$. The left side becomes
-$d(e^{\Phi}u)/dt$, because $d\Phi/dt=(1-n)k_t/\tau_H$:
+$d(e^{\Phi}u)/dt$, because $d\Phi/dt=(1-n)k_t/t_R$:
 \[
  \frac{d}{dt}\left(e^{\Phi}u\right)
- =e^{\Phi}\frac{du}{dt}+e^{\Phi}\frac{1-n}{\tau_H}k_tu
- =e^{\Phi}\frac{1-n}{\tau_H}k_b .
+ =e^{\Phi}\frac{du}{dt}+e^{\Phi}\frac{1-n}{t_R}k_tu
+ =e^{\Phi}\frac{1-n}{t_R}k_b .
 \]
 Integrate from 0 to $t$ with $u(0)=u_0$:
 \begin{equation}\label{eq:ld-integrating-factor}
- u(t)=e^{-\Phi(t)}\left[u_0+\frac{1-n}{\tau_H}
+ u(t)=e^{-\Phi(t)}\left[u_0+\frac{1-n}{t_R}
       \int_0^tk_b(s)\,e^{\Phi(s)}\,ds\right],
  \qquad p'=u^{1/(1-n)} .
 \end{equation}
@@ -513,25 +517,25 @@ For piecewise-constant commands, as when valves are pulsed, apply
 the previous interval as its starting value:
 \[
  u(t_{j}+s)=\frac{k_b}{k_{t,j}}
- +\left(u(t_j)-\frac{k_b}{k_{t,j}}\right)e^{-(1-n)k_{t,j}s/\tau_H},
+ +\left(u(t_j)-\frac{k_b}{k_{t,j}}\right)e^{-(1-n)k_{t,j}s/t_R},
  \quad 0\le s\le t_{j+1}-t_j .
 \]
 This is exact under the hypotheses of \eqref{eq:ld-dimensionless}.
 For a square wave with $k_t=1$ for 4~ms and $0.6$ for 6~ms,
-$\tau_H=0.02$~s and $n=0.35$, it agrees with a numerical solution to
+$t_R=0.02$~s and $n=0.35$, it agrees with a numerical solution to
 $3\times10^{-8}$ over 20 periods. It is the golden vector for a pulsed
 valve.
 
 \paragraph{Fast pulsing: average and ripple.} Let $k_t$ alternate
 between $k_1$ for a fraction $D$ of each period $T_p$ and $k_0$ for
 the rest, with $k_b$ fixed. Suppose $T_p$ is short compared with
-$\tau_H/[(1-n)k_t]$, so $u$ changes little within a period; call its
+$t_R/[(1-n)k_t]$, so $u$ changes little within a period; call its
 period average $\bar u$. In the periodic state, the rise of $u$ during
 the $k_0$ phase equals the fall during the $k_1$ phase. By
 \eqref{eq:ld-linear},
 \[
- \frac{1-n}{\tau_H}(k_b-k_0\bar u)(1-D)T_p
- =\frac{1-n}{\tau_H}(k_1\bar u-k_b)DT_p .
+ \frac{1-n}{t_R}(k_b-k_0\bar u)(1-D)T_p
+ =\frac{1-n}{t_R}(k_1\bar u-k_b)DT_p .
 \]
 Collect the $\bar u$ terms:
 $k_b(1-D)+k_bD=\bar u\,[Dk_1+(1-D)k_0]$, so
@@ -544,14 +548,14 @@ $\bar p'\approx(k_b/\bar k_t)^{1/(1-n)}$. The peak-to-peak change of
 $u$ is the rise during the $k_0$ phase. Substitute
 $k_b=\bar k_t\bar u$ and $\bar k_t-k_0=D(k_1-k_0)$:
 \[
- \delta u=\frac{1-n}{\tau_H}\,\bar u\,(\bar k_t-k_0)(1-D)T_p
- =\frac{1-n}{\tau_H}\,\bar u\,(k_1-k_0)\,D(1-D)\,T_p .
+ \delta u=\frac{1-n}{t_R}\,\bar u\,(\bar k_t-k_0)(1-D)T_p
+ =\frac{1-n}{t_R}\,\bar u\,(k_1-k_0)\,D(1-D)\,T_p .
 \]
 Since $\delta p'/p'\approx\delta u/[(1-n)u]$, the relative pressure
 ripple is
 \begin{equation}\label{eq:ld-ripple}
  \frac{\delta p'}{\bar p'}\approx
- (k_1-k_0)\,D(1-D)\,\frac{T_p}{\tau_H},
+ (k_1-k_0)\,D(1-D)\,\frac{T_p}{t_R},
 \end{equation}
 independent of $n$. For the square wave above,
 $\bar p'=(1/0.76)^{1/0.65}=1.5253$ against a period mean of 1.5255
@@ -661,14 +665,14 @@ $A_b$ and $A_t$, set $\dot Q=0$, neglect $dV_c/dt$, and write
 $\dot m_{\mathrm{out}}=\Gamma p_cA_t/\sqrt{R_sT_{\mathrm{out}}}$ with
 $T_{\mathrm{out}}=T_c$, so that the outflow depends on temperature. The equilibrium is $T_c=T_f$,
 $\dot m_g=\dot m_{\mathrm{out}}=\dot m_i$. Perturb with
-$P=\delta p_c/p_{c,i}$, $\Theta=\delta T_c/T_f$ and $s=t/\tau_H$.
+$P=\delta p_c/p_{c,i}$, $\Theta=\delta T_c/T_f$ and $s=t/t_R$.
 To first order,
 \[
  \frac{\delta\dot m_g}{\dot m_i}=nP,\qquad
  \frac{\delta\dot m_{\mathrm{out}}}{\dot m_i}=P-\frac{\Theta}{2}.
 \]
 Insert these into \eqref{eq:ld-pressure-energy}, whose equilibrium
-part cancels, and use $\gamma R_sT_f\dot m_i/(V_cp_{c,i})=\gamma/\tau_H$:
+part cancels, and use $\gamma R_sT_f\dot m_i/(V_cp_{c,i})=\gamma/t_R$:
 \[
  \frac{dP}{ds}
  =\gamma\left[nP-\left(P-\frac\Theta2\right)-\Theta\right]
@@ -728,11 +732,11 @@ Squaring,
 So $\gamma_+\le1<\gamma$, and $4\Delta>0$.
 \end{proof}
 For $\gamma=1.2$ and $n=0.35$ the eigenvalues are $-0.618$ and $-1.262$
-(in units of $1/\tau_H$); a finite-difference Jacobian of the full
+(in units of $1/t_R$); a finite-difference Jacobian of the full
 $(m_c,E)$ equations reproduces them. Compare three models:
 \begin{center}
 \begin{tabular}{lll}
-Model & Pressure decay rate $\times\tau_H$ & Source\\ \hline
+Model & Pressure decay rate $\times t_R$ & Source\\ \hline
 isothermal & $1-n=0.65$ & Humble (6.37)\\
 isentropic chamber, $\Theta$ ignored & $\gamma(1-n)=0.78$ &
   Williams (83)--(84)\\
@@ -741,13 +745,13 @@ mass and energy & $0.618$ and $1.262$ & \eqref{eq:ld-energy}
 \end{center}
 Williams writes $\omega_L=a^2C_D/L^*$ with $a^2=\gamma R_sT_c$ and
 $C_D=\dot m_{\mathrm{out}}/(A_tp_c)=1/c^*$; his linearized Eq.~(83)
-decays at $\omega_L(1-n)=\gamma(1-n)/\tau_H$ for a quasi-steady burn
+decays at $\omega_L(1-n)=\gamma(1-n)/t_R$ for a quasi-steady burn
 law. The slow mode of the full model is within 5\% of Humble's
 isothermal rate. The fast mode is temperature relaxation. This
 quantifies Heister and Landsbaum's statement: the pressure transient
 is nearly isothermal because hot new gas and the throat flow carry
 away the compression energy, but a disturbance on the scale of
-$\tau_H$ also excites a temperature mode. For a DACS, whose valves move
+$t_R$ also excites a temperature mode. For a DACS, whose valves move
 on that scale, carry $E$; it costs one extra state per volume.
 
 \subsection{The model for a solid DACS}
@@ -799,7 +803,7 @@ every other valve's thrust. The side force from closing valve 1 of an
 opposed pair is the full thrust of valve 2 at the raised pressure.
 
 \emph{Asymmetric response.} By \eqref{eq:ld-642} the settling time
-after a step is $\tau_H/[k_t(1-n)]$ at the new $k_t$: closing is slower
+after a step is $t_R/[k_t(1-n)]$ at the new $k_t$: closing is slower
 than opening. For pulsed commands use the exact piecewise solution and
 \eqref{eq:ld-ripple}.
 
@@ -866,7 +870,7 @@ values agree and
 \begin{equation}\label{eq:ld-plenum-ratio}
  \frac{p_{\mathrm{pl},\infty}}{p_c}=\frac{C_oA_o}{A_v}.
 \end{equation}
-Its time constant is $\tau_{H,\mathrm{pl}}=V_{\mathrm{pl}}c^*/(R_sT_{\mathrm{pl}}A_v)$
+Its time constant is $t_{R,\mathrm{pl}}=V_{\mathrm{pl}}c^*/(R_sT_{\mathrm{pl}}A_v)$
 with no $1-n$ factor.
 
 \emph{When the orifice unchokes.} The orifice stays choked while
@@ -942,7 +946,7 @@ $k_b$ and $k_t$ (single volume, fixed $V_c$, isothermal,
 $\rho_g$ neglected).
 \item The piecewise solution for pulsed valves, and
 Eq.~\eqref{eq:ld-ripple} as a fast-pulsing limit.
-\item Isothermal blowdown $e^{-t/\tau_H}$ and adiabatic blowdown
+\item Isothermal blowdown $e^{-t/t_R}$ and adiabatic blowdown
 \eqref{eq:ld-adiabatic-blowdown} ($k_b=0$).
 \item The eigenvalues of Proposition~\ref{prop:ld-modes} for the
 linearized mass and energy equations.

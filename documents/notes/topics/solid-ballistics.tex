@@ -29,10 +29,13 @@ $V_c$ & gas chamber (cavity) volume\\
 $m_c$ & gas mass stored in that chamber\\
 $p_c$ & gas chamber pressure (stagnation value for nozzle flow)\\
 $A_b$ & burning surface area\\
-$r$ & normal surface-recession speed\\
+$r_b$ & normal surface-recession speed\\
 $A_t(t)$ & instantaneous nozzle throat area\\
 $\dot m_g$ & gas-generation rate at the burning surface\\
-$\dot m_{\mathrm{out}}$ & mass-flow rate leaving the chamber
+$\dot m_{\mathrm{out}}$ & mass-flow rate leaving the chamber\\
+$T_c$ & chamber gas temperature (stagnation value; the lumped gas is at rest)\\
+$T_{\mathrm{out}}$ & temperature of the gas leaving the control volume\\
+$R_s$ & specific gas constant, $k_B/M$ (see below)
 \end{tabular}
 \end{center}
 The motor's gas chamber is the gas-filled space inside its case, including
@@ -43,15 +46,63 @@ $V_{\mathrm{pl}}$, $p_{\mathrm{pl}}$ and $m_{c,\mathrm{pl}}$.
 
 The symbol $\dot m_g$ denotes the \emph{total} rate at which mass crosses
 the burning solid--gas interface into the modelled gas. For uniform
-recession and density its local mass flux is $\rho_p r$, and its
-surface-integrated rate is $\dot m_g=\rho_p A_b r$.
+recession and density its local mass flux is $\rho_p r_b$, and its
+surface-integrated rate is $\dot m_g=\rho_p A_b r_b$.
 The symbol $m_c$ denotes the stored gas inventory: its derivative is
 $dm_c/dt$, not $\dot m_g$. The latter is the input to that inventory,
 whereas $\dot m_{\mathrm{out}}$ is its output.
 
 We retain $K=A_b/A_t$, initial grain temperature $T_b$, gas heat-capacity
-ratio $\gamma$, chamber stagnation temperature $T_0$, and specific gas
-constant $R$. Our derivations use these conventions. Textbook equations
+ratio $\gamma$, chamber gas temperature $T_c$, outflow temperature
+$T_{\mathrm{out}}$, and specific gas constant $R_s$. In a lumped chamber
+the gas leaves at the chamber's stagnation state, so $T_{\mathrm{out}}=T_c$
+for its outlets; we keep both symbols because a receiving volume's inflow
+temperature is the upstream volume's $T_{\mathrm{out}}$.
+
+\paragraph{Thermodynamic conventions and constants.} We use Kittel and
+Kroemer's conventions \cite{CKittelHKroemer1980}, as in Ernest's
+thermal-physics notes (\path{mathphysics/LaTeX_and_pdfs/Kittel_Kroemer_Thermal_Physics.tex}
+and \path{LaTeXandpdfs/thermo.tex}). The fundamental temperature is
+$\tau=k_BT$. A classical ideal gas of $N$ molecules, each of mass $M$, in
+volume $V$ obeys
+\[
+ pV=N\tau,\qquad\text{equivalently}\qquad p=\frac{\rho\tau}{M},
+ \qquad \rho=\frac{NM}{V}.
+\]
+Its heat capacities are $C_V=(\partial U/\partial\tau)_V$ and
+$C_p=C_V+N$, dimensionless because $\tau$ is an energy, and
+$\gamma=C_p/C_V$; the sound speed satisfies $a^2=\gamma\tau/M$.
+The constants in those notes are
+\[
+ k_B=1.38066\times10^{-23}\ \mathrm{J/K},\quad
+ N_0=6.02205\times10^{23}\ \mathrm{mol^{-1}},\quad
+ R\equiv N_0k_B=8.31441\ \mathrm{J/(K\,mol)}.
+\]
+So $R$ without a subscript is the \emph{molar} gas constant. The
+2019 SI fixes $k_B=1.380649\times10^{-23}$~J/K and
+$N_0=6.02214076\times10^{23}$~mol$^{-1}$ exactly, giving
+$R=8.314462618$~J/(K\,mol), the value used in the Cosmos code; the
+older values differ in the fifth significant figure.
+
+We keep both temperatures: $\tau$ in energy units, as in those notes,
+and $T=\tau/k_B$ in kelvin, as in almost every other physics and
+engineering text; so $\tau_c=k_BT_c$ is the chamber gas temperature in
+energy units. Time constants are therefore not written $\tau$ here
+(Humble's residence time is our $t_R$), and Mach number is written
+$\mathfrak M$ (as in \path{LaTeXandpdfs/Propulsion.tex}) because $M$ is
+the molecular mass. Define the \emph{specific} gas constant and
+specific heats by
+\[
+ R_s\equiv\frac{k_B}{M},\qquad
+ c_v\equiv\frac{k_BC_V}{NM},\qquad
+ c_p\equiv\frac{k_BC_p}{NM},
+\]
+in J/(kg\,K). Then $p=\rho\tau/M=\rho R_sT$, $a^2=\gamma\tau/M=\gamma R_sT$, and $R_sT=\tau/M$,
+$\gamma=c_p/c_v$, and $C_p=C_V+N$ becomes
+\[
+ c_p-c_v=\frac{k_B(C_p-C_V)}{NM}=\frac{k_B}{M}=R_s .
+\]
+The molar mass is $N_0M$, so $R_s=R/(N_0M)$. Our derivations use these conventions. Textbook equations
 retain their authors' symbols and are translated explicitly in
 Section~\ref{sec:sb-mass-notation}.
 
@@ -69,7 +120,7 @@ We use the following quantities, with their time dependence explicit:
 \begin{description}
 \item[$S_b(t)$] The exposed burning surface at time $t$.
 \item[$A_b(t)$] Area of that burning surface, in $\mathrm m^2$.
-\item[$r(t)$] Normal surface-recession speed relative to the solid,
+\item[$r_b(t)$] Normal surface-recession speed relative to the solid,
 in $\mathrm m/\mathrm s$, taken as uniform over $S_b(t)$ initially.
 \item[$\rho_p$] Solid propellant density, in $\mathrm{kg}/\mathrm m^3$,
 assumed uniform and constant in time.
@@ -80,19 +131,19 @@ in $\mathrm{kg}/\mathrm s$.
 \end{description}
 The burning area $A_b$ includes only surfaces being consumed; it is
 different from the port cross-sectional area and the nozzle throat area.
-The recession speed $r$ is a length per unit time, whereas
+The recession speed $r_b$ is a length per unit time, whereas
 $\dot m_g$ is a mass per unit time. Neither $A_b(t)$ nor
-$r(t)$ is assumed constant in time.
+$r_b(t)$ is assumed constant in time.
 
 \paragraph{From recession distance to consumed volume.}
 Consider an otherwise stationary solid with a smooth burning surface,
 over an interval containing no change of surface topology. In a short
 time $\Delta t$, the surface recedes a normal distance
-$r(t)\Delta t+o(\Delta t)$. Multiplying this distance by the
+$r_b(t)\Delta t+o(\Delta t)$. Multiplying this distance by the
 instantaneous burning area gives, to first order,
 \begin{align}
  \Delta V_{\mathrm{consumed}}
- &=A_b(t)r(t)\Delta t+o(\Delta t),
+ &=A_b(t)r_b(t)\Delta t+o(\Delta t),
  \label{eq:sb-swept-volume}\\
  \Delta m_{\mathrm{burned}}
  &=\rho_p\Delta V_{\mathrm{consumed}}.
@@ -102,7 +153,7 @@ Substitute \eqref{eq:sb-swept-volume} into
 \eqref{eq:sb-consumed-mass} and divide by $\Delta t$:
 \[
  \frac{\Delta m_{\mathrm{burned}}}{\Delta t}
- =\rho_p A_b(t)r(t)
+ =\rho_p A_b(t)r_b(t)
    +\rho_p\frac{o(\Delta t)}{\Delta t}.
 \]
 Taking $\Delta t\to0$ eliminates the last term. If all consumed solid
@@ -111,24 +162,24 @@ storage, conservation of mass then gives
 \begin{equation}\label{eq:sb-mass-generation}
  \dot m_g(t)
  =\frac{dm_{\mathrm{burned}}}{dt}
- =\rho_p A_b(t)r(t).
+ =\rho_p A_b(t)r_b(t).
 \end{equation}
 Thus the gas-generation rate is the product of solid density, burning
 surface area, and normal recession speed.
 
 \paragraph{When recession is not uniform.}
-Let $r(\mathbf x,t)$ be the local normal recession speed at
+Let $r_b(\mathbf x,t)$ be the local normal recession speed at
 $\mathbf x\in S_b(t)$. Apply the same swept-volume argument to each
 surface patch $dA$, then sum over the burning surface:
 \begin{equation}\label{eq:sb-surface-mass}
  \frac{dm_{\mathrm{burned}}}{dt}
- =\rho_p\int_{S_b(t)}r(\mathbf x,t)\,dA.
+ =\rho_p\int_{S_b(t)}r_b(\mathbf x,t)\,dA.
 \end{equation}
-For uniform recession, $r$ can be taken outside the integral and
+For uniform recession, $r_b$ can be taken outside the integral and
 $\int_{S_b(t)}dA=A_b(t)$ recovers
 \eqref{eq:sb-mass-generation}. For nonuniform recession, the same product
 holds with the area-average
-$\bar r(t)=A_b(t)^{-1}\int_{S_b(t)}r(\mathbf x,t)\,dA$ when $A_b(t)>0$.
+$\bar r_b(t)=A_b(t)^{-1}\int_{S_b(t)}r_b(\mathbf x,t)\,dA$ when $A_b(t)>0$.
 If condensed products also enter the chamber, the consumed mass equals
 the \emph{total} admitted product mass; obtaining a gas-only generation
 rate then requires accounting for the separate phases.
@@ -139,14 +190,14 @@ density, area and recession speed, together with the stated mass-transfer
 assumptions. It is a geometric and mass-accounting identity.
 Dimensional analysis provides the independent check
 \[
- [\rho_p A_b r]
+ [\rho_p A_b r_b]
  =\frac{\mathrm{kg}}{\mathrm m^3}\,\mathrm m^2\,
    \frac{\mathrm m}{\mathrm s}
  =\frac{\mathrm{kg}}{\mathrm s}.
 \]
 Dimensions alone would permit a dimensionless multiplier; the
 swept-volume derivation fixes that multiplier to one. The identity
-does not predict $r$. A pressure-dependent burning-rate law supplies
+does not predict $r_b$. A pressure-dependent burning-rate law supplies
 additional physical information, as discussed in
 Section~\ref{sec:sb-time-pressure}.
 
@@ -155,8 +206,8 @@ Choose $m_{\mathrm{burned}}(t_0)=0$. Integrating
 \eqref{eq:sb-mass-generation} over the interval $[t_0,t]$ gives
 \begin{equation}\label{eq:sb-burned-mass-integral}
  m_{\mathrm{burned}}(t)
- =\int_{t_0}^{t}\dot m_g(\tau)\,d\tau
- =\rho_p\int_{t_0}^{t}A_b(\tau)r(\tau)\,d\tau.
+ =\int_{t_0}^{t}\dot m_g(s)\,ds
+ =\rho_p\int_{t_0}^{t}A_b(s)r_b(s)\,ds.
 \end{equation}
 For a nonzero initial tally, replace the left side by
 $m_{\mathrm{burned}}(t)-m_{\mathrm{burned}}(t_0)$.
@@ -192,9 +243,9 @@ with time and pressure, consistently with Sutton, p.~444, and
 Hill--Peterson, pp.~598--600 \cite{sutton,hillpeterson}. The instantaneous
 notation is explicitly
 \[
- A_b=A_b(t),\qquad r=r(t),\qquad p_c=p_c(t).
+ A_b=A_b(t),\qquad r_b=r_b(t),\qquad p_c=p_c(t).
 \]
-The notation $A_b=A_b(t,p_c)$ and $r=r(t,p_c)$ can be used as
+The notation $A_b=A_b(t,p_c)$ and $r_b=r_b(t,p_c)$ can be used as
 \emph{model shorthand}, evaluated at the gas chamber pressure $p_c(t)$
 and with any other state or history understood. Current time and
 pressure alone do not generally determine both quantities.
@@ -202,9 +253,9 @@ pressure alone do not generally determine both quantities.
 For the rigid grain with uniform regression used below, the more precise
 description is
 \begin{align}
- r(t)&=\mathcal R\bigl(p_c(t),T_b,\ldots\bigr),
+ r_b(t)&=\mathcal R\bigl(p_c(t),T_b,\ldots\bigr),
  \label{eq:sb-rate-dependence}\\
- y(t)&=y(t_0)+\int_{t_0}^{t}r(\tau)\,d\tau,
+ y(t)&=y(t_0)+\int_{t_0}^{t}r_b(s)\,ds,
  \label{eq:sb-web-history}\\
  A_b(t)&=\mathcal A\bigl(y(t)\bigr).
  \label{eq:sb-area-history}
@@ -217,7 +268,7 @@ function $\mathcal A(y)$. Substituting
 \eqref{eq:sb-area-history} makes the pressure-history dependence visible:
 \begin{equation}\label{eq:sb-area-pressure-history}
  A_b(t)=\mathcal A\left(
- y(t_0)+\int_{t_0}^{t}\mathcal R\bigl(p_c(\tau),T_b,\ldots\bigr)\,d\tau
+ y(t_0)+\int_{t_0}^{t}\mathcal R\bigl(p_c(s),T_b,\ldots\bigr)\,ds
  \right).
 \end{equation}
 Two grains with the same initial shape can have the same current pressure
@@ -235,13 +286,13 @@ fixed length $L$, with inhibited ends, the geometry gives
 \]
 until the burning surface reaches the outer boundary. This explicitly
 shows time dependence through recession. An end-burning grain of constant
-cross section can instead have constant $A_b$ while $r$ varies.
+cross section can instead have constant $A_b$ while $r_b$ varies.
 Substituting \eqref{eq:sb-area-history} into
 \eqref{eq:sb-mass-generation} yields the instantaneous rate
-$\dot m_g(t)=\rho_p\mathcal A(y(t))r(t)$.
+$\dot m_g(t)=\rho_p\mathcal A(y(t))r_b(t)$.
 There are no $dA_b/dt$ or $dr/dt$ terms in this expression: those arise
 only if we differentiate the \emph{rate} again. The geometric identity
-does not prescribe $\mathcal R$; $r=a(T_b)p_c^n$ below is an additional,
+does not prescribe $\mathcal R$; $r_b=a(T_b)p_c^n$ below is an additional,
 empirical constitutive assumption.
 
 \subsection{Related treatments in the propulsion and combustion texts}
@@ -269,7 +320,7 @@ a separate counterpart to Sutton's cumulative integral 12--2.
 Section~6.5, printed p.~332 / PDF p.~352, Eq.~(6.25)
 \cite{humble}, gives
 $\dot m_{\mathrm{in}}=\rho_p r_b A_b$ by recalling density times velocity
-times flow area. Here $r_b$ is our $r$. The same page explains increasing,
+times flow area. Humble's $r_b$ is also our symbol. The same page explains increasing,
 constant and decreasing burning areas using grain geometry.
 Section~6.5.1, printed pp.~335--336 / PDF pp.~355--356,
 Eq.~(6.31), integrates $r_b(t)$ to obtain web distance and explicitly
@@ -284,7 +335,7 @@ Section~4.6, printed p.~117 / downloaded PDF p.~134
 \cite{huzelhuang}, Eq.~(4--46), gives
 $\dot w_g=A_bR\rho$, using $R$ for linear burning rate and the book's
 \emph{weight flowrate} convention (lb/s, with density in lb/in.$^3$).
-For our SI mass balance we use $\dot m_g$, $r$, and
+For our SI mass balance we use $\dot m_g$, $r_b$, and
 $\rho_p$, respectively; a force-valued weight rate would instead be
 $g\dot m_g$. Equation~(4--45) specifies pressure dependence
 of $R$ at a given propellant temperature. The surrounding discussion
@@ -301,7 +352,7 @@ composition. Section~7.1, printed p.~232 / PDF p.~255 \cite{williams},
 defines the mass burning rate $m$ in $\mathrm{g}/(\mathrm{cm}^2\,\mathrm s)$
 in a frame attached to the planar burning interface. Thus his $m$ is a
 \emph{mass flux}, unlike Sutton's accumulated mass $m$. In our notation
-the translation is $m_{\mathrm{Williams}}=\rho_p r$, and integration over
+the translation is $m_{\mathrm{Williams}}=\rho_p r_b$, and integration over
 the surface gives \eqref{eq:sb-surface-mass}. Section~7.6,
 printed p.~250 / PDF p.~273, Eq.~(7--41), also discusses a
 pressure- and temperature-dependent mass-burning-rate expression.
@@ -316,7 +367,7 @@ defines species mass flux as flowrate per unit area.
 Chapter~14, printed p.~534 / PDF p.~553, Eqs.~(14.9)--(14.11),
 uses carbon-surface mass accounting and spherical area times flux.
 \emph{Assessment:} area times uniform flux is definitional; identifying
-the solid's flux with $\rho_p r$ uses the recession argument derived
+the solid's flux with $\rho_p r_b$ uses the recession argument derived
 above. This carbon-particle example is not a solid-rocket grain model:
 oxygen enters from outside, so outgoing carbon dioxide mass flow is
 not the carbon consumption rate. These passages are related
@@ -355,7 +406,7 @@ moves with the burning surface. Over $[t,t+\Delta t]$,
 \[
  m_c(t+\Delta t)-m_c(t)
  =\int_t^{t+\Delta t}
-   \bigl[\dot m_g(\tau)-\dot m_{\mathrm{out}}(\tau)\bigr]\,d\tau.
+   \bigl[\dot m_g(s)-\dot m_{\mathrm{out}}(s)\bigr]\,ds.
 \]
 Divide by $\Delta t$ and take $\Delta t\to0$. Rearranging the resulting
 rate equation gives
@@ -380,7 +431,7 @@ this to
 Substitute \eqref{eq:sb-mass-generation} and
 \eqref{eq:sb-chamber-mass} into \eqref{eq:sb-chamber-continuity}:
 \begin{equation}\label{eq:sb-chamber-product}
- \rho_p A_b(t)r(t)
+ \rho_p A_b(t)r_b(t)
  =\frac{d}{dt}\bigl[\rho_g(t)V_c(t)\bigr]+\dot m_{\mathrm{out}}(t).
 \end{equation}
 This mass balance does not require constant chamber temperature,
@@ -389,7 +440,7 @@ constant pressure, an ideal gas, or a choked outlet.
 \paragraph{Keeping an unspecified outlet, or $N$ pintle valves, general.}
 Before selecting an outlet-flow model, the relation remains
 \[
- \boxed{\rho_p A_b r
+ \boxed{\rho_p A_b r_b
  =\frac{d(\rho_gV_c)}{dt}+\dot m_{\mathrm{out}}.}
 \]
 For $N$ outlets on this same chamber, define the total outward rate by
@@ -442,7 +493,7 @@ derives the formula explicitly from $\dot m=\rho uA$, energy conservation,
 the equation of state and isentropy.
 
 \emph{Choked flow} means the throat is sonic:
-$M_t=u_t/a_{\mathrm{s},t}=1$, where $u_t$ is local velocity and
+$\mathfrak M_t=u_t/a_{\mathrm{s},t}=1$, where $u_t$ is local velocity and
 $a_{\mathrm{s},t}$ is local sound speed. At fixed upstream state and
 throat area, lowering downstream pressure further does not increase
 the mass flow while the flow remains choked. It does not mean
@@ -483,7 +534,7 @@ The notation $p_cA_t/c^*$ alone does not specify a chemistry model.
 Only under this nozzle specialization do we substitute into
 Eq.~\eqref{eq:sb-chamber-product} to obtain
 \begin{equation}\label{eq:sb-motor-mass-flow}
- \boxed{\rho_p A_b(t)r(t)
+ \boxed{\rho_p A_b(t)r_b(t)
  =\frac{d}{dt}\bigl[\rho_g(t)V_c(t)\bigr]
   +\frac{p_c(t)A_t(t)}{c^*(t)}.}
 \end{equation}
@@ -513,29 +564,29 @@ guarantee increasing gas mass if its density is falling sufficiently fast.
 For a rigid grain and case, with uniform normal recession and no other
 change of cavity volume, the swept-volume argument gives
 \begin{equation}\label{eq:sb-cavity-growth}
- \frac{dV_c}{dt}=A_b(t)r(t).
+ \frac{dV_c}{dt}=A_b(t)r_b(t).
 \end{equation}
 Substitute \eqref{eq:sb-cavity-growth} into
 \eqref{eq:sb-storage-product-rule}, and then into
 \eqref{eq:sb-chamber-product}:
 \begin{align}
- \rho_p A_b r
- &=V_c\frac{d\rho_g}{dt}+\rho_g A_b r+\dot m_{\mathrm{out}},\notag\\
+ \rho_p A_b r_b
+ &=V_c\frac{d\rho_g}{dt}+\rho_g A_b r_b+\dot m_{\mathrm{out}},\notag\\
  V_c\frac{d\rho_g}{dt}
- &=(\rho_p-\rho_g)A_b r-\dot m_{\mathrm{out}}.
+ &=(\rho_p-\rho_g)A_b r_b-\dot m_{\mathrm{out}}.
  \label{eq:sb-expanded-mass}
 \end{align}
 Time arguments have been suppressed only to shorten these two lines.
 The factor $\rho_p-\rho_g$ follows by subtracting the gas mass needed
 to fill the newly exposed volume at the current gas density. It is
 not a change to the solid-generation identity $\dot m_g
-=\rho_p A_b r$.
+=\rho_p A_b r_b$.
 
 \paragraph{Three masses that must remain distinct.}
 Integrating \eqref{eq:sb-chamber-continuity} from $t_0$ to $t$ gives
 \begin{equation}\label{eq:sb-integrated-chamber-mass}
  m_{\mathrm{burned}}(t)
- =m_c(t)-m_c(t_0)+\int_{t_0}^{t}\dot m_{\mathrm{out}}(\tau)\,d\tau,
+ =m_c(t)-m_c(t_0)+\int_{t_0}^{t}\dot m_{\mathrm{out}}(s)\,ds,
 \end{equation}
 where $m_{\mathrm{burned}}(t_0)=0$. Consumed propellant, the change in
 stored gas, and expelled mass are separate quantities.
@@ -563,7 +614,7 @@ chamber gas density & $\rho_g$ & $\rho_1$ & $\rho_0$ & $\rho_g$\\
 gas chamber (cavity) volume & $V_c$ & $V_1$ & $\mathcal V_0$ & $V$\\
 stored chamber gas mass & $m_c$ & $\rho_1V_1$ & $\mathcal M_s$ & $m$\\
 gas chamber pressure & $p_c$ & $p_1$ & $p_0$ & $p_c$\\
-recession speed & $r$ & $r$ & $r$ & $r_b$\\
+recession speed & $r_b$ & $r$ & $r$ & $r_b$\\
 throat area & $A_t$ & $A_t$ & $A^*$ & $A_t$\\
 surface generation rate & $\dot m_g$ & $\rho_b A_b r$
  & $\dot m_g$ & $\dot m_{\mathrm{in}}$\\
@@ -594,7 +645,7 @@ produces their Eq.~(12.27):
  &\quad+\frac{p_0 A^*}{\sqrt{RT_0}}\sqrt{\gamma}
  \left(\frac{2}{\gamma+1}\right)^{\frac{\gamma+1}{2(\gamma-1)}}.
 \end{align*}
-Their next step uses fixed $T_0$ and $R$ to replace
+Their next step uses fixed $T_0$ and $R$ (our $T_c$ and $R_s$) to replace
 $d\rho_0/dt$ by $(RT_0)^{-1}dp_0/dt$, giving Eq.~(12.28).
 Thus the conservation equation precedes the burning and nozzle closures.
 
@@ -616,9 +667,11 @@ Eqs.~(6.33)--(6.36), starts from
  &=\frac1{p_c}\frac{dp_c}{dt}+\frac1V\frac{dV}{dt},\\
  \frac{dV}{dt}&=r_bA_b.
 \end{align*}
-Here $\mathcal M$ is molecular mass, $\mathcal R_u$ is the universal gas
-constant, and our specific gas constant is $R=\mathcal R_u/\mathcal M$.
-The logarithmic derivative shown assumes fixed $T_c$ and $\mathcal M$.
+Humble's $\mathcal M$ is the molar mass in kg/kmol, $10^3N_0M$ in our
+notation, and his $\mathcal R_u=8314$~J/(kmol\,K) is $10^3R$. Hence
+$\mathcal R_u/\mathcal M=R/(N_0M)=k_B/M=R_s$, and his first line is
+$m_c=p_cV_c/(R_sT_c)$. His $T_c$ is our $T_c$. The logarithmic
+derivative shown assumes fixed $T_c$ and fixed gas composition.
 Solving for the pressure derivative and inserting the mass balance gives
 \begin{align*}
  \frac1{p_c}\frac{dp_c}{dt}
@@ -648,7 +701,7 @@ The first two substitutions define generation and inventory under the
 stated lumped assumptions. The third is the additional nozzle model
 needed to reproduce Sutton's specialized expression:
 \begin{align}
- \dot m_g&=\rho_p A_b r
+ \dot m_g&=\rho_p A_b r_b
  &&\text{surface recession, Eq.~\eqref{eq:sb-mass-generation}},
  \label{eq:sb-sutton-generation}\\
  \frac{dm_c}{dt}
@@ -670,18 +723,18 @@ For unspecified pintle outlets, keep $\dot m_{\mathrm{out}}$ and stop
 before the final substitution below:
 \begin{align*}
  \dot m_g&=\frac{dm_c}{dt}+\dot m_{\mathrm{out}}\\
- \rho_p A_b r&=\frac{dm_c}{dt}+\dot m_{\mathrm{out}}
+ \rho_p A_b r_b&=\frac{dm_c}{dt}+\dot m_{\mathrm{out}}
  &&\text{insert \eqref{eq:sb-sutton-generation}},\\
- \rho_p A_b r&=\frac{d(\rho_gV_c)}{dt}+\dot m_{\mathrm{out}}
+ \rho_p A_b r_b&=\frac{d(\rho_gV_c)}{dt}+\dot m_{\mathrm{out}}
  &&\text{insert \eqref{eq:sb-sutton-storage}},\\
- \rho_p A_b r&=\frac{d(\rho_gV_c)}{dt}+\frac{p_c A_t}{c^*}
+ \rho_p A_b r_b&=\frac{d(\rho_gV_c)}{dt}+\frac{p_c A_t}{c^*}
  &&\text{insert \eqref{eq:sb-sutton-outlet}}.
 \end{align*}
 The third line is the general chamber balance; the last line is its
 nozzle specialization, Eq.~\eqref{eq:sb-motor-mass-flow}, with the time
 arguments suppressed. For that nozzle model, written out explicitly, it is
 \[
- \rho_p A_b(t)r(t)
+ \rho_p A_b(t)r_b(t)
  =\frac{d}{dt}\bigl[\rho_g(t)V_c(t)\bigr]
   +\frac{p_c(t)A_t(t)}{c^*(t)}.
 \]
@@ -694,7 +747,8 @@ Sutton's symbols map to ours as follows:
  V_1\longleftrightarrow V_c,\qquad
  p_1\longleftrightarrow p_c.
 \]
-The symbols $A_b,r,A_t,c^*$ are unchanged. The two notations can
+The symbols $A_b,A_t,c^*$ are unchanged, and Sutton's $r$ is our
+$r_b$. The two notations can
 therefore be read side by side:
 \begin{center}
 \begin{tabular}{c@{\qquad}c}
@@ -702,7 +756,7 @@ Sutton, Eq.~12--3 & Our notation\\[6pt]
 $\displaystyle A_b r\rho_b
  =\frac{d(\rho_1V_1)}{dt}+\frac{A_t p_1}{c^*}$
 &
-$\displaystyle \rho_p A_b r
+$\displaystyle \rho_p A_b r_b
  =\frac{d(\rho_gV_c)}{dt}+\frac{p_c A_t}{c^*}$
 \end{tabular}
 \end{center}
@@ -711,16 +765,16 @@ In particular, the storage term expands mathematically as
  \frac{dm_c}{dt}
  =\frac{d(\rho_gV_c)}{dt}
  =V_c\frac{d\rho_g}{dt}+\rho_g\frac{dV_c}{dt}
- =V_c\frac{d\rho_g}{dt}+\rho_g A_b r,
+ =V_c\frac{d\rho_g}{dt}+\rho_g A_b r_b,
 \]
 where the last equality uses \eqref{eq:sb-cavity-growth}. Thus the
 same substitution chain also gives
 \[
 \begin{aligned}
- \rho_p A_b r
- &=V_c\frac{d\rho_g}{dt}+\rho_g A_b r+\frac{p_c A_t}{c^*},\\
+ \rho_p A_b r_b
+ &=V_c\frac{d\rho_g}{dt}+\rho_g A_b r_b+\frac{p_c A_t}{c^*},\\
  V_c\frac{d\rho_g}{dt}
- &=(\rho_p-\rho_g)A_b r-\frac{p_c A_t}{c^*}.
+ &=(\rho_p-\rho_g)A_b r_b-\frac{p_c A_t}{c^*}.
 \end{aligned}
 \]
 This shows explicitly which part of the generated mass changes gas
@@ -849,12 +903,12 @@ Using the product rule and the recession relation gives
  \frac{dm_c}{dt}
  &=\underbrace{V_c\frac{d\rho_g}{dt}}_{\text{density change}}
    +\underbrace{\rho_g\frac{dV_c}{dt}}_{\text{volume change}}
-   =V_c\frac{d\rho_g}{dt}+\rho_g A_b r,
+   =V_c\frac{d\rho_g}{dt}+\rho_g A_b r_b,
    \label{eq:sb-storage-two-terms}\\
  \frac{\rho_g\,dV_c/dt}{\dot m_g}
- &=\frac{\rho_g A_b r}{\rho_p A_b r}
+ &=\frac{\rho_g A_b r_b}{\rho_p A_b r_b}
    =\frac{\rho_g}{\rho_p}\ll1,
-   \qquad A_b r>0.
+   \qquad A_b r_b>0.
    \label{eq:sb-volume-storage-ratio}
 \end{align}
 The small density ratio controls the volume-change term only.
@@ -886,7 +940,7 @@ During active burning, $\dot m_g>0$, define
   \label{eq:sb-storage-test}\\
  \epsilon_\rho
  &\equiv\frac{V_c|d\rho_g/dt|}{\dot m_g},\qquad
- \epsilon_V\equiv\frac{\rho_g A_b r}{\dot m_g}
+ \epsilon_V\equiv\frac{\rho_g A_b r_b}{\dot m_g}
   =\frac{\rho_g}{\rho_p},\notag\\
  \epsilon_{\mathrm{store}}&\le\epsilon_\rho+\epsilon_V.\notag
 \end{align}
@@ -898,7 +952,7 @@ the outlet by drawing down the stored inventory.
 
 \paragraph{Eq.~12--4: negligible accumulation and a choked nozzle.}
 Here \emph{choked} means sonic flow at the controlling throat:
-$M_t=u_t/a_{\mathrm{s},t}=1$. With upstream pressure, temperature,
+$\mathfrak M_t=u_t/a_{\mathrm{s},t}=1$. With upstream pressure, temperature,
 composition and throat area fixed, lowering downstream pressure further
 does not increase mass flow while choking persists. Frozen chemistry,
 which holds composition fixed during transit, is a separate assumption
@@ -907,10 +961,10 @@ Start with the full instantaneous balance and rearrange:
 \begin{align}
  \dot m_g(t)
  &=\frac{dm_c}{dt}+\dot m_{\mathrm{out}}(t),\notag\\
- \rho_p A_b(t)r(t)
+ \rho_p A_b(t)r_b(t)
  &=\frac{dm_c}{dt}+\frac{p_c(t)A_t(t)}{c^*(t)},\notag\\
  p_c(t)
- &=K(t)\rho_p r(t)c^*(t)
+ &=K(t)\rho_p r_b(t)c^*(t)
    -\frac{c^*(t)}{A_t(t)}\frac{dm_c}{dt},
  \quad K(t)\equiv\frac{A_b(t)}{A_t(t)}.
  \label{eq:sb-pressure-with-storage}
@@ -933,18 +987,18 @@ Substituting both into the mass balance gives, step by step,
 \[
  \dot m_g\simeq\dot m_{\mathrm{out}}
  \quad\Longrightarrow\quad
- \rho_pA_br\simeq\frac{p_cA_t}{c^*}
+ \rho_pA_b r_b\simeq\frac{p_cA_t}{c^*}
  \quad\Longrightarrow\quad
- p_c\simeq\frac{A_b}{A_t}\rho_prc^*.
+ p_c\simeq\frac{A_b}{A_t}\rho_p r_bc^*.
 \]
 Thus
 \begin{equation}\label{eq:sb-sutton-quasisteady}
- \boxed{p_c(t)\simeq K(t)\rho_p r(t)c^*(t).}
+ \boxed{p_c(t)\simeq K(t)\rho_p r_b(t)c^*(t).}
 \end{equation}
 This is Sutton's Eq.~12--4 in our notation: a specialized approximation,
 not the general motor or valve-network balance. The approximation sign
 and time dependence are explicit. No step required $dA_t/dt=0$.
-It is generally an implicit relation because $r$ depends on $p_c$.
+It is generally an implicit relation because $r_b$ depends on $p_c$.
 If a burning law is supplied, the pressure given by this algebraic
 balance is a quasi-steady target, not automatically the transient
 pressure.
@@ -956,7 +1010,7 @@ constant $\rho_g$. Nevertheless, a burning grain increases $V_c$, so
  \frac{dp_c}{dt}=0
  \ \Longrightarrow\
  \frac{d\rho_g}{dt}=0,\qquad
- \frac{dm_c}{dt}=\rho_g A_b r>0.
+ \frac{dm_c}{dt}=\rho_g A_b r_b>0.
 \]
 Thus even constant-pressure burning has a small positive storage term
 when the cavity grows. Dropping it is an approximation justified by
@@ -1035,7 +1089,7 @@ Using Eq.~\eqref{eq:sb-nozzle-flow} for each outlet and summing gives
  \dot m_{\mathrm{out}}(t)
  &=\sum_{i=1}^{N}\frac{p_c(t)A_{t,i}(t)}{c^*(t)}
   =\frac{p_c(t)}{c^*(t)}A_{t,\Sigma}(t),\notag\\
- \rho_pA_b r
+ \rho_pA_b r_b
  &=\frac{dm_c}{dt}+\frac{p_cA_{t,\Sigma}}{c^*}.
  \label{eq:sb-multiple-choked-balance}
 \end{align}
@@ -1043,7 +1097,7 @@ This is our direct generalization of the single-nozzle balance.
 It retains accumulation and allows the individual areas to vary.
 Only with negligible accumulation does it reduce to
 \[
- p_c(t)\simeq K_\Sigma(t)\rho_p r(t)c^*(t).
+ p_c(t)\simeq K_\Sigma(t)\rho_p r_b(t)c^*(t).
 \]
 Thus a single nozzle is not essential, but common upstream conditions
 and compatible outlet laws are essential to this particular reduction.
@@ -1136,15 +1190,15 @@ which says that each unit of recession uncovers a slab of volume $A_b\,dy$.
 
 Assumptions:
 \begin{itemize}
-\item[B1] \emph{Lumped chamber.} $p_c$, $\rho_g$ and $T_0$ are uniform in the
+\item[B1] \emph{Lumped chamber.} $p_c$, $\rho_g$ and $T_c$ are uniform in the
 cavity. (Hill--Peterson's axial pressure drop, treated below, is the first
 correction.)
-\item[B2] \emph{Perfect gas with fixed $T_0$, $R$, $\gamma$.} Hence
-$\rho_g=p_c/(RT_0)$. Hill and Peterson justify fixing $T_0$: it ``is
+\item[B2] \emph{Perfect gas with fixed $T_c$, $R_s$, $\gamma$.} Hence
+$\rho_g=p_c/(R_sT_c)$. Hill and Peterson justify fixing it (their $T_0$): it ``is
 practically independent of changes in combustion pressure for typical solid
 propellants'' (p.~599).
 \item[B3] \emph{Optional nozzle model: choked, quasi-steady flow with area $A_t(t)>0$.}
-At the throat $M_t=1$ (choked flow); composition is unchanged during
+At the throat $\mathfrak M_t=1$ (choked flow); composition is unchanged during
 transit (frozen chemistry). For the ideal formula below the gas has
 constant heat capacities and accelerates adiabatically without friction
 to that throat. The nozzle adjusts sufficiently quickly for an instantaneous
@@ -1155,18 +1209,18 @@ range on p.~445 is not a bound on a pintle's commanded area variation.
 \item[B4] \emph{Saint-Robert (Vieille) burning law}, Sutton Eq.~12--5,
 Hill--Peterson Eq.~(12.25):
 \begin{equation}\label{eq:sb-burn-law}
- r\equiv\frac{dy}{dt}=a(T_b)\,p_c^n,\qquad a>0,\ n\ \text{constant}.
+ r_b\equiv\frac{dy}{dt}=a(T_b)\,p_c^n,\qquad a>0,\ n\ \text{constant}.
 \end{equation}
-No erosive burning: $r$ does not depend on the gas velocity over the surface.
+No erosive burning: $r_b$ does not depend on the gas velocity over the surface.
 \item[B5] $\rho_p$ constant.
 \end{itemize}
 
 \paragraph{Nozzle flow: deriving the optional outlet relation.}
 This paragraph uses B3 in addition to the chamber assumptions.
 For the elementary nozzle calculation take a single-phase gas with
-fixed composition, constant specific heat $c_p$, and constant $R$ and
+fixed composition, constant specific heat $c_p$, and constant $R_s$ and
 $\gamma>1$, with
-$c_p=\gamma R/(\gamma-1)$. Use adiabatic, frictionless,
+$c_p=\gamma R_s/(\gamma-1)$. Use adiabatic, frictionless,
 quasi-one-dimensional flow from the chamber to a sonic throat, with
 no shaft work. The quasi-steady approximation means this passage
 adjusts fast enough to apply the steady equations at each time;
@@ -1174,23 +1228,24 @@ it does not set $dm_c/dt$ to zero.
 
 Let $p_t,T_t,\rho_t,u_t$ be the local static pressure, temperature,
 density and velocity at the throat. The inlet stagnation quantities
-are $p_c,T_0$. In the notation of Section~\ref{topic:nozzle},
-$p_0\leftrightarrow p_c$ and $R_s\leftrightarrow R$.
+are $p_c,T_c$. In the notation of Section~\ref{topic:nozzle},
+$p_0\leftrightarrow p_c$ and $T_0\leftrightarrow T_c$; $R_s$ is
+the same symbol.
 For this gas the throat sound speed is
-$a_{\mathrm{s},t}=\sqrt{\gamma RT_t}$. Choking imposes
+$a_{\mathrm{s},t}=\sqrt{\gamma R_sT_t}$. Choking imposes
 \begin{equation}\label{eq:sb-sonic-throat}
- M_t=\frac{u_t}{a_{\mathrm{s},t}}=1,
- \qquad u_t=\sqrt{\gamma RT_t}.
+ \mathfrak M_t=\frac{u_t}{a_{\mathrm{s},t}}=1,
+ \qquad u_t=\sqrt{\gamma R_sT_t}.
 \end{equation}
 Now substitute this speed into the energy equation:
 \begin{align*}
- c_pT_0&=c_pT_t+\frac{u_t^2}{2}
-        =c_pT_t+\frac{\gamma RT_t}{2},\\
- T_0&=T_t\left(1+\frac{\gamma R}{2c_p}\right)
+ c_pT_c&=c_pT_t+\frac{u_t^2}{2}
+        =c_pT_t+\frac{\gamma R_sT_t}{2},\\
+ T_c&=T_t\left(1+\frac{\gamma R_s}{2c_p}\right)
      =T_t\frac{\gamma+1}{2},\\
- \frac{T_t}{T_0}&=\frac{2}{\gamma+1},\qquad
+ \frac{T_t}{T_c}&=\frac{2}{\gamma+1},\qquad
  \frac{p_t}{p_c}
- =\left(\frac{T_t}{T_0}\right)^{\gamma/(\gamma-1)}
+ =\left(\frac{T_t}{T_c}\right)^{\gamma/(\gamma-1)}
  =\left(\frac{2}{\gamma+1}\right)^{\gamma/(\gamma-1)}.
 \end{align*}
 The pressure relation is isentropic. Its ratio is the
@@ -1202,12 +1257,12 @@ Steady continuity across the throat and the ideal-gas law give
 \begin{align}
  \dot m_{\mathrm{out}}
  &=A_t\rho_tu_t
-  =A_t\frac{p_t}{RT_t}\sqrt{\gamma RT_t}
-  =A_t p_t\sqrt{\frac{\gamma}{RT_t}},\notag\\
- &=\frac{p_c A_t}{\sqrt{RT_0}}\sqrt{\gamma}
+  =A_t\frac{p_t}{R_sT_t}\sqrt{\gamma R_sT_t}
+  =A_t p_t\sqrt{\frac{\gamma}{R_sT_t}},\notag\\
+ &=\frac{p_c A_t}{\sqrt{R_sT_c}}\sqrt{\gamma}
    \left(\frac{2}{\gamma+1}\right)^{
                   \frac{\gamma}{\gamma-1}-\frac12},\notag\\
- &=\frac{p_c A_t}{\sqrt{RT_0}}\sqrt{\gamma}
+ &=\frac{p_c A_t}{\sqrt{R_sT_c}}\sqrt{\gamma}
    \left(\frac{2}{\gamma+1}\right)^{
                   \frac{\gamma+1}{2(\gamma-1)}}.
    \label{eq:sb-throat-mass-derivation}
@@ -1218,12 +1273,12 @@ $p_t$ and $1/\sqrt{T_t}$. Define
  \Gamma\equiv\sqrt{\gamma}
     \left(\frac{2}{\gamma+1}\right)^{\frac{\gamma+1}{2(\gamma-1)}},
  \qquad
- c^*\equiv\frac{\sqrt{RT_0}}{\Gamma}.
+ c^*\equiv\frac{\sqrt{R_sT_c}}{\Gamma}.
 \]
 Then, without suppressing the time-dependent throat area,
 \begin{equation}\label{eq:sb-nozzle-flow}
  \dot m_{\mathrm{out}}(t)=\frac{p_c(t)A_t(t)}{c^*},
- \qquad RT_0=(\Gamma c^*)^2 .
+ \qquad R_sT_c=(\Gamma c^*)^2 .
 \end{equation}
 This reproduces Hill--Peterson Eq.~(3.14) \cite{hillpeterson}
 and Sutton Eqs.~3--24 and 3--32 \cite{sutton}.
@@ -1234,7 +1289,7 @@ for a steady passage without species diffusion,
 $Y_j(x)=Y_j(x_{\mathrm{in}})$ for each species mass fraction $Y_j$.
 In a shifting-equilibrium model, composition instead adjusts to the
 local thermodynamic state as the gas expands. Neither assumption
-alone establishes $M_t=1$; sonic flow and chemistry must be specified
+alone establishes $\mathfrak M_t=1$; sonic flow and chemistry must be specified
 separately. A frozen mixture can still have temperature-dependent
 heat capacities, so the constant-$\gamma$ formula above is a further
 specialization. The algebraic definition of $c^*$ can also report a
@@ -1255,23 +1310,23 @@ in Section~\ref{sec:sb-mass-balance}:
  \frac{dm_c}{dt}
  &=V_c\frac{d\rho_g}{dt}+\rho_g\frac{dV_c}{dt}
   =\dot m_g-\dot m_{\mathrm{out}},\notag\\
- \frac{V_c}{RT_0}\frac{dp_c}{dt}
+ \frac{V_c}{R_sT_c}\frac{dp_c}{dt}
  &=\dot m_g-\dot m_{\mathrm{out}}
       -\rho_g\frac{dV_c}{dt},\notag\\
  \frac{dp_c}{dt}
- &=\frac{RT_0}{V_c}
+ &=\frac{R_sT_c}{V_c}
    \left(\dot m_g-\dot m_{\mathrm{out}}
                      -\rho_g\frac{dV_c}{dt}\right).
    \label{eq:sb-general-pressure-outlet}
 \end{align}
 For the present rigid grain, insert
-$\dot m_g=\rho_pA_br$ and $dV_c/dt=A_br$:
+$\dot m_g=\rho_pA_b r_b$ and $dV_c/dt=A_b r_b$:
 \[
  \frac{dp_c}{dt}
- =\frac{RT_0}{V_c}
-   \left[(\rho_p-\rho_g)A_br-\dot m_{\mathrm{out}}\right].
+ =\frac{R_sT_c}{V_c}
+   \left[(\rho_p-\rho_g)A_b r_b-\dot m_{\mathrm{out}}\right].
 \]
-These equations require fixed $T_0,R$ as in B2, but no nozzle
+These equations require fixed $T_c,R_s$ as in B2, but no nozzle
 assumption B3. If $N$ valves discharge directly from this chamber,
 substitute $\dot m_{\mathrm{out}}=\sum_i\dot m_{\mathrm{out},i}$ here.
 If they discharge from a receiving chamber, use that chamber's
@@ -1282,7 +1337,7 @@ Only for the choked nozzle just derived, substitute
 Eq.~\eqref{eq:sb-nozzle-flow} and the burning law
 Eq.~\eqref{eq:sb-burn-law} to obtain
 \begin{align}
- \frac{dp_c}{dt}&=\frac{RT_0}{V_c(y)}
+ \frac{dp_c}{dt}&=\frac{R_sT_c}{V_c(y)}
    \left[(\rho_p-\rho_g)A_b(y)\,a\,p_c^n-\frac{p_cA_t(t)}{c^*}\right],
    \label{eq:sb-pressure-ode}\\
  \frac{dy}{dt}&=a\,p_c^n .\label{eq:sb-web-ode}
@@ -1331,8 +1386,124 @@ $(0,\infty)$ onto itself, and raising both sides to the power $1/(1-n)$ gives
 \end{proof}
 Equation~\eqref{eq:sb-peq} is Sutton Eq.~12--6 solved for $p_1$, and
 Hill--Peterson Eq.~(12.29) with their $(\rho_p-\rho_0)$ reduced to
-$\rho_p$. Substituting $r=ap_c^n$ back into $Ka\rho_pc^*=p_c^{1-n}$ gives
-$p_c=K\rho_prc^*$, Sutton Eq.~12--4 in this frozen approximation.
+$\rho_p$. Substituting $r_b=ap_c^n$ back into $Ka\rho_pc^*=p_c^{1-n}$ gives
+$p_c=K\rho_p r_bc^*$, Sutton Eq.~12--4 in this frozen approximation.
+
+\paragraph{Huzel and Huang's gas-generator pressure, Eq.~(4--47).}
+Huzel and Huang, Section~4.6, printed p.~117 / downloaded PDF p.~134,
+give the burning correlation and generation rate as Eqs.~(4--45) and
+(4--46) \cite{huzelhuang}:
+\begin{align}
+ R_H&=k_1(T_b)\left(\frac{P_c}{P_{\mathrm{ref}}}\right)^n,
+ &P_{\mathrm{ref}}&=1000\ \mathrm{psia},
+ \label{eq:sb-huzel-burn}\\
+ \dot w_g&=\rho_H A_bR_H.
+ \label{eq:sb-huzel-generation}
+\end{align}
+The subscript $H$ distinguishes their recession speed $R_H$ from our
+\emph{specific gas constant} $R_s$; it also distinguishes their propellant
+weight density $\rho_H$ from our SI mass density $\rho_p$. Their printed
+symbol is simply $R$ or $\rho$, without the editorial subscript.
+The pressure ratio in \eqref{eq:sb-huzel-burn} is dimensionless:
+$k_1$ is the measured recession speed at $P_{\mathrm{ref}}$ and the
+specified grain temperature, not a universal propellant constant.
+At fixed $T_b$ and in consistent SI units our Eq.~\eqref{eq:sb-burn-law}
+has $a(T_b)=k_1(T_b)/P_{\mathrm{ref}}^n$.
+
+The notation needed for the two cited equations is:
+\begin{center}
+\begin{tabular}{lll}
+Huzel--Huang & Ours & Parallel notation\\ \hline
+$R_H$ & $r_b$ & Sutton, Hill--Peterson: $r$; Humble: $r_b$\\
+$P_c$ & $p_c$ & Sutton: $p_1$; Hill--Peterson: $p_0$\\
+$A_0$ & $A_t$ & Hill--Peterson: $A^*$; Humble: $A_t$\\
+$\rho_H$ & $\rho_p$ & Sutton: $\rho_b$; Humble: $\rho_p$\\
+$\dot w_g$ & $\dot m_g$ & Hill--Peterson: $\dot m_g$\\
+$k_1/P_{\mathrm{ref}}^n$ & $a(T_b)$ & Sutton, Hill--Peterson: $a$\\
+\end{tabular}
+\end{center}
+The first and fourth rows identify the same physical quantities after
+unit conversion. Huzel and Huang use $A_0$ for the \emph{outlet orifice},
+not for the burning area. Their $c^*$ is our $c^*$. Their $\dot w_g$ is
+a weight rate in lb/s, whereas our $\dot m_g$ is a mass rate in kg/s;
+their Eq.~(1--32) uses $g$ to convert between the two conventions.
+Williams' $m$ in Chapter~7 is a local burning \emph{flux}, not either
+total rate; Turns does not assign a solid-grain counterpart here.
+
+To recall Eq.~(1--32), begin with the sonic-throat calculation above,
+Eq.~\eqref{eq:sb-throat-mass-derivation}. Under B3 it gives
+\begin{align}
+ \dot m_{\mathrm{out}}
+ &=A_t\rho_tu_t
+  =\frac{p_cA_t}{\sqrt{R_sT_c}}\,
+    \underbrace{\sqrt{\gamma}
+      \left(\frac{2}{\gamma+1}\right)^{
+      \frac{\gamma+1}{2(\gamma-1)}}}_{\Gamma},
+ \notag\\
+ c^*&\equiv\frac{\sqrt{R_sT_c}}{\Gamma}
+  =\frac{p_cA_t}{\dot m_{\mathrm{out}}}.
+ \label{eq:sb-huzel-cstar-mass}
+\end{align}
+The first equality uses $u_t=\sqrt{\gamma R_sT_t}$, the ideal-gas law,
+$T_t/T_c=2/(\gamma+1)$ and the isentropic throat pressure ratio, all
+derived above. In Huzel and Huang's English weight-flow convention,
+$\dot W_{tc}=g\dot m_{tc}$ when $\dot m_{tc}$ is measured in slugs/s.
+Replacing the mass rate in \eqref{eq:sb-huzel-cstar-mass} by this weight
+rate gives their Eq.~(1--32), printed p.~13 / downloaded PDF p.~32:
+\begin{equation}\label{eq:sb-huzel-cstar-weight}
+ c^*=\frac{(p_c)_{ns}A_tg}{\dot W_{tc}}
+ \quad\Longleftrightarrow\quad
+ \dot W_{tc}=\frac{(p_c)_{ns}A_tg}{c^*}.
+\end{equation}
+Here $(p_c)_{ns}$ is the stagnation pressure at the nozzle inlet;
+identifying it with the gas-generator's $P_c$ neglects a pressure loss
+between that chamber and its sonic orifice. We have used SI mass flow
+in \eqref{eq:sb-nozzle-flow}, so its $g$ factor does not appear there.
+
+Now specialize Eq.~\eqref{eq:sb-huzel-cstar-weight} to a choked orifice
+of area $A_0$. For an equilibrium or a sufficiently slow quasi-steady
+change, neglect chamber accumulation in
+Eq.~\eqref{eq:sb-chamber-continuity}; only \emph{then} set generated
+weight flow equal to outlet weight flow. Substituting
+Eqs.~\eqref{eq:sb-huzel-burn} and \eqref{eq:sb-huzel-generation}
+one at a time gives
+\begin{align}
+ \dot w_g&=\dot W_{\mathrm{out}},\notag\\
+ \rho_HA_bR_H&=\frac{P_cA_0g}{c^*},\notag\\
+ \rho_HA_bk_1\left(\frac{P_c}{P_{\mathrm{ref}}}\right)^n
+   &=\frac{P_cA_0g}{c^*},\notag\\
+ P_c^{\,1-n}
+   &=\frac{\rho_Hk_1c^*}{gP_{\mathrm{ref}}^n}
+     \frac{A_b}{A_0}.
+ \label{eq:sb-huzel-pressure-power}
+\end{align}
+For $P_c>0$ and $n\ne1$, define the temperature-dependent constant
+\begin{equation}\label{eq:sb-huzel-k2}
+ k_2\equiv
+ \left(\frac{\rho_Hk_1c^*}{gP_{\mathrm{ref}}^n}\right)^{1/(1-n)}.
+\end{equation}
+Raising \eqref{eq:sb-huzel-pressure-power} to $1/(1-n)$ yields precisely
+their Eq.~(4--47):
+\begin{equation}\label{eq:sb-huzel-pressure}
+ \boxed{P_c=k_2\left(\frac{A_b}{A_0}\right)^{1/(1-n)}.}
+\end{equation}
+The units of $k_2$ are pressure, and $A_b/A_0$ is dimensionless.
+In our notation the same result is Eq.~\eqref{eq:sb-peq}, with
+$A_0\leftrightarrow A_t$ and $a=k_1/P_{\mathrm{ref}}^n$ after unit
+conversion. For $n=1$, the preceding equation either has no positive
+solution or permits every positive pressure at one special coefficient;
+division by $1-n$ would be invalid.
+
+Equation~\eqref{eq:sb-huzel-pressure} assumes a pressure-uniform chamber,
+one choked outlet with fixed effective area, negligible accumulation,
+and approximately fixed $k_1,n,\rho_H,c^*$ at the specified grain
+temperature. Choking removes downstream pressure from the ideal outlet
+flow law only while the critical pressure ratio is satisfied.
+Constant $A_b$ alone does not ensure constant flow during ignition,
+tail-off, or changes in orifice area, gas properties or grain
+temperature. The transient pressure instead obeys the balance in
+Eq.~\eqref{eq:sb-pressure-ode}; for a separate downstream plenum use
+Eq.~\eqref{eq:sb-two-chamber-mass}.
 
 When geometry or throat area varies, define the instantaneous target
 \begin{equation}\label{eq:sb-moving-target}
@@ -1353,8 +1524,8 @@ area into a single motor-nozzle equilibrium formula.
 
 \paragraph{The neglect of $\rho_g$.} With $p_c=7\ \mathrm{MPa}$,
 $c^*=1550\ \mathrm{m/s}$ and $\gamma=1.2$, one has $\Gamma=0.6485$ and
-$RT_0=(\Gamma c^*)^2=1.010\times10^6\ \mathrm{m^2/s^2}$, so
-$\rho_g=p_c/(RT_0)=6.93\ \mathrm{kg/m^3}$. Against $\rho_p=1800\ \mathrm{kg/m^3}$
+$R_sT_c=(\Gamma c^*)^2=1.010\times10^6\ \mathrm{m^2/s^2}$, so
+$\rho_g=p_c/(R_sT_c)=6.93\ \mathrm{kg/m^3}$. Against $\rho_p=1800\ \mathrm{kg/m^3}$
 the ratio is $3.8\times10^{-3}$: the correction to $p_{c,\mathrm{eq}}$ is
 a factor $(1-\rho_g/\rho_p)^{1/(1-n)}$, about $0.6\%$ at $n=0.35$. These inputs
 are illustrative, not a particular propellant.
@@ -1379,7 +1550,7 @@ p.~447, and we hold it fixed):
  \pi_K\equiv\left(\frac{\partial\ln p_{c,\mathrm{eq}}}{\partial T_b}\right)_K
  =\frac{1}{1-n}\frac{d\ln a}{dT_b}=\frac{\sigma_p}{1-n},
  \qquad
- \sigma_p\equiv\left(\frac{\partial\ln r}{\partial T_b}\right)_{p_c}=\frac{d\ln a}{dT_b}.
+ \sigma_p\equiv\left(\frac{\partial\ln r_b}{\partial T_b}\right)_{p_c}=\frac{d\ln a}{dT_b}.
 \]
 This is Sutton Eq.~12--14 and Hill--Peterson's $\Pi_p=\Pi_r/(1-n)$
 (p.~602). With $\sigma_p=0.002\ \mathrm{K^{-1}}$ and $n=0.35$,
@@ -1391,13 +1562,13 @@ $+20^\circ$C loses about $1-e^{-50\pi_K}\approx14\%$ of its chamber pressure.
 Under the hypotheses of Proposition~\ref{prop:sb-equilibrium}, with $y$
 (hence $A_b$ and $V_c$) and $A_t$ frozen, write
 $f(p_c)=\rho_pA_bap_c^n-p_cA_t/c^*$, so that
-$dp_c/dt=(RT_0/V_c)f(p_c)$.
+$dp_c/dt=(R_sT_c/V_c)f(p_c)$.
 \begin{enumerate}
 \item If $n<1$, every solution with $p_c(0)>0$ converges monotonically to
 $p_{c,\mathrm{eq}}$, and the linearization there decays at the rate
-$1/\tau$ with
+$1/t_{\mathrm{rel}}$ with
 \begin{equation}\label{eq:sb-tau}
- \tau=\frac{V_c c^*}{(1-n)RT_0A_t}=\frac{L^*}{(1-n)\,\Gamma^2c^*},
+ t_{\mathrm{rel}}=\frac{V_c c^*}{(1-n)R_sT_cA_t}=\frac{L^*}{(1-n)\,\Gamma^2c^*},
  \qquad L^*\equiv\frac{V_c}{A_t}.
 \end{equation}
 \item If $n>1$, $p_{c,\mathrm{eq}}$ is unstable: solutions starting below it
@@ -1426,9 +1597,9 @@ $p_{c,\mathrm{eq}}$:
 \]
 using $\rho_pA_bap_{c,\mathrm{eq}}^{n-1}=A_t/c^*$ again. With
 $\delta=p_c-p_{c,\mathrm{eq}}$, the linearization is
-$d\delta/dt=(RT_0/V_c)f'(p_{c,\mathrm{eq}})\,\delta=-\delta/\tau$ with the first
+$d\delta/dt=(R_sT_c/V_c)f'(p_{c,\mathrm{eq}})\,\delta=-\delta/t_{\mathrm{rel}}$ with the first
 form of \eqref{eq:sb-tau}. The second form substitutes
-$RT_0=(\Gamma c^*)^2$ from \eqref{eq:sb-nozzle-flow} and cancels one $c^*$.
+$R_sT_c=(\Gamma c^*)^2$ from \eqref{eq:sb-nozzle-flow} and cancels one $c^*$.
 \end{proof}
 This is the argument Hill and Peterson draw as Fig.~12.18 (p.~601) and Sutton
 states in one line on p.~446: $n<1$ for stability. The proposition adds the
@@ -1441,14 +1612,14 @@ $\delta(t)=p_c(t)-p_{c,\mathrm{eq}}(y(t),t)$.
 In the same small-$\rho_g/\rho_p$ model, local linearization gives
 \[
  \frac{d\delta}{dt}
- \simeq-\frac{\delta}{\tau(t)}
+ \simeq-\frac{\delta}{t_{\mathrm{rel}}(t)}
        -\frac{dp_{c,\mathrm{eq}}}{dt},\qquad
- \tau(t)=\frac{V_c(y(t))c^*}{(1-n)RT_0A_t(t)},\quad n<1.
+ t_{\mathrm{rel}}(t)=\frac{V_c(y(t))c^*}{(1-n)R_sT_cA_t(t)},\quad n<1.
 \]
 The extra forcing term is the motion of the equilibrium itself.
 Near the target, a useful local slow-change condition is
 \begin{equation}\label{eq:sb-tracking-condition}
- \tau(t)\left|\frac{d\ln p_{c,\mathrm{eq}}}{dt}\right|\ll1.
+ t_{\mathrm{rel}}(t)\left|\frac{d\ln p_{c,\mathrm{eq}}}{dt}\right|\ll1.
 \end{equation}
 The coefficients must also vary slowly over the local response time.
 This is a tracking estimate after transients have decayed, not a
@@ -1457,11 +1628,11 @@ Eq.~\eqref{eq:sb-storage-test} before discarding accumulation.
 
 For illustration, $L^*=20\ \mathrm m$, $n=0.35$, $\gamma=1.2$ and
 $c^*=1550\ \mathrm{m/s}$ give
-$\tau=20/(0.65\times0.4206\times1550)=0.047\ \mathrm s$.
+$t_{\mathrm{rel}}=20/(0.65\times0.4206\times1550)=0.047\ \mathrm s$.
 Changes much slower than this local response may admit a quasi-steady
 approximation under the other assumptions. A long total burn does
 not make a rapid valve movement quasi-steady. Since
-$\tau\propto L^*=V_c/A_t$, a larger $V_c/A_t$ lengthens the response
+$t_{\mathrm{rel}}\propto L^*=V_c/A_t$, a larger $V_c/A_t$ lengthens the response
 time; a smaller ratio shortens it when the other parameters are fixed.
 Ignition, tail-off, and changes on comparable or shorter time scales
 require retaining the transient balance and checking the applicable
@@ -1480,21 +1651,21 @@ is Hill--Peterson Eq.~(12.33), written in our notation as
 $-A\,dp_c=d(\dot m u)$. Integrate from the head
 end $x=0$, where $u=0$ and $p_c=p_h$, to $x$; with $A$ constant this gives
 $p_h-p_c=\dot mu/A$ (Eq.~12.35). Substitute $u=\dot m/(\rho_g A)$ and
-$\rho_g=p_c/(RT)$:
+$\rho_g=p_c/(R_sT)$:
 \[
- p_h-p_c=\frac{RT}{p_c}\left(\frac{\dot m}{A}\right)^2
+ p_h-p_c=\frac{R_sT}{p_c}\left(\frac{\dot m}{A}\right)^2
  \quad\Longrightarrow\quad
- p_c^2-p_h p_c+RT\left(\frac{\dot m}{A}\right)^2=0 .
+ p_c^2-p_h p_c+R_sT\left(\frac{\dot m}{A}\right)^2=0 .
 \]
-With uniform burning, $\dot m=c_pr\rho_px$. The root that reduces to $p_h$
+With uniform burning, $\dot m=c_p r_b\rho_px$. The root that reduces to $p_h$
 at $x=0$ is
 \begin{equation}\label{eq:sb-port}
- \frac{p_c}{p_h}=\frac12\left[1+\sqrt{1-4RT\left(\frac{c_pr\rho_px}{p_hA}\right)^2}\,\right],
+ \frac{p_c}{p_h}=\frac12\left[1+\sqrt{1-4R_sT\left(\frac{c_p r_b\rho_px}{p_hA}\right)^2}\,\right],
 \end{equation}
 Hill--Peterson Eq.~(12.37). The square root is real only while
-$\dot m/A\le p_h/(2\sqrt{RT})$. At equality $p_c=p_h/2$ and
-$u=\dot m/(\rho_g A)=\sqrt{RT}$, the isothermal sound speed: the port chokes
-in this model at $M=1/\sqrt\gamma$. That limit, together with erosive
+$\dot m/A\le p_h/(2\sqrt{R_sT})$. At equality $p_c=p_h/2$ and
+$u=\dot m/(\rho_g A)=\sqrt{R_sT}$, the isothermal sound speed: the port chokes
+in this model at $\mathfrak M=1/\sqrt\gamma$. That limit, together with erosive
 burning (Sutton Eq.~12--17; Hill--Peterson p.~603), is what forces a booster
 model beyond zero dimensions: a long, slender grain early in the burn has a
 high port Mach number, uneven recession along its length, and a head-end
@@ -1514,7 +1685,7 @@ burners, then in small ballistic evaluation motors, and finally in full-scale
 firings; strand rates run 4 to 12\% below full-scale, and the relation
 between the three ``must be determined empirically for each propellant
 category and grain configuration'' (p.~444). Hill and Peterson likewise call
-$r$ ``an empirically determined function'' (p.~598).
+$r_b$ ``an empirically determined function'' (p.~598).
 
 \paragraph{Why the chemistry is hard to carry.} Williams Chapter~7 is the
 theory. A homogeneous propellant deflagrates through a condensed-phase
@@ -1540,7 +1711,7 @@ three dimensions with reduced kinetics.
 \item The flame zone is micrometres to a fraction of a millimetre thick,
 against a motor metres long. No full-motor simulation resolves it.
 Full-motor CFD imposes the burning rate as a surface boundary condition,
-$r=r(p_c,\text{local flow},T_b)$, calibrated as above.
+$r_b=r_b(p_c,\text{local flow},T_b)$, calibrated as above.
 \end{enumerate}
 
 Aluminized propellants add a second, largely empirical layer: aluminium
@@ -1553,7 +1724,7 @@ models) \cite{turns} is the closest textbook analogue for a burning metal partic
 \paragraph{The fidelity ladder, solid versus liquid.}
 Ordered by what is resolved rather than assumed:
 \begin{enumerate}
-\item \emph{Equilibrium thermochemistry} for $T_0$, $\gamma$, $c^*$,
+\item \emph{Equilibrium thermochemistry} for $T_c$, $\gamma$, $c^*$,
 $C_F$, with frozen or shifting expansion (Sutton Chapter~5; the NASA CEA
 program \cite{CEA1994} is the standard reference implementation). Same for
 both.
