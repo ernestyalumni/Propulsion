@@ -48,7 +48,7 @@ The check report is `runge-kutta-verification.json` beside the built PDFs.
 
 Write a shared `topics/<id>.tex` with `\topic{<id>}{Title}`. State spaces,
 domains, regularity, conventions, units, initial/boundary data, approximation
-regime, derivation, and scope of evidence. Distinguish physical assumptions,
+regime and derivation. Distinguish physical assumptions,
 proofs, symbolic identities, finite numerical checks and experimental evidence.
 Use the shared bibliography for citations. Add the chapter to its companion(s)
 and the master; add registered source/PDF/code assets and resolvable book-section

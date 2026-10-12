@@ -26,6 +26,15 @@ on 2026-09-12 and will be refined with him.
   symbols, their roles, and the explicit map to our symbols. Keep the original
   notation long enough to make the comparison checkable. Name the point at
   which our notation takes over.
+- Write the mass ratio explicitly as `\frac{M_f}{M(0)}` in our
+  notation, or `\frac{m_f}{m_0}` when using Sutton's mass symbols.
+  Use `\frac{M(0)}{M_f}` for the reciprocal. Ernest prefers the
+  explicit fractions and rejects both `MR` and `r_m` as shorthand
+  (2026-10-07). Show the actual masses for stages and subsystem boxes;
+  keep `M(t)`, `M_f`, `m_p(t)` and
+  `\zeta = 1-\frac{M_f}{M(0)}`. Define each source author's convention
+  when translating it. Simplify reciprocal fractions and split long
+  displays at meaningful equalities so both PDF editions stay readable.
 - Prefer explicit partial-derivative fractions, including in prose:
   `\frac{\partial f^r}{\partial t}` and
   `\frac{\partial^2 f^r}{\partial t^2}`. Do not routinely replace them
@@ -97,7 +106,11 @@ on 2026-09-12 and will be refined with him.
   and how it follows from the previous one. Avoid rhetorical transitions,
   vague assurances, or extra generalizations without hypotheses.
 - Separate general proofs from symbolic examples, finite numerical checks,
-  and physical validation. Record the scope of any executable evidence.
+  and physical validation, at the point where each appears. Do not add
+  closing "Scope of what is claimed" sections, transcription-change logs or
+  other meta-commentary about the notes themselves; state assumptions where
+  they are used and keep the text on the physics and mathematics
+  (Ernest, 2026-10-06).
 - Preserve readable mathematics in both portrait and screen PDFs. Split long
   displays at meaningful equalities or terms, and add equation references
   where page breaks separate an argument. Do not hide overflow by shrinking

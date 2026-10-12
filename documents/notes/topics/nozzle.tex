@@ -13,28 +13,28 @@ and no shaft work. Fixed composition means the species fractions remain
 unchanged during passage (frozen chemistry); constant heat capacities
 are the additional calorically perfect approximation. Stagnation temperature
 $T_0$ and pressure $p_0$ are constant on the streamline. With specific gas
-constant $R_s>0$, $a^2=\gamma R_sT$, $M=u/a>0$, and
+constant $R_s>0$, $a^2=\gamma R_sT$, $\mathfrak M=u/a>0$, and
 $c_p=\gamma R_s/(\gamma-1)$, energy conservation gives
 \[
- c_pT+u^2/2=c_pT_0,\qquad T/T_0=[1+(\gamma-1)M^2/2]^{-1}.
+ c_pT+u^2/2=c_pT_0,\qquad T/T_0=[1+(\gamma-1)\mathfrak M^2/2]^{-1}.
 \]
 Isentropy gives $p/p_0=(T/T_0)^{\gamma/(\gamma-1)}$.
-Substitute into $\dot m=\rho uA=(p/R_sT)M\sqrt{\gamma R_sT}$:
+Substitute into $\dot m=\rho uA=(p/R_sT)\mathfrak M\sqrt{\gamma R_sT}$:
 \[
  \frac{\dot m}{A}=p_0\sqrt{\frac{\gamma}{R_sT_0}}\,
- M[1+(\gamma-1)M^2/2]^{-\frac{\gamma+1}{2(\gamma-1)}}.
+ \mathfrak M[1+(\gamma-1)\mathfrak M^2/2]^{-\frac{\gamma+1}{2(\gamma-1)}}.
 \]
-Taking the ratio with the sonic state $M=1$, defining its area as $A^*$,
+Taking the ratio with the sonic state $\mathfrak M=1$, defining its area as $A^*$,
 and holding the same mass flow yields
 \begin{equation}\label{eq:area-mach}
- \frac{A}{A^*}=\frac1M\left[\frac{2}{\gamma+1}
-    \left(1+\frac{\gamma-1}{2}M^2\right)\right]^{\frac{\gamma+1}{2(\gamma-1)}}.
+ \frac{A}{A^*}=\frac1{\mathfrak M}\left[\frac{2}{\gamma+1}
+    \left(1+\frac{\gamma-1}{2}\mathfrak M^2\right)\right]^{\frac{\gamma+1}{2(\gamma-1)}}.
 \end{equation}
 
 \subsection{Existence, branches and a worked solution}
 Logarithmic differentiation gives
 \[
- \frac{d}{dM}\log(A/A^*)=\frac{M^2-1}{M[1+(\gamma-1)M^2/2]}.
+ \frac{d}{d\mathfrak M}\log(A/A^*)=\frac{\mathfrak M^2-1}{\mathfrak M[1+(\gamma-1)\mathfrak M^2/2]}.
 \]
 The area function decreases on $(0,1)$, increases on $(1,\infty)$,
 diverges at either endpoint, and has minimum one at the sonic point.
@@ -42,13 +42,13 @@ Thus every area ratio greater than one admits one root on each branch;
 area ratio alone does not select the physical operating state.
 
 For $\gamma=7/5$, equation~\eqref{eq:area-mach} becomes
-$(M^2+5)^3/(216M)$; in particular $M=2$ gives $A/A^*=27/16$.
+$(\mathfrak M^2+5)^3/(216\mathfrak M)$; in particular $\mathfrak M=2$ gives $A/A^*=27/16$.
 The executable worked problem uses $A/A^*=2.5$ and brackets both branches.
 It checks the resulting roots against the independently evaluated normalized
 mass flux, with residual below $10^{-12}$. Sage verifies the sonic limit,
 the Mach-two rational value and the differentiated expression exactly.
 
-The derivative vanishes at $M=1$: inversion becomes poorly conditioned near
+The derivative vanishes at $\mathfrak M=1$: inversion becomes poorly conditioned near
 the sonic point. The implementation handles $A/A^*=1$ explicitly and rejects
 invalid domains and unknown branch names. Real nozzle selection also requires
 back pressure, boundary conditions, losses and possibly shocks; these have not
