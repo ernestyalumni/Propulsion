@@ -3,70 +3,53 @@
 Reading anchor: Sutton and Biblarz, ninth edition, Section 2.1, printed
 p.~26 / PDF p.~50 \cite{sutton}; Frankel, Overview Section O.f, ``Line
 Integrals'', printed p.~xxxix \cite{frankel}; Hill and Peterson, Sections 1.2
-and 7.2, printed pp.~4 and 277 \cite{hillpeterson}. The claim developed here is
-that force is naturally a covector, that impulse inherits that status, and that
-Sutton's Eqs.~2--1 through 2--6 are flat-space specialisations of the
-force--displacement pairing. That pairing needs no metric; unit directions,
-force magnitudes and conversion of a covector into a velocity vector do.
+and 7.2, printed pp.~4 and 277 \cite{hillpeterson}. Claim: force is naturally
+a covector, impulse inherits that status, and Sutton's Eqs.~2--1 through
+2--6 are flat-space specialisations of the force--displacement pairing. The
+pairing needs no metric. Unit directions, force magnitudes, and turning a
+covector into a velocity vector all do.
 
 \subsection{Work is a pairing, not a dot product}
-Let $M$ be a smooth manifold, the configuration space of the mechanical system.
-At each $x\in M$ the tangent space $T_xM$ holds velocities and the cotangent
-space $T^*_xM$ holds linear functionals on them. The evaluation
-$T^*_xM\times T_xM\to\R$, $(\alpha,v)\mapsto\alpha(v)$, is canonical: it is
-defined by the manifold structure alone and requires \emph{no} metric.
+Let $M$ be a smooth manifold, the configuration space of the mechanical
+system. At each $x\in M$ the tangent space $T_xM$ holds velocities and the
+cotangent space $T^*_xM$ holds linear functionals on them. The evaluation
+$T^*_xM\times T_xM\to\R$, $(\alpha,v)\mapsto\alpha(v)$, is defined by the
+manifold structure alone; it requires \emph{no} metric.
 
 A position-dependent force is specified by its pairing with displacements.
-For a curve
-$C:[a,b]\to M$ with $t\mapsto x(t)$,
+For a curve $C:[a,b]\to M$, $t\mapsto x(t)$,
 \[
  W=\int_C f=\int_a^b f\bigl(\dot x(t)\bigr)\,dt
   =\int_a^b f_k\bigl(x(t)\bigr)\frac{dx^k}{dt}\,dt ,
 \]
-which is the ordinary integral of the pullback $C^*f$ over $[a,b]$. The
-integrand is a $1$-form $f=f_k\,dx^k\in\Omega^1(M)$, and the value is
-independent of the parameterisation at fixed orientation. Frankel states the
-conclusion directly: the integrand of a line integral is naturally a $1$-form,
-not a vector, and the work integral ``does not require a metric''
-\cite[Section O.f]{frankel}.
+the integral of the pullback $C^*f$ over $[a,b]$. The integrand is a
+$1$-form $f=f_k\,dx^k\in\Omega^1(M)$, and $W$ is independent of the
+parameterisation at fixed orientation. Frankel: the integrand of a line
+integral is naturally a $1$-form, and the work integral ``does not require a
+metric'' \cite[Section O.f]{frankel}.
 
-The position-only hypothesis matters here. A general applied force may depend
-on velocity and time, $f(x,v,t)\in T_x^*M$. It is then a covector at $x$
-parametrised by $v,t$, rather than a single one-form on $M$. Its work along
-the actual motion is
+A force that also depends on velocity and time, $f(x,v,t)\in T_x^*M$, is a
+covector at $x$ parametrised by $(v,t)$, not a single one-form on $M$. Its
+work along the actual motion,
 \begin{equation}\label{Eq:VelocityDependentForceWork}
- W=\int_a^b f_k(x(t),\dot x(t),t)\dot x^k(t)\,dt.
+ W=\int_a^b f_k(x(t),\dot x(t),t)\dot x^k(t)\,dt,
 \end{equation}
-This quantity can change if the same geometric path is traversed at a
-different speed. For example, on a line with $f=-b\dot x\,dx$, $b>0$, traverse
-a distance $\ell>0$ uniformly in a time $\tau>0$. Then
-\[
- \dot x=\frac{\ell}{\tau},\qquad
- W=-b\int_0^\tau\left(\frac{\ell}{\tau}\right)^2dt
-   =-\frac{b\ell^2}{\tau}.
-\]
-Replacing $\tau$ by $2\tau$ halves the dissipated energy. This changes the
-physical timing of the motion; it is distinct from changing the integration
-variable while describing the same timed trajectory.
+depends on the timing. For example, the damper $f=-b\dot x\,dx$ traversing
+a length $\ell$ uniformly in time $\tau$ does work $W=-b\ell^2/\tau$.
 
-The familiar $W=\int\mathbf F\cdot d\mathbf r$ is therefore \emph{not} the
-primitive statement. It presupposes a metric $g$ (to form the dot product) and
-usually also Cartesian components (so that $g_{ij}=\delta_{ij}$ makes the
-distinction invisible). Both are extra structure, and both are available in the
-rocket problem --- which is precisely why the shortcut is safe there and unsafe
-elsewhere.
+The familiar $W=\int\mathbf F\cdot d\mathbf r$ presupposes a metric $g$, for
+the dot product, and usually Cartesian components, where $g_{ij}=\delta_{ij}$
+hides the distinction. The rocket problem has both, which is why the
+shortcut is safe there.
 
 \subsection{Why the index is down: the Legendre transform}
-The covector status of force is not a convention; it follows from the
-variational formulation. The fibre derivative and the variational principles
-below require no metric. The main calculation assumes $L=T(x,\dot x)-V(x)$;
-the later examples explain what changes when time or velocity dependence is
-allowed in the potential. A particular metric kinetic energy is chosen in the
-next subsection.
+The covector status of force follows from the variational formulation,
+which uses no metric. Here we take $L=T(x,\dot x)-V(x)$. The metric enters
+only when a particular $T$ is chosen, in the next subsection.
 
-For the general form of the Lagrangian that only depends upon $x,\dot{x}$, and
-assuming that $V=V(x)$ (i.e.\ potential $V$ has no dependency on $\dot{x}$),
-then
+For the general form of the Lagrangian that only depends upon $x,\dot{x}$,
+and assuming that $V=V(x)$ (i.e.\ potential $V$ has no dependency on
+$\dot{x}$), then
 \[
 L = L(x,\dot{x}) = T(x,\dot{x}) - V(x)
 \]
@@ -92,29 +75,10 @@ So
 
 \noindent where the last equality was obtained using
 Eq.~\ref{Eq:MomentumDefinitionFromLagrangian}, the definition of momentum
-$p_i$.
-
-\subsubsection*{Where the two terms in the time derivative come from}
-The quantity $\frac{\partial T}{\partial \dot x^i}$ is a function on $TM$: it has a slot
-for the point and a slot for the velocity,
-$(x,\dot x)\mapsto(\frac{\partial T}{\partial \dot x^i})(x,\dot x)$. Along a trajectory
-both slots move with $t$, so differentiating in $t$ is the chain rule in $2n$
-variables,
-\[
- \frac{d}{dt}\Bigl[\frac{\partial T}{\partial\dot x^i}
-   \bigl(x(t),\dot x(t)\bigr)\Bigr]
- =\frac{\partial}{\partial x^j}
-   \Bigl(\frac{\partial T}{\partial\dot x^i}\Bigr)\frac{dx^j}{dt}
- +\frac{\partial}{\partial\dot x^j}
-   \Bigl(\frac{\partial T}{\partial\dot x^i}\Bigr)\frac{d\dot x^j}{dt},
-\]
-and Eq.~\ref{Eq:LagrangianFormPart1} is what this becomes once $dx^j/dt=\dot
-x^j$ and $d\dot x^j/dt=\ddot x^j$ are substituted. The first term is present
-whenever $\frac{\partial T}{\partial \dot x^i}$ depends on position. For the later
-constant-mass example $T=\tfrac12m\delta_{ij}\dot x^i\dot x^j$ it vanishes
-in Cartesian coordinates; a general $T(x,\dot x)$ need not have this property.
-Nothing about the form of $T$ has been assumed here:
-Eq.~\ref{Eq:LagrangianFormPart1} is the chain rule and nothing else.
+$p_i$. The time derivative is the chain rule on $TM$: both slots of
+$\frac{\partial T}{\partial\dot x^i}(x,\dot x)$ move along the trajectory,
+with $dx^j/dt=\dot x^j$ and $d\dot x^j/dt=\ddot x^j$. The first term is
+present whenever $\frac{\partial T}{\partial\dot x^i}$ depends on position.
 
 If we consider the Euler--Lagrange equation, which could take the following
 forms:
@@ -126,20 +90,9 @@ forms:
   - \frac{\partial L }{ \partial x^k} = f_k
 \end{aligned}
 \]
-where $f_k$ is some external force (or forces) applied on the total system that
-has not been written into $L$ --- usually, though not necessarily,
-non-conservative, which is settled two headings below --- then from the
-Euler--Lagrange equation and Eqns.~\ref{Eq:LagrangianFormPart1},
-\ref{Eq:LagrangianFormPart2}, we get
-\[
-\begin{aligned}
-	& \dot{p}_k  -  \frac{\partial T}{ \partial x^k} - F_k = 0 \text{ or } \\
-	& \dot{p}_k  -  \frac{\partial T}{ \partial x^k} - F_k = f_k  \\
-\end{aligned}
-\]
-where $F_k := -\frac{\partial V}{\partial x^k}$ (i.e.\ the negative of the
-gradient of a conservative potential is a conservative force due to the
-potential). Written out, that substitution is
+where $f_k$ is some external force (or forces) applied on the total system
+that has not been written into $L$, then from the Euler--Lagrange equation
+and Eqns.~\ref{Eq:LagrangianFormPart1}, \ref{Eq:LagrangianFormPart2}, we get
 \[
 \begin{aligned}
  \frac{d}{dt}\frac{\partial L}{\partial\dot x^k}
@@ -149,12 +102,14 @@ potential). Written out, that substitution is
  &=\dot p_k-\frac{\partial T}{\partial x^k}
    +\frac{\partial V}{\partial x^k}
  &&\text{by Eq.~\ref{Eq:LagrangianFormPart2}}\\
- &=\dot p_k-\frac{\partial T}{\partial x^k}-F_k
- &&\text{by the definition of }F_k .
+ &=\dot p_k-\frac{\partial T}{\partial x^k}-F_k ,
 \end{aligned}
 \]
-We can combine the force due to the conservative potential and the
-``external'' force that's not necessarily conservative into one force term:
+where $F_k := -\frac{\partial V}{\partial x^k}$ (i.e.\ the negative of the
+gradient of a conservative potential is a conservative force due to the
+potential). We can combine the force due to the conservative potential and
+the ``external'' force that's not necessarily conservative into one force
+term:
 \[
 \mathfrak{F}_k \equiv f_k + F_k
 \]
@@ -163,16 +118,14 @@ so that
 	\dot{p}_k - \frac{\partial T}{ \partial x^k} = \mathfrak{F}_k
 \end{equation}
 
-Equation~\ref{Eq:EulerLagrangeEquationForm2} is the statement this section is
-about. The momentum $p_k=\frac{\partial L}{\partial \dot x^k}$ is the image of the
-fibre derivative $\mathbb FL:TM\to T^*M$, and $F_k=-\frac{\partial V}{\partial x^k}$
-are the components of $-dV$. Both are covectors at the configuration point.
-However, $\dot p_k$ and $\frac{\partial T}{\partial x^k}$ separately are generally
-\emph{not} covector components: $T$ depends on velocity as well as position.
-The Euler--Lagrange combination has the covector transformation law.
+The momentum $p_k=\frac{\partial L}{\partial\dot x^k}$ is the image of the
+fibre derivative $\mathbb FL:TM\to T^*M$, and
+$F_k=-\frac{\partial V}{\partial x^k}$ are the components of $-dV$. Both are
+covectors. But $\dot p_k$ and $\frac{\partial T}{\partial x^k}$ separately are
+generally \emph{not} covector components; only their difference is.
 
-To show the distinction, let $x=x(q)$ be a time-independent coordinate change,
-and define
+To see this, let $x=x(q)$ be a time-independent coordinate change, and
+define
 \begin{equation}\label{Eq:CoordinateJacobianForEL}
 \begin{gathered}
  A^i{}_a:=\frac{\partial x^i}{\partial q^a},\qquad
@@ -180,74 +133,49 @@ and define
  \widetilde L(q,\dot q):=L\bigl(x(q),A(q)\dot q\bigr).
 \end{gathered}
 \end{equation}
-The chain rule, with $q$ fixed when differentiating in $\dot q$, gives
+At fixed $q$, the chain rule gives
 \begin{equation}\label{Eq:MomentumCovectorTransformation}
  \widetilde p_a:=\frac{\partial\widetilde L}{\partial\dot q^a}
  =\frac{\partial L}{\partial\dot x^i}
    \frac{\partial\dot x^i}{\partial\dot q^a}
  =p_i A^i{}_a .
 \end{equation}
-For the position derivative, holding $\dot q$ fixed does not hold $\dot x$
-fixed: Eq.~\ref{Eq:CoordinateJacobianForEL} gives
-\[
- \frac{\partial\dot x^i}{\partial q^a}\Big|_{\dot q}
- =\frac{\partial}{\partial q^a}(A^i{}_b\dot q^b)
- =\frac{\partial A^i{}_b}{\partial q^a}\dot q^b.
-\]
-Differentiating Eq.~\ref{Eq:MomentumCovectorTransformation} in time, and
-the definition of $\widetilde L$ in $q$ at fixed $\dot q$, respectively,
+At fixed $\dot q$, however, $\dot x$ is not fixed:
+$\frac{\partial\dot x^i}{\partial q^a}\big|_{\dot q}
+=\frac{\partial A^i{}_b}{\partial q^a}\dot q^b$. Hence
 \begin{align}
  \frac{d\widetilde p_a}{dt}
- &=\frac{d}{dt}(p_iA^i{}_a)
- =A^i{}_a\dot p_i+p_i\frac{\partial A^i{}_a}{\partial q^b}\dot q^b,
+ &=A^i{}_a\dot p_i+p_i\frac{\partial A^i{}_a}{\partial q^b}\dot q^b,
  \label{Eq:MomentumDerivativeTransformation}\\
  \frac{\partial\widetilde L}{\partial q^a}
- &=\frac{\partial L}{\partial x^i}A^i{}_a
-   +\frac{\partial L}{\partial\dot x^i}
-     \frac{\partial\dot x^i}{\partial q^a}\Big|_{\dot q}\notag\\
  &=A^i{}_a\frac{\partial L}{\partial x^i}
    +p_i\frac{\partial A^i{}_b}{\partial q^a}\dot q^b.
  \label{Eq:PositionDerivativeTransformation}
 \end{align}
-Mixed partial derivatives of the smooth coordinate map commute:
-\[
- \frac{\partial A^i{}_a}{\partial q^b}
- =\frac{\partial^2x^i}{\partial q^b\partial q^a}
- =\frac{\partial^2x^i}{\partial q^a\partial q^b}
- =\frac{\partial A^i{}_b}{\partial q^a}.
-\]
-Subtracting Eq.~\ref{Eq:PositionDerivativeTransformation} from
-Eq.~\ref{Eq:MomentumDerivativeTransformation} therefore cancels the extra terms:
+Mixed partials of the coordinate map commute,
+$\frac{\partial A^i{}_a}{\partial q^b}
+=\frac{\partial^2x^i}{\partial q^b\partial q^a}
+=\frac{\partial A^i{}_b}{\partial q^a}$, so subtracting
+Eq.~\ref{Eq:PositionDerivativeTransformation} from
+Eq.~\ref{Eq:MomentumDerivativeTransformation} cancels the extra terms:
 \begin{equation}\label{Eq:ELCovectorTransformation}
-\begin{aligned}
  \frac{d\widetilde p_a}{dt}-\frac{\partial\widetilde L}{\partial q^a}
- &=A^i{}_a\left(\dot p_i-\frac{\partial L}{\partial x^i}\right)\\
- &\quad+p_i\left(\frac{\partial A^i{}_a}{\partial q^b}
-              -\frac{\partial A^i{}_b}{\partial q^a}\right)\dot q^b\\
- &=A^i{}_a\left(\dot p_i-\frac{\partial L}{\partial x^i}\right).
-\end{aligned}
+ =A^i{}_a\left(\dot p_i-\frac{\partial L}{\partial x^i}\right).
 \end{equation}
-This is the required covector law \cite[Section 2.2]{tongdynamics}.
-For $L=T-V(x)$, Eq.~\ref{Eq:LagrangianFormPart0} gives
-$p_i=\frac{\partial T}{\partial \dot x^i}$, so applying the same subtraction to $T$
-gives, explicitly,
+This is the covector law \cite[Section 2.2]{tongdynamics}. Each term
+separately picks up $p_i\frac{\partial A^i{}_a}{\partial q^b}\dot q^b$.
+For $L=T-V(x)$ the same holds with $T$ in place of $L$:
 \begin{equation}\label{Eq:KineticELCovectorTransformation}
  \frac{d\widetilde p_a}{dt}-\frac{\partial\widetilde T}{\partial q^a}
  =A^i{}_a\left(\dot p_i-\frac{\partial T}{\partial x^i}\right).
 \end{equation}
-Finally, $-dV$ requires no metric;
-the gradient of $V$ is $(dV)^\sharp$ and does require one.
+Note that $-dV$ requires no metric, while the gradient $(dV)^\sharp$ does.
 
-\subsubsection*{Why the right-hand side is zero almost every time you see it}
-The homogeneous form is what Hamilton's principle produces, and it is worth
-seeing the boundary term in order to know what the zero is claiming. Fix
-endpoints $x(t_0)=x_0$, $x(t_1)=x_1$, and let
-\[
- S[x]=\int_{t_0}^{t_1}L\bigl(x(t),\dot x(t)\bigr)\,dt .
-\]
-Vary the curve by $x_\varepsilon^k(t)=x^k(t)+\varepsilon\eta^k(t)$ with
-$\eta^k(t_0)=\eta^k(t_1)=0$, so the varied curve still joins the same two
-endpoints. Then
+\subsubsection*{The homogeneous form, and the forced form}
+Fix endpoints $x(t_0)=x_0$, $x(t_1)=x_1$, let
+$S[x]=\int_{t_0}^{t_1}L(x,\dot x)\,dt$, and vary
+$x_\varepsilon^k=x^k+\varepsilon\eta^k$ with $\eta(t_0)=\eta(t_1)=0$.
+Integrating the $\dot\eta$ term by parts,
 \[
 \begin{aligned}
  \frac{d}{d\varepsilon}\Big|_{\varepsilon=0}S[x_\varepsilon]
@@ -255,114 +183,58 @@ endpoints. Then
    +\frac{\partial L}{\partial\dot x^k}\dot\eta^k\Bigr)dt\\
  &=\Bigl[\frac{\partial L}{\partial\dot x^k}\eta^k\Bigr]_{t_0}^{t_1}
    -\int_{t_0}^{t_1}\Bigl(\frac{d}{dt}\frac{\partial L}{\partial\dot x^k}
-   -\frac{\partial L}{\partial x^k}\Bigr)\eta^k\,dt ,
+   -\frac{\partial L}{\partial x^k}\Bigr)\eta^k\,dt .
 \end{aligned}
 \]
-the second line by integrating the $\dot\eta^k$ term by parts, and the bracket
-vanishes because $\eta$ was required to vanish at both endpoints. Stationarity
-means what is left vanishes for \emph{every} admissible $\eta$, and the
-fundamental lemma of the calculus of variations then forces the integrand's
-bracket to vanish at every $t$:
+The bracket vanishes at the fixed endpoints. Stationarity for every $\eta$
+and the fundamental lemma give
 \begin{equation}\label{Eq:EulerLagrangeHomogeneous}
  \frac{d}{dt}\frac{\partial L}{\partial\dot x^k}
    -\frac{\partial L}{\partial x^k}=0 .
 \end{equation}
-Three consequences, together, explain the ubiquity of that zero.
+The zero does not say ``no force''. It says no covector is left over once
+everything has been put into $L$: a body falling under gravity carries its
+force in $V$. The two ways of carrying a potential force give the same
+equation. With $L_1=T$ and right side $-\frac{\partial V}{\partial x^k}$,
+or with $L_2=T-V$ and right side $0$, expanding the second
+(with $\frac{\partial V}{\partial\dot x^k}=0$) gives the first rearranged. So
+the split $\mathfrak F_k=f_k+F_k$ is the modeller's bookkeeping; only the
+total is fixed by the problem.
 
-\begin{description}\itemsep3pt
-\item[The zero does not say ``no force''.] The bracket in
-  Eq.~\ref{Eq:EulerLagrangeHomogeneous} is a covector, and its integral
-  against an arbitrary variation $\eta$ is (minus) the first variation. Setting
-  it to zero says there is no \emph{left-over} covector once everything has
-  been accounted for inside $L$. A body falling under gravity has its force
-  inside $V$, and its Euler--Lagrange equation still reads $=0$.
-\item[Anything with a potential can be moved to the left.] The two ways of
-  carrying a potential force give the same equation:
-  \[
-  \begin{aligned}
-   \text{(i)}\ \ L_1&=T,\ \text{right side }F_k:
-     &&\frac{d}{dt}\frac{\partial T}{\partial\dot x^k}
-       -\frac{\partial T}{\partial x^k}=-\frac{\partial V}{\partial x^k},\\
-   \text{(ii)}\ \ L_2&=T-V,\ \text{right side }0:
-     &&\frac{d}{dt}\frac{\partial(T-V)}{\partial\dot x^k}
-       -\frac{\partial(T-V)}{\partial x^k}=0 .
-  \end{aligned}
-  \]
-  Expanding (ii) with $\frac{\partial V}{\partial \dot x^k}=0$ gives
-  $\dot p_k-\frac{\partial T}{\partial x^k}+\frac{\partial V}{\partial x^k}=0$, which is (i)
-  rearranged. So the split $\mathfrak F_k=f_k+F_k$ is bookkeeping, chosen by
-  the modeller; only the total $\mathfrak F_k$ is fixed by the problem. The
-  standard convention is to push everything that admits a potential into $L$,
-  which empties the right-hand side for exactly the systems textbooks like to
-  choose.
-\item[The homogeneous form gives the usual conservation laws.] Noether's
-  theorem relates symmetries of the action to conserved quantities of its
-  Euler--Lagrange flow. For a regular $L$ (nonsingular velocity Hessian), the
-  Legendre map also gives a local Hamiltonian formulation. Adding a force
-  does not remove that map or the canonical symplectic form on $T^*M$;
-  whether the forced flow preserves the form or a particular momentum must
-  be checked from the force, as the balance below illustrates.
-\end{description}
-
-For forces kept outside the chosen $L$, stationarity of $S[x]$ alone does
-not give the forced equation. The Lagrange--d'Alembert principle instead asks
-that the variation of this action plus the virtual work of those forces vanish:
+For forces kept outside $L$, the Lagrange--d'Alembert principle adds their
+virtual work to the first variation:
 \[
  \int_{t_0}^{t_1}\Bigl(\frac{\partial L}{\partial x^k}\eta^k
   +\frac{\partial L}{\partial\dot x^k}\dot\eta^k
   +f_k\eta^k\Bigr)dt=0
  \quad\text{for all }\eta\text{ with }\eta(t_0)=\eta(t_1)=0 .
 \]
-Integrating by parts and using the endpoint conditions gives explicitly
-\[
-\begin{aligned}
- 0&=[p_k\eta^k]_{t_0}^{t_1}
-   +\int_{t_0}^{t_1}\left(\frac{\partial L}{\partial x^k}
-        -\dot p_k+f_k\right)\eta^k\,dt\\
-  &=\int_{t_0}^{t_1}
- \left(\frac{\partial L}{\partial x^k}-\frac{d}{dt}
- \frac{\partial L}{\partial\dot x^k}+f_k\right)\eta^k\,dt .
-\end{aligned}
-\]
-Since the variations are arbitrary, the fundamental lemma yields
+The same integration by parts gives
+$\int_{t_0}^{t_1}\bigl(\frac{\partial L}{\partial x^k}-\dot p_k+f_k\bigr)
+\eta^k\,dt=0$, hence
 \begin{equation}\label{Eq:EulerLagrangeForced}
  \frac{d}{dt}\frac{\partial L}{\partial\dot x^k}
  -\frac{\partial L}{\partial x^k}=f_k .
 \end{equation}
-The term $f_k\eta^k$ is virtual work: a
-covector paired with a displacement, the same pairing as in the first
-subsection, with no metric used anywhere. That is the second and independent
-reason the index on $f$ is down --- $f$ is \emph{defined} by what it does to a
-virtual displacement.
-
-It is also what fixes how a generalised force transforms. If the system is a
-collection of particles carrying ambient force components $F^{(a)}_i$ at
-positions $r_{(a)}(q)$, and $q^k$ are any configuration coordinates, then
+The term $f_k\eta^k$ is virtual work, a covector paired with a displacement.
+This is the second, independent reason the index on $f$ is down: $f$ is
+\emph{defined} by what it does to a virtual displacement. It also fixes how
+a generalised force transforms. For particles with ambient force components
+$F^{(a)}_i$ at positions $r_{(a)}(q)$,
 \[
  \delta W=\sum_a F^{(a)}_i\,\delta r^i_{(a)}
   =\sum_a F^{(a)}_i\frac{\partial r^i_{(a)}}{\partial q^k}\,\delta q^k
   =:Q_k\,\delta q^k ,
- \qquad
- Q_k=\sum_a F^{(a)}_i\frac{\partial r^i_{(a)}}{\partial q^k},
 \]
-and $\frac{\partial r^i}{\partial q^k}$ is precisely the Jacobian appearing in the
-transformation law of a covector. A torque showing up as the $\theta$ slot of a
-force covector, carrying an extra factor of $r$, is this formula and nothing
-more.
+and $\frac{\partial r^i}{\partial q^k}$ is the Jacobian of the covector law.
+A torque appearing as the $\theta$ slot of a force covector, with an extra
+factor of $r$, is this formula.
 
-The force also determines an energy balance. Define $E:=p_k\dot x^k-L$.
-If $T$ is homogeneous of degree two in velocity, then for a scale factor
-$\lambda$,
-\[
-\begin{aligned}
- T(x,\lambda\dot x)&=\lambda^2T(x,\dot x),\\
- \frac{\partial T}{\partial\dot x^k}\dot x^k
- &=\left.\frac{d}{d\lambda}T(x,\lambda\dot x)\right|_{\lambda=1}
- =\left.2\lambda T(x,\dot x)\right|_{\lambda=1}=2T.
-\end{aligned}
-\]
-For $V=V(x)$, Eq.~\ref{Eq:LagrangianFormPart0} therefore gives
-$E=2T-(T-V)=T+V$. Along any solution,
+\paragraph{Energy.} Define $E:=p_k\dot x^k-L$. If $T$ is homogeneous of
+degree two in velocity, $T(x,\lambda\dot x)=\lambda^2T(x,\dot x)$, then
+differentiating at $\lambda=1$ gives
+$\frac{\partial T}{\partial\dot x^k}\dot x^k=2T$, so $E=2T-(T-V)=T+V$.
+Along any solution,
 \[
 \begin{aligned}
  \frac{dE}{dt}
@@ -372,440 +244,158 @@ $E=2T-(T-V)=T+V$. Along any solution,
    -\frac{\partial L}{\partial\dot x^k}\ddot x^k\\
  &=\Bigl(\frac{d}{dt}\frac{\partial L}{\partial\dot x^k}
    -\frac{\partial L}{\partial x^k}\Bigr)\dot x^k
-  =f_k\dot x^k=f(\dot x) .
+  =f_k\dot x^k .
 \end{aligned}
 \]
-For the time-independent $L$ used here, the homogeneous form conserves $E$.
-In the forced form, $f_k\dot x^k$ is the power supplied by the additional force;
-it may be positive, negative, or zero. In particular, $f\ne0$ does not imply
-$dE/dt\ne0$.
+The power $f_k\dot x^k$ may be zero even when $f\ne0$.
 
-A symmetry can also retain its conserved momentum in a forced system. For
-example, consider a time-independent infinitesimal transformation
-$x_\varepsilon^k=x^k+\varepsilon\xi^k(x)+O(\varepsilon^2)$. Its induced
-velocity variation is
-\[
- \left.\frac{\partial\dot x_\varepsilon^k}{\partial\varepsilon}
- \right|_{\varepsilon=0}
- =\frac{d}{dt}\xi^k(x(t))
- =\frac{\partial\xi^k}{\partial x^j}\dot x^j.
-\]
-Strict invariance means that the first-order change of $L$ vanishes:
+\paragraph{Momentum.} Let $x_\varepsilon^k=x^k+\varepsilon\xi^k(x)
++O(\varepsilon^2)$ be a time-independent transformation, with induced
+velocity variation $\frac{\partial\xi^k}{\partial x^j}\dot x^j$. Strict
+invariance of $L$ means
 \begin{equation}\label{Eq:StrictSymmetryCondition}
- 0=\left.\frac{\partial}{\partial\varepsilon}
- L(x_\varepsilon,\dot x_\varepsilon)\right|_{\varepsilon=0}
- =\frac{\partial L}{\partial x^k}\xi^k
+ 0=\frac{\partial L}{\partial x^k}\xi^k
    +p_k\frac{\partial\xi^k}{\partial x^j}\dot x^j .
 \end{equation}
-Using Eq.~\ref{Eq:EulerLagrangeForced}, then
-Eq.~\ref{Eq:StrictSymmetryCondition}, gives the momentum balance
+Then, by Eq.~\ref{Eq:EulerLagrangeForced} and
+Eq.~\ref{Eq:StrictSymmetryCondition},
 \begin{equation}\label{Eq:ForcedSymmetryBalance}
 \begin{aligned}
  \frac{d}{dt}(p_k\xi^k)
  &=\dot p_k\xi^k+p_k\frac{\partial\xi^k}{\partial x^j}\dot x^j\\
- &=\left(\frac{\partial L}{\partial x^k}+f_k\right)\xi^k
-   +p_k\frac{\partial\xi^k}{\partial x^j}\dot x^j\\
- &=\underbrace{\left(\frac{\partial L}{\partial x^k}\xi^k
-     +p_k\frac{\partial\xi^k}{\partial x^j}\dot x^j\right)}_{0\text{ by Eq.~\ref{Eq:StrictSymmetryCondition}}}
-     +f_k\xi^k
+ &=\Bigl(\frac{\partial L}{\partial x^k}+f_k\Bigr)\xi^k
+   +p_k\frac{\partial\xi^k}{\partial x^j}\dot x^j
  =f_k\xi^k .
 \end{aligned}
 \end{equation}
-Thus $p_k\xi^k$ is conserved when the force has zero pairing with this symmetry
-along the solution. This is the strict configuration-symmetry case of the
-forced Noether balance \cite{deleonforced}; no assertion that every forced
-system has a nontrivial conserved momentum is needed.
+So $p_k\xi^k$ is conserved when the force has zero pairing with the symmetry
+\cite{deleonforced}.
 
-\subsubsection*{What forcing changes in the symplectic calculation}
-The distinction between a symplectic form and its preservation can also be
-checked directly. For a regular $L$, solve $p_i=\frac{\partial L}{\partial \dot x^i}$
-locally for $\dot x=v(x,p,t)$ and define
+\paragraph{Symplectic form.} For a regular $L$ (nonsingular velocity
+Hessian $\frac{\partial^2L}{\partial\dot x^i\partial\dot x^j}$), solve
+$p_i=\frac{\partial L}{\partial\dot x^i}$ locally for $\dot x=v(x,p,t)$ and set
 \begin{equation}\label{Eq:LocalHamiltonianDefinition}
  H(x,p,t):=p_iv^i-L(x,v,t).
 \end{equation}
-Here regularity means the velocity Hessian
-$\frac{\partial^2L}{\partial\dot x^i\,\partial\dot x^j}$ is nonsingular; it is the
-hypothesis that allows this local inverse. In the following exterior
-derivatives, $t$ is held fixed. Differentiating
-Eq.~\ref{Eq:LocalHamiltonianDefinition} gives
-\[
-\begin{aligned}
- dH&=v^i\,dp_i+p_i\,dv^i
-     -\frac{\partial L}{\partial x^i}\,dx^i
-     -\frac{\partial L}{\partial v^i}\,dv^i\\
-   &=v^i\,dp_i-\frac{\partial L}{\partial x^i}\,dx^i,
-   \qquad p_i=\frac{\partial L}{\partial v^i}.
-\end{aligned}
-\]
-Matching coefficients and using Eq.~\ref{Eq:EulerLagrangeForced},
+At fixed $t$, $dH=v^i\,dp_i-\frac{\partial L}{\partial x^i}\,dx^i$, since the
+$dv^i$ terms cancel by $p_i=\frac{\partial L}{\partial v^i}$. With
+Eq.~\ref{Eq:EulerLagrangeForced},
 \begin{equation}\label{Eq:ForcedHamiltonEquations}
  \dot x^i=\frac{\partial H}{\partial p_i},\qquad
- \dot p_i=\frac{\partial L}{\partial x^i}+f_i
-         =-\frac{\partial H}{\partial x^i}+f_i.
+ \dot p_i=-\frac{\partial H}{\partial x^i}+f_i .
 \end{equation}
-The force is now evaluated at $(x,v(x,p,t),t)$. On $T^*M$, define the
-canonical one-form $\vartheta=p_i\,dx^i$ and its symplectic form
-\begin{equation}\label{Eq:CanonicalSymplecticForm}
- \omega=-d\vartheta=-dp_i\wedge dx^i=dx^i\wedge dp_i,
- \qquad d\omega=-d^2\vartheta=0.
-\end{equation}
-These definitions do not involve $f$. The time-dependent vector field of
-Eq.~\ref{Eq:ForcedHamiltonEquations} is
-\[
- X=\frac{\partial H}{\partial p_i}\frac{\partial}{\partial x^i}
-   +\left(-\frac{\partial H}{\partial x^i}+f_i\right)
-     \frac{\partial}{\partial p_i}.
-\]
-The contraction $\iota_X\omega$ means inserting $X$ into the first slot of
-$\omega$. Using
-$\iota_X(dx^i\wedge dp_i)=X(x^i)\,dp_i-X(p_i)\,dx^i$, we obtain
-\[
-\begin{aligned}
- \iota_X\omega
- &=\frac{\partial H}{\partial p_i}\,dp_i
-   -\left(-\frac{\partial H}{\partial x^i}+f_i\right)dx^i\\
- &=dH-f_i\,dx^i.
-\end{aligned}
-\]
-Cartan's formula gives the change of a differential form along the flow:
-$\mathcal L_X\omega=d(\iota_X\omega)+\iota_X(d\omega)$. Thus
+Let $\omega=dx^i\wedge dp_i$, the canonical form on $T^*M$; its definition
+does not involve $f$. For the vector field $X$ of
+Eq.~\ref{Eq:ForcedHamiltonEquations},
+$\iota_X\omega=X(x^i)\,dp_i-X(p_i)\,dx^i=dH-f_i\,dx^i$. Cartan's formula,
+with $d\omega=0$, then gives
 \begin{equation}\label{Eq:ForcedSymplecticBalance}
-\begin{aligned}
- \mathcal L_X\omega
- &=d(dH-f_i\,dx^i)+\iota_X(0)\\
- &=-d(f_i\,dx^i)\\
- &=-\frac{\partial f_i}{\partial x^j}\,dx^j\wedge dx^i
-   -\frac{\partial f_i}{\partial p_j}\,dp_j\wedge dx^i.
-\end{aligned}
+ \mathcal L_X\omega=d(\iota_X\omega)=-d(f_i\,dx^i).
 \end{equation}
-If $\Phi_{t,t_0}$ is the flow map carrying initial phase points at $t_0$ to
-their values at $t$, differentiation of the pulled-back form gives
-\[
- \frac{d}{dt}\Phi_{t,t_0}^*\omega
-   =\Phi_{t,t_0}^*(\mathcal L_{X(t)}\omega).
-\]
-Thus $\mathcal L_{X(t)}\omega=0$ at every time implies
-$\Phi_{t,t_0}^*\omega=\Phi_{t_0,t_0}^*\omega=\omega$.
-A general force need not satisfy this preservation condition. The form
-itself still exists in either case.
-
-For an explicit example, keep a spring force on the right in one dimension:
-$L=\tfrac12m\dot x^2$, $p=m\dot x$, $f=-\kappa x$, with $m,\kappa>0$.
-Then $H=p^2/(2m)$ and Eq.~\ref{Eq:ForcedHamiltonEquations} reads
-\[
- \dot x=\frac{p}{m},\qquad \dot p=-\kappa x.
-\]
-Equation~\ref{Eq:ForcedSymplecticBalance} gives
-$\mathcal L_X\omega=-d(-\kappa x\,dx)=\kappa\,dx\wedge dx=0$.
-Moreover, define $H_{\rm total}=p^2/(2m)+\kappa x^2/2$. Its derivative is
-\[
- \frac{dH_{\rm total}}{dt}
- =\frac{p}{m}\dot p+\kappa x\dot x
- =\frac{p}{m}(-\kappa x)+\kappa x\frac{p}{m}=0.
-\]
-Thus a nonzero force on the right is compatible with both a conserved total
-energy and a symplectic flow. The physical equations decide these properties.
+The flow preserves $\omega$ exactly when $f_i\,dx^i$ is closed on phase
+space. A spring kept on the right, $f=-\kappa x$, gives
+$-d(-\kappa x\,dx)=\kappa\,dx\wedge dx=0$: a nonzero applied force can still
+give a symplectic flow, and here also conserves $p^2/2m+\kappa x^2/2$.
+A damper $f=-\gamma p$ gives
+$\mathcal L_X\omega=-\gamma\,dx\wedge dp\ne0$.
 
 \subsubsection*{Which forces may be moved into the Lagrangian}
-The parenthetical above deserves a definite answer, because three different
-notions get collapsed into the one word ``conservative''.
-
 \begin{description}\itemsep3pt
-\item[Conservative means exact.] A force one-form $f=f_k\,dx^k$ on
-  configuration space is conservative when it is exact, $f=-dV$ for some
-  $V=V(x)$. Equivalently, the work $\int_Cf$ depends only on the endpoints of
-  $C$; equivalently again, $f$ is closed, $\frac{\partial f_i}{\partial x^j}=\frac{\partial f_j}{\partial x^i}$, \emph{provided} the domain is simply connected
-  (Poincar\'e's lemma). The proviso is not idle: on the punctured plane the
-  one-form written $d\theta$ --- by habit, since $\theta$ is not a global
-  function there --- is closed but not exact, so a force proportional to it
-  passes the ``curl-free'' test pointwise and still does net work around a
-  loop.
-\item[Time dependence requires a separate energy check.] If $V=V(x,t)$,
-  then $F=-d_xV$ is spatially exact at each fixed time. Allowing $L=L(x,\dot x,t)$
-  adds one term to the chain rule in the energy calculation:
+\item[Conservative means exact.] A force one-form is conservative when
+  $f=-dV$ for some $V(x)$; equivalently, its work depends only on the
+  endpoints. Closedness,
+  $\frac{\partial f_i}{\partial x^j}=\frac{\partial f_j}{\partial x^i}$, is
+  equivalent only on a simply connected domain (Poincar\'e's lemma). On the
+  punctured plane, the closed one-form written $d\theta$ is not exact and
+  does net work around a loop.
+\item[Time dependence.] If $L=L(x,\dot x,t)$, the energy calculation gains
+  one term:
   \begin{equation}\label{Eq:ForcedTimeDependentEnergyBalance}
-  \begin{aligned}
-   \frac{dE}{dt}
-   &=\dot p_k\dot x^k+p_k\ddot x^k
-     -\frac{\partial L}{\partial x^k}\dot x^k
-     -\frac{\partial L}{\partial\dot x^k}\ddot x^k
-     -\frac{\partial L}{\partial t}\\
-   &=\left(\dot p_k-\frac{\partial L}{\partial x^k}\right)\dot x^k
-     +\left(p_k-\frac{\partial L}{\partial\dot x^k}\right)\ddot x^k
-     -\frac{\partial L}{\partial t}\\
-   &=f_k\dot x^k-\frac{\partial L}{\partial t}.
-  \end{aligned}
+   \frac{dE}{dt}=f_k\dot x^k-\frac{\partial L}{\partial t}.
   \end{equation}
-  For time-independent $T$ and $f=0$, this gives $d(T+V)/dt=\frac{\partial V}{\partial t}$,
-  so $T+V$ is not generally conserved. Spatial exactness at fixed time and
-  conservation of mechanical energy are distinct statements. Here the word
-  conservative uses the time-independent convention of the preceding item;
-  a time-dependent potential remains admissible in $L$.
-  Even explicit time dependence of $V$ need not make the force time-dependent:
-  if $V(x,t)=V_0(x)+a(t)$, then
-  \[
-  \begin{aligned}
-   F_k&=-\frac{\partial}{\partial x^k}(V_0+a)
-       =-\frac{\partial V_0}{\partial x^k},\\
-   E&=T+V_0+a(t),\qquad \frac{dE}{dt}=a'(t),\\
-   \frac{d}{dt}(T+V_0)&=\frac{dE}{dt}-a'(t)=0
-       \qquad(f=0).
-  \end{aligned}
-  \]
-  Here $a(t)$ changes the reference of the energy function without changing
-  the force or the conservation of $T+V_0$.
-\item[Velocity dependence need not break it.] The hypothesis $V=V(x)$ is
-  exactly what makes $\frac{\partial L}{\partial \dot x^i}=\frac{\partial T}{\partial \dot x^i}$
-  in Eq.~\ref{Eq:LagrangianFormPart0}. It can be weakened: a force is derivable
-  from a \emph{generalised} potential $U(x,\dot x,t)$ when
+  So $V(x,t)$ is spatially exact at each instant, but $T+V$ is not
+  conserved in general.
+\item[Velocity dependence.] A force derives from a generalised potential
+  $U(x,\dot x,t)$ when
   \begin{equation}\label{Eq:GeneralisedPotentialForce}
    \mathfrak F_k=\frac{d}{dt}\frac{\partial U}{\partial\dot x^k}
      -\frac{\partial U}{\partial x^k},
   \end{equation}
-  and then $L=T-U$ restores the homogeneous form. For the Lorentz force,
-  take $U=q\varphi-qA_i\dot x^i$, where $q$ is the particle's charge.
-  Holding $x,t$ fixed in the velocity
-  derivative gives
-  \begin{equation}\label{Eq:ElectromagneticCanonicalMomentum}
-  \begin{aligned}
-   \frac{\partial U}{\partial\dot x^k}
-      &=\frac{\partial}{\partial\dot x^k}(q\varphi-qA_i\dot x^i)
-       =-qA_i\delta^i_k=-qA_k,\\
-   p_k=\frac{\partial L}{\partial\dot x^k}
-      &=\frac{\partial T}{\partial\dot x^k}+qA_k
-       =m\,g_{kj}\dot x^j+qA_k.
-  \end{aligned}
-  \end{equation}
-  The last equality uses the metric kinetic energy computed in the next
-  subsection. It exhibits the shift from kinetic to canonical momentum.
-  More generally, define the kinetic momentum $\pi_k:=\frac{\partial T}{\partial \dot x^k}$.
-  Then for $L=T-U$,
+  and then $L=T-U$ restores the homogeneous form. The canonical momentum
+  shifts away from the kinetic momentum
+  $\pi_k:=\frac{\partial T}{\partial\dot x^k}$:
   \begin{equation}\label{Eq:CanonicalAndKineticMomentum}
-   p_k=\frac{\partial(T-U)}{\partial\dot x^k}
-      =\frac{\partial T}{\partial\dot x^k}
-        -\frac{\partial U}{\partial\dot x^k}
-      =\pi_k-\frac{\partial U}{\partial\dot x^k}.
+   p_k=\pi_k-\frac{\partial U}{\partial\dot x^k},
+   \qquad
+   \dot\pi_k-\frac{\partial T}{\partial x^k}=\mathfrak F_k .
   \end{equation}
-  The momenta coincide wherever $\frac{\partial U}{\partial \dot x^k}=0$ for every $k$;
-  time dependence alone, as in $U=V(x,t)$, does not separate them. When the
-  velocity derivative is nonzero, Eq.~\ref{Eq:LagrangianFormPart0} and the
-  equations derived using it must be revised. If $U$ represents all the force,
-  the homogeneous equation explicitly becomes
-  \[
-  \begin{aligned}
-   0&=\frac{d}{dt}\left(\pi_k-\frac{\partial U}{\partial\dot x^k}\right)
-     -\left(\frac{\partial T}{\partial x^k}-\frac{\partial U}{\partial x^k}\right)\\
-    &=\dot\pi_k-\frac{\partial T}{\partial x^k}
-       -\frac{d}{dt}\frac{\partial U}{\partial\dot x^k}
-       +\frac{\partial U}{\partial x^k}.
-  \end{aligned}
-  \]
-  Moving the last two terms to the other side and using
-  Eq.~\ref{Eq:GeneralisedPotentialForce},
-  \begin{equation}\label{Eq:GeneralisedPotentialKineticBalance}
-   \dot\pi_k-\frac{\partial T}{\partial x^k}
-    =\frac{d}{dt}\frac{\partial U}{\partial\dot x^k}
-      -\frac{\partial U}{\partial x^k}=\mathfrak F_k.
-  \end{equation}
-  Covector character survives, with the kinetic force balance written using
-  $\pi_k$.
-
-  The Lorentz-force substitution in Eq.~\ref{Eq:GeneralisedPotentialForce}
-  is also explicit. With $A_i=A_i(x,t)$ and $\varphi=\varphi(x,t)$,
+  The second equation is the homogeneous Euler--Lagrange equation for $T-U$
+  with Eq.~\ref{Eq:GeneralisedPotentialForce} substituted.
+  For the Lorentz force, $U=q\varphi-qA_i\dot x^i$, so
+  $\frac{\partial U}{\partial\dot x^k}=-qA_k$ and
+  $p_k=m\,g_{kj}\dot x^j+qA_k$. Substituting into
+  Eq.~\ref{Eq:GeneralisedPotentialForce} and expanding $dA_k/dt$ along the
+  path,
   \begin{equation}\label{Eq:LorentzForceFromGeneralisedPotential}
   \begin{aligned}
    \mathfrak F_k
-    &=\frac{d}{dt}(-qA_k)
-      -\frac{\partial}{\partial x^k}(q\varphi-qA_j\dot x^j)\\
-    &=-q\left(\frac{\partial A_k}{\partial t}
-          +\frac{\partial A_k}{\partial x^j}\dot x^j\right)
+    &=-q\Bigl(\frac{\partial A_k}{\partial t}
+          +\frac{\partial A_k}{\partial x^j}\dot x^j\Bigr)
       -q\frac{\partial\varphi}{\partial x^k}
       +q\frac{\partial A_j}{\partial x^k}\dot x^j\\
-    &=q\left(-\frac{\partial A_k}{\partial t}
-             -\frac{\partial\varphi}{\partial x^k}\right)
-      +q\left(\frac{\partial A_j}{\partial x^k}
-             -\frac{\partial A_k}{\partial x^j}\right)\dot x^j.
+    &=q\Bigl(-\frac{\partial A_k}{\partial t}
+             -\frac{\partial\varphi}{\partial x^k}\Bigr)
+      +qB_{kj}\dot x^j,
+    \quad
+    B_{kj}:=\frac{\partial A_j}{\partial x^k}-\frac{\partial A_k}{\partial x^j}.
   \end{aligned}
   \end{equation}
-  Define $B_{kj}:=\frac{\partial A_j}{\partial x^k}-\frac{\partial A_k}{\partial x^j}$;
-  then $B_{jk}=-B_{kj}$. The magnetic power vanishes because
-  \[
-  \begin{aligned}
-   P_{\rm mag}&=qB_{kj}\dot x^j\dot x^k
-     =qB_{jk}\dot x^k\dot x^j
-     =-qB_{kj}\dot x^j\dot x^k=-P_{\rm mag},\\
-   2P_{\rm mag}&=0\quad\Longrightarrow\quad P_{\rm mag}=0.
-  \end{aligned}
-  \]
-  The second equality renames the summed indices; the third uses the
-  antisymmetry of $B$ and commutation of the velocity components. A nonzero
-  magnetic force depends on velocity and is not a position-only exact
-  one-form $-dV(x)$, despite doing no work.
-\item[Rayleigh dissipation keeps the mechanical Lagrangian fixed.] For a linear
-  damper $f_k=-C_{kj}\dot x^j$, with $C=C(x,t)$ symmetric and positive
-  semi-definite, the standard formulation keeps $L=T-V$ and uses the
-  Rayleigh dissipation function
-  $\mathcal R=\tfrac12C_{ij}\dot x^i\dot x^j$. At fixed $x,t$,
+  The magnetic power $qB_{kj}\dot x^j\dot x^k$ vanishes because $B$ is
+  antisymmetric, so this force does no work although it is not of the form
+  $-dV(x)$.
+\item[Rayleigh dissipation.] A linear damper $f_k=-C_{kj}\dot x^j$, with
+  $C$ symmetric positive semi-definite, is kept on the right through
+  $\mathcal R=\tfrac12C_{ij}\dot x^i\dot x^j$:
   \begin{equation}\label{Eq:RayleighForceAndPower}
-  \begin{aligned}
-   \frac{\partial\mathcal R}{\partial\dot x^k}
-    &=\frac12C_{ij}(\delta^i_k\dot x^j+\dot x^i\delta^j_k)\\
-    &=\frac12(C_{kj}\dot x^j+C_{ik}\dot x^i)
-     =C_{kj}\dot x^j,\\
-   f_k&=-\frac{\partial\mathcal R}{\partial\dot x^k}
-       =-C_{kj}\dot x^j,\\
-   f_k\dot x^k&=-C_{kj}\dot x^k\dot x^j=-2\mathcal R\le0.
-  \end{aligned}
+   f_k=-\frac{\partial\mathcal R}{\partial\dot x^k}=-C_{kj}\dot x^j,
+   \qquad
+   f_k\dot x^k=-2\mathcal R\le0 .
   \end{equation}
-  The second line renames $i$ to $j$ and uses $C_{jk}=C_{kj}$; the inequality
-  uses positive semi-definiteness. The Rayleigh function supplies a force
-  on the right and is not added to the mechanical $L$.
-
-  The restriction on a generalised potential has a precise scope. If a smooth
-  $U(x,\dot x,t)$ must reproduce the force as an identity without acceleration
-  terms while $T$ is fixed, expand Eq.~\ref{Eq:GeneralisedPotentialForce}:
-  \begin{equation}\label{Eq:GeneralisedPotentialAccelerationTerms}
-  \begin{aligned}
-   f_k&=\frac{d}{dt}\frac{\partial U}{\partial\dot x^k}
-       -\frac{\partial U}{\partial x^k}\\
-      &=\frac{\partial^2U}{\partial\dot x^k\partial\dot x^j}\ddot x^j
-    +\frac{\partial^2U}{\partial\dot x^k\partial x^j}\dot x^j
-    +\frac{\partial^2U}{\partial\dot x^k\partial t}
-    -\frac{\partial U}{\partial x^k}.
-  \end{aligned}
-  \end{equation}
-  Since this must be an identity for all accelerations at fixed $x,\dot x,t$,
-  each acceleration coefficient must vanish:
-  \[
-   \frac{\partial^2U}{\partial\dot x^k\partial\dot x^j}=0
-   \quad\Longrightarrow\quad
-   \frac{\partial U}{\partial\dot x^k}=a_k(x,t)
-   \quad\Longrightarrow\quad
-   U=a_j(x,t)\dot x^j+b(x,t)
-  \]
-  locally on a connected velocity neighbourhood. In the partial derivatives
-  below, $x$ and $\dot x$ are independent coordinates: a time partial
-  holds both fixed, and a position partial holds the other coordinates
-  fixed. The subscripts on $a_k$ and $f_k$ label covector components.
-  Substitution into
-  Eq.~\ref{Eq:GeneralisedPotentialForce} gives
-  \begin{equation}\label{Eq:AffinePotentialForce}
-  \begin{aligned}
-   f_k&=\frac{d a_k}{dt}
-        -\frac{\partial}{\partial x^k}(a_j\dot x^j+b)\\
-      &=\frac{\partial a_k}{\partial t}+\frac{\partial a_k}{\partial x^j}\dot x^j
-        -\frac{\partial a_j}{\partial x^k}\dot x^j-\frac{\partial b}{\partial x^k}\\
-      &=\left(\frac{\partial a_k}{\partial x^j}
-             -\frac{\partial a_j}{\partial x^k}\right)\dot x^j
-        +\frac{\partial a_k}{\partial t}-\frac{\partial b}{\partial x^k}.
-  \end{aligned}
-  \end{equation}
-  Let $D_{kj}:=\frac{\partial a_k}{\partial x^j}-\frac{\partial a_j}{\partial x^k}$. Its transpose is
-  $D_{jk}=\frac{\partial a_j}{\partial x^k}-\frac{\partial a_k}{\partial x^j}=-D_{kj}$. Equality to the damping
-  law for all velocities would require $D_{kj}=-C_{kj}$ and a zero
-  velocity-independent term. But symmetry of $C$ then gives
-  \[
-   D_{kj}=-C_{kj}=-C_{jk}=D_{jk}=-D_{kj}
-   \quad\Longrightarrow\quad D_{kj}=0\quad\Longrightarrow\quad C_{kj}=0.
-  \]
-  Thus a nonzero symmetric linear damping law is excluded under the specified
-  additive-potential assumptions.
-
-  This does not rule out a different Lagrangian for the same trajectories.
-  For a constant mass $m>0$, damping rate $\gamma>0$, and a one-dimensional
-  potential $V(x)$, the Bateman--Caldirola--Kanai construction is
-  \cite{leonegourieux}
-  \begin{equation}\label{Eq:DampedParticleAlternativeLagrangian}
-   L_d=e^{\gamma t}\left(\tfrac12m\dot x^2-V(x)\right).
-  \end{equation}
-  Each derivative in its Euler--Lagrange equation is
-  \begin{equation}\label{Eq:DampedParticleLagrangianDerivatives}
-  \begin{aligned}
-   p_d=\frac{\partial L_d}{\partial\dot x}&=e^{\gamma t}m\dot x,\\
-   \frac{d p_d}{dt}
-      &=\gamma e^{\gamma t}m\dot x+e^{\gamma t}m\ddot x,\\
-   \frac{\partial L_d}{\partial x}&=-e^{\gamma t}V'(x).
-  \end{aligned}
-  \end{equation}
-  Subtracting the last line from the second,
-  \[
-  \begin{aligned}
-   \frac{d}{dt}\frac{\partial L_d}{\partial\dot x}
-    -\frac{\partial L_d}{\partial x}
-   &=e^{\gamma t}m\ddot x+\gamma e^{\gamma t}m\dot x+e^{\gamma t}V'(x)\\
-   &=e^{\gamma t}\left(m\ddot x+m\gamma\dot x+V'(x)\right)=0 .
-  \end{aligned}
-  \]
-  Since $e^{\gamma t}>0$, division gives
-  $m\ddot x=-V'(x)-m\gamma\dot x$. Its mechanical energy obeys
-  \begin{equation}\label{Eq:DampedParticleMechanicalEnergy}
-   \frac{d}{dt}\left(\tfrac12m\dot x^2+V(x)\right)
-   =(m\ddot x+V'(x))\dot x=-m\gamma\dot x^2\le0.
-  \end{equation}
-  The alternative Lagrangian therefore reproduces the dissipative trajectory
-  without restoring conservation of mechanical energy. Its canonical momentum
-  $p_d=e^{\gamma t}m\dot x$ is different from the mechanical momentum
-  $p_{\rm mech}=m\dot x$. Its Hamiltonian follows by solving for the velocity:
-  \begin{equation}\label{Eq:DampedParticleHamiltonian}
-  \begin{aligned}
-   \dot x&=e^{-\gamma t}\frac{p_d}{m},\\
-   H_d=p_d\dot x-L_d
-      &=e^{-\gamma t}\frac{p_d^2}{m}
-        -\left(e^{-\gamma t}\frac{p_d^2}{2m}-e^{\gamma t}V(x)\right)\\
-      &=e^{-\gamma t}\frac{p_d^2}{2m}+e^{\gamma t}V(x).
-  \end{aligned}
-  \end{equation}
-  This time-dependent Hamiltonian has canonical form $dx\wedge dp_d$.
-  For comparison, in the mechanical variables the force outside $T-V$ is
-  $f=-\gamma p_{\rm mech}$, so Eq.~\ref{Eq:ForcedSymplecticBalance} gives
-  \[
-  \begin{aligned}
-   \mathcal L_X(dx\wedge dp_{\rm mech})
-    &=-d(-\gamma p_{\rm mech}\,dx)
-     =\gamma\,dp_{\rm mech}\wedge dx\\
-    &=-\gamma\,dx\wedge dp_{\rm mech}.
-  \end{aligned}
-  \]
-  Thus the physical flow does not preserve this mechanical symplectic form.
-  There is no contradiction with the alternative canonical formulation: at
-  fixed time $dp_d=e^{\gamma t}dp_{\rm mech}$, hence
-  $dx\wedge dp_d=e^{\gamma t}dx\wedge dp_{\rm mech}$; the change of momentum
-  itself depends explicitly on time.
-\item[Thrust is kept on the right in the vehicle model.] Rocket thrust is
-  normally specified by propellant flow, exhaust conditions and control inputs,
-  so the model here treats it as an applied force. This is a modelling choice:
-  a prescribed spatially uniform force $f_k(t)$ can formally be represented by
-  $U(x,t)=-f_k(t)x^k$ in Cartesian coordinates, since
-  \[
-   -\frac{\partial U}{\partial x^j}
-    =-\frac{\partial}{\partial x^j}(-f_k(t)x^k)
-    =f_k(t)\delta^k_j=f_j(t).
-  \]
-  That representation does not
-  supply a rocket's open-system momentum balance. The changing vehicle mass
-  and exhaust momentum flux still require the separate treatment below.
+  It cannot be moved into a generalised potential with $T$ fixed.
+  Eq.~\ref{Eq:GeneralisedPotentialForce} must hold for every acceleration,
+  so $\frac{\partial^2U}{\partial\dot x^k\partial\dot x^j}=0$ and
+  $U=a_j(x,t)\dot x^j+b(x,t)$. Its velocity-linear force is then
+  $\bigl(\frac{\partial a_k}{\partial x^j}-\frac{\partial a_j}{\partial x^k}
+  \bigr)\dot x^j$, whose coefficient is antisymmetric in $k,j$. It equals the
+  symmetric $-C_{kj}$ only if $C=0$. A different Lagrangian can still give
+  the same trajectories: for constant $m$ and rate $\gamma$,
+  $L_d=e^{\gamma t}\bigl(\tfrac12m\dot x^2-V(x)\bigr)$ yields
+  $e^{\gamma t}(m\ddot x+m\gamma\dot x+V'(x))=0$ \cite{leonegourieux}. Its
+  canonical momentum $e^{\gamma t}m\dot x$ is not the mechanical one.
+\item[Thrust stays on the right.] Rocket thrust is set by propellant flow,
+  exhaust conditions and control inputs, so it is modelled as an applied
+  force. A prescribed uniform $f_k(t)$ could be written as
+  $U=-f_k(t)x^k$, but that does not supply the open-system momentum balance
+  of a vehicle that loses mass. Section~\ref{topic:vehicle-acceleration}
+  derives that balance.
 \end{description}
 
-\noindent So the honest reading of $f_k$ is: whatever has not been put into
-$L$. The split is a modelling choice; the total $\mathfrak F_k$, and its
-covector character, are not.
+\noindent So $f_k$ is whatever has not been put into $L$. The split is a
+modelling choice; the total $\mathfrak F_k$ and its covector character are
+not.
 
 \subsection{A point particle: kinetic energy built from a metric}
-We now return to $L=T(x,\dot x)-V(x)$. Choosing the kinetic energy of a point
-particle brings in the metric and gives the extra term
-$\frac{\partial T}{\partial x^k}$ of Eq.~\ref{Eq:EulerLagrangeEquationForm2} a name.
-Two hypotheses are used below and both matter: the metric $g$ is Riemannian
-(symmetric, positive definite) with components $g_{ij}=g_{ij}(x)$ depending on
-position only, and the mass $m$ is constant, since otherwise $m$ cannot be
-pulled through $d/dt$.
+We now return to $L=T(x,\dot x)-V(x)$. Two hypotheses are used below: the
+metric $g$ is Riemannian with components $g_{ij}(x)$ depending on position
+only, and the mass $m$ is constant, so that it passes through $d/dt$.
 
 Indeed, let's show how these equations are fulfilled for the kinetic energy
 term $T$ having the following form:
 \[
 T = \frac{1}{2} m g_{ij} \dot{x}^i \dot{x}^j
 \]
-For a metric $g_{ij} = g_{ij}(x)$ dependent upon coordinates $x$, and symmetric
-in $i,j$, then
+For a metric $g_{ij} = g_{ij}(x)$ dependent upon coordinates $x$, and
+symmetric in $i,j$, then
 \begin{align}
 & \frac{ \partial T}{\partial x^k}
   = \frac{m}{2} \left( \frac{ \partial g_{ij}}{ \partial x^k}
@@ -814,44 +404,33 @@ in $i,j$, then
 & \frac{ \partial T}{ \partial \dot{x}^k} = m g_{kj} \dot{x}^j
   \label{Eq:MomentumOfPointParticle}
 \end{align}
-
-\subsubsection*{Both of those derivatives, in full}
 In Eq.~\ref{Eq:PartialDerivativeOfPointParticleKineticEnergy} only $g_{ij}$
-carries an $x$: on $TM$ the velocities $\dot x^i$ are coordinates on the fibre,
-independent of the $x^k$ and held fixed by $\frac{\partial}{\partial x^k}$. The other
-one needs the product rule and $\frac{\partial\dot x^i}{\partial\dot x^k}=\delta^i_k$:
+depends on $x$; the fibre coordinates $\dot x^i$ are held fixed. For
+Eq.~\ref{Eq:MomentumOfPointParticle}, use the product rule and
+$\frac{\partial\dot x^i}{\partial\dot x^k}=\delta^i_k$:
 \[
-\begin{aligned}
  \frac{\partial T}{\partial\dot x^k}
- &=\frac{m}{2}\,g_{ij}\frac{\partial}{\partial\dot x^k}
-    \bigl(\dot x^i\dot x^j\bigr)
-  =\frac{m}{2}\,g_{ij}\bigl(\delta^i_k\dot x^j+\dot x^i\delta^j_k\bigr)\\
- &=\frac{m}{2}\bigl(g_{kj}\dot x^j+g_{ik}\dot x^i\bigr)
-  =\frac{m}{2}\bigl(g_{kj}\dot x^j+g_{kj}\dot x^j\bigr)
-  =m\,g_{kj}\dot x^j ,
-\end{aligned}
+ =\frac{m}{2}\,g_{ij}\bigl(\delta^i_k\dot x^j+\dot x^i\delta^j_k\bigr)
+ =\frac{m}{2}\bigl(g_{kj}\dot x^j+g_{ik}\dot x^i\bigr)
+ =m\,g_{kj}\dot x^j ,
 \]
-the last step renaming the dummy $i\to j$ and then using $g_{jk}=g_{kj}$.
-Here metric symmetry makes the two product-rule terms equal.
+renaming $i\to j$ and using $g_{jk}=g_{kj}$.
 
 \begin{proposition}\label{prop:momentum-covector}
-For $T=\tfrac12m\,g_{ij}\dot x^i\dot x^j$ and $V=V(x)$, the momentum conjugate
-to $x^k$ is
-$p_k=\frac{\partial L}{\partial \dot x^k}=\frac{\partial T}{\partial \dot x^k}=m\,g_{kj}\dot x^j$;
-that is, $p=m\,v^\flat$, the metric dual of $m$ times the velocity.
+For $T=\tfrac12m\,g_{ij}\dot x^i\dot x^j$ and $V=V(x)$, the momentum
+conjugate to $x^k$ is
+$p_k=\frac{\partial L}{\partial \dot x^k}=\frac{\partial T}{\partial \dot x^k}
+=m\,g_{kj}\dot x^j$; that is, $p=m\,v^\flat$.
 \end{proposition}
 
-\noindent The proposition is Eq.~\ref{Eq:MomentumOfPointParticle} combined with
-Eq.~\ref{Eq:MomentumDefinitionFromLagrangian} and
-Eq.~\ref{Eq:LagrangianFormPart0}. Frankel performs exactly this calculation and
-concludes that $p$ ``is $m$ times the covariant version of the velocity
-vector'' \cite[Section O.f]{frankel}. The fibre derivative produces a covector
-for any $L$. For this particular $L$, the metric is already part of $T$ and
-determines the map $v\mapsto m\,g(v,\cdot)=m\,v^\flat$.
+\noindent This is Eq.~\ref{Eq:MomentumOfPointParticle} with
+Eqs.~\ref{Eq:MomentumDefinitionFromLagrangian} and
+\ref{Eq:LagrangianFormPart0}. Frankel: $p$ ``is $m$ times the covariant
+version of the velocity vector'' \cite[Section O.f]{frankel}. The fibre
+derivative gives a covector for any $L$; for this $L$ the metric in $T$
+determines the map $v\mapsto m\,v^\flat$.
 
-Differentiating Eq.~\ref{Eq:MomentumOfPointParticle} once more --- with respect
-to $x^k$ only the metric responds, with respect to $\dot x^k$ only the explicit
-$\dot x^j$ does --- gives
+Differentiating Eq.~\ref{Eq:MomentumOfPointParticle} once more,
 \[
 \Longrightarrow \quad
 \begin{aligned}
@@ -860,40 +439,12 @@ $\dot x^j$ does --- gives
 & \frac{ \partial^2 T}{ \partial \dot{x}^j \partial \dot{x}^k } = m g_{jk}
 \end{aligned}
 \]
-then from Eq.~\ref{Eq:LagrangianFormPart1}, we get
+then from Eq.~\ref{Eq:LagrangianFormPart1} (with $i\to k$, and
+$g_{ki}=g_{ik}$), we get
 \begin{equation}\label{Eq:MomentumInTermsOfMetricAndCoordinates}
 \dot{p}_k = m \left( \frac{\partial g_{ik} }{ \partial x^j}
   \dot{x}^j \dot{x}^i + g_{kj} \ddot{x}^j \right)
 \end{equation}
-Explicitly, that substitution is
-\[
-\begin{aligned}
- \dot p_k
- &=\frac{\partial^2T}{\partial x^j\partial\dot x^k}\dot x^j
-  +\frac{\partial^2T}{\partial\dot x^j\partial\dot x^k}\ddot x^j
- &&\text{Eq.~\ref{Eq:LagrangianFormPart1} with }i\to k\\
- &=m\frac{\partial g_{ki}}{\partial x^j}\dot x^i\dot x^j
-  +m\,g_{kj}\ddot x^j
- &&\text{the two second derivatives}\\
- &=m\Bigl(\frac{\partial g_{ik}}{\partial x^j}\dot x^j\dot x^i
-  +g_{kj}\ddot x^j\Bigr)
- &&g_{ki}=g_{ik} .
-\end{aligned}
-\]
-The direct product-rule route provides a check on the same answer:
-\[
-\begin{aligned}
- \frac{d}{dt}\bigl(m\,g_{kj}(x(t))\dot x^j(t)\bigr)
-  &=m\frac{dg_{kj}(x(t))}{dt}\dot x^j+m\,g_{kj}\ddot x^j\\
-  &=m\frac{\partial g_{kj}}{\partial x^i}\dot x^i\dot x^j
-     +m\,g_{kj}\ddot x^j\\
-  &=m\frac{\partial g_{ki}}{\partial x^j}\dot x^j\dot x^i
-     +m\,g_{kj}\ddot x^j.
-\end{aligned}
-\]
-The last line exchanges the dummy indices $i,j$ in the first term only.
-Using $g_{ki}=g_{ik}$ gives
-Eq.~\ref{Eq:MomentumInTermsOfMetricAndCoordinates} term for term.
 
 Because $g_{kj}$ is symmetric in $k,j$ then we can write
 \[
@@ -901,18 +452,11 @@ Because $g_{kj}$ is symmetric in $k,j$ then we can write
  = \frac{1}{2} \left( \frac{ \partial g_{kj}}{ \partial x^i}
    + \frac{ \partial g_{ki}}{\partial x^j} \right) \dot{x}^i \dot{x}^j
 \]
-The identity is right, but the symmetry doing the work is that of $\dot x^i\dot
-x^j$ under $i\leftrightarrow j$, not that of $g$. Written out: $i$ and $j$ are
-summed dummies, so renaming them changes nothing,
-\[
- \frac{\partial g_{kj}}{\partial x^i}\dot x^i\dot x^j
- =\frac{\partial g_{ki}}{\partial x^j}\dot x^j\dot x^i
- =\frac{\partial g_{ki}}{\partial x^j}\dot x^i\dot x^j ,
-\]
-the last step only because the numbers $\dot x^i$ and $\dot x^j$ commute.
-Averaging the first and last expressions gives the displayed identity.
-This symmetrisation of the contracted indices does not require metric
-symmetry, although metric symmetry is used elsewhere in the derivation.
+The symmetry actually used is that of $\dot x^i\dot x^j$: renaming the
+dummies $i\leftrightarrow j$ gives
+$\frac{\partial g_{kj}}{\partial x^i}\dot x^i\dot x^j
+=\frac{\partial g_{ki}}{\partial x^j}\dot x^i\dot x^j$, and the identity is the
+average of the two sides.
 
 \noindent And recall the definition of this form of the Christoffel symbol:
 \[
@@ -933,22 +477,12 @@ $\Gamma_{k,ij}$ into Eq.~\ref{Eq:EulerLagrangeEquationForm2}, we get
    -\frac{m}{2}\frac{\partial g_{ij}}{\partial x^k}\dot x^i\dot x^j\\
  &=m\,g_{kj}\ddot x^j
    +\frac{m}{2}\Bigl(\frac{\partial g_{kj}}{\partial x^i}
-     +\frac{\partial g_{ki}}{\partial x^j}\Bigr)\dot x^i\dot x^j
-   -\frac{m}{2}\frac{\partial g_{ij}}{\partial x^k}\dot x^i\dot x^j\\
- &=m\,g_{kj}\ddot x^j
-   +\frac{m}{2}\Bigl(\frac{\partial g_{kj}}{\partial x^i}
      +\frac{\partial g_{ki}}{\partial x^j}
      -\frac{\partial g_{ij}}{\partial x^k}\Bigr)\dot x^i\dot x^j\\
  &=m\bigl(g_{kj}\ddot x^j+\Gamma_{k,ij}\dot x^i\dot x^j\bigr),
 \end{aligned}
 \]
-line by line: the first is Eq.~\ref{Eq:EulerLagrangeEquationForm2}; the second
-substitutes Eq.~\ref{Eq:MomentumInTermsOfMetricAndCoordinates} and
-Eq.~\ref{Eq:PartialDerivativeOfPointParticleKineticEnergy}; the third replaces
-the velocity--velocity term by its symmetrisation, which changes nothing; the
-fourth collects all three metric derivatives over the common factor
-$\tfrac{m}{2}\dot x^i\dot x^j$; the fifth is the definition of
-$\Gamma_{k,ij}$. That is
+the third line by the symmetrisation above. That is
 \begin{equation}\label{Eq:ForcedGeodesicEquation}
 m \left( g_{jk} \ddot{x}^j  + \Gamma_{k,ij} \dot{x}^i \dot{x}^j \right)
  = \mathfrak{F}_k
@@ -956,101 +490,61 @@ m \left( g_{jk} \ddot{x}^j  + \Gamma_{k,ij} \dot{x}^i \dot{x}^j \right)
 and thus we reobtain the geodesic equation.
 
 More precisely, Eq.~\ref{Eq:ForcedGeodesicEquation} is the \emph{forced}
-geodesic equation, and it is the geodesic equation proper exactly when
-$\mathfrak F_k=0$. Raising the index makes that visible: contract with the
-inverse metric, $g^{lk}g_{kj}=\delta^l_j$, and write
-$\Gamma^l_{ij}:=g^{lk}\Gamma_{k,ij}$, $\mathfrak F^l:=g^{lk}\mathfrak F_k$.
-The contraction of Eq.~\ref{Eq:ForcedGeodesicEquation} is
+geodesic equation; it is the geodesic equation when $\mathfrak F_k=0$.
+Contract with $g^{lk}$ and write $\Gamma^l_{ij}:=g^{lk}\Gamma_{k,ij}$,
+$\mathfrak F^l:=g^{lk}\mathfrak F_k$:
 \[
-\begin{aligned}
- g^{lk}\mathfrak F_k
-  &=m\bigl(g^{lk}g_{kj}\ddot x^j+g^{lk}\Gamma_{k,ij}\dot x^i\dot x^j\bigr)\\
-  &=m\bigl(\delta^l_j\ddot x^j+\Gamma^l_{ij}\dot x^i\dot x^j\bigr)\\
-  &=m\bigl(\ddot x^l+\Gamma^l_{ij}\dot x^i\dot x^j\bigr)=\mathfrak F^l.
-\end{aligned}
+ m\bigl(\ddot x^l+\Gamma^l_{ij}\dot x^i\dot x^j\bigr)=\mathfrak F^l ,
 \]
-By the definition of the covariant acceleration, this is
-$m\,\nabla_{\dot x}\dot x=\mathfrak F^\sharp$, Newton's second law written
-covariantly, with $\nabla$ the Levi-Civita connection of $g$.
-The $\Gamma$ terms are not forces. They are what the
-derivative of the coordinate basis contributes, which is why they persist in
-flat space in curvilinear coordinates --- where the curvature tensor vanishes
-identically --- and disappear in Cartesian ones. The cylindrical example below
-shows them arriving under the names centrifugal and Coriolis.
+that is, $m\,\nabla_{\dot x}\dot x=\mathfrak F^\sharp$ with $\nabla$ the
+Levi-Civita connection. The $\Gamma$ terms are not forces. They come from
+differentiating the coordinate basis, so they appear in flat space in
+curvilinear coordinates and vanish in Cartesian ones. The cylindrical
+example below shows them as the centrifugal and Coriolis terms.
 
-Two hypotheses deserve a second look. First, $m$ was pulled through $d/dt$
-freely, so Eq.~\ref{Eq:MomentumInTermsOfMetricAndCoordinates} assumes $\dot
-m=0$; with $m=m(t)$ an extra $\dot m\,g_{kj}\dot x^j$ appears and
-Eq.~\ref{Eq:ForcedGeodesicEquation} fails as written. That is the same warning
-issued later about taking $F=d(mv)/dt$ for a rocket. Second, the mass can
-equally be absorbed into the metric, $G_{ij}:=m\,g_{ij}$, giving
-$T=\tfrac12G_{ij}\dot x^i\dot x^j$; Christoffel symbols of the first kind are
-linear in the metric, $\Gamma_{k,ij}[G]=m\,\Gamma_{k,ij}[g]$, and those of the
-second kind are invariant under constant rescaling,
-$\Gamma^l_{ij}[G]=\Gamma^l_{ij}[g]$, so nothing in
-Eq.~\ref{Eq:ForcedGeodesicEquation} changes. A free particle follows the
-geodesics of either metric; the mass only sets the scale at which a given force
-bends them.
+Two remarks on the hypotheses. If $m=m(t)$, an extra
+$\dot m\,g_{kj}\dot x^j$ appears and Eq.~\ref{Eq:ForcedGeodesicEquation}
+fails as written. A particle of changing mass is not a closed system;
+Section~\ref{topic:vehicle-acceleration} treats the rocket correctly. And
+absorbing a constant mass into the metric, $G_{ij}:=m\,g_{ij}$, changes
+nothing: $\Gamma_{k,ij}[G]=m\,\Gamma_{k,ij}[g]$ and
+$\Gamma^l_{ij}[G]=\Gamma^l_{ij}[g]$.
 
-\subsubsection*{Notation from here on}
-The split $\mathfrak F_k=f_k+F_k$ was bookkeeping. In the rocket sections that
-follow no potential is carried explicitly, so $\mathfrak F=f$ there, and $f$
-is written for the total force covector. Reinstating a
-potential changes nothing, since only the sum enters
-Eq.~\ref{Eq:EulerLagrangeEquationForm2}.
+From here on no potential is carried explicitly, so $\mathfrak F=f$ is
+written for the total force covector.
 
 \subsection{Promotion and demotion: the musical isomorphisms}
-A metric $g$ supplies --- and is exactly what supplies --- the identification
-between the two spaces.
-
 \begin{definition}
 For a Riemannian metric $g$, define
 $\flat:T_xM\to T^*_xM$ by $v^\flat=g(v,\cdot)$, so
 $(v^\flat)_i=g_{ij}v^j$, and $\sharp:T^*_xM\to T_xM$ by
-$(\alpha^\sharp)^i=g^{ij}\alpha_j$, where $g^{ij}g_{jk}=\delta^i_k$. The two are
-mutually inverse.
+$(\alpha^\sharp)^i=g^{ij}\alpha_j$, where $g^{ij}g_{jk}=\delta^i_k$. The two
+are mutually inverse.
 \end{definition}
 
-So one may always ``promote'' the force $1$-form to a vector field
-$f^\sharp\in\mathfrak X(M)$, with $(f^\sharp)^i=g^{ij}f_j$, and Newton's second
-law takes either the covector form $m(\nabla_{\dot x}\dot x)^\flat=f$ or the
-vector form $m\nabla_{\dot x}\dot x=f^\sharp$. Nothing is lost --- but the
-promotion is a choice that consumes the metric, and the two objects transform
-differently under a change of coordinates.
-
-In Cartesian coordinates on Euclidean $\R^3$, $g_{ij}=\delta_{ij}$ and the
-components of $f$ and $f^\sharp$ are numerically equal. That coincidence is the
-whole reason engineering mechanics can treat force as a vector without ever
-being wrong. It stops being a coincidence in curvilinear coordinates. In
-cylindrical coordinates $(r,\theta,z)$ on flat space,
-\[
- g=\operatorname{diag}(1,\;r^2,\;1),\qquad
- f_\theta=r^2f^\theta,
-\]
-so the covariant, contravariant and \emph{physical} components
-$f_{(\theta)}=f_\theta/r=r f^\theta$ are three different numbers. This is not
-pedantry for turbomachinery: Hill and Peterson's angular-momentum balance,
-$rF_\theta=\delta m\,\tfrac{d}{dt}(rc_\theta)$ \cite[Eq.~7.5]{hillpeterson},
-carries exactly these $r$ weightings, and stating which component is meant is
-what keeps a torque bookkeeping consistent.
+So the force $1$-form can be promoted to a vector field $f^\sharp$, and
+Newton's second law reads either $m(\nabla_{\dot x}\dot x)^\flat=f$ or
+$m\nabla_{\dot x}\dot x=f^\sharp$. The promotion uses the metric, and the two
+objects transform differently. In Cartesian coordinates on Euclidean
+$\R^3$, $g_{ij}=\delta_{ij}$, so $f$ and $f^\sharp$ have equal components;
+that is why engineering mechanics can treat force as a vector. In
+cylindrical coordinates $(r,\theta,z)$,
+$g=\operatorname{diag}(1,\;r^2,\;1)$, so $f_\theta=r^2f^\theta$, and the
+covariant, contravariant and \emph{physical} components
+$f_{(\theta)}=f_\theta/r=r f^\theta$ are three different numbers.
 
 \subsection{Impulse is the increment of a covector}
-Write the impulse of $f$ over $[t_0,t_1]$ as
-$J=\int_{t_0}^{t_1}f(t)\,dt$. There is an obstruction hiding in that
-expression: $f(t)\in T^*_{x(t)}M$, and covectors at \emph{different} points lie
-in different vector spaces, so the integrand cannot simply be summed. Making
-$J$ well defined requires one of
-
+The impulse $J=\int_{t_0}^{t_1}f(t)\,dt$ has a problem: $f(t)\in
+T^*_{x(t)}M$, and covectors at different points lie in different vector
+spaces. Making $J$ well defined needs one of
 \begin{itemize}\itemsep2pt
-\item a flat space with a globally parallel (inertial Cartesian) frame, so all
-      fibres are canonically identified; or
-\item a connection, integrating the parallel-transported covector; or
-\item contraction with a covariantly constant vector field first, reducing the
-      integrand to a scalar.
+\item a flat space with a globally parallel (inertial Cartesian) frame,
+      which identifies all fibres;
+\item a connection, transporting the covectors to one point; or
+\item contraction with a covariantly constant vector field first, which
+      makes the integrand a scalar.
 \end{itemize}
-
-\noindent Rocket performance uses the first, and the third is what the scalar
-total impulse actually is.
+Rocket performance uses the first. The scalar total impulse is the third.
 
 \begin{proposition}\label{prop:impulse-momentum}
 In Cartesian coordinates on Euclidean $\R^3$, $g$ is constant, hence
@@ -1059,112 +553,63 @@ $\dot p_k=f_k$. Integrating,
 $J=\int_{t_0}^{t_1}f\,dt=p(t_1)-p(t_0)$, an identity in $T^*\R^3$.
 \end{proposition}
 
-\noindent Every step of that is now available. With $g_{ij}=\delta_{ij}$
-constant, every $\frac{\partial g_{ij}}{\partial x^k}$ vanishes, so
-Eq.~\ref{Eq:PartialDerivativeOfPointParticleKineticEnergy} gives $\frac{\partial T}{\partial x^k}=0$, every $\Gamma_{k,ij}=0$, and
-Eq.~\ref{Eq:EulerLagrangeEquationForm2} and
-Eq.~\ref{Eq:ForcedGeodesicEquation} both collapse to
-\[
- \dot p_k=f_k ,\qquad p_k=m\,\delta_{kj}\dot x^j ,
-\]
-whose components are numerically the familiar $m\dot x^k$. Integrating slot by
-slot over $[t_0,t_1]$,
-\[
- J_k=\int_{t_0}^{t_1}f_k\,dt=\int_{t_0}^{t_1}\dot p_k\,dt
-   =p_k(t_1)-p_k(t_0) ,
-\]
-and the hypothesis is what licenses reading this as a statement about
-covectors rather than about three unrelated numbers: in an inertial Cartesian
-frame every fibre $T^*_{x(t)}\R^3$ is canonically identified with one copy of
-$(\R^3)^*$, so adding integrands taken at different points means something.
-Without a specified identification of the fibres, the component integrals
-still define numbers, but generally do not transform as a single covector
-under a change of coordinates. A connection and transport to one reference
-point provide a coordinate-independent comparison.
-
-The failure is not exotic. It is already visible in cylindrical coordinates on
-the same flat space.
+\noindent With $g_{ij}=\delta_{ij}$, every
+$\frac{\partial g_{ij}}{\partial x^k}$ and every $\Gamma_{k,ij}$ vanishes, so
+Eqs.~\ref{Eq:EulerLagrangeEquationForm2} and \ref{Eq:ForcedGeodesicEquation}
+both become $\dot p_k=f_k$ with $p_k=m\,\delta_{kj}\dot x^j$. Integrating
+slot by slot, $J_k=p_k(t_1)-p_k(t_0)$. The inertial frame identifies every
+fibre $T^*_{x(t)}\R^3$ with one copy of $(\R^3)^*$, which is what makes
+these three integrals the components of one covector.
 
 \subsubsection*{The cylindrical case, explicitly}
-Take $(r,\theta,z)$ with $g=\operatorname{diag}(1,r^2,1)$, so
-$T=\tfrac12m(\dot r^2+r^2\dot\theta^2+\dot z^2)$. Then
+Take $T=\tfrac12m(\dot r^2+r^2\dot\theta^2+\dot z^2)$. Then
 Eq.~\ref{Eq:MomentumOfPointParticle} gives
 \[
  p_r=m\dot r,\qquad p_\theta=mr^2\dot\theta,\qquad p_z=m\dot z,
 \]
-and, since $\frac{\partial g_{\theta\theta}}{\partial r}=2r$ is the only non-vanishing
-derivative of the metric,
+and, since $\frac{\partial g_{\theta\theta}}{\partial r}=2r$ is the only
+nonvanishing metric derivative,
 Eq.~\ref{Eq:PartialDerivativeOfPointParticleKineticEnergy} gives
-\[
- \frac{\partial T}{\partial r}=\frac{m}{2}\,(2r)\,\dot\theta^2=mr\dot\theta^2,
- \qquad
- \frac{\partial T}{\partial\theta}=0,\qquad
- \frac{\partial T}{\partial z}=0 .
-\]
-Equation~\ref{Eq:EulerLagrangeEquationForm2} in the radial slot gives
-$m\ddot r=f_r+mr\dot\theta^2$, i.e.\ $f_r=m(\ddot r-r\dot\theta^2)$ --- the
-centrifugal term is the $\frac{\partial T}{\partial r}$ contribution, not a fictitious
-force added by hand. In the angular slot $\frac{\partial T}{\partial \theta}=0$, so
-\[
- \dot p_\theta=f_\theta
- \;\Longleftrightarrow\;
- \frac{d}{dt}\bigl(mr^2\dot\theta\bigr)=f_\theta ,
-\]
-and expanding gives $m(r^2\ddot\theta+2r\dot r\dot\theta)=f_\theta$, whose
-$2r\dot r\dot\theta$ is the Coriolis term.
-
-The forced geodesic form, Eq.~\ref{Eq:ForcedGeodesicEquation}, must reproduce
-both, and does. From $\frac{\partial g_{\theta\theta}}{\partial r}=2r$ alone,
-\[
- \Gamma_{r,\theta\theta}
- =\tfrac12\Bigl(2\frac{\partial g_{r\theta}}{\partial\theta}
-   -\frac{\partial g_{\theta\theta}}{\partial r}\Bigr)=-r ,
- \qquad
- \Gamma_{\theta,r\theta}=\Gamma_{\theta,\theta r}
- =\tfrac12\frac{\partial g_{\theta\theta}}{\partial r}=r ,
-\]
-with every other $\Gamma_{k,ij}$ zero, so
-Eq.~\ref{Eq:ForcedGeodesicEquation} reads
+$\frac{\partial T}{\partial r}=mr\dot\theta^2$ and
+$\frac{\partial T}{\partial\theta}=\frac{\partial T}{\partial z}=0$.
+Equation~\ref{Eq:EulerLagrangeEquationForm2} then reads
 \[
 \begin{aligned}
- k=r:&\quad m\bigl(\ddot r+\Gamma_{r,\theta\theta}\dot\theta^2\bigr)
-   =m\bigl(\ddot r-r\dot\theta^2\bigr)=f_r,\\
- k=\theta:&\quad m\bigl(r^2\ddot\theta
-   +2\Gamma_{\theta,r\theta}\dot r\dot\theta\bigr)
-   =m\bigl(r^2\ddot\theta+2r\dot r\dot\theta\bigr)=f_\theta ,
+ r:&\quad m\ddot r-mr\dot\theta^2=f_r,\\
+ \theta:&\quad \frac{d}{dt}\bigl(mr^2\dot\theta\bigr)
+   =m\bigl(r^2\ddot\theta+2r\dot r\dot\theta\bigr)=f_\theta .
 \end{aligned}
 \]
-matching the two lines above term for term.
+The centrifugal term is the $\frac{\partial T}{\partial r}$ contribution, and
+$2r\dot r\dot\theta$ is the Coriolis term. The forced geodesic form agrees:
+$\Gamma_{r,\theta\theta}=-\tfrac12\frac{\partial g_{\theta\theta}}{\partial r}=-r$
+and $\Gamma_{\theta,r\theta}=\Gamma_{\theta,\theta r}=r$, all others zero, so
+Eq.~\ref{Eq:ForcedGeodesicEquation} gives
+$m(\ddot r-r\dot\theta^2)=f_r$ and
+$m(r^2\ddot\theta+2r\dot r\dot\theta)=f_\theta$.
 
-Note what the lower index bought: $p_\theta=mr^2\dot\theta$ is the angular
-momentum and $f_\theta$ is the torque, both with an extra factor of $r$
-relative to the physical components $c_\theta=r\dot\theta$ and
+The lower index identifies the quantity: $p_\theta=mr^2\dot\theta$ is the
+angular momentum and $f_\theta$ is the torque, each with an extra factor of
+$r$ relative to the physical components $c_\theta=r\dot\theta$ and
 $f_{(\theta)}=f_\theta/r$. Hill and Peterson's
-$rF_\theta=\delta m\,\tfrac{d}{dt}(rc_\theta)$
-\cite[Eq.~7.5]{hillpeterson} is exactly $\dot p_\theta=f_\theta$ written in
-physical components, since $r\,c_\theta=r^2\dot\theta=p_\theta/m$ and their
-$rF_\theta$ is our $f_\theta$. The covariant components are the ones an
-engineer already calls angular momentum and torque; the index position is
-telling you which quantity you are holding.
-
-Because $\frac{\partial T}{\partial x^k}\neq0$ here, the naive componentwise
+$rF_\theta=\delta m\,\tfrac{d}{dt}(rc_\theta)$ \cite[Eq.~7.5]{hillpeterson}
+is $\dot p_\theta=f_\theta$ in physical components, since
+$rc_\theta=r^2\dot\theta=p_\theta/m$ and their $rF_\theta$ is our $f_\theta$.
+Because $\frac{\partial T}{\partial r}\neq0$, the componentwise
 $\int f\,dt=\Delta p$ is false in these coordinates.
 
 \subsection{From the covector to Sutton's total impulse}
-Sutton defines total impulse by
-$I_t=\int_0^t F\,dt$ \cite[Eq.~2--1]{sutton}, where $F$ is a scalar. The
-geometric content is the third bullet above: if $\hat e$ is a fixed unit
+Sutton defines total impulse by $I_t=\int_0^t F\,dt$
+\cite[Eq.~2--1]{sutton}, with $F$ a scalar. If $\hat e$ is a fixed unit
 direction (the thrust axis) and $F=f(\hat e)$, then
 \[
  I_t=\int_0^{t}f(\hat e)\,dt=J(\hat e),
 \]
-one component of the impulse covector. The evaluation $J(\hat e)$ needs no
-metric once $\hat e$ is supplied, but normalising that vector does:
-$\hat e=e/\sqrt{g(e,e)}$. Four assumptions separate this from the
-general statement.
-
+one component of the impulse covector. Evaluating $J(\hat e)$ needs no
+metric; normalising $\hat e=e/\sqrt{g(e,e)}$ does. Four assumptions separate
+this from the general statement.
 \begin{description}\itemsep2pt
-\item[A1] Flat space, inertial Cartesian frame --- so $J$ exists
+\item[A1] Flat space, inertial Cartesian frame, so $J$ exists
   (Prop.~\ref{prop:impulse-momentum}).
 \item[A2] The thrust direction $\hat e$ is constant over $[0,t]$.
 \item[A3] $F\ge0$, the thrust magnitude along that axis.
@@ -1174,186 +619,136 @@ general statement.
 \begin{proposition}\label{prop:scalar-bound}
 $\lVert J\rVert\le\int_0^t\lVert f\rVert\,dt$, using the Euclidean dual norm.
 Equality holds exactly when the nonzero force covectors lie on one common
-ray almost everywhere in time. Thus a change of thrust direction during
-nonzero thrust, on time sets with nonzero impulse contribution, makes the
-scalar integral of thrust magnitude strictly exceed $\lVert J\rVert$.
-Direction changes confined to zero thrust do not affect equality.
+ray almost everywhere in time. A change of thrust direction during nonzero
+thrust, on a set of times with nonzero impulse contribution, makes the
+scalar integral strictly exceed $\lVert J\rVert$.
 \end{proposition}
 
-\noindent To see both the inequality and its equality condition, suppose first
-that $J\ne0$ and set $u=J^\sharp/\lVert J\rVert$. Then $g(u,u)=1$, and
+\begin{proof}
+If $J\ne0$, set $u=J^\sharp/\lVert J\rVert$, so $g(u,u)=1$, and use the
+pointwise Cauchy--Schwarz inequality:
 \[
  \lVert J\rVert=J(u)
  =\int_0^t f(u)\,dt
  \le\int_0^t\lVert f\rVert\lVert u\rVert\,dt
  =\int_0^t\lVert f\rVert\,dt.
 \]
-The inequality is the pointwise Cauchy--Schwarz inequality. Equality of the
-integrals requires $\lVert f\rVert-f(u)=0$ almost everywhere, since this
-integrand is nonnegative. Equality in the pointwise inequality then gives
-$f=\lambda(t)u^\flat$, $\lambda(t)\ge0$, almost everywhere. Conversely,
-such an $f$ gives $J=(\int_0^t\lambda\,dt)u^\flat$, so the norms are equal.
-If $J=0$, equality requires $\int_0^t\lVert f\rVert\,dt=0$, hence $f=0$
-almost everywhere. These observations include the zero-thrust case.
+Equality requires the nonnegative integrand $\lVert f\rVert-f(u)$ to
+vanish almost everywhere, that is, $f=\lambda(t)u^\flat$ with
+$\lambda\ge0$. Conversely, such an $f$ gives
+$J=(\int_0^t\lambda\,dt)\,u^\flat$, with equal norms. If $J=0$, equality
+requires $\int_0^t\lVert f\rVert\,dt=0$, so $f=0$ almost everywhere.
+\end{proof}
 
-The scalar total impulse bounds the magnitude of the thrust impulse.
-Converting either quantity into a vehicle $\Delta v$ also requires the mass
-history and the vehicle's force and momentum balance.
+\noindent The scalar total impulse bounds the magnitude of the thrust
+impulse. Converting either into a vehicle $\Delta u$ needs the mass history:
+Section~\ref{topic:vehicle-acceleration} applies the same inequality to
+$f/M$.
 
-Sutton's Eq.~2--2, $I_t=Ft$, follows by additionally holding $F$ constant: with
-$F$ constant the integral $\int_0^tF\,dt$ is just $Ft$, and A4 is what allows
-the start and stop transients --- during which $F$ is emphatically not constant
---- to be left out of the integral rather than modelled. For specific impulse Sutton writes
+Sutton's Eq.~2--2, $I_t=Ft$, holds $F$ constant; A4 lets the transients,
+during which $F$ is not constant, be left out rather than modelled. For
+specific impulse Sutton writes
 \[
  I_s=\frac{\int_0^t F\,dt}{g_0\int_0^t\dot m\,dt}
  \qquad\text{\cite[Eq.~2--3]{sutton}},
 \]
-a ratio of two integrals. It is worth being explicit about what average that is.
+a ratio of two integrals.
 
 \begin{proposition}\label{prop:weighted-mean}
-Let $\dot m(t)>0$ denote the propellant consumption rate during the averaging
-interval; it is the negative of the vehicle mass derivative for pure
-propellant loss. With the instantaneous value $I_s(t)=F/(\dot m g_0)$,
+Let $\dot m(t)>0$ be the propellant consumption rate over the averaging
+interval. With the instantaneous $I_s(t)=F/(\dot m g_0)$,
 \[
  \frac{\int F\,dt}{g_0\int\dot m\,dt}
  =\frac{\int I_s(t)\,\dot m\,dt}{\int \dot m\,dt},
 \]
-the \emph{mass-flow-weighted} mean of $I_s$. It equals the time average exactly
-when the time covariance of $I_s$ and $\dot m$ vanishes. Constant $\dot m$ is
-sufficient, but is not necessary.
+the \emph{mass-flow-weighted} mean of $I_s$. It equals the time average
+exactly when the time covariance of $I_s$ and $\dot m$ vanishes. Constant
+$\dot m$ is sufficient but not necessary.
 \end{proposition}
 
-\noindent Explicitly, for an interval of length $\tau>0$, define
-\[
- \langle h\rangle_t:=\frac1\tau\int_0^\tau h(t)\,dt,\qquad
- \operatorname{Cov}_t(I_s,\dot m)
- :=\langle I_s\dot m\rangle_t-\langle I_s\rangle_t\langle\dot m\rangle_t.
-\]
-Then the difference of the two means is
+\noindent For an interval of length $\tau>0$, let
+$\langle h\rangle_t:=\frac1\tau\int_0^\tau h\,dt$ and
+$\operatorname{Cov}_t(I_s,\dot m)
+:=\langle I_s\dot m\rangle_t-\langle I_s\rangle_t\langle\dot m\rangle_t$. Then
 \begin{equation}\label{Eq:SpecificImpulseMeanDifference}
-\begin{aligned}
  \frac{\int_0^\tau I_s\dot m\,dt}{\int_0^\tau\dot m\,dt}
       -\langle I_s\rangle_t
-  &=\frac{\langle I_s\dot m\rangle_t}{\langle\dot m\rangle_t}
-      -\langle I_s\rangle_t\\
-  &=\frac{\langle I_s\dot m\rangle_t
+  =\frac{\langle I_s\dot m\rangle_t
           -\langle I_s\rangle_t\langle\dot m\rangle_t}
          {\langle\dot m\rangle_t}
    =\frac{\operatorname{Cov}_t(I_s,\dot m)}{\langle\dot m\rangle_t}.
-\end{aligned}
 \end{equation}
-The denominator is positive. As a counterexample to necessity of constant
-mass flow, take $I_s(t)=I_0$ and any positive variable $\dot m(t)$. Both means
-then equal $I_0$, since
-$\int I_0\dot m\,dt/\int\dot m\,dt=I_0$ and
-$\tau^{-1}\int_0^\tau I_0\,dt=I_0$.
+A constant $I_s=I_0$ with any positive variable $\dot m$ gives both means
+equal to $I_0$, so constant mass flow is not necessary. Sutton's Eq.~2--5,
+$I_s=F/(\dot m g_0)$, is the constant-$F$, constant-$\dot m$ case, and
+Eq.~2--4, $I_s=I_t/(m_pg_0)$, follows from $\int\dot m\,dt=m_p$.
 
-\noindent Sutton's Eq.~2--5, $I_s=F/(\dot m g_0)$, is then the constant-$F$,
-constant-$\dot m$ case, and Eq.~2--4, $I_s=I_t/(m_pg_0)$, follows from
-$\int\dot m\,dt=m_p$.
-
-Two further points of hygiene. First, $g_0$ is a \emph{defined} constant,
-$9.80665\,\mathrm{m/s^2}$, not the local gravitational acceleration; Sutton says
-so, and notes that in orbit $m_pg_0$ ``does not represent the weight''
-\cite[Section 2.1]{sutton}. Consequently $I_s$ measured in seconds is not a
-duration --- it is a velocity divided by a conventional constant, and the unit
-is an artefact of that convention.
-
-Second, and this is where the metric re-enters, Sutton's effective exhaust
-velocity
+Two further points. First, $g_0=9.80665\,\mathrm{m/s^2}$ is a
+\emph{defined} constant, not the local gravitational acceleration; in orbit
+$m_pg_0$ ``does not represent the weight'' \cite[Section 2.1]{sutton}. So
+$I_s$ in seconds is a velocity divided by a conventional constant, not a
+duration. Second, the effective exhaust velocity
 \[
- c=I_sg_0=F/\dot m \qquad\text{\cite[Eq.~2--6]{sutton}}
+ u_e=I_sg_0=F/\dot m \qquad\text{(Sutton's $c$, \cite[Eq.~2--6]{sutton})}
 \]
-divides a force by a mass flow rate and calls the result a velocity. Force is a
-covector and velocity is a vector, so the equality is really
-$c\,\hat e=(f/\dot m)^\sharp$: the identification is the musical isomorphism,
-performed silently. In Cartesian components on Euclidean space the two sides
-have equal numbers, so nothing goes wrong. The metric enters through both
-the musical isomorphism and the unit normalisation of $\hat e$. In fact,
-for thrust aligned with a unit $\hat e$, $f=F\hat e^\flat$ and
-\[
- (f/\dot m)^\sharp
- =\frac{F}{\dot m}(\hat e^\flat)^\sharp
- =\frac{F}{\dot m}\hat e=c\hat e.
-\]
-The pairing operation itself is metric-free; scalar magnitudes and unit
-directions used in both $I_t$ and $c$ carry metric information.
+divides a force by a mass flow rate and calls the result a velocity. Force
+is a covector and velocity a vector, so the equality is really
+$u_e\,\hat e=(f/\dot m)^\sharp$, the musical isomorphism applied silently. For
+thrust along a unit $\hat e$, $f=F\hat e^\flat$, and
+$(f/\dot m)^\sharp=\frac{F}{\dot m}(\hat e^\flat)^\sharp=u_e\,\hat e$.
+The pairing is metric-free. The magnitudes and unit directions used in both
+$I_t$ and $u_e$ carry the metric.
 
 \subsection{Where the thrust covector comes from}
-$f$ in the vehicle equation of motion is not primitive either: it is the
-resultant of surface tractions --- pressure and viscous --- over the wetted
-boundary. Traction is naturally a covector-valued $2$-form, the object Frankel
-uses for stress and which pairs with a deformation $1$-form to give a scalar
-$3$-form of work \cite[Section on Elasticity and Stresses]{frankel}. Sutton's
-momentum-flux expression for thrust is a consequence of a control-volume
-balance, not a definition of force, and the rocket's variable mass means the
-vehicle-only $F=d(mv)/dt$ is \emph{not} a correct starting point. That
-derivation belongs with Sutton Section 2.2 and is not attempted here.
+The $f$ in the vehicle equation of motion is the resultant of surface
+tractions, pressure and viscous, over the wetted boundary. Traction is
+naturally a covector-valued $2$-form; Frankel pairs it with a deformation
+$1$-form to give a scalar $3$-form of work
+\cite[Section on Elasticity and Stresses]{frankel}. Sutton's
+momentum-flux expression for thrust follows from a control-volume balance,
+derived in Section~\ref{topic:sutton-definitions}
+(Eq.~\ref{Eq:ThrustEquation}). Because the vehicle loses mass,
+$F=d(Mu)/dt$ is \emph{not} its equation of motion.
+Section~\ref{topic:vehicle-acceleration} derives the correct one,
+$M\,du/dt=F-D-Mg\sin\theta$.
 
-\subsection{Notation: the symbol \texorpdfstring{$c$}{c}}
-Reading Sutton and Hill and Peterson together creates a live collision.
-
+\subsection{Notation: exhaust velocities}
+Our effective exhaust velocity is $u_e:=F/\dot m$, and the nozzle exit
+velocity relative to the vehicle is $u_{\rm exh}$, with exit pressure
+$p_{\rm exh}$, ambient pressure $p_a$ and exit area $A_e$. The books
+collide with this and with each other.
 \begin{description}\itemsep2pt
-\item[Sutton] $c$ is the effective exhaust velocity \cite[Eq.~2--6]{sutton};
-  $c^*$ is characteristic velocity. Sutton notes the Russian literature uses
-  $c$ in place of $I_s$.
-\item[Hill and Peterson] $c$ (and $\mathbf c$) is the \emph{absolute fluid
-  velocity}, with components $c_r,c_\theta,c_z$ throughout the turbomachinery
-  chapters; $c$ also denotes duct circumference, specific heat of a liquid and
-  the speed of light. Speed of sound is $a$, and $c^*$ is again characteristic
-  velocity \cite[Appendix X]{hillpeterson}.
+\item[Sutton] $c$ is the effective exhaust velocity \cite[Eq.~2--6]{sutton}
+  and $v_2$ the exit velocity; $c^*$ is characteristic velocity.
+\item[Hill and Peterson] $u_e$ is the \emph{actual} exit velocity, our
+  $u_{\rm exh}$, and $u_{\rm eq}$ the effective one, our $u_e$
+  \cite[Eq.~(10.5)]{hillpeterson}. Their $c$ (and $\mathbf c$) is the
+  absolute fluid velocity, with components $c_r,c_\theta,c_z$ in the
+  turbomachinery chapters, which we keep; speed of sound is $a$.
 \end{description}
+Read Hill and Peterson's $u_e$ as our $u_{\rm exh}$.
 
-\noindent So $c$ \emph{is} the propulsion convention for effective exhaust
-velocity, and it is worth keeping rather than inventing a private symbol. The
-collision is with Hill and Peterson's fluid velocity, not with the speed of
-sound --- these notes already write $a$ for the latter, as in the nozzle topic.
-The rule adopted here: $c$ denotes effective exhaust velocity in
-rocket-performance contexts; subscripted $c_r,c_\theta,c_z$ denote absolute
-fluid velocity components in turbomachinery contexts, following Hill and
-Peterson; and where both appear in one derivation, the exhaust velocity is
-written $v_e$ and said to equal $c$.
-
-\subsection{Scope of what is claimed}
-Propositions~\ref{prop:momentum-covector}--\ref{prop:weighted-mean} are
-mathematical identities under their stated hypotheses, verifiable by direct
-computation; they are not physical claims. A1--A4 are modelling assumptions
-about a particular burn, and whether they hold is an engineering question about
-the vehicle, not something the geometry decides. No numerical or symbolic study
-accompanies this topic yet, so no executable evidence is claimed here; the
-natural first check is Proposition~\ref{prop:scalar-bound} on a slewing burn,
-comparing $\int\lVert f\rVert\,dt$ against $\lVert\int f\,dt\rVert$.
-
-\subsection{An erratum, and why it is the relevant kind}
+\subsection{An erratum}
 Sutton's worked Example~2--1 (printed p.~31 / PDF p.~55) prints
 \[
  F=I_sg_0=23.3\times2354.4=54{,}936\ \mathrm{N},
 \]
-which was checked here against the source PDF's own text layer, not merely
-against OCR. Two defects sit in that line. First, $I_sg_0=2354.4\
-\mathrm{m/s}$ is the effective exhaust velocity $c$ --- the book computes it as
-$c$ one sentence earlier --- so the equation sets a force equal to a velocity.
-Eq.~2--6 rearranges to $F=\dot mc=\dot mI_sg_0$; the factor $\dot m$ is
-missing. Second, the displayed multiplicand does not reproduce the stated
-result: $23.3\times2354.4=54{,}857.5$, whereas the printed $54{,}936$ follows
-from the unrounded $\dot m=70/3$, since $2354.4\times70/3=54{,}936$ exactly.
-
-Every downstream quantity in the example is nevertheless correct, including
-$I_t=164{,}808\ \mathrm{N\,s}$ --- independently confirmed by
-$I_sm_pg_0=240\times70\times9.81$ --- and the final acceleration
-$422.58\ \mathrm{m/s^2}=43.08\,g_0$. Only the symbolic statement is wrong, and
-it survives into the ninth edition.
-
-The missing mass-flow factor is already visible to dimensional analysis,
-whether force is represented as a vector or a covector:
+checked against the source PDF's own text layer. The line has two defects.
+First, $I_sg_0=2354.4\ \mathrm{m/s}$ is the effective exhaust velocity $u_e$
+(the book computes it as its $c$ one sentence earlier), so the equation sets
+a force equal to a velocity; Eq.~2--6 gives $F=\dot mu_e=\dot mI_sg_0$. Second,
+$23.3\times2354.4=54{,}857.5$; the printed $54{,}936$ comes from the
+unrounded $\dot m=70/3$, since $2354.4\times70/3=54{,}936$ exactly. Every
+downstream quantity is correct, including $I_t=164{,}808\ \mathrm{N\,s}$
+(confirmed by $I_sm_pg_0=240\times70\times9.81$) and the final acceleration
+$422.58\ \mathrm{m/s^2}=43.08\,g_0$. Dimensional analysis already catches
+the missing factor:
 \[
  [I_sg_0]=\mathrm{s}\,\frac{\mathrm{m}}{\mathrm{s^2}}
         =\frac{\mathrm{m}}{\mathrm{s}},\qquad
  [\dot m I_sg_0]=\frac{\mathrm{kg}}{\mathrm{s}}
-                  \frac{\mathrm{m}}{\mathrm{s}}
-                =\frac{\mathrm{kg\,m}}{\mathrm{s^2}}=\mathrm{N}.
+                  \frac{\mathrm{m}}{\mathrm{s}}=\mathrm{N}.
 \]
-The distinction between $f\in T^*M$ and
-$c\,\hat e=(f/\dot m)^\sharp\in TM$ supplies a separate geometric check.
-The metric converts tensor type after division by the mass-flow rate; it
-does not supply the missing physical units.
+The distinction $f\in T^*M$ versus $u_e\,\hat e=(f/\dot m)^\sharp\in TM$ is a
+separate geometric check. The metric converts tensor type after division
+by $\dot m$; it does not supply the missing units.

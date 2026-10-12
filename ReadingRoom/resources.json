@@ -303,6 +303,21 @@
       "kind": "LaTeX source"
     },
     {
+      "id": "vehicle-acceleration-pdf",
+      "title": "Vehicle acceleration: the rocket equation with gravity and drag · PDF",
+      "root": "artifacts",
+      "path": "master-portrait.pdf",
+      "kind": "PDF",
+      "anchor": "topic-vehicle-acceleration"
+    },
+    {
+      "id": "vehicle-acceleration-source",
+      "title": "Vehicle acceleration: the rocket equation with gravity and drag · derivation",
+      "root": "propulsion",
+      "path": "documents/notes/topics/vehicle-acceleration.tex",
+      "kind": "LaTeX source"
+    },
+    {
       "id": "runge-kutta-pdf",
       "title": "Runge–Kutta: formulation and order conditions · PDF",
       "root": "artifacts",
@@ -396,6 +411,32 @@
       "assets": [
         "sutton-definitions-pdf",
         "sutton-definitions-source",
+        "legacy-propulsion"
+      ]
+    },
+    {
+      "id": "vehicle-acceleration",
+      "title": "Vehicle acceleration: the rocket equation with gravity and drag",
+      "summary": "Hill-Peterson's increment derivation and a rigorous one (momentum map in V*, dt as the Galilean clock 1-form, transport theorem) of M du/dt = F - D - Mg sin(theta) and its planar vector form (Sutton 4-13/4-14); ideal increment u_e ln(M(0)/M_f) with gravity and drag losses as a budget; Sutton 4.1-4.3 with Problems 1, 2, 4; sounding rocket (Hill-Peterson 10.15-10.18); free-space momentum conservation and the Lagrangian route; a ballistic trajectory with drag.",
+      "authorship": "New synthesis; historical references retain Ernest Yeung's authorship.",
+      "status": "Derivations under stated hypotheses; closed forms checked symbolically and against numerical integrations; no physical validation.",
+      "locators": [
+        {
+          "book": "hp",
+          "section": "10.3"
+        },
+        {
+          "book": "sutton",
+          "section": "4.1"
+        },
+        {
+          "book": "sutton",
+          "section": "4.3"
+        }
+      ],
+      "assets": [
+        "vehicle-acceleration-pdf",
+        "vehicle-acceleration-source",
         "legacy-propulsion"
       ]
     },

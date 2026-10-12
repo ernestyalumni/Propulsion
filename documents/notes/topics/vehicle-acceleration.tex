@@ -1,0 +1,870 @@
+\topic{vehicle-acceleration}{Vehicle acceleration: the rocket equation with gravity and drag}
+
+Reading anchors: Hill and Peterson, second edition, Section 10.3,
+printed pp.~472--477 / PDF pp.~484--489, Eqs.~(10.8)--(10.18)
+\cite{hillpeterson}; Sutton and Biblarz, ninth edition, Section 4.1,
+printed pp.~99--102, Eqs.~4--1 to 4--8, and Sections 4.2--4.3, from printed
+p.~104, Eqs.~4--9 to 4--20 \cite{sutton}; Oates, third edition,
+Section 3.3, ``Acceleration of a Rocket'', printed pp.~66--67,
+Eqs.~(3.10)--(3.14) \cite{oates}.
+
+The question is how fast a vehicle that is losing mass moves. The answer is
+a momentum balance on a \emph{closed} system --- vehicle plus the mass it
+expels --- and it settles the point that
+Section~\ref{topic:force-one-form} left open: $F=d(Mu)/dt$ is wrong for a
+rocket, and $M\,du/dt=F+\dots$, with $F$ the thrust, is right.
+
+\subsection{Variables, assumptions and notation}
+\label{sec:va-notation}
+The model is flight over a non-rotating Earth.
+\begin{description}\itemsep1pt
+\item[$t$] time, s; the burn occupies $0\le t\le t_p$.
+\item[$\mathbf u(t)$] vehicle velocity, m/s; $u=\lVert\mathbf u\rVert$ is
+  the speed, $u_0=u(0)$, $u_p=u(t_p)$.
+\item[$\hat e(t)$] unit vector along the flight path, $\mathbf u=u\hat e$;
+  $\hat n$ is the in-plane unit normal, $\hat e$ turned by $+\pi/2$.
+\item[$\hat e_T$] unit vector along the thrust (forward nozzle axis).
+\item[$\theta,\ \psi$] angles of $\hat e$ and $\hat e_T$ above the local
+  horizontal, rad.
+\item[$M(t)$] vehicle mass, including the propellant still aboard, kg;
+  $M(0)$ initial, $M_f=M(t_p)$ final (burnout).
+\item[$m_p(t)$] propellant aboard; $M(t)=M_f+m_p(t)$
+  (Eq.~\ref{Eq:MassBookkeeping}).
+\item[$\dot m(t)$] propellant mass flow rate, $\dot m=-\frac{dM}{dt}\ge0$,
+  kg/s.
+\item[$u_{\rm exh},\ p_{\rm exh},\ A_e$] nozzle exit velocity relative to the
+  vehicle (m/s), exit pressure (Pa) and exit area (m$^2$).
+\item[$p_a$] ambient pressure, Pa.
+\item[$F$] thrust, Eq.~\ref{Eq:ThrustEquation}, N.
+\item[$u_e$] effective exhaust velocity, $u_e:=F/\dot m=I_sg_0$, m/s.
+\item[$D,\ L$] drag and lift, N.
+\item[$g$] local gravitational acceleration, m/s$^2$; $g_0$ the standard
+  value.
+\item[$\frac{M_f}{M(0)},\ \zeta$] mass ratio and propellant fraction
+  $\frac{m_p(0)}{M(0)}=1-\frac{M_f}{M(0)}$, Eqs.~\ref{Eq:MassRatioDefinition},
+  \ref{Eq:PropellantMassFractionDefinition}, \ref{Eq:ZetaPlusMR}.
+\end{description}
+Assumptions used throughout: the exhaust leaves uniformly along
+$-\hat e_T$ with relative speed $u_{\rm exh}$; the vehicle does not rotate.
+Each later specialisation states its additional assumptions.
+
+The sources disagree on almost every symbol:
+\begin{center}\small
+\begin{tabular}{llll}
+Ours & Sutton & Hill--Peterson & Oates\\ \hline
+$M(t)$ & $m$ & $\mathcal M$ & $m$\\
+$M(0)$, $M_f$ & $m_0$, $m_f$ & $\mathcal M_0$, $\mathcal M_b$
+  & $m_0$, $m_0-m_p$\\
+$\frac{M_f}{M(0)}$ & $\frac{m_f}{m_0}$ & $\frac1{\mathfrak R}$ & $\frac{m_0-m_p}{m_0}$\\
+$u_e$ & $c$ & $u_{\rm eq}$ & $C$\\
+$u_{\rm exh}$, $p_{\rm exh}$, $p_a$ & $v_2$, $p_2$, $p_3$
+  & $u_e$, $p_e$, $p_a$ & $u_e$, $p_e$, $p_a$\\
+$u$ & $u$ & $u$ & $v$\\
+$F$, $D$ & $F$, $D$ & $\mathcal T$, $\mathfrak D$ & $T$, $D$\\
+$\theta$ & $\theta$ & $\tfrac\pi2-\theta$ & $\tfrac\pi2-\theta$\\
+$t_p$, $g_0$ & $t_p$, $g_0$ & $t_b$, $g_e$ & $\tau$, $g_0$\\
+\end{tabular}
+\end{center}
+Four entries are traps.
+\begin{itemize}\itemsep1pt
+\item Hill and Peterson's $u_e$ is the actual exit velocity, our
+  $u_{\rm exh}$. Our $u_e$ is the effective velocity, their $u_{\rm eq}$.
+\item Hill and Peterson's mass ratio $\mathfrak R=\mathcal M_0/\mathcal M_b$
+  and Oates's mass ratio $m_0/(m_0-m_p)$ are both $\frac{M(0)}{M_f}\ge1$.
+\item Hill and Peterson and Oates measure $\theta$ from the local upward
+  vertical, so their gravity term $-g\cos\theta_{\rm HP}$ is our
+  $-g\sin\theta$. Hill and Peterson's text calls it ``the angle between
+  $\mathbf u$ and $\mathbf g$'' (p.~473), but their Fig.~10.3 draws it
+  between the tail axis, $-\mathbf u$, and $\mathbf g$; the figure is right.
+\item Hill and Peterson's sounding-rocket example writes $u_e$ where its
+  derivation needs $u_{\rm eq}$.
+\end{itemize}
+
+\subsection{The momentum balance, as Hill and Peterson argue it}
+\label{sec:va-momentum}
+Newton's second law applies to a fixed collection of matter. The vehicle
+is not one: it loses mass. Hill and Peterson therefore follow a fixed
+collection over a short interval. Fix $t$ and $dt>0$ (a small number here),
+and take as the system $S$ everything aboard the vehicle at time $t$, of mass
+$M$. During $[t,t+dt]$ the vehicle expels the parcel $dm=\dot m\,dt$, to
+first order. At $t+dt$, $S$ consists of the vehicle, of mass $M-dm$ and speed
+$u+du$, and the parcel. The parcel leaves at some instant in the interval,
+with velocity $-u_{\rm exh}\hat e$ relative to the vehicle ($\psi=\theta$).
+Its speed is therefore $u+\alpha\,du-u_{\rm exh}$ for some
+$\alpha\in[0,1]$. Components are taken along the fixed vector $\hat e(t)$:
+\[
+\begin{aligned}
+ P(t)&=Mu,\\
+ P(t+dt)&=(M-dm)(u+du)+dm\,(u+\alpha\,du-u_{\rm exh}).
+\end{aligned}
+\]
+Expanding the two products,
+\[
+\begin{aligned}
+ (M-dm)(u+du)&=Mu+M\,du-dm\,u-dm\,du,\\
+ dm\,(u+\alpha\,du-u_{\rm exh})&=dm\,u+\alpha\,dm\,du-dm\,u_{\rm exh} .
+\end{aligned}
+\]
+Add them and subtract $P(t)$. The terms $\pm dm\,u$ cancel:
+\begin{equation}\label{eq:va-momentum-change}
+ P(t+dt)-P(t)=M\,du-dm\,u_{\rm exh}-(1-\alpha)\,dm\,du .
+\end{equation}
+The last term is second order and is dropped.
+
+The external forces on $S$ along $\hat e$ are:
+\begin{description}\itemsep1pt
+\item[Pressure.] The ambient pressure is $p_a$ over the closed surface of
+  $S$, except on the jet cross-section $A_e$, where the earlier exhaust
+  presses with $p_{\rm exh}$. As in the derivation of
+  Eq.~\ref{Eq:ThrustEquation}, a uniform $p_a$ over a closed surface
+  integrates to zero. This leaves $(p_{\rm exh}-p_a)A_e$ along $+\hat e$.
+\item[Drag.] $-D$, which collects the viscous traction and the departure of
+  the external pressure from $p_a$.
+\item[Gravity.] $-Mg\sin\theta$.
+\end{description}
+Equating the impulse over $dt$ to Eq.~\ref{eq:va-momentum-change},
+substituting $dm=\dot m\,dt$, dividing by $dt$ and letting $dt\to0$,
+\[
+ M\frac{du}{dt}-\dot m\,u_{\rm exh}=(p_{\rm exh}-p_a)A_e-D-Mg\sin\theta .
+\]
+Moving $\dot m\,u_{\rm exh}$ to the right and using
+Eq.~\ref{Eq:ThrustEquation},
+\begin{equation}\label{eq:va-tangential}
+\begin{aligned}
+ M\frac{du}{dt}
+ &=\dot m\,u_{\rm exh}+(p_{\rm exh}-p_a)A_e-D-Mg\sin\theta\\
+ &=F-D-Mg\sin\theta .
+\end{aligned}
+\end{equation}
+
+\paragraph{Sources side by side.} Hill and Peterson's
+\[
+ \mathcal M\,du-dm\,u_e
+ =\bigl[(p_e-p_a)A_e-\mathfrak D-\mathcal Mg\cos\theta_{\rm HP}\bigr]dt
+ \qquad\text{\cite[Eq.~(10.8)]{hillpeterson}}
+\]
+is Eq.~\ref{eq:va-tangential} times $dt$. They assign the parcel the speed
+$u$ before and $u-u_e$ after, which differs from
+Eq.~\ref{eq:va-momentum-change} only in the second-order $\alpha$ term.
+Oates writes the same balance directly,
+$T-D-gm\cos\theta=m\,dv/dt$ \cite[Eq.~(3.10)]{oates}. Sutton's Eq.~4--13,
+$m\,du/dt=F\cos(\psi-\theta)-D-mg\sin\theta$, is Eq.~\ref{eq:va-tangential}
+with $\psi=\theta$; his Eq.~4--1, $F=m\,du/dt$, is its gravity-free,
+drag-free case. He calls it Newton's second law, but it is not $d(mu)/dt$.
+
+\paragraph{Why $F=d(Mu)/dt$ fails.} By the product rule,
+\[
+ \frac{d}{dt}(Mu)=M\frac{du}{dt}+u\frac{dM}{dt}
+ =M\frac{du}{dt}-\dot m\,u .
+\]
+Change to another inertial frame, $u\mapsto u+w$ with $w$ constant. Then
+$M\,du/dt$ is unchanged, but $d(Mu)/dt$ changes by $-\dot m\,w$. Forces do
+not depend on the inertial frame, so $F=d(Mu)/dt$ cannot hold when
+$\dot m\neq0$. Equation~\ref{eq:va-tangential} contains only the relative
+exhaust velocity, so it is frame-independent.
+
+\subsection{The same balance, rigorously}
+\label{sec:va-rigour}
+\subsubsection*{What the increment argument proves}
+Read literally, the display for $P(t+dt)$ has four problems.
+\begin{enumerate}\itemsep1pt
+\item $dt$, $dm$, $du$ are finite increments $h$, $\Delta m$, $\Delta u$,
+  not differentials. The display is not an identity; it is a first-order
+  expansion with an unstated remainder.
+\item The parcel does not leave at one instant. Mass leaves continuously
+  over $[t,t+h]$, so its momentum is an integral over emission times, and
+  after leaving it is pushed by the jet and by gravity for a time at most
+  $h$.
+\item Momentum is a vector. For a vector-valued $\mathbf u(t)$ there is in
+  general \emph{no} $\alpha\in[0,1]$ with
+  $\mathbf u(\tau)=\mathbf u(t)+\alpha(\mathbf u(t+h)-\mathbf u(t))$: the
+  mean value theorem fails for curves that do not lie on a line, for
+  example $\mathbf u(t)=(\cos t,\sin t)$. What is true, and all that is
+  needed, is $\lVert\mathbf u(\tau)-\mathbf u(t)\rVert\le
+  h\sup\lVert\dot{\mathbf u}\rVert$.
+\item Taking components along $\hat e(t)$ is legitimate only because
+  $\hat e(t)$ is held fixed: pairing with a fixed vector is linear and
+  commutes with $d/dh$.
+\end{enumerate}
+With $M$ and $\mathbf u$ of class $C^1$ and bounded forces, items 2 and 3
+contribute terms of norm at most $Ch^2$. So the honest content of the
+display is
+\[
+ \mathbf P_S(t+h)-\mathbf P_S(t)
+ =M\,(\mathbf u(t+h)-\mathbf u(t))-\Delta m\,u_{\rm exh}\hat e_T
+  +\mathbf R(h),
+ \qquad \lVert\mathbf R(h)\rVert\le Ch^2,
+\]
+which says that $h\mapsto\mathbf P_S(t+h)$ is differentiable at $h=0$ with
+derivative $M\dot{\mathbf u}-\dot m\,u_{\rm exh}\hat e_T$. That derivative is
+all the argument needs, and all it can deliver. The derivation below obtains
+it exactly, without increments.
+
+\subsubsection*{Where $\mathbf P$ lives, and what $dt$ is}
+\begin{description}\itemsep2pt
+\item[Spacetime and time.] Galilean spacetime is a $4$-dimensional affine
+  space $\mathbb A$ with translation space $W$ and a nonzero linear map
+  $W\to\R$, the clock. The clock defines a closed, nowhere-vanishing
+  $1$-form $dt$ on $\mathbb A$. Its kernel $V\subset W$, the spatial
+  translations, carries the Euclidean inner product, and the level sets
+  $t=\text{const}$ are Euclidean $3$-spaces $E$ with translation space $V$.
+  On the time line $I\subset\R$, $dt$ is the coordinate $1$-form,
+  $dt(\partial_t)=1$. So yes, $dt$ is a $1$-form. The ``small $dt$'' of the
+  increment argument is the number $dt(h\,\partial_t)=h$.
+\item[Velocity and frames.] The vehicle's world line is a curve
+  $\gamma:I\to\mathbb A$ with $dt(\gamma')=1$. An inertial frame is a choice
+  of $e_0\in W$ with $dt(e_0)=1$, and then $\mathbf u=\gamma'-e_0\in V$.
+  Changing the frame, $e_0\mapsto e_0-\mathbf w$, adds $\mathbf w\in V$ to
+  every velocity: the Galilean boost of the previous paragraph.
+\item[Momentum.] Because $E$ is affine, every tangent space $T_xE$ is
+  canonically $V$. Momenta of particles at \emph{different} points can
+  therefore be added, which is the flatness used in
+  Proposition~\ref{prop:impulse-momentum}. Formally: the translation group
+  $(V,+)$ acts on the configuration space $Q=E^N$ of $N$ particles, its Lie
+  algebra is $V$, and the momentum map of the induced action on the
+  symplectic manifold $T^*Q$ is
+  \[
+   J:T^*Q\to V^*,\qquad
+   \langle J(q,p),\boldsymbol\xi\rangle=\sum_a p_a(\boldsymbol\xi),
+  \]
+  each $p_a\in T^*_{q_a}E\cong V^*$. For $p_a=m_a\mathbf v_a^\flat$
+  (Proposition~\ref{prop:momentum-covector}), $J=\mathbf P^\flat$ with
+  $\mathbf P=\sum_am_a\mathbf v_a$. For a continuum,
+  $\mathbf P=\int\rho\,\mathbf v\,\mathrm{vol}$. So the total momentum of a
+  system is an element of $V^*$, identified with $V$ by the metric. Its time
+  history is a smooth curve $\mathbf P:I\to V^*$, and its differential
+  $d\mathbf P=\dot{\mathbf P}\,dt$ is a $V^*$-valued $1$-form on $I$. In a
+  curved space there is no translation group, and no total momentum.
+\item[Newton's law as forms.] For a closed system, $d\mathbf P=\mathbf F\,dt$
+  in $\Omega^1(I;V^*)$, with $\mathbf F$ the external force. This is the
+  forced Noether balance, Eq.~\ref{Eq:ForcedSymmetryBalance}, applied to every
+  translation generator $\boldsymbol\xi\in V$ at once. Integrating over
+  $[t_0,t_1]$ (Stokes on a $1$-manifold with boundary) gives the impulse
+  identity.
+\item[Products of differentials.] Hill and Peterson's Eq.~(10.8),
+  $\mathcal M\,du-u_e\,dm=[\dots]\,dt$, is an exact identity between
+  $1$-forms on $I$, with $dm:=\dot m\,dt=-d\mathcal M$. Evaluating it on
+  $h\,\partial_t$ gives the increment reading to first order. A product such
+  as $dm\,du$ is not a $1$-form. As a tensor it is $dm\otimes du$, quadratic
+  in $h$, and its antisymmetric part $dm\wedge du$ vanishes identically
+  because $\Lambda^2T^*I=0$ on a $1$-manifold. Dropping it is exactly what
+  taking the differential means.
+\end{description}
+
+\subsubsection*{Derivation from the balance of momentum of a material body}
+Let the matter be a continuum with density $\rho(t,x)$ and spatial velocity
+field $\mathbf v(t,x)$, and let $\varphi_s$ be its motion, so that a material
+region $\mathcal P$ occupies $\varphi_s(\mathcal P)\subset E$ at time $s$. The
+axiom is Euler's balance of linear momentum: for every material region,
+\begin{equation}\label{eq:va-euler-axiom}
+ \frac{d}{ds}\int_{\varphi_s(\mathcal P)}\rho\,\mathbf v\,\mathrm{vol}
+ =\oint_{\partial\varphi_s(\mathcal P)}\mathbf t\,dA
+  +\int_{\varphi_s(\mathcal P)}\rho\,\mathbf g\,\mathrm{vol},
+\end{equation}
+with $\mathbf t$ the Cauchy traction. The integrands are $V$-valued
+$3$-forms on $E$; they are integrated componentwise in the fixed space $V$.
+
+\paragraph{Transport theorem.} Let $\Omega_s=\Phi_s(\Omega_t)$, where
+$\Phi_s$ is the flow of a time-dependent vector field $\mathbf w$ with
+$\Phi_t=\mathrm{id}$, and let $\omega_s=f(s,\cdot)\,\mathrm{vol}$ with $f$
+$V$-valued. Pull back to the fixed region, differentiate, and use Cartan's
+formula $\mathcal L_{\mathbf w}=d\,\iota_{\mathbf w}+\iota_{\mathbf w}d$,
+with $d\omega=0$ in top degree, and Stokes:
+\begin{equation}\label{eq:va-transport}
+\begin{aligned}
+ \frac{d}{ds}\Big|_{s=t}\int_{\Omega_s}\omega_s
+ &=\frac{d}{ds}\Big|_{s=t}\int_{\Omega_t}\Phi_s^*\omega_s
+ =\int_{\Omega_t}\Bigl(\frac{\partial\omega}{\partial s}
+   +\mathcal L_{\mathbf w}\omega\Bigr)\\
+ &=\int_{\Omega_t}\frac{\partial f}{\partial t}\,\mathrm{vol}
+   +\oint_{\partial\Omega_t}f\,\iota_{\mathbf w}\mathrm{vol}.
+\end{aligned}
+\end{equation}
+On $\partial\Omega_t$, $\iota_{\mathbf w}\mathrm{vol}=\langle\mathbf w,
+\mathbf n\rangle\,dA$ with $\mathbf n$ the outward normal.
+
+\paragraph{The vehicle as a moving region.} Let $B_s$ be the region occupied
+by the vehicle and its internal contents. Without rotation it translates:
+its boundary moves with the vehicle velocity $\mathbf u(s)$. Fix $t$, and
+let $\mathcal P$ be the matter inside the vehicle at that instant,
+$\varphi_t(\mathcal P)=B_t$. Apply Eq.~\ref{eq:va-transport} twice at
+$s=t$: to $\varphi_s(\mathcal P)$, with $\mathbf w=\mathbf v$, and to $B_s$,
+with $\mathbf w=\mathbf u$. The two regions coincide at $s=t$, so the volume
+integrals agree, and subtracting,
+\begin{equation}\label{eq:va-material-vs-region}
+ \frac{d}{ds}\Big|_{s=t}\int_{\varphi_s(\mathcal P)}\rho f\,\mathrm{vol}
+ =\frac{d}{ds}\Big|_{s=t}\int_{B_s}\rho f\,\mathrm{vol}
+  +\oint_{\partial B_t}\rho f\,\langle\mathbf v-\mathbf u,\mathbf n\rangle\,dA .
+\end{equation}
+Matter crosses $\partial B_t$ only through the exit plane $A_e$, where
+$\mathbf n=-\hat e_T$ and $\mathbf v-\mathbf u=-u_{\rm exh}\hat e_T$, so
+$\langle\mathbf v-\mathbf u,\mathbf n\rangle=u_{\rm exh}$.
+
+\emph{Mass}, $f=1$. The mass of $\mathcal P$ is constant, so
+\[
+ 0=\frac{dM}{dt}+\int_{A_e}\rho\,u_{\rm exh}\,dA
+ =\frac{dM}{dt}+\dot m,
+ \qquad \dot m:=\rho_{\rm exh}u_{\rm exh}A_e .
+\]
+
+\emph{Momentum}, $f=\mathbf v$. Write the momentum inside $B_s$ as
+$\int_{B_s}\rho\mathbf v\,\mathrm{vol}=M\mathbf u+\mathbf Q$, where
+$\mathbf Q:=\int_{B_s}\rho(\mathbf v-\mathbf u)\,\mathrm{vol}$ is the momentum
+of the contents relative to the vehicle. Assume $\mathbf Q$ constant:
+propellant at rest in the tanks contributes nothing as it drains, and the
+feed, chamber and nozzle flows are quasi-steady. Then
+\[
+\begin{aligned}
+ \frac{d}{dt}\int_{\varphi_t(\mathcal P)}\rho\mathbf v\,\mathrm{vol}
+ &=\frac{dM}{dt}\mathbf u+M\dot{\mathbf u}
+   +\int_{A_e}\rho\,(\mathbf u-u_{\rm exh}\hat e_T)\,u_{\rm exh}\,dA\\
+ &=-\dot m\,\mathbf u+M\dot{\mathbf u}
+   +\dot m\,\mathbf u-\dot m\,u_{\rm exh}\hat e_T\\
+ &=M\dot{\mathbf u}-\dot m\,u_{\rm exh}\hat e_T .
+\end{aligned}
+\]
+The cancelling $\pm\dot m\,\mathbf u$ is Hill and Peterson's cancellation of
+$\pm dm\,u$, and it is why the result is frame-independent.
+
+\emph{Forces.} On $\partial B_t\setminus A_e$ split the traction into the
+ambient part and the aerodynamic part, and define the aerodynamic resultant
+\[
+ \mathbf A:=\oint_{\partial B_t\setminus A_e}(\mathbf t+p_a\mathbf n)\,dA
+ =-D\,\hat e+L\,\hat n .
+\]
+On $A_e$, $\mathbf t=-p_{\rm exh}\mathbf n$. Since $p_a$ is constant,
+$\oint_{\partial B_t}p_a\mathbf n\,dA=0$ by Stokes, and
+\[
+ \oint_{\partial B_t}\mathbf t\,dA
+ =-\int_{A_e}(p_{\rm exh}-p_a)\,\mathbf n\,dA+\mathbf A
+ =(p_{\rm exh}-p_a)A_e\,\hat e_T+\mathbf A .
+\]
+With uniform $\mathbf g$, the body force is $M\mathbf g$.
+
+\emph{Result.} Substituting into Eq.~\ref{eq:va-euler-axiom} and moving the
+flux term to the right,
+\begin{equation}\label{eq:va-vector}
+ M\dot{\mathbf u}
+ =\bigl[\dot m\,u_{\rm exh}+(p_{\rm exh}-p_a)A_e\bigr]\hat e_T
+  +\mathbf A+M\mathbf g
+ =F\,\hat e_T-D\,\hat e+L\,\hat n+M\mathbf g .
+\end{equation}
+
+\paragraph{Planar components.} With $\hat e=(\cos\theta,\sin\theta)$,
+$\hat n=(-\sin\theta,\cos\theta)$ and $\mathbf g=(0,-g)$, differentiate
+$\mathbf u=u\hat e$:
+$\dot{\mathbf u}=\dot u\,\hat e+u\dot\theta\,\hat n$. The pairings are
+$\langle\hat e_T,\hat e\rangle=\cos(\psi-\theta)$,
+$\langle\hat e_T,\hat n\rangle=\sin(\psi-\theta)$,
+$\langle\mathbf g,\hat e\rangle=-g\sin\theta$ and
+$\langle\mathbf g,\hat n\rangle=-g\cos\theta$. Pair
+Eq.~\ref{eq:va-vector} with $\hat e$ and with $\hat n$:
+\begin{equation}\label{eq:va-planar}
+\begin{aligned}
+ M\frac{du}{dt}&=F\cos(\psi-\theta)-D-Mg\sin\theta,\\
+ Mu\frac{d\theta}{dt}&=F\sin(\psi-\theta)+L-Mg\cos\theta .
+\end{aligned}
+\end{equation}
+These are Sutton's Eqs.~4--13 and 4--14. With $\psi=\theta$ the first is
+Eq.~\ref{eq:va-tangential}. The vector form gives both at once; the scalar
+argument gives only the first. A rotating vehicle adds terms (jet damping,
+Coriolis forces on the internal flow) because its boundary velocity is then
+$\mathbf u+\boldsymbol\omega\times\mathbf r$.
+
+\subsubsection*{Free space: conservation of the momentum map}
+With no external force, the closed system of vehicle plus all exhaust has
+constant total momentum. Let $\mathbf U(\tau,t)$ be the velocity at time $t$
+of the exhaust shed at time $\tau$, so $\mathbf U(\tau,\tau)=\mathbf u(\tau)
+-u_{\rm exh}\hat e_T$. Then
+\[
+ \mathbf P(t)=M(t)\mathbf u(t)+\int_0^t\dot m(\tau)\,\mathbf U(\tau,t)\,d\tau .
+\]
+Differentiate, using the Leibniz rule for the integral:
+\[
+ 0=\frac{d\mathbf P}{dt}
+ =-\dot m\,\mathbf u+M\dot{\mathbf u}
+  +\dot m\,(\mathbf u-u_{\rm exh}\hat e_T)
+  +\int_0^t\dot m(\tau)\frac{\partial\mathbf U}{\partial t}(\tau,t)\,d\tau .
+\]
+The last integral is the rate of change of momentum of the exhaust already
+outside, which in vacuum is the push $-p_{\rm exh}A_e\hat e_T$ it receives
+across the exit plane. Hence $M\dot{\mathbf u}=(\dot m\,u_{\rm exh}
++p_{\rm exh}A_e)\hat e_T=F\hat e_T$ with $p_a=0$, which is
+Eq.~\ref{eq:va-vector} in free space. If the exhaust is taken to coast after
+leaving, the integral is zero and the relative speed is the effective $u_e$.
+
+\paragraph{A Lagrangian route, and why it needs care.} Ernest's AE121
+Problem Set~2 solution writes $M(t)=M(0)-m(t)$, with $m(t)$ the mass
+expelled, and the ``Lagrangian''
+\[
+ \mathcal L=\tfrac12Mu^2+\tfrac12\int_0^t\dot m\,d\tau\,(u-u_e)^2 ,
+\]
+the second term the kinetic energy of the exhaust, $u_e$ the exhaust speed
+relative to the vehicle. The Euler--Lagrange equation then gives
+$-\dot mu_i+M\dot u_i+\dot mu_i-\dot mu_e=0$, that is
+\[
+ \boxed{\dot u_i=\frac{\dot mu_e}{M}} .
+\]
+The result is right, but two steps cancel each other. First, every past
+parcel is given the current speed $u(t)-u_e$; the parcel shed at $\tau$
+moves at $u(\tau)-u_e$. Second, in
+\[
+ \frac{d}{dt}\int_0^t\dot m(\tau)\bigl(u(t)-u_e\bigr)d\tau
+ =\dot m(t)\bigl(u(t)-u_e\bigr)+\Bigl(\int_0^t\dot m\,d\tau\Bigr)\dot u ,
+\]
+the second term was dropped. Keeping it, without the first fix, gives
+$M(0)\dot u=\dot mu_e$, a constant-mass equation. The vehicle alone has no
+Lagrangian, because it is not a closed system. The correct object is the
+momentum map of the closed system above, with coasting exhaust:
+\[
+ \frac{d}{dt}\Bigl[Mu+\int_0^t\dot m(\tau)\bigl(u(\tau)-u_e\bigr)d\tau\Bigr]
+ =-\dot mu+M\dot u+\dot m\,(u-u_e)=M\dot u-\dot mu_e=0 .
+\]
+
+\subsection{Integrating: the ideal increment and the losses}
+\label{sec:va-integration}
+Divide Eq.~\ref{eq:va-tangential} by $M$ and write
+$F=u_e\dot m=-u_e\frac{dM}{dt}$:
+\begin{equation}\label{eq:va-acceleration}
+ \frac{du}{dt}=-\frac{u_e}{M}\frac{dM}{dt}-\frac{D}{M}-g\sin\theta .
+\end{equation}
+This is Hill and Peterson's Eq.~(10.9), Oates's Eq.~(3.11), and Sutton's
+Eq.~4--15 with $\psi=\theta$.
+
+\paragraph{Gravity-free, drag-free, constant flow.} Sutton's Section~4.1
+route: with $\dot m=m_p/t_p$ constant, $m(t)=\frac{m_p}{t_p}t$ expelled and
+\[
+ M(t)=M(0)-\frac{m_p}{t_p}t
+ =M(0)\Bigl(1-\frac{m_p}{M(0)}\frac{t}{t_p}\Bigr)
+ =M(0)\Bigl(1-\zeta\frac{t}{t_p}\Bigr),
+\]
+Sutton's Eqs.~4--2 and 4--3. Then $F=\dot mu_e=M\,du/dt$ gives
+$\frac{\dot m\,dt}{M}=\frac{du}{u_e}$, and
+\[
+\begin{aligned}
+ \frac{\Delta u}{u_e}
+ &=\int_0^{t_p}\frac{\frac{m_p}{t_p}\,dt}{M(0)-\frac{m_p}{t_p}t}
+ =\Bigl[-\ln\Bigl(M(0)-\frac{m_p}{t_p}t\Bigr)\Bigr]_0^{t_p}\\
+ &=\ln M(0)-\ln\bigl(M(0)-m_p\bigr)
+ =\ln\frac{M(0)}{M(0)-m_p}=\ln\frac{M(0)}{M_f}.
+\end{aligned}
+\]
+Thus
+\begin{equation}\label{eq:va-ideal}
+\begin{aligned}
+ \Delta u&=u_e\ln\frac{M(0)}{M_f},\\
+ e^{\Delta u/u_e}&=\frac{M(0)}{M_f},\\
+ \frac{M_f}{M(0)}&=e^{-\Delta u/u_e}.
+\end{aligned}
+\end{equation}
+Sutton's Eqs.~4--5 to 4--7, Hill and Peterson's Eqs.~(10.10)--(10.11)
+($\Delta u=u_{\rm eq}\ln\mathfrak R$), and Oates's Eq.~(3.14). Solving for
+the propellant, $m_p=M(0)-M_f$,
+\begin{equation}\label{eq:va-propellant}
+ m_p=M_f\bigl(e^{\Delta u/u_e}-1\bigr)=M(0)\bigl(1-e^{-\Delta u/u_e}\bigr),
+\end{equation}
+Sutton's Eq.~4--8. By Eq.~\ref{Eq:ZetaPlusMR}, $\zeta=1-\frac{M_f}{M(0)}$; for
+example $M(0)/M_f=5$ gives $\zeta=1-\frac15=0.8$. Constant flow was a
+convenience: $\int\dot m\,dt/M=-\int dM/M$ for any flow history.
+
+\paragraph{Payload and dead weight.} Oates splits the final mass into the
+payload $m_L$ and the dead weight $m_d$ (structure, engines, unused
+propellant), $M_f=m_L+m_d$ \cite[p.~67]{oates}. With the payload ratio
+$\lambda:=m_L/M(0)$ and the dead-weight ratio $\delta:=m_d/M(0)$,
+\[
+ \frac{M_f}{M(0)}=\frac{m_L+m_d}{M(0)}=\lambda+\delta,
+ \qquad
+ \frac{M(0)}{M(0)-m_p}=\frac1{\lambda+\delta}.
+\]
+
+\paragraph{Keeping the pressure thrust explicit.} Oates's route: with
+$p_a=0$ and $D=0$, $g=0$, and $\dot m=m_p/t_p$ constant, integrate the two
+parts of $F/M$ separately:
+\[
+\begin{aligned}
+ \Delta u
+ &=-u_{\rm exh}\ln\frac{M(0)-m_p}{M(0)}
+  +\Bigl[\frac{(p_{\rm exh}-p_a)A_e}{-m_p/t_p}
+   \ln\Bigl(M(0)-\frac{m_p}{t_p}t\Bigr)\Bigr]_0^{t_p}\\
+ &=-u_{\rm exh}\ln\frac{M(0)-m_p}{M(0)}
+  +\frac{(p_{\rm exh}-p_a)A_e}{-\dot m}\ln\frac{M(0)-m_p}{M(0)}\\
+ &=\Bigl[u_{\rm exh}+\frac{(p_{\rm exh}-p_a)A_e}{\dot m}\Bigr]
+   \ln\frac{M(0)}{M(0)-m_p}
+ =u_e\ln\frac{M(0)}{M_f} .
+\end{aligned}
+\]
+The bracket is $u_e$ by Eq.~\ref{Eq:ThrustEquation}; the pressure term has
+the same logarithm only because $(p_{\rm exh}-p_a)A_e/\dot m$ was constant.
+
+\paragraph{With gravity and drag.} Integrate Eq.~\ref{eq:va-acceleration}
+over the burn and define the two losses
+\begin{equation}\label{eq:va-losses}
+ \Delta u_g:=\int_0^{t_p}g\sin\theta\,dt,\qquad
+ \Delta u_D:=\int_0^{t_p}\frac{D}{M}\,dt .
+\end{equation}
+With $u_e$ constant the first term is
+$-u_e\int_{M(0)}^{M_f}dM/M=u_e\ln\frac{M(0)}{M_f}$, so
+\begin{equation}\label{eq:va-budget}
+ u_p-u_0=u_e\ln\frac{M(0)}{M_f}-\Delta u_g-\Delta u_D .
+\end{equation}
+This is Oates's Eq.~(3.13) and Sutton's Eq.~4--19.
+\begin{itemize}\itemsep1pt
+\item $D=0$, $g$ constant: $\Delta u_g=g\,t_p\,\overline{\sin\theta}$, the
+  time average over the burn. This is Hill and Peterson's Eq.~(10.13),
+  $\Delta u=u_{\rm eq}\ln\mathfrak R-g\,\overline{\cos\theta}\,t_b$, in their
+  angle. For variable $g$, $\Delta u_g=t_p\,\overline{g\sin\theta}$, the
+  average of the product.
+\item Vertical flight, constant $\dot m$: with
+  $D=C_D\tfrac12\rho u^2A$ and $M=M(0)(1-\zeta t/t_p)$,
+  \[
+   \Delta u_D=\int_0^{t_p}
+   \frac{C_D\tfrac12\rho u^2A}{M(0)(1-\zeta t/t_p)}\,dt
+   =\frac{C_DA}{M(0)}B,
+   \quad
+   B:=\int_0^{t_p}\frac{\tfrac12\rho u^2}{1-\zeta t/t_p}\,dt ,
+  \]
+  the drag term of Sutton's Eq.~4--19. Taking $C_D$ outside the integral
+  assumes it is constant, but it depends on Mach number.
+\end{itemize}
+In ascent $\sin\theta>0$ and $D\ge0$, so both losses are nonnegative and
+$u_p-u_0\le u_e\ln\frac{M(0)}{M_f}$.
+
+\paragraph{When $u_e$ is not constant.} The first term is
+$\int_0^{t_p}u_e\,\dot m/M\,dt$. Sutton's $\bar c$ in Eq.~4--19 is the
+average that makes $\bar u_e\ln\frac{M(0)}{M_f}$ equal to it:
+\[
+ \bar u_e:=\frac{\int_0^{t_p}u_e\,\frac{\dot m}{M}\,dt}
+          {\int_0^{t_p}\frac{\dot m}{M}\,dt},
+ \qquad
+ \int_0^{t_p}\frac{\dot m}{M}\,dt=\ln\frac{M(0)}{M_f} .
+\]
+The weight is $\dot m/M$, not the $\dot m$ of
+Proposition~\ref{prop:weighted-mean}: propellant burned late, when the
+vehicle is light, counts for more. In the atmosphere $u_e=u_{\rm exh}
++(p_{\rm exh}-p_a)A_e/\dot m$ rises as $p_a$ falls with altitude.
+
+\subsection{Exercises: gravity-free flight}
+\begin{exercise}[Sutton and Biblarz 9e, Chapter 4, Problem 1 \cite{sutton}]
+For a vehicle in gravitationless space, determine the mass ratio necessary
+to boost the vehicle velocity by (a) 1600 m/sec and (b) 3400 m/sec; the
+effective exhaust velocity is 2000 m/sec. If the initial total vehicle mass
+is 4000 kg, what are the corresponding propellant masses?
+\emph{Answer:} (a) 2204 kg.
+\end{exercise}
+\begin{proof}[Solution]
+By Eq.~\ref{eq:va-ideal}, $\frac{M_f}{M(0)}=e^{-\Delta u/u_e}$, and by
+Eq.~\ref{eq:va-propellant}, $m_p=M(0)\bigl(1-\frac{M_f}{M(0)}\bigr)$.
+\[
+\begin{aligned}
+ \text{(a)}&\quad \frac{M_f}{M(0)}=e^{-1600/2000}=e^{-0.8}=0.449329,\\
+ &\quad m_p=4000\times0.550671=2202.7\ \mathrm{kg};\\
+ \text{(b)}&\quad \frac{M_f}{M(0)}=e^{-3400/2000}=e^{-1.7}=0.182684,\\
+ &\quad m_p=4000\times0.817316=3269.3\ \mathrm{kg}.
+\end{aligned}
+\]
+The printed 2204 kg follows from rounding $\frac{M_f}{M(0)}$ to $0.449$.
+\end{proof}
+
+\begin{exercise}[Sutton and Biblarz 9e, Chapter 4, Problem 4 \cite{sutton}]
+A research space vehicle in gravity-free and drag-free space launches a
+smaller spacecraft into a meteor shower region. The 2-kg sensitive
+instrument package of this spacecraft (25 kg total mass) limits the maximum
+acceleration to no more than 50 m/sec$^2$. It is launched by a solid
+propellant rocket motor ($I_s=260$ sec and $\zeta=0.88$). Assume
+instantaneous start and stop of the rocket motor.
+(a) Determine the minimum allowable burn time, assuming steady constant
+propellant mass flow;
+(b) Determine the maximum velocity relative to the launch vehicle.
+(c) Solve for (a) and (b) when half of the total impulse is delivered at
+the previous propellant mass flow rate, with the other half at 20\% of this
+mass flow rate.
+\end{exercise}
+\paragraph{Solution.} Take $\zeta$ for the whole 25 kg spacecraft. With
+constant thrust $F=I_sg_0\dot m=I_sg_0\zeta M(0)/t_p$, the acceleration
+$a=F/M(t)$ grows as the mass falls, so its maximum is at burnout
+(Eq.~\ref{Eq:BurnoutAcceleration}):
+\[
+ a_f=\frac{F}{M_f}=\frac{I_sg_0\zeta}{t_p}\,\frac{M(0)}{M_f}
+ =\frac{I_sg_0}{t_p}\,\frac{1}{M(0)/m_p-1}.
+\]
+(a) $a_f\le50$ is a \emph{lower} bound on the burn time, since a longer burn
+lowers $a_f$:
+\[
+ t_p\ge\frac{I_sg_0}{50}\,\frac{1}{1/0.88-1}
+ =\frac{260\times9.80665}{50}\times7.3333=373.96\ \mathrm{s}
+\]
+(373.71 s with $g_0=9.8$).
+(b) By Eq.~\ref{eq:va-ideal},
+$\Delta u=-I_sg_0\ln(1-\zeta)=2549.73\times\ln(1/0.12)=5406.1\ \mathrm{m/s}$
+(5402.4 m/s with $g_0=9.8$). Part (c) is not yet worked.
+
+\subsection{Forces in the atmosphere}
+\label{sec:va-atmosphere}
+\paragraph{Lift and drag.} With $A$ a reference (frontal) area and $\rho$ the
+local air density,
+\begin{equation}\label{eq:va-lift-drag}
+ L=C_L\tfrac12\rho Au^2,\qquad D=C_D\tfrac12\rho Au^2 ,
+\end{equation}
+Sutton's Eqs.~4--10 and 4--11 and Hill and Peterson's Eq.~(10.14). The
+coefficients depend on Mach number and on the angle of attack. Hill and
+Peterson fit the density by $\rho(h)=a\exp(-bh^{1.15})$ with
+$a=1.2\ \mathrm{kg/m^3}$, $b=2.9\times10^{-5}$ for $h$ in metres; it falls
+to 1\% of its sea-level value by 30 km. Above 300 km the density varies by
+up to a factor of two with solar activity and between day and night, the
+main uncertainty in orbital drag (Sutton Section~4.2).
+
+\paragraph{Gravity.} Neglect the Earth's oblateness and local variations.
+Newton's law of gravitation for a mass $M$ at distance $r$ from the centre
+of an Earth of mass $M_e$ and radius $R_0$, and its value at the surface,
+\[
+ F=\frac{GM_eM}{r^2},\qquad Mg_0=\frac{GM_eM}{R_0^2},
+\]
+divide to give, with $r=R_0+h$,
+\begin{equation}\label{eq:va-gravity}
+ g=g_0\frac{R_0^2}{r^2}=g_0\Bigl(\frac{R_0}{R_0+h}\Bigr)^2,
+\end{equation}
+Sutton's Eq.~4--12 and Hill and Peterson's Eq.~(10.12). At 100 miles,
+$g=0.95g_0$.
+
+\paragraph{Wingless vehicles.} With $L=0$, $\psi=\theta$ and constant
+$\dot m$, Eqs.~\ref{eq:va-planar} divided by $M=M(0)(1-\zeta t/t_p)$ become
+\begin{equation}\label{eq:va-wingless}
+\begin{aligned}
+ \frac{du}{dt}
+ &=\frac{u_e\zeta/t_p}{1-\zeta t/t_p}-g\sin\theta
+  -\frac{C_D\tfrac12\rho u^2A/M(0)}{1-\zeta t/t_p},\\
+ u\frac{d\theta}{dt}&=-g\cos\theta ,
+\end{aligned}
+\end{equation}
+Sutton's Eq.~4--17 and the reduced Eq.~4--16. The thrust term is
+$F/M=(u_e\zeta M(0)/t_p)/M$, with $\zeta/t_p$ and not $\zeta t/t_p$ in the
+numerator. Vertical flight, $\theta=\pi/2$, gives Sutton's Eq.~4--18.
+
+\subsection{Turning, and why \texorpdfstring{$u_e\ln\frac{M(0)}{M_f}$}{u_e ln(M(0)/M_f)} is the budget}
+\label{sec:va-budget}
+The two lines of Eq.~\ref{eq:va-wingless} are a gravity turn: gravity alone
+bends the path. Vertical flight, $\theta=\pi/2$, makes the second right side
+vanish, so a gravity turn must start at some $\theta(0)<\pi/2$; that is Hill
+and Peterson's initial angle $\theta_1$ from the vertical, their Fig.~10.5.
+
+Hill and Peterson integrate the trajectory by stepping the velocity vector.
+Over each $\delta t$ they hold $\mathfrak D/\mathcal M$, $g$ and $\theta$
+fixed and add three increments, from thrust, drag and gravity. That is the
+explicit Euler method applied to Eq.~\ref{eq:va-vector}. Its global error is
+$O(\delta t)$, which is their remark that accuracy depends on $\delta t$
+relative to $t_b$. A Runge--Kutta step (the Runge--Kutta topic of the master)
+is the natural replacement.
+
+The thrust increment over $\delta t$ is
+$\delta\mathbf u_F=(F/M)\,\hat e_T\,\delta t$. To first order its magnitude
+is $\lVert\delta\mathbf u_F\rVert=(u_e\dot m/M)\,\delta t=-u_e\,\delta M/M$.
+Integrating over the burn,
+\begin{equation}\label{eq:va-thrust-magnitude}
+ \int_0^{t_p}\frac{F}{M}\,dt
+ =-u_e\int_{M(0)}^{M_f}\frac{dM}{M}
+ =u_e\ln\frac{M(0)}{M_f} ,
+\end{equation}
+for \emph{every} thrust-direction history. Their
+$\sum\lvert\delta\mathbf u_{\mathcal T}\rvert=u_{\rm eq}\ln\mathfrak R$
+(p.~476) is this equation. By the argument of
+Proposition~\ref{prop:scalar-bound}, applied to $F\hat e_T/M$ in place of $f$,
+\[
+ \Bigl\lVert\int_0^{t_p}\frac{F}{M}\,\hat e_T\,dt\Bigr\rVert
+ \le\int_0^{t_p}\frac{F}{M}\,dt
+ =u_e\ln\frac{M(0)}{M_f} ,
+\]
+with equality exactly when $\hat e_T$ is constant whenever $F>0$. So
+$u_e\ln\frac{M(0)}{M_f}$ is a scalar budget. A trajectory spends it on
+velocity change, gravity loss, drag loss and, when thrust and path are not
+aligned, the steering loss
+$\int_0^{t_p}\frac{F}{M}\bigl(1-\cos(\psi-\theta)\bigr)dt$ of
+Eq.~\ref{eq:va-planar}. That is the sense in which Hill and Peterson say
+that Eq.~(10.11) ``characterize[s] the propulsion requirements for any
+mission'': the trajectory computation supplies the losses.
+
+\subsection{The vertical sounding rocket}
+\label{sec:va-sounding}
+Hill and Peterson, pp.~476--477, Eqs.~(10.15)--(10.18), and Sutton's
+Eq.~4--20. Additional assumptions:
+\begin{itemize}\itemsep1pt
+\item vertical flight, $\theta=\pi/2$; no drag, $D=0$;
+\item constant gravity, $g=g_0$; constant $u_e$;
+\item constant $\dot m=\zeta M(0)/t_p$, so $M(t)=M(0)(1-\zeta t/t_p)$;
+\item $u(0)=0$, $h(0)=0$, and the vehicle lifts off at $t=0$.
+\end{itemize}
+Lift-off at $t=0$ needs $F>M(0)g_0$. Since $F=u_e\dot m=u_e\zeta M(0)/t_p$,
+this is
+\begin{equation}\label{eq:va-liftoff}
+ \frac{u_e\,\zeta}{g_0\,t_p}>1 .
+\end{equation}
+Without it the vehicle waits on the pad, and the formulas below do not
+apply.
+
+\paragraph{Velocity.} Integrate Eq.~\ref{eq:va-acceleration} from $0$ to
+$t$, with $\theta=\pi/2$ and $D=0$:
+\begin{equation}\label{eq:va-sounding-u}
+ u(t)=u_e\ln\frac{M(0)}{M(t)}-g_0t
+     =-u_e\ln\Bigl(1-\zeta\frac{t}{t_p}\Bigr)-g_0t .
+\end{equation}
+This is Hill and Peterson's Eq.~(10.15). Their
+$1-(1-1/\mathfrak R)\,t/t_b$ is our $1-\zeta t/t_p$, since
+$1-1/\mathfrak R=1-\frac{M_f}{M(0)}=\zeta$. At burnout,
+\begin{equation}\label{eq:va-sounding-up}
+ u_p=u_e\ln\frac{M(0)}{M_f}-g_0t_p ,
+\end{equation}
+which is Sutton's Eq.~4--20 with constant $g$.
+
+\paragraph{Burnout altitude.} $h_p=\int_0^{t_p}u\,dt$. The gravity part
+gives $-\tfrac12g_0t_p^2$. For the thrust part, substitute
+$x=\zeta t/t_p$, so $dt=(t_p/\zeta)\,dx$:
+\[
+ \int_0^{t_p}-\ln\Bigl(1-\zeta\frac{t}{t_p}\Bigr)dt
+ =\frac{t_p}{\zeta}\int_0^{\zeta}-\ln(1-x)\,dx .
+\]
+An antiderivative follows from the product rule,
+\[
+ \frac{d}{dx}\bigl[(1-x)\ln(1-x)+x\bigr]
+ =-\ln(1-x)-1+1=-\ln(1-x),
+\]
+so the integral is $(1-\zeta)\ln(1-\zeta)+\zeta$. With $1-\zeta=\frac{M_f}{M(0)}$,
+\[
+ \frac{t_p}{\zeta}\bigl(\frac{M_f}{M(0)}\ln \frac{M_f}{M(0)}+\zeta\bigr)
+ =t_p\Bigl(1+\frac{M_f}{M(0)-M_f}\ln\frac{M_f}{M(0)}\Bigr).
+\]
+Hence
+\begin{equation}\label{eq:va-sounding-hp}
+ h_p=u_e\,t_p\Bigl(1+\frac{M_f}{M(0)-M_f}\ln\frac{M_f}{M(0)}\Bigr)
+     -\tfrac12g_0t_p^2 .
+\end{equation}
+To compare with Hill and Peterson's Eq.~(10.16), put
+$\frac{M_f}{M(0)}=1/\mathfrak R$:
+\[
+ \frac{M_f}{M(0)-M_f}\ln\frac{M_f}{M(0)}
+ =\frac{-\mathfrak R^{-1}\ln\mathfrak R}{(\mathfrak R-1)/\mathfrak R}
+ =-\frac{\ln\mathfrak R}{\mathfrak R-1},
+\]
+and Eq.~\ref{eq:va-sounding-hp} becomes their
+$h_b=-u_et_b\frac{\ln\mathfrak R}{\mathfrak R-1}+u_et_b-\tfrac12g_et_b^2$.
+The lower limit of their $h_b=\int u\,dt$ is $0$.
+
+\paragraph{Coast to apogee.} After burnout, $du/dt=-g_0$. Multiply by
+$u=dh/dt$:
+\[
+ \frac{d}{dt}\Bigl(\tfrac12u^2\Bigr)=-g_0\frac{dh}{dt}
+ \quad\Longrightarrow\quad
+ \tfrac12u_p^2+g_0h_p=g_0h_{\max},
+\]
+since $u=0$ at apogee. This is Hill and Peterson's Eq.~(10.17),
+$h_{\max}=h_p+u_p^2/(2g_0)$, and it requires $u_p>0$. Square
+Eq.~\ref{eq:va-sounding-up}:
+\[
+ \frac{u_p^2}{2g_0}
+ =\frac{u_e^2}{2g_0}\ln^2\frac{M(0)}{M_f}
+  -u_e\,t_p\ln\frac{M(0)}{M_f}+\tfrac12g_0t_p^2 .
+\]
+Add Eq.~\ref{eq:va-sounding-hp}. The $\tfrac12g_0t_p^2$ terms cancel:
+\[
+\begin{aligned}
+ h_{\max}&=\frac{u_e^2}{2g_0}\ln^2\frac{M(0)}{M_f}
+  -u_e\,t_p\ln\frac{M(0)}{M_f}\\
+ &\quad+u_e\,t_p
+  +u_e\,t_p\frac{M_f}{M(0)-M_f}\ln\frac{M_f}{M(0)} .
+\end{aligned}
+\]
+Write $\frac{M_f}{M(0)}\ln \frac{M_f}{M(0)}=-\frac{M_f}{M(0)}\ln\frac{M(0)}{M_f}$ and collect
+the two logarithms:
+\[
+ \ln\frac{M(0)}{M_f}\Bigl(1+\frac{M_f}{M(0)-M_f}\Bigr)
+ =\frac{M(0)}{M(0)-M_f}\ln\frac{M(0)}{M_f} .
+\]
+Therefore
+\begin{equation}\label{eq:va-sounding-hmax}
+\begin{aligned}
+ h_{\max}&=\frac{u_e^2}{2g_0}\ln^2\frac{M(0)}{M_f}\\
+ &\quad-u_e\,t_p\Bigl(\frac{M(0)}{M(0)-M_f}\ln\frac{M(0)}{M_f}-1\Bigr).
+\end{aligned}
+\end{equation}
+With $\frac{M_f}{M(0)}=1/\mathfrak R$,
+$\frac{M(0)}{M(0)-M_f}\ln\frac{M(0)}{M_f}=\mathfrak R\ln\mathfrak R/(\mathfrak R-1)$,
+which is Hill and Peterson's Eq.~(10.18).
+
+\paragraph{Burning time.} Differentiate
+Eq.~\ref{eq:va-sounding-hmax} with $u_e$, $\frac{M_f}{M(0)}$ and $g_0$ held fixed:
+\[
+ \frac{\partial h_{\max}}{\partial t_p}
+ =-u_e\Bigl(\frac{M(0)}{M(0)-M_f}\ln\frac{M(0)}{M_f}-1\Bigr).
+\]
+The bracket is positive. Let $y=\frac{M(0)}{M_f}>1$, so that
+$\frac{M(0)}{M(0)-M_f}\ln\frac{M(0)}{M_f}=y\ln y/(y-1)$. Define
+$\varphi(y):=y\ln y-(y-1)$. Then $\varphi(1)=0$ and
+$\varphi'(y)=\ln y+1-1=\ln y>0$ for $y>1$, so $\varphi(y)>0$, that is,
+$y\ln y/(y-1)>1$. A shorter burn therefore always gains altitude: it spends
+less propellant lifting propellant (Hill and Peterson's ``Burning Time''
+paragraph; Oates's gravity-loss remark). The first term of
+Eq.~\ref{eq:va-sounding-hmax} is the impulsive limit $t_p\to0$, which cannot
+be reached. Eq.~\ref{eq:va-liftoff} bounds $t_p$ from above; the largest
+tolerable acceleration, reached at burnout, bounds it from below:
+\[
+\begin{aligned}
+ a_f&=\frac{F}{M_f}-g_0
+ =\frac{u_e\,\zeta}{t_p}\,\frac{M(0)}{M_f}-g_0\le a_{\max}\\
+ &\iff t_p\ge\frac{u_e\,\zeta}{a_{\max}+g_0}\,\frac{M(0)}{M_f}.
+\end{aligned}
+\]
+
+\begin{exercise}[Sutton and Biblarz 9e, Chapter 4, Problem 2 \cite{sutton}]
+Determine the burnout velocity and burnout altitude for a dragless
+projectile with the following parameters for a simplified vertical
+trajectory: $\overline{c}=2209$ m/sec; $m_p/m_0=0.57$; $t_p=5.0$ sec; and
+$u_0=0$; $h_0=0$. Select a relatively small diameter missile with $L/D$ of
+10 and an average vehicle density of 1200 kg/m$^3$.
+\end{exercise}
+\begin{proof}[Solution]
+In our notation $u_e=2209$ m/s, $\zeta=0.57$, $\frac{M_f}{M(0)}=0.43$, and we take
+$g_0=9.8$ m/s$^2$; Eq.~\ref{eq:va-liftoff} holds with
+$u_e\zeta/(g_0t_p)=25.7$. Equations~\ref{eq:va-sounding-up} and
+\ref{eq:va-sounding-hp} give
+\[
+\begin{aligned}
+ u_p&=2209\ln\frac1{0.43}-9.8\times5.0=1815.33\ \mathrm{m/s},\\
+ h_p&=2209\times5.0\Bigl(1+\frac{0.43\ln0.43}{0.57}\Bigr)
+      -\tfrac12\times9.8\times5.0^2=3890.38\ \mathrm{m}.
+\end{aligned}
+\]
+A direct numerical integration of Eq.~\ref{eq:va-wingless} in SymPy gives
+$u_p=1815.32988528061$ m/s and $h_p=3890.37850288891$ m, agreeing to every
+printed digit. The length-to-diameter ratio and vehicle density are needed
+only for the drag of Problem~3.
+\end{proof}
+
+\subsection{A ballistic trajectory with drag}
+\label{sec:va-ballistic}
+Ernest's AE121 Problem Set~2, Problem~4, is the unpowered case of
+Eq.~\ref{eq:va-vector}: $F=0$, $L=0$, constant mass $M$, drag opposite the
+velocity, and an exponential atmosphere $\rho=\rho_0e^{-y/H}$ with scale
+height $H$. Since $D\hat e=C_D\tfrac12\rho Au^2\,\mathbf u/u$, in Cartesian
+components $\mathbf u=(u_x,u_y)$,
+\[
+\begin{aligned}
+ \dot u_x&=-k\,e^{-y/H}\bigl(u_x^2+u_y^2\bigr)^{1/2}u_x,\\
+ \dot u_y&=-g-k\,e^{-y/H}\bigl(u_x^2+u_y^2\bigr)^{1/2}u_y,\\
+ \dot x&=u_x,\qquad \dot y=u_y,
+ \qquad k:=\frac{\rho_0C_DA}{2M}.
+\end{aligned}
+\]
+The data are a 15 cm iron cannonball of density
+$7.8\times10^3\ \mathrm{kg/m^3}$ ($M=13.78$ kg), $C_D=0.1$,
+$\rho_0=1.225\ \mathrm{kg/m^3}$, $H=10$ km, $g=9.8\ \mathrm{m/s^2}$, and launch
+at $300$ m/s and $50^\circ$, giving $k=7.853\times10^{-5}\ \mathrm{m^{-1}}$.
+Without drag the range is $u_0^2\sin(2\theta_0)/g=9044$ m. Integrated with
+an adaptive Dormand--Prince method to ground impact,
+\begin{center}\small
+\begin{tabular}{lccc}
+Case & Range (m) & Flight time (s) & Apogee (m)\\ \hline
+(a) $\rho=\rho_0e^{-y/H}$ & 6108 & 41.58 & 2124\\
+(b) $\rho=\rho_0$ & 5887 & 41.23 & 2091\\
+(c) no drag & 9044 & 46.90 & 2694\\
+\end{tabular}
+\end{center}
+Drag costs almost 3 km of range. The thinning of the air with height is
+worth 221 m, which matters for precise impact prediction.

@@ -2,26 +2,19 @@
 
 Reading anchor: Sutton and Biblarz, ninth edition, Section 2.1,
 ``Definitions'', printed pp.~26--31 / PDF pp.~50--55, Eqs.~2--1 to 2--11 and
-Example~2--1 \cite{sutton}. The text reproduced below is Ernest's own
-section on the same material from \path{LaTeXandpdfs/Propulsion.tex}, written
-against the seventh edition \cite{GSuttonOBiblarz2001}; the equation numbering
-of Section 2.1 and the placement of Example~2--1 are unchanged between the two
-editions, so its citations resolve in either. (The book's authors are Sutton
-and Biblarz in that order; the manuscript's ``Biblarz and Sutton'' is kept as
-written.)
+Example~2--1 \cite{sutton}. Ernest's notes below were written against the
+seventh edition \cite{GSuttonOBiblarz2001}; the equation numbering of
+Section 2.1 and the placement of Example~2--1 are unchanged between the two
+editions.
 
-The point of carrying this section is the bridge it builds. The previous topic,
-Section~\ref{topic:force-one-form}, is the rigorous end: force is a covector,
-impulse is its increment, and Sutton's scalars are components taken under
-stated assumptions. The manuscript below is the engineering end: definitions
-boxed, the practical formulas recovered, the mass bookkeeping made explicit
-with ``imaginary boxes''. What is added here sits between them. Each block of
-the manuscript is followed by run-in paragraphs headed \textbf{Annotation},
-which do one of three things: name the assumption a shortcut is silently
-using, check a claim, or connect a formula to the covector picture. The
-manuscript text itself is not altered except for the transcription fixes
-listed at the end; every correction of substance is made in an annotation,
-where the reader can see it.
+The previous topic, Section~\ref{topic:force-one-form}, is the rigorous end:
+force is a covector, impulse is its increment, and Sutton's scalars are
+components taken under stated assumptions. The notes below are the
+engineering end: definitions boxed, the practical formulas recovered, the
+mass bookkeeping made explicit with ``imaginary boxes''. Paragraphs headed
+\textbf{Annotation} name the assumption a shortcut is using, check a claim,
+or connect a formula to the covector picture; corrections of substance are
+made there.
 
 \subsection{Definitions}
 
@@ -61,8 +54,8 @@ uses four things at once: $\dot m$ constant, $u_e$ constant, no start or stop
 transients, and $F=\dot m u_e$ with nothing else --- that is, no pressure
 thrust. The first three are A2--A4 of Section~\ref{topic:force-one-form}; the
 fourth is discussed under the exhaust-velocity annotation below, and it is why
-Sutton's $u_e$ in this role is the \emph{effective} exhaust velocity $c$, not
-the nozzle-exit velocity $v_2$. The $g$ that divides is the defined constant
+$u_e$ in this role is the \emph{effective} exhaust velocity (Sutton's $c$),
+not the nozzle-exit velocity $u_{\rm exh}$. The $g$ that divides is the defined constant
 $g_0=9.80665\ \mathrm{m/s^2}$, never the local gravitational acceleration ---
 Sutton says so explicitly, and it is why $I_s$ ``in seconds'' is not a
 duration. Three names for the burn time ($T$, $t$, $t_p$) are in use;
@@ -76,7 +69,7 @@ what makes it a number rather than an object living in different cotangent
 spaces at different instants. It equals the magnitude of the delivered
 momentum change only when the thrust direction holds still
 (Proposition~\ref{prop:scalar-bound}); for a gimballed or slewing burn the
-boxed number is an upper bound on $\lVert\Delta p\rVert$, not the $\Delta v$
+boxed number is an upper bound on $\lVert\Delta p\rVert$, not the $\Delta u$
 budget.
 
 Let $m_{p, \text{exp}} = m_{p, \text{exp}}(t) = $ mass of propellant already
@@ -132,7 +125,7 @@ boost--sustain motor with $(F_1,\dot m_1)$ over $t_1$ and $(F_2,\dot m_2)$
 over $t_2$, the two averages are
 $\frac{I_{s,1}\dot m_1t_1+I_{s,2}\dot m_2t_2}{\dot m_1t_1+\dot m_2t_2}$ and
 $\frac{I_{s,1}t_1+I_{s,2}t_2}{t_1+t_2}$, and the first is the one that
-predicts $\Delta v$.
+predicts $\Delta u$.
 
 \paragraph*{Annotation: weight, and regularity.}
 $W_{p,\text{total expelled}}=g_0\,m_{p,\text{exp}}$ is a mass multiplied by a
@@ -180,9 +173,8 @@ than as a formula to evaluate. Three remarks make it precise.
 First, the notation $D:\Omega^{d-1}(N;TN)\to\Omega^d(N;TN)$ names the correct
 tool: a momentum flux through a surface is a vector-valued $(d-1)$-form, and
 its exterior covariant derivative is the coordinate-free way to state a
-momentum balance on a volume. That machinery is what
-Section~\ref{topic:force-one-form} defers to a Sutton~2.2 topic; the
-displayed formula does not actually use it.
+momentum balance on a volume. The displayed formula does not actually use
+it.
 
 Second, the reduction ``$\nabla_{\mathbf u}\mathbf u=0$ (no curved space)''
 mislabels a flow assumption as a geometric one. In flat space
@@ -195,9 +187,9 @@ chapter.
 
 Third, the surviving term $\int_B\dot m\otimes\mathbf u$ is a momentum
 \emph{flux through a surface}, not a derivative of a vehicle's momentum, and
-Section~\ref{topic:force-one-form} already warns that the vehicle-only
-$F=d(mv)/dt$ is not a correct starting point for a variable-mass body. The
-manuscript's later remark that ``$\dot m_S$ is the mass per unit (surface)
+the vehicle-only $F=d(Mu)/dt$ is not a correct starting point for a
+variable-mass body (Section~\ref{topic:vehicle-acceleration}). The later
+remark that ``$\dot m_S$ is the mass per unit (surface)
 area'' is the right instinct with the wrong units: the integrand is the mass
 \emph{flow rate} per unit area, $\dot m_S=\rho\,\mathbf u\cdot\mathbf n$ in
 $\mathrm{kg\,m^{-2}\,s^{-1}}$, and $\int_S\dot m_S\,dA=\dot m$. The honest
@@ -210,7 +202,7 @@ Cartesian components,
  +\oint_{\partial B}\rho\,u^i\,(u^jn_j)\,dA
  =\oint_{\partial B}t^i\,dA+\int_B\rho\,b^i\,dV .
 \end{equation}
-Both terms of the manuscript's schematic are inside the left side: by the
+Both terms of the schematic are inside the left side: by the
 transport theorem and continuity, for a steady flow
 $\int_B\rho\,(\mathbf u\cdot\nabla)u^i\,dV=\oint_{\partial B}\rho u^i(u^jn_j)\,dA$,
 so ``$\dot m\otimes\mathbf u$'' and ``$m\otimes\nabla_{\mathbf u}\mathbf u$''
@@ -222,79 +214,81 @@ Sutton's ninth edition quotes rather than derives its thrust equation
 control-volume derivation in full, for the test-stand case that his Eq.~2--13
 describes. Let $\hat e$ be the forward unit vector. Take $B$ to be the region
 bounded by a surface $\Sigma$ that hugs the outside of the vehicle and cuts
-straight across the nozzle exit plane $A_2$, so the contents of $B$ are the
+straight across the nozzle exit plane $A_e$, so the contents of $B$ are the
 vehicle, the propellant aboard, and the gas in the chamber and nozzle. Assume:
 steady flow in the vehicle frame, which is inertial on a test stand
-(A\textsubscript{s}); exit velocity uniform, axial, of magnitude $v_2$
-(A\textsubscript{u}); uniform ambient pressure $p_3$ on the outside of
-$\Sigma$ and uniform gas pressure $p_2$ across $A_2$ (A\textsubscript{p});
+(A\textsubscript{s}); exit velocity uniform, axial, of magnitude $u_{\rm exh}$
+(A\textsubscript{u}); uniform ambient pressure $p_a$ on the outside of
+$\Sigma$ and uniform gas pressure $p_{\rm exh}$ across $A_e$ (A\textsubscript{p});
 inviscid traction on $\Sigma$, $t^i=-p\,n^i$ (A\textsubscript{v}); and no body
 force, gravity being balanced separately or absent (A\textsubscript{g}). Under
 A\textsubscript{s} the first term of
 Eq.~\ref{Eq:ControlVolumeMomentumBalance} vanishes. Mass crosses $\Sigma$ only
-through $A_2$, where $\mathbf u=-v_2\hat e$ and $\mathbf n=-\hat e$, so with
+through $A_e$, where $\mathbf u=-u_{\rm exh}\hat e$ and $\mathbf n=-\hat e$, so with
 A\textsubscript{u} the flux term is
 \[
  \oint_{\partial B}\rho\,\mathbf u\,(\mathbf u\cdot\mathbf n)\,dA
- =\int_{A_2}\rho_2\,(-v_2\hat e)\,(v_2)\,dA
- =-\rho_2v_2^2A_2\,\hat e=-\dot m\,v_2\,\hat e,
- \qquad \dot m=\rho_2v_2A_2 .
+ =\int_{A_e}\rho_{\rm exh}\,(-u_{\rm exh}\hat e)\,(u_{\rm exh})\,dA
+ =-\dot m\,u_{\rm exh}\,\hat e,
+ \qquad \dot m=\rho_{\rm exh}u_{\rm exh}A_e .
 \]
 The external forces on the contents are the stand's reaction $\mathbf R$ and
-the pressure over $\Sigma$. Write the pressure as $p_3$ everywhere on $\Sigma$
-except on $A_2$, where it is $p_2$, and use A\textsubscript{v}:
+the pressure over $\Sigma$. Write the pressure as $p_a$ everywhere on $\Sigma$
+except on $A_e$, where it is $p_{\rm exh}$, and use A\textsubscript{v}:
 \[
  \oint_{\partial B}\mathbf t\,dA
  =-\oint_{\Sigma}p\,\mathbf n\,dA
- =-\underbrace{\oint_{\Sigma}p_3\,\mathbf n\,dA}_{=\,0\ \text{(closed surface)}}
-  -\int_{A_2}(p_2-p_3)\,\mathbf n\,dA
- =(p_2-p_3)A_2\,\hat e .
+ =-\underbrace{\oint_{\Sigma}p_a\,\mathbf n\,dA}_{=\,0\ \text{(closed surface)}}
+  -\int_{A_e}(p_{\rm exh}-p_a)\,\mathbf n\,dA
+ =(p_{\rm exh}-p_a)A_e\,\hat e .
 \]
 Equation~\ref{Eq:ControlVolumeMomentumBalance} then reads
-$-\dot m v_2\hat e=\mathbf R+(p_2-p_3)A_2\hat e$, i.e.
+$-\dot m u_{\rm exh}\hat e=\mathbf R+(p_{\rm exh}-p_a)A_e\hat e$, i.e.
 \[
- \mathbf R=-\bigl[\dot m\,v_2+(p_2-p_3)A_2\bigr]\hat e ,
+ \mathbf R=-\bigl[\dot m\,u_{\rm exh}+(p_{\rm exh}-p_a)A_e\bigr]\hat e ,
 \]
 the stand pushes backward with exactly the thrust, and by Newton's third law
 the vehicle pushes forward with
 \begin{equation}\label{Eq:ThrustEquation}
- F=\dot m\,v_2+(p_2-p_3)A_2 ,
+ F=\dot m\,u_{\rm exh}+(p_{\rm exh}-p_a)A_e ,
 \end{equation}
 Sutton's Eq.~2--13. The momentum thrust is the flux term; the pressure thrust
-is the one place where the closed-surface cancellation of $p_3$ fails, namely
-on the cut where the pressure is $p_2$ instead. Dropping the pressure term
-requires $p_2=p_3$ (optimum expansion, Chapter~3), which is the additional
-assumption hidden in the manuscript's $F=\dot m u$.
+is the one place where the closed-surface cancellation of $p_a$ fails, namely
+on the cut where the pressure is $p_{\rm exh}$ instead. Dropping the pressure
+term requires $p_{\rm exh}=p_a$ (optimum expansion, Chapter~3), which is the
+additional assumption hidden in $F=\dot m u$ above.
 
 \paragraph*{Annotation: why the boxed equation is nevertheless exact.}
 The subtlety is that Eq.~\ref{Eq:ConstantEffectiveExhaustVelocity} is true
-\emph{by construction}, with no flow assumption at all. Sutton does not
-measure $c$; he defines it, Eq.~2--6, as the number $F/\dot m$, and then
-observes, Eq.~2--15, that Eq.~\ref{Eq:ThrustEquation} gives it the value
+\emph{by construction}, with no flow assumption at all; its $u$ is the
+effective exhaust velocity $u_e$. Sutton does not measure it; he defines it
+(his $c$, Eq.~2--6) as the number $F/\dot m$, and then observes, Eq.~2--15,
+that Eq.~\ref{Eq:ThrustEquation} gives it the value
 \[
- c=\frac{F}{\dot m}=v_2+\frac{(p_2-p_3)A_2}{\dot m}=I_sg_0 .
+ u_e=\frac{F}{\dot m}=u_{\rm exh}+\frac{(p_{\rm exh}-p_a)A_e}{\dot m}=I_sg_0 .
 \]
-So $F=\dot mc$ holds whenever $\dot m$ is constant, full stop, and
-A\textsubscript{u}, A\textsubscript{p} and $p_2=p_3$ are needed only to
-identify the defined $c$ with the physical exit velocity $v_2$. This is the
-engineering shorthand at its most honest: $c$ is the velocity that
+So $F=\dot mu_e$ holds whenever $\dot m$ is constant, and
+A\textsubscript{u}, A\textsubscript{p} and $p_{\rm exh}=p_a$ are needed only
+to identify the defined $u_e$ with the physical exit velocity $u_{\rm exh}$.
+This is the engineering shorthand at its most honest: $u_e$ is the velocity
+that
 \emph{would} produce the measured thrust if all of it were momentum thrust.
 What the covector picture adds is that even this is a metric statement ---
 $F/\dot m$ is a covector divided by a scalar, and calling it a velocity is
-$c\,\hat e=(f/\dot m)^\sharp$, the musical isomorphism applied silently, as
+$u_e\,\hat e=(f/\dot m)^\sharp$, the musical isomorphism applied silently, as
 Section~\ref{topic:force-one-form} spells out.
 
-\textbf{Mass ratio} $\mathbf{MR}$ of a vehicle or \emph{particular vehicle
+The \textbf{mass ratio} of a vehicle or \emph{particular vehicle
 stage} is defined as
 \[
-\mathbf{MR} := \frac{m_f}{m_0}
+\frac{m_f}{m_0}
 \]
 where, using Biblarz and Sutton (2001)'s notation, \\
 $m_f \equiv $ final mass (after rocket operation has consumed all usable
 propellant), and \\
 $m_0$ (before rocket operation).
 
-$\mathbf{MR}$ applies to a single, or multistage vehicle.
+The mass ratio applies to a single, or multistage vehicle.
 \begin{itemize}
 	\item Overall mass ratio is the product of the individual vehicle stage
 	mass ratios
@@ -308,23 +302,27 @@ $\mathbf{MR}$ applies to a single, or multistage vehicle.
 \paragraph*{Annotation: the product of stage mass ratios.}
 The first bullet is Sutton's sentence, and it is true in the sense that
 matters for velocity, not literally for masses. Take $N$ stages burned in
-series; stage $i$ starts at $m_{0,i}$ and ends at $m_{f,i}$, then jettisons
-its inert hardware $s_i$, so $m_{0,i+1}=m_{f,i}-s_i$. Telescoping,
+series; stage $i$ starts at $M_i(0)$ and ends at $M_{f,i}$, then jettisons
+its inert hardware $s_i$, so $M_{i+1}(0)=M_{f,i}-s_i$. The mass ratio
+of stage $i$ is $\frac{M_{f,i}}{M_i(0)}$. Telescoping,
 \[
- \frac{m_{f,N}}{m_{0,1}}
- =\prod_{i=1}^{N}\frac{m_{f,i}}{m_{0,i}}\;
-  \prod_{i=1}^{N-1}\frac{m_{0,i+1}}{m_{f,i}}
- =\Bigl(\prod_{i=1}^{N}\mathbf{MR}_i\Bigr)
-  \prod_{i=1}^{N-1}\Bigl(1-\frac{s_i}{m_{f,i}}\Bigr),
+\begin{aligned}
+ \frac{M_{f,N}}{M_1(0)}
+ &=\prod_{i=1}^{N}\frac{M_{f,i}}{M_i(0)}\;
+  \prod_{i=1}^{N-1}\frac{M_{i+1}(0)}{M_{f,i}}\\
+ &=\Bigl(\prod_{i=1}^{N}\frac{M_{f,i}}{M_i(0)}\Bigr)
+  \prod_{i=1}^{N-1}\Bigl(1-\frac{s_i}{M_{f,i}}\Bigr).
+\end{aligned}
 \]
 so the literal ratio of final to initial mass equals the product of the stage
 ratios only when nothing is dropped. What \emph{is} multiplicative is the
 quantity the mass ratio is for: in gravity-free, drag-free flight each stage
-contributes $\Delta u_i=c_i\ln(1/\mathbf{MR}_i)$ (Sutton Eq.~4--6), and with
-equal $c$ the total is $c\ln\prod_i(1/\mathbf{MR}_i)$. Sutton's ``overall
+contributes $\Delta u_i=u_{e,i}\ln\frac{M_i(0)}{M_{f,i}}$ (Sutton Eq.~4--6, derived
+in Section~\ref{topic:vehicle-acceleration}), and with
+equal $u_e$ the total is $u_e\ln\Bigl(\prod_i\frac{M_i(0)}{M_{f,i}}\Bigr)$. Sutton's ``overall
 mass ratio'' is the product in that sense, made precise in his Section~4.7,
-and this is the first place the manuscript's imaginary boxes earn their keep:
-each $\mathbf{MR}_i$ is computed in the box of stage $i$ with everything above
+and this is the first place the imaginary boxes earn their keep:
+each $\frac{M_{f,i}}{M_i(0)}$ is computed in the box of stage $i$ with everything above
 it counted as payload, and the boxes for successive stages are not nested
 copies of one another.
 
@@ -363,10 +361,13 @@ Thus
 and so define
 \begin{definition}[Mass ratio]
 \begin{equation}\label{Eq:MassRatioDefinition}
-\mathbf{MR} := \frac{M_f}{M(0)}	= \frac{M_f}{ M_f + m_p(0)}
+\frac{M_f}{M(0)}	= \frac{M_f}{ M_f + m_p(0)}
 \end{equation}
 	\end{definition}
-and
+For $M_f>0$ and $m_p(0)\ge0$, $0<\frac{M_f}{M(0)}\le1$. Its reciprocal is
+$\frac{M(0)}{M_f}\ge1$, the initial-to-final convention used by
+Hill and Peterson and Oates.
+
 \begin{definition}[propellant mass fraction $\zeta$]
 	\begin{equation}\label{Eq:PropellantMassFractionDefinition}
 	\zeta := \frac{m_p(0)}{ M(0)} = \frac{M(0) - M_f}{M(0)}
@@ -381,7 +382,7 @@ substantially larger mass of propellant: a high value of $\zeta$ is
 desirable.
 
 \paragraph*{Annotation: the dictionary, and one identity.}
-The manuscript's time-dependent bookkeeping and Sutton's static symbols
+The time-dependent bookkeeping above and Sutton's static symbols
 correspond as follows, with the box always to be stated:
 \[
  M(0)\leftrightarrow m_0,\qquad
@@ -390,18 +391,18 @@ correspond as follows, with the box always to be stated:
  M(t_p)=M_f .
 \]
 For the whole vehicle $M_f=M_r+M_{\text{pay}}$; for the propulsion system
-alone $M_f=M_r$ (the manuscript's notation for Example~2--1, below). Sutton's
+alone $M_f=M_r$ (the notation for Example~2--1, below). Sutton's
 Eqs.~2--7 to 2--10 are, in this notation,
 Eq.~\ref{Eq:MassRatioDefinition}, Eq.~\ref{Eq:PropellantMassFractionDefinition}
 and the second line of Eq.~\ref{Eq:MassBookkeeping}; the one identity worth
 keeping in view is that the two definitions are not independent,
 \begin{equation}\label{Eq:ZetaPlusMR}
- \zeta+\mathbf{MR}
+ \zeta+\frac{M_f}{M(0)}
  =\frac{m_p(0)}{M(0)}+\frac{M_f}{M(0)}
  =\frac{m_p(0)+M_f}{M(0)}=1 ,
 \end{equation}
 so a ``mass fraction of 0.91'' and a ``mass ratio of 0.09'' are the same
-statement, and $1/\mathbf{MR}=1/(1-\zeta)$ is the number that enters the
+statement, and $\frac{M(0)}{M_f}=1/(1-\zeta)$ is the number that enters the
 logarithm of the rocket equation. The residual-propellant convention matters
 here: Sutton counts unusable residuals in $m_f$, some manufacturers count
 them in $m_p$, and $\zeta$ moves accordingly.
@@ -451,7 +452,7 @@ neglected, $F/w_0=a_0/g_0$ is the initial acceleration in units of $g_0$, and
 because the thrust is unchanged while the mass falls,
 \begin{equation}\label{Eq:BurnoutAcceleration}
  a_f=\frac{F}{M_f}=\frac{F}{M(0)}\,\frac{M(0)}{M_f}
- =\frac{a_0}{\mathbf{MR}} ,
+ =a_0\,\frac{M(0)}{M_f} ,
 \end{equation}
 the burnout acceleration is the initial one divided by the mass ratio of
 whichever box actually moves together.
@@ -484,15 +485,15 @@ boxes do not overlap).
 \end{aligned}
 \]
 
-Recall that mass ratio is defined as $\mathbf{MR} := \frac{M_f}{ M(0)}$. But
-remember that $\mathbf{MR}$ can be considered for different, discrete
+Recall that the mass ratio is $\frac{M_f}{M(0)}$. It can be
+considered for different, discrete
 imaginary boxes (subsystems). So for Example 2-1 of Biblarz and Sutton:
 
 \[
 \begin{aligned}
-&	\mathbf{MR}_{\text{tot}} = \frac{M_{f, \text{tot}}}{M(0)}
+&	\frac{M_{f, \text{tot}}}{M(0)}
  = \frac{M_r + M_{\text{pay}}}{ M(0) } \\
-	& \mathbf{MR}_r = \frac{ M_r }{ M_r+ m_p(0)}
+	& \frac{ M_r }{ M_r+ m_p(0)}
  = \frac{M_r }{ M(0) - M_{\text{pay}}}
 \end{aligned}
 \]
@@ -533,19 +534,19 @@ Then $m_p(0)=200-130=70\ \mathrm{kg}$ and $M_r=130-110=20\ \mathrm{kg}$, and
 the two boxes give
 \[
 \begin{aligned}
- \mathbf{MR}_{\text{tot}}&=\frac{130}{200}=0.65, &
+ \frac{M_{f,\text{tot}}}{M(0)}&=\frac{130}{200}=0.65, &
  \zeta_{\text{tot}}&=\frac{70}{200}=0.35, \\
- \mathbf{MR}_r&=\frac{20}{90}=0.222, &
+ \frac{M_r}{M_r+m_p(0)}&=\frac{20}{90}=0.222, &
  \zeta_r&=\frac{70}{90}=0.778,
 \end{aligned}
 \]
 each pair summing to one as Eq.~\ref{Eq:ZetaPlusMR} requires. Sutton
-reports $\mathbf{MR}$ for both boxes but $\zeta$ only for the propulsion
+reports the mass ratio for both boxes but $\zeta$ only for the propulsion
 unit, although the problem statement asks for both. Continuing,
-$c=I_sg_0=240\times9.81=2354.4\ \mathrm{m/s}$
+$u_e=I_sg_0=240\times9.81=2354.4\ \mathrm{m/s}$
 (with the defined $g_0=9.80665$ it would be $2353.6$; the book's rounding is
 harmless here), $\overline{\dot m}=70/3\ \mathrm{kg/s}$, and
-$\overline F=\overline{\dot m}\,c=(70/3)\times2354.4=54{,}936\ \mathrm{N}$
+$\overline F=\overline{\dot m}\,u_e=(70/3)\times2354.4=54{,}936\ \mathrm{N}$
 --- using the unrounded flow rate, which is what reproduces the printed
 figure; the book's own display of this line is the erratum recorded in
 Section~\ref{topic:force-one-form}. Then $I_t=\overline F\,T=164{,}808\
@@ -558,12 +559,12 @@ and the impulse-to-weight ratio of the propulsion unit is
 confirming Eq.~\ref{Eq:ImpulseToWeightIsIsZeta} and Sutton's printed
 $187\ \mathrm{s}$. For the acceleration the box is no longer a choice: the
 $35\,g_0$ limit is on the payload's electronics, which ride with the whole
-vehicle, so $M_f$ in the manuscript's last line must be the vehicle's
+vehicle, so $M_f$ in the last line above must be the vehicle's
 $130\ \mathrm{kg}$ and not the propulsion unit's $20\ \mathrm{kg}$. That gives
 $a_f=54{,}936/130=422.6\ \mathrm{m/s^2}=43.08\,g_0$, over the limit, and
 Eq.~\ref{Eq:BurnoutAcceleration} checks it from the other end:
 $a_0=54{,}936/200=274.7\ \mathrm{m/s^2}=28.0\,g_0$ and
-$a_0/\mathbf{MR}_{\text{tot}}=28.0/0.65=43.1\,g_0$. The rule the example
+$a_0\,\frac{M(0)}{M_{f,\text{tot}}}=28.0/0.65=43.1\,g_0$. The rule the example
 teaches is therefore: for ratios, choose the box and say which; for
 Newton's law, the box is whatever moves rigidly together.
 
@@ -609,8 +610,8 @@ Specific impulse & 2--3 & $I_s=\dfrac{\int F\,dt}{g_0\int\dot m\,dt}$ &
  (Prop.~\ref{prop:weighted-mean}). \\
  & 2--4 & $I_s=I_t/(m_pg_0)$ & Identity from 2--3. \\
  & 2--5 & $I_s=F/(\dot mg_0)$ & $F$, $\dot m$ constant. \\
-Effective exhaust velocity & 2--6 & $c=I_sg_0=F/\dot m$ &
- Definition of $c$; equals $v_2$ iff $p_2=p_3$ (Eq.~2--15). \\
+Effective exhaust velocity & 2--6 & $u_e=I_sg_0=F/\dot m$ &
+ Definition of $u_e$; equals $u_{\rm exh}$ iff $p_{\rm exh}=p_a$ (Eq.~2--15). \\
 \hline
 \end{tabular}
 \end{center}
@@ -621,35 +622,14 @@ Effective exhaust velocity & 2--6 & $c=I_sg_0=F/\dot m$ &
 \hline
 Masses and ratios & Sutton & Formula & Exact when \\
 \hline
-Mass ratio & 2--7 & $\mathbf{MR}=m_f/m_0$ & Definition; state the box. \\
-Propellant mass fraction & 2--8, 2--9 & $\zeta=m_p/m_0=1-\mathbf{MR}$ &
- Same box as $\mathbf{MR}$; residual convention stated. \\
-Impulse-to-weight & 2--11 & $\dfrac{I_t}{w_0}=\dfrac{I_s}{m_f/m_p+1}=I_s\zeta$ &
+Mass ratio & 2--7 & $\dfrac{M_f}{M(0)}$ & Definition; state the box. \\
+Propellant mass fraction & 2--8, 2--9 & $\begin{aligned}\zeta&=\dfrac{m_p(0)}{M(0)}\\&=1-\dfrac{M_f}{M(0)}\end{aligned}$ &
+ Same box as $\frac{M_f}{M(0)}$; residual convention stated. \\
+Impulse-to-weight & 2--11 & $\dfrac{I_t}{w_0}=\dfrac{I_s}{M_f/m_p(0)+1}=I_s\zeta$ &
  Identity given 2--4; $\le I_s$. \\
 Thrust-to-weight & --- & $\dfrac{F}{w_0}=\dfrac{a_0}{g_0}$,\quad
- $\dfrac{a_f}{g_0}=\dfrac{F/w_0}{\mathbf{MR}}$ &
+ $\dfrac{a_f}{g_0}=\dfrac{F}{w_0}\,\dfrac{M(0)}{M_f}$ &
  $F$ constant, gravity and drag neglected. \\
 \hline
 \end{tabular}
 \end{center}
-
-\subsection{Scope of what is claimed}
-Everything above is definition, identity or bookkeeping, checkable by hand;
-the control-volume derivation of Eq.~\ref{Eq:ThrustEquation} is exact under
-the five assumptions labelled A\textsubscript{s}--A\textsubscript{g}, and the
-numbers in Example~2--1 were recomputed from the ninth edition's data and
-agree with its printed results. No executable study accompanies this topic.
-The covector-valued-form version of the momentum balance, the object the
-manuscript's $D$ points at, remains deferred to a Sutton~2.2 topic, as in
-Section~\ref{topic:force-one-form}.
-
-\subsubsection*{Transcription notes}
-The manuscript is reproduced as written apart from the following, each a
-typographical fix rather than a change of content: a missing ``$=$'' in
-Eq.~\ref{Eq:SpecificImpulsePractical}; $g\to g_0$ in the second quick line
-and in Eq.~\ref{Eq:ImpulseToWeight}; $M_s\to M_f$ in the last member of
-Eq.~\ref{Eq:ImpulseToWeight}; ``$>0$'' $\to$ ``$\ge0$'' for
-$\dot m_{p,\text{exp}}$, for the reason given in the regularity annotation;
-straight quotation marks set as \LaTeX{} quotes; equation labels added so the
-annotations can cite by number; and trailing forced line breaks removed where
-they preceded a blank line.
