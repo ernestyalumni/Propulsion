@@ -27,7 +27,12 @@
 //!
 //! `Cosmos/Source/Numerical/ODE/RKMethods/ComputePIStepSize.h`. The golden
 //! vectors in `golden/pi_step_size.tsv` are emitted from that header and the
-//! test below asserts agreement to 1e-15 relative.
+//! test below asserts agreement to 1e-15 relative. The C++ twin multiplies
+//! `h` by the clamped scale; this module divides `h` by the clamped
+//! reciprocal, Hairer's order in `DOPRI5`/`DOP853`, so the two agree to a few
+//! units in the last place and the Rust integrators reproduce the Fortran
+//! reference step sequences bit for bit
+//! (`ode::runge_kutta::hairer_reference_tests`).
 
 use crate::field::RealField;
 
@@ -114,7 +119,8 @@ impl<T: RealField> PIStepSizeControl<T>
   ///
   /// `error <= 1` means the step was accepted; the new step may grow, bounded
   /// by `max_scale`, or by one if the previous attempt was rejected. An error
-  /// of exactly zero means the largest allowed growth. `error > 1` means the
+  /// of exactly zero means the largest allowed growth (for `alpha > 0`).
+  /// `error > 1` means the
   /// step was rejected; the new step shrinks by at least `min_scale` and the
   /// integral term is not applied, matching the C++ twin.
   pub fn compute_new_step_size(
@@ -124,34 +130,32 @@ impl<T: RealField> PIStepSizeControl<T>
     h: T,
     was_rejected: bool) -> T
   {
+    // Hairer's operation order (DOPRI5/DOP853 `FAC`, `HNEW = H / FAC`): the
+    // reciprocal of the scale is formed and clamped, then divides h. This
+    // keeps the Rust integrators bitwise on the reference codes' step
+    // sequence; it differs from `h · scale` only in the last bits.
+    let reciprocal_min_scale = T::one() / self.min_scale;
+    let reciprocal_max_scale = T::one() / self.max_scale;
+    let error_power = error.power(self.alpha);
     if error <= T::one()
     {
-      let unclamped = if error == T::zero()
+      let factor = (error_power / previous_error.power(self.beta)
+        / self.safety_factor)
+        .minimum(reciprocal_min_scale)
+        .maximum(reciprocal_max_scale);
+      let h_new = h / factor;
+
+      return if was_rejected && h_new.absolute_value() > h.absolute_value()
       {
-        self.max_scale
+        h
       }
       else
       {
-        self.safety_factor
-          * error.power(-self.alpha)
-          * previous_error.power(self.beta)
-      };
-
-      let scale = unclamped.maximum(self.min_scale).minimum(self.max_scale);
-
-      return if was_rejected
-      {
-        h * scale.minimum(T::one())
-      }
-      else
-      {
-        h * scale
+        h_new
       };
     }
 
-    let scale =
-      (self.safety_factor * error.power(-self.alpha)).maximum(self.min_scale);
-    h * scale
+    h / (error_power / self.safety_factor).minimum(reciprocal_min_scale)
   }
 }
 

@@ -7,6 +7,10 @@
 //! mathematics. Where a C++ twin exists in `Cosmos/Source`, a golden-vector
 //! test under `golden/` proves the two agree.
 
+// Index loops mirror the subscripted equations (and fix the summation order
+// that the golden-vector tests compare bit for bit).
+#![allow(clippy::needless_range_loop)]
+
 pub mod field;
 pub mod linear_algebra;
 pub mod ode;

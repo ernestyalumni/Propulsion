@@ -1,0 +1,9 @@
+[package]
+name = "cosmos_dynamics"
+version = "0.1.0"
+edition = "2021"
+description = "Rigid-body and vehicle dynamics for spacecraft simulation and GNC, built on cosmos_numerical"
+license = "MIT"
+
+[dependencies]
+cosmos_numerical = { path = "../cosmos_numerical" }

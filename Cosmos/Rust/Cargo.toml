@@ -1,3 +1,3 @@
 [workspace]
 resolver = "2"
-members = ["cosmos_numerical", "cosmos_propulsion"]
+members = ["cosmos_numerical", "cosmos_propulsion", "cosmos_dynamics"]

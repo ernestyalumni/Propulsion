@@ -3,6 +3,13 @@
 version = 4
 
 [[package]]
+name = "cosmos_dynamics"
+version = "0.1.0"
+dependencies = [
+ "cosmos_numerical",
+]
+
+[[package]]
 name = "cosmos_numerical"
 version = "0.1.0"
 dependencies = [
