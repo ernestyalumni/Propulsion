@@ -322,6 +322,7 @@ where
   M: EmbeddedPair<T, N>,
   F: FnMut(T, &[T; N]) -> [T; N],
 {
+  #[allow(clippy::neg_cmp_op_on_partial_ord)]
   /// Validates the problem, evaluates `f(t_0, y_0)` and, unless an initial
   /// step is given, the starting-step rule. An empty interval evaluates
   /// nothing and is finished at once.
@@ -347,7 +348,6 @@ where
       return Err(IntegrationError::ZeroStiffnessCheckInterval);
     }
     // Written so that NaN fails the test.
-    #[allow(clippy::neg_cmp_op_on_partial_ord)]
     let unit_roundoff_out_of_range = !(options.unit_roundoff > T::from_f64(1.0e-35)
       && options.unit_roundoff < T::one());
     if unit_roundoff_out_of_range
@@ -484,6 +484,23 @@ where
     self.last_step = None;
     self.stiffness = StiffnessMonitor::default();
     Ok(())
+  }
+
+  /// Restarts at an earlier `time` inside the last accepted step, from the
+  /// dense output there: the response to a discontinuity located at `time`
+  /// after the integration has already stepped past it (a control input
+  /// switched at a frame time, an event found by root-finding on the
+  /// interpolant). `time` equal to the current time is `restart_from(None)`.
+  pub fn restart_at(&mut self, time: T) -> Result<(), IntegrationError<T>>
+  {
+    if time == self.time
+    {
+      return self.restart_from(None);
+    }
+    let state = self.dense_output(time)?;
+    self.time = time;
+    self.finished = time == self.end_time;
+    self.restart_from(Some(state))
   }
 
   /// Moves the end time further in the direction of integration, so an
@@ -825,5 +842,40 @@ pub(crate) fn stiffness_quotient<T: RealField, const N: usize>(
   else
   {
     None
+  }
+}
+
+#[cfg(test)]
+mod tests
+{
+  use super::*;
+  use crate::ode::runge_kutta::dormand_prince_5;
+
+  /// y' = -y, switched to y' = +y at t = 1 after the integration has passed
+  /// it: restarting at t = 1 reproduces y = e^{-1} e^{t-1}.
+  #[test]
+  fn restart_at_a_time_inside_the_last_step()
+  {
+    let sign = std::cell::Cell::new(-1.0);
+    let mut integration = dormand_prince_5::integrator(
+      |_t: f64, y: &[f64; 1]| [sign.get() * y[0]],
+      0.0,
+      [1.0],
+      3.0,
+      Tolerance::uniform(1.0e-12, 1.0e-12).unwrap(),
+      IntegratorOptions::default())
+    .unwrap();
+    while integration.time() <= 1.0
+    {
+      integration.step().unwrap();
+    }
+    assert!(integration.time() > 1.0);
+    sign.set(1.0);
+    integration.restart_at(1.0).unwrap();
+    assert_eq!(integration.time(), 1.0);
+    let end = integration.integrate_to_end().unwrap();
+    let exact = (-1.0_f64).exp() * 2.0_f64.exp();
+    assert!((end[0] - exact).abs() < 1.0e-10 * exact, "{end:?} vs {exact}");
+    assert!(integration.restart_at(0.5).is_err());
   }
 }

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cosmos Integrator Lab</title>
+<link rel="icon" href="data:,">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+</head>
+<body>
+<div class="app">
+  <header class="masthead">
+    <div class="identity">
+      <h1>Cosmos Integrator Lab</h1>
+      <p class="subtitle">Rust integrators from <code>cosmos_numerical</code>, compiled to WebAssembly, rendered live</p>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Simulation">
+      <button id="tab-rigid" role="tab" aria-selected="true" aria-controls="panel-rigid">Rigid body</button>
+      <button id="tab-orbit" role="tab" aria-selected="false" aria-controls="panel-orbit">Arenstorf orbit</button>
+    </nav>
+    <div class="status" aria-live="polite">
+      <span id="backend" class="chip">starting</span>
+      <span id="clock" class="chip mono">t = 0.00 s</span>
+      <span id="cost" class="chip mono">wasm 0.00 ms</span>
+    </div>
+  </header>
+
+  <main class="stage">
+    <section class="viewport" aria-label="3D view">
+      <canvas id="scene"></canvas>
+      <div id="labels-rigid" class="quadrants"></div>
+      <div id="legend-orbit" class="orbit-key" hidden></div>
+      <p id="failure" class="failure" hidden></p>
+    </section>
+
+    <aside class="panel">
+      <div id="panel-rigid" role="tabpanel" aria-labelledby="tab-rigid" class="panel-body">
+        <p class="lede">The same body, four integrators. With no torque, kinetic energy and |L| are invariants; the
+          errors below are measured against a DOP853 run at tolerance 10<sup>−13</sup>.</p>
+        <div class="controls">
+          <label class="control" for="scenario"><span>Scenario</span>
+            <select id="scenario">
+              <option value="0">Intermediate-axis flip, J = diag(1, 2, 3)</option>
+              <option value="1">Axisymmetric precession, J = diag(2, 2, 3)</option>
+              <option value="2">Asymmetric tumble, J = diag(1, 2, 3)</option>
+            </select>
+          </label>
+          <label class="control" for="time-step"><span>Fixed step Δt <output id="time-step-value" class="mono"></output></span>
+            <input id="time-step" type="range" min="-2.7" max="-0.7" step="0.05" value="-1.3">
+          </label>
+          <label class="control" for="tolerance"><span>Adaptive tolerance <output id="tolerance-value" class="mono"></output></span>
+            <input id="tolerance" type="range" min="-12" max="-3" step="1" value="-6">
+          </label>
+          <label class="control" for="time-scale"><span>Time scale <output id="time-scale-value" class="mono"></output></span>
+            <input id="time-scale" type="range" min="-2" max="3" step="1" value="0">
+          </label>
+          <div class="buttons">
+            <button id="play" class="primary" type="button">Pause</button>
+            <button id="restart" type="button">Restart</button>
+            <button id="torque" type="button" title="Body torque τ = (0, 0, 0.6) N·m for 0.5 s">Torque pulse</button>
+          </div>
+        </div>
+        <table class="stats" id="stats-rigid" aria-label="Integrator statistics">
+          <thead><tr><th scope="col">Integrator</th><th scope="col">Steps</th><th scope="col">f evals</th><th scope="col">|ΔE/E|</th><th scope="col">Attitude err</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <figure class="chart" id="chart-energy"></figure>
+        <figure class="chart" id="chart-attitude"></figure>
+      </div>
+
+      <div id="panel-orbit" role="tabpanel" aria-labelledby="tab-orbit" class="panel-body" hidden>
+        <p class="lede">HNW I §II.0: a satellite in the Earth–Moon rotating frame, period T = 17.0652. Each dot is an
+          accepted step; they crowd where the satellite swings past the Moon.</p>
+        <div class="controls">
+          <label class="control" for="orbit-tolerance"><span>Tolerance <output id="orbit-tolerance-value" class="mono"></output></span>
+            <input id="orbit-tolerance" type="range" min="-12" max="-3" step="1" value="-6">
+          </label>
+          <label class="control" for="orbit-time-scale"><span>Time scale <output id="orbit-time-scale-value" class="mono"></output></span>
+            <input id="orbit-time-scale" type="range" min="-2" max="3" step="1" value="1">
+          </label>
+          <div class="buttons">
+            <button id="orbit-play" class="primary" type="button">Pause</button>
+            <button id="orbit-restart" type="button">Restart</button>
+          </div>
+        </div>
+        <table class="stats" id="stats-orbit" aria-label="Integrator statistics">
+          <thead><tr><th scope="col">Integrator</th><th scope="col">Steps</th><th scope="col">Rejected</th><th scope="col">f evals</th><th scope="col">Return error</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <figure class="chart" id="chart-step"></figure>
+      </div>
+    </aside>
+  </main>
+</div>
+<script type="module" src="./src/main.ts"></script>
+</body>
+</html>

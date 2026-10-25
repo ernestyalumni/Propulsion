@@ -1,0 +1,14 @@
+[package]
+name = "cosmos_web"
+version = "0.1.0"
+edition = "2021"
+description = "WebAssembly front door to the Cosmos integrators: real-time rigid-body and orbit labs for a TypeScript/WebGPU viewer"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+cosmos_dynamics = { path = "../cosmos_dynamics" }
+cosmos_numerical = { path = "../cosmos_numerical" }
+wasm-bindgen = "=0.2.129"

@@ -1,3 +1,10 @@
 [workspace]
 resolver = "2"
-members = ["cosmos_numerical", "cosmos_propulsion", "cosmos_dynamics"]
+members = ["cosmos_numerical", "cosmos_propulsion", "cosmos_dynamics", "cosmos_web"]
+
+# The wasm viewer is built with `--profile web` (see cosmos_web/web/README.md):
+# full optimization and link-time optimization without changing `release`.
+[profile.web]
+inherits = "release"
+lto = true
+codegen-units = 1
