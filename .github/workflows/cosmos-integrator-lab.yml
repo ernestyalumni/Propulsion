@@ -1,0 +1,46 @@
+# Publish the Cosmos Integrator Lab (Cosmos/Rust/cosmos_web) to GitHub Pages.
+# One-time setup: Settings -> Pages -> Build and deployment -> Source:
+# "GitHub Actions". The site is built by the same Dockerfile as the local
+# launcher, exporting only its static `dist` stage.
+name: Cosmos Integrator Lab
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "Cosmos/Rust/**"
+      - "Stunticons/wildrider/**"
+      - ".github/workflows/cosmos-integrator-lab.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the static site
+        run: >
+          docker build -f Cosmos/Rust/cosmos_web/Dockerfile --target dist
+          --output type=local,dest=site .
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

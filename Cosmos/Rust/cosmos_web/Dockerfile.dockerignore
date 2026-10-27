@@ -1,0 +1,10 @@
+# Context is the repository root; send only the Rust workspace and its one
+# out-of-workspace path dependency (Stunticons/wildrider).
+*
+!Cosmos/Rust
+!Stunticons/wildrider
+Cosmos/Rust/target
+Cosmos/Rust/golden
+**/node_modules
+**/dist
+**/src/generated

@@ -5,6 +5,42 @@ integrators on one rigid body (RK4, implicit midpoint, DOPRI5, DOP853 against a
 DOP853 reference at 1e-13), and the Arenstorf orbit of HNW I §II.0 under DOPRI5
 and DOP853 with every accepted step drawn.
 
+## Run it
+
+One command from a clone, on Linux or macOS:
+
+```bash
+Cosmos/Rust/cosmos_web/run-lab.sh
+```
+
+It builds the lab and opens http://127.0.0.1:4173 in the default browser. It
+uses the local toolchain when it is complete, and Docker otherwise, so Docker
+alone is enough. `--docker` or `--local` forces a route, `--port N` changes the
+port, and Ctrl-C stops the server. Append `?webgl` to the URL to force the
+WebGL 2 backend.
+
+To launch with a double-click:
+
+- **macOS:** double-click `Cosmos Integrator Lab.command` in Finder.
+- **Linux:** run `Cosmos/Rust/cosmos_web/run-lab.sh --install-launcher` once.
+  "Cosmos Integrator Lab" then appears in the application menu (Activities on
+  GNOME) and opens a terminal that runs the lab.
+
+Docker by hand, from the repository root:
+
+```bash
+docker build -f Cosmos/Rust/cosmos_web/Dockerfile -t cosmos-integrator-lab .
+docker run --rm -p 4173:80 cosmos-integrator-lab
+```
+
+The build context is the repository root because `cosmos_numerical` depends on
+`Stunticons/wildrider`; `Dockerfile.dockerignore` sends only those two
+directories. `.github/workflows/cosmos-integrator-lab.yml` builds the same
+Dockerfile's `dist` stage and publishes it to GitHub Pages on pushes to
+`master` (one-time setup: Settings → Pages → Source: GitHub Actions).
+
+## Develop
+
 ```bash
 cd Cosmos/Rust/cosmos_web/web
 npm install
@@ -16,7 +52,8 @@ npx vite preview   # serves dist/ on http://localhost:4173
 Prerequisites: `rustup target add wasm32-unknown-unknown` and
 `cargo install wasm-bindgen-cli --version 0.2.129 --locked` (the version must
 equal the `wasm-bindgen` pin in `cosmos_web/Cargo.toml`; `scripts/build-wasm.sh`
-checks). Append `?webgl` to the URL to force the WebGL 2 backend.
+checks). `npm run build:web` is the TypeScript half alone, for when
+`src/generated/` already holds the bindings.
 
 ## Architecture
 

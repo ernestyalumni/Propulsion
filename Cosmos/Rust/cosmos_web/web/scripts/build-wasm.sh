@@ -5,7 +5,7 @@
 set -euo pipefail
 web_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 rust_root="$(cd "${web_directory}/../.." && pwd)"
-pinned="$(grep -oP 'wasm-bindgen = "=\K[0-9.]+' "${rust_root}/cosmos_web/Cargo.toml")"
+pinned="$(sed -n 's/^wasm-bindgen = "=\([0-9.]*\)"/\1/p' "${rust_root}/cosmos_web/Cargo.toml")"
 installed="$(wasm-bindgen --version | awk '{print $2}')"
 if [[ "${pinned}" != "${installed}" ]]; then
   echo "wasm-bindgen-cli ${installed} does not match the crate's ${pinned}:" >&2
