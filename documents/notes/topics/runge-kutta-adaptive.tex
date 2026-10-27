@@ -1,0 +1,530 @@
+\subsection{Embedded Runge--Kutta formulas and adaptive step size}
+\label{sec:RKAdaptive}
+
+Hairer I, Section~II.4, printed pp.~165--169, Eqs.~(4.6)--(4.14)
+\cite{HNW1993}. The calculation proceeds in this order:
+\[
+ \text{shared stages}\ \longrightarrow\ \text{two endpoint values}
+ \ \longrightarrow\ \text{error vector},
+\]
+\[
+ \text{error vector}\ \longrightarrow\ \text{scaled scalar error}
+ \ \longrightarrow\ \text{accept or retry and choose the next step}.
+\]
+We use boldface for state and error vectors. Let
+$\mathbf y'=\mathbf f(x,\mathbf y)$, $\mathbf y\in U\subseteq\mathbb R^d$,
+with $d\geq1$. Assume the smoothness needed for the stated local orders on a
+neighborhood containing the stages. Initially take $h>0$. All error comparisons
+refer to a single attempted step from the \emph{same} current state
+$(x_n,\mathbf y_n)$, with exact local reference
+\begin{equation}\label{Eq:AdaptLocalReference}
+ \mathbf Y=\boldsymbol\Psi_h(x_n,\mathbf y_n).
+\end{equation}
+Even if $\mathbf y_n$ contains accumulated error, $\mathbf Y$ starts from that
+computed state, not from the original trajectory's exact state at $x_n$.
+
+\subsubsection{One set of stages, two sets of output weights}
+For an explicit $s$-stage pair, compute
+\begin{equation}\label{Eq:AdaptSharedStages}
+\begin{aligned}
+ \mathbf k_1&=\mathbf f(x_n,\mathbf y_n),\\
+ \mathbf k_i&=\mathbf f\!\left(x_n+c_i h,
+       \mathbf y_n+h\sum_{j<i}a_{ij}\mathbf k_j\right),
+       \quad i=2,\ldots,s,\\
+ c_i&=\sum_{j<i}a_{ij}.
+\end{aligned}
+\end{equation}
+Use these same derivative values in two updates:
+\begin{equation}\label{Eq:AdaptTwoOutputs}
+\begin{aligned}
+ \mathbf y_{n+1}^{\mathrm{high}}
+ &=\mathbf y_n+h\sum_i b_i\mathbf k_i,\\
+ \mathbf y_{n+1}^{\mathrm{low}}
+ &=\mathbf y_n+h\sum_i\widetilde b_i\mathbf k_i.
+\end{aligned}
+\end{equation}
+Subtract the second update from the first, displaying the common term:
+\begin{equation}\label{Eq:AdaptDifference}
+\begin{aligned}
+ \boldsymbol\delta
+ &:=\mathbf y_{n+1}^{\mathrm{high}}-\mathbf y_{n+1}^{\mathrm{low}}\\
+ &=\left[\mathbf y_n+h\sum_i b_i\mathbf k_i\right]
+   -\left[\mathbf y_n+h\sum_i\widetilde b_i\mathbf k_i\right]\\
+ &=h\sum_i(b_i-\widetilde b_i)\mathbf k_i.
+\end{aligned}
+\end{equation}
+No new right-hand-side evaluation is needed to form this difference once the
+pair's stages are available.
+
+Let the lower formula have order $q$ and the higher formula order $p>q$.
+At fixed starting data, write their signed local errors as
+\[
+ \mathbf Y-\mathbf y_{n+1}^{\mathrm{low}}
+   =\mathbf L h^{q+1}+O(h^{q+2}),\qquad
+ \mathbf Y-\mathbf y_{n+1}^{\mathrm{high}}=O(h^{p+1}).
+\]
+Then
+\begin{equation}\label{Eq:AdaptEstimatedOrder}
+\begin{aligned}
+ \boldsymbol\delta
+ &=(\mathbf Y-\mathbf y_{n+1}^{\mathrm{low}})
+    -(\mathbf Y-\mathbf y_{n+1}^{\mathrm{high}})\\
+ &=\mathbf L h^{q+1}+O(h^{q+2})-O(h^{p+1})\\
+ &=\mathbf L h^{q+1}+O(h^{q+2}),
+\end{aligned}
+\end{equation}
+since $p+1\geq q+2$. Thus $\boldsymbol\delta$ estimates the lower-order
+local error. The solver can still keep the higher-order value; HNW calls
+this choice \emph{local extrapolation}. It does not mean adding a Richardson
+step-doubling correction.
+
+\subsubsection{A two-stage example: Euler embedded in Heun}
+Use
+\[
+ \mathbf k_1=\mathbf f(x_n,\mathbf y_n),\qquad
+ \mathbf k_2=\mathbf f(x_n+h,\mathbf y_n+h\mathbf k_1),
+\]
+with output weights $b=(1/2,1/2)$ and $\widetilde b=(1,0)$:
+\begin{equation}\label{Eq:AdaptHeunEuler}
+\begin{aligned}
+ \mathbf y_{n+1}^{\mathrm{high}}
+   &=\mathbf y_n+\tfrac h2(\mathbf k_1+\mathbf k_2),\\
+ \mathbf y_{n+1}^{\mathrm{low}}&=\mathbf y_n+h\mathbf k_1,\\
+ \boldsymbol\delta
+   &=\tfrac h2(\mathbf k_1+\mathbf k_2)-h\mathbf k_1
+     =\tfrac h2(\mathbf k_2-\mathbf k_1).
+\end{aligned}
+\end{equation}
+For $y'=y$ starting at $y_n=1$,
+\[
+\begin{aligned}
+ k_1&=1,\qquad k_2=1+h,\\
+ y_{n+1}^{\mathrm{low}}&=1+h,\\
+ y_{n+1}^{\mathrm{high}}&=1+h+\tfrac12h^2,\\
+ \delta&=\tfrac h2[(1+h)-1]=\tfrac12h^2.
+\end{aligned}
+\]
+The exact local value is $Y=e^h$, so
+\[
+\begin{aligned}
+ Y-y_{n+1}^{\mathrm{low}}
+ &=\tfrac12h^2+\tfrac16h^3+O(h^4)=\delta+O(h^3),\\
+ Y-y_{n+1}^{\mathrm{high}}&=\tfrac16h^3+O(h^4).
+\end{aligned}
+\]
+The estimate starts at $h^2$, although the retained Heun value has local
+error starting at $h^3$.
+
+\subsubsection{DOPRI5: what the difference estimates}
+For the Dormand--Prince $5(4)$ pair, $p=5$, $q=4$, $s=7$; see Hairer I,
+Section~II.5, printed pp.~178--179, Table~5.2 \cite{HNW1993}.
+Its fifth-order weights are
+\[
+ b=\left(\frac{35}{384},0,\frac{500}{1113},\frac{125}{192},
+ -\frac{2187}{6784},\frac{11}{84},0\right).
+\]
+Define the error weights $\varepsilon_i=b_i-\widetilde b_i$:
+\[
+ \varepsilon=\left(\frac{71}{57600},0,-\frac{71}{16695},
+ \frac{71}{1920},-\frac{17253}{339200},\frac{22}{525},-\frac1{40}\right).
+\]
+Equation~\ref{Eq:AdaptDifference} then becomes
+\begin{equation}\label{Eq:AdaptDopriDifference}
+\begin{aligned}
+ \boldsymbol\delta
+ &=h\left(\frac{71}{57600}\mathbf k_1
+       -\frac{71}{16695}\mathbf k_3+\frac{71}{1920}\mathbf k_4\right.\\
+ &\hspace{2.2em}\left.
+       -\frac{17253}{339200}\mathbf k_5+\frac{22}{525}\mathbf k_6
+       -\frac1{40}\mathbf k_7\right),\\
+ \boldsymbol\delta&=\mathbf L h^5+O(h^6),\qquad
+ \mathbf Y-\mathbf y_{n+1}^{\mathrm{high}}=O(h^6).
+\end{aligned}
+\end{equation}
+The seventh row satisfies $a_{7j}=b_j$ and $c_7=1$, so
+\[
+ \mathbf k_7=\mathbf f(x_n+h,\mathbf y_{n+1}^{\mathrm{high}}).
+\]
+After acceptance it can be reused as the next step's $\mathbf k_1$
+(\emph{first same as last}, FSAL). The first attempt requires seven stage evaluations, apart from any
+starting-step probe; subsequent attempts reuse the derivative at their
+starting state and need six new evaluations. After a rejection, the starting state and its derivative
+remain unchanged; the rejected endpoint's derivative is not the next
+starting derivative.
+
+\subsubsection{Scaling each error component by its tolerance}
+A state can combine positions, velocities, and other quantities with different
+units and magnitudes. Set, for each component $r$,
+\begin{equation}\label{Eq:AdaptToleranceScale}
+ \mathrm{sc}_r=\mathrm{Atol}_r
+ +\mathrm{Rtol}_r\max\!\left(|y_n^r|,
+                      |(y_{n+1}^{\mathrm{high}})^r|\right),
+ \qquad z_r=\frac{\delta^r}{\mathrm{sc}_r}.
+\end{equation}
+Here $\mathrm{Atol}_r$ has the units of $y^r$, while $\mathrm{Rtol}_r$ and
+$z_r$ are dimensionless. Assume finite
+$\mathrm{Atol}_r>0$ and finite $\mathrm{Rtol}_r\geq0$; hence
+$\mathrm{sc}_r>0$ for finite states even when a component passes through zero.
+For a component of magnitude $M_r$, the scale is
+$\mathrm{Atol}_r+\mathrm{Rtol}_r M_r$: the absolute term supplies a floor near
+zero, and the relative term increases the permitted error with the magnitude.
+
+HNW's Eqs.~(4.10)--(4.11) motivate componentwise scales and then combine them
+using a root-mean-square measure:
+\begin{equation}\label{Eq:AdaptErrorNorm}
+ \mathrm{err}
+ =\left[\frac1d\sum_{r=1}^d
+        \left(\frac{\delta^r}{\mathrm{sc}_r}\right)^2\right]^{1/2}
+ =\left(\frac{z_1^2+\cdots+z_d^2}{d}\right)^{1/2}.
+\end{equation}
+The explicit finite sum here defines the norm across components; it is not
+an unscaled norm of quantities with incompatible units.
+
+For example, take two components with
+\[
+\begin{aligned}
+ \max(|y_n^1|,|(y_{n+1}^{\mathrm{high}})^1|)&=10,
+ &\mathrm{Atol}_1&=10^{-6},&\mathrm{Rtol}_1&=10^{-3},\\
+ \max(|y_n^2|,|(y_{n+1}^{\mathrm{high}})^2|)&=0,
+ &\mathrm{Atol}_2&=10^{-6},&\mathrm{Rtol}_2&=10^{-3}.
+\end{aligned}
+\]
+Then
+\[
+\begin{aligned}
+ \mathrm{sc}_1&=10^{-6}+10^{-3}(10)=0.010001,\\
+ \mathrm{sc}_2&=10^{-6}+10^{-3}(0)=10^{-6}.
+\end{aligned}
+\]
+If $\delta^1=0.0050005$ and $\delta^2=5\times10^{-7}$, the complete reduction is
+\[
+ z_1=\frac{0.0050005}{0.010001}=\frac12,\qquad
+ z_2=\frac{5\times10^{-7}}{10^{-6}}=\frac12,
+\]
+\[
+ \mathrm{err}=\sqrt{\frac{(1/2)^2+(1/2)^2}{2}}=\frac12.
+\]
+This attempted step passes the test $\mathrm{err}\leq1$.
+RMS acceptance does \emph{not} require every $|z_r|\leq1$:
+\[
+ (z_1,z_2)=(1.2,0)
+ \quad\Longrightarrow\quad
+ \mathrm{err}=\sqrt{\frac{1.44}{2}}\approx0.849<1.
+\]
+A strict componentwise test would instead use $\max_r|z_r|\leq1$.
+Equation~\ref{Eq:AdaptErrorNorm} defines the RMS test used here.
+
+\subsubsection{Deriving the next step size from the local error power}
+At fixed starting data, suppose the leading error coefficient is nonzero and
+the scales vary little between trial step sizes. Equations~\ref{Eq:AdaptEstimatedOrder}
+and \ref{Eq:AdaptErrorNorm} give the local model
+\[
+ \mathrm{err}(h)\approx K h^{q+1},\qquad K>0.
+\]
+The scale changes with the proposed endpoint, so this is a prediction used to
+choose a trial step, not an exact law. To target unit scaled error, solve
+\begin{equation}\label{Eq:AdaptOptimalStep}
+\begin{aligned}
+ \mathrm{err}&\approx K h^{q+1},
+ &1&\approx K h_{\mathrm{opt}}^{q+1},\\
+ \frac1{\mathrm{err}}&\approx
+       \frac{K h_{\mathrm{opt}}^{q+1}}{K h^{q+1}}
+       =\left(\frac{h_{\mathrm{opt}}}{h}\right)^{q+1},\\
+ h_{\mathrm{opt}}&=h\,\mathrm{err}^{-1/(q+1)}.
+\end{aligned}
+\end{equation}
+This is HNW Eq.~(4.12). DOPRI5 has $q=4$, so the basic exponent is
+$1/(q+1)=1/5$, not $1/6$: the controlling difference starts at $h^5$.
+
+Introduce a safety factor $0<\eta<1$ and growth bounds
+$0<f_{\min}<1<f_{\max}$. HNW Eq.~(4.13) is
+\begin{equation}\label{Eq:AdaptBoundedStep}
+ \rho=\min\!\left(f_{\max},
+          \max\!\left(f_{\min},\eta\,\mathrm{err}^{-1/(q+1)}\right)\right),
+ \qquad h_{\mathrm{new}}=h\rho.
+\end{equation}
+Before clipping, substitution into the local model shows why the safety factor
+leaves room below the acceptance boundary:
+\[
+ K h_{\mathrm{new}}^{q+1}
+ =K h^{q+1}\eta^{q+1}\mathrm{err}^{-1}
+ \approx\mathrm{err}\,\eta^{q+1}\mathrm{err}^{-1}
+ =\eta^{q+1}<1.
+\]
+For $\mathrm{err}=0$, do not evaluate a negative power: choose the largest
+permitted increase. A zero measured difference can also arise from roundoff
+or a vanishing leading coefficient; it does not prove zero true error.
+
+\paragraph{A rejected step, calculated explicitly.}
+For the basic DOPRI5 controller with memory disabled, take
+$q=4$, $\eta=0.9$, $h=0.1$, and $\mathrm{err}=32$. Then
+\[
+\begin{aligned}
+ h_{\mathrm{opt}}&=0.1(32)^{-1/5}=0.1/2=0.05,\\
+ h_{\mathrm{new}}&=0.9(0.05)=0.045,\\
+ \mathrm{err}_{\mathrm{predicted}}
+ &=32\left(\frac{0.045}{0.1}\right)^5
+   =32(0.45)^5=0.9^5=0.59049.
+\end{aligned}
+\]
+The original step is rejected because $32>1$. Recompute the stages from the
+same $(x_n,\mathbf y_n)$ using $0.045$; accept only if the newly computed
+error passes the test. The prediction $0.59049$ is not a substitute for that
+new calculation.
+
+\subsubsection{Acceptance changes the state; rejection changes only the trial step}
+Check both finiteness and the scalar error. For a finite trial,
+\begin{equation}\label{Eq:AdaptAcceptReject}
+\begin{array}{lll}
+ \mathrm{err}\leq1:
+ &x_{n+1}=x_n+h,
+ &\mathbf y_{n+1}=\mathbf y_{n+1}^{\mathrm{high}},\\[2pt]
+ \mathrm{err}>1:
+ &x_n\ \text{unchanged},
+ &\mathbf y_n\ \text{unchanged; retry with }h_{\mathrm{new}}.
+\end{array}
+\end{equation}
+If the trial state or error is nonfinite, reject the trial and use $h_{\mathrm{new}}=f_{\min}h$. After a rejected attempt, the first accepted
+retry is not allowed to propose immediate step growth; its proposed next
+magnitude is capped by the accepted retry's magnitude.
+
+The accepted state is already the higher-order output. In particular,
+\[
+ \mathbf y_{n+1}=\mathbf y_{n+1}^{\mathrm{high}}
+ \quad\text{does not mean}\quad
+ \mathbf y_{n+1}=\mathbf y_{n+1}^{\mathrm{high}}+\boldsymbol\delta.
+\]
+The estimate controls the trial step; it is not an extra correction added to
+the fifth-order DOPRI5 state. Nor does $\mathrm{err}\leq1$ bound the accumulated
+global error since the original initial time.
+
+\subsubsection{PI step-size control and its memory}
+The plain rule in Eq.~\ref{Eq:AdaptBoundedStep} uses only the current error.
+A controller with memory also uses the previous accepted step's scaled error
+$\mathrm{err}_{\mathrm{old}}>0$:
+\begin{equation}\label{Eq:AdaptPIProposal}
+ \rho_* =\eta\,\mathrm{err}^{-\alpha}
+                   \mathrm{err}_{\mathrm{old}}^{\beta},
+ \qquad
+ \log\rho_* =\log\eta-\alpha\log\mathrm{err}
+                         +\beta\log\mathrm{err}_{\mathrm{old}}.
+\end{equation}
+The logarithmic expression shows separately the current-error response and
+the remembered-error contribution. This is a controller modification, not
+another cancellation of the local truncation error. Setting $\beta=0$ and
+$\alpha=1/(q+1)$ recovers the basic rule. See HNW I, printed p.~168, for the
+reference to PI control in Volume~II \cite{HNW1993}.
+
+One choice of controller parameters for DOPRI5 is
+\begin{equation}\label{Eq:AdaptDopriPIConstants}
+\begin{aligned}
+ \eta&=0.9,& f_{\min}&=0.2,& f_{\max}&=10,\\
+ \beta&=0.04,&
+ \alpha&=\frac15-0.75\beta
+        =0.2-0.03=0.17.
+\end{aligned}
+\end{equation}
+Thus the accepted-step proposal before clipping is
+$h_{\mathrm{new}}=0.9h\,\mathrm{err}^{-0.17}
+\mathrm{err}_{\mathrm{old}}^{0.04}$.
+These are adjustable controller parameters; they are not part of the
+Runge--Kutta order conditions.
+
+The same step-size rule can be written using a reciprocal factor. For an
+accepted trial,
+\begin{equation}\label{Eq:AdaptPIReciprocal}
+\begin{aligned}
+ F_*&=\frac{\mathrm{err}^{\alpha}}
+           {\eta\,\mathrm{err}_{\mathrm{old}}^{\beta}}
+       =\frac1{\rho_*},\\
+ F&=\max\!\left(\frac1{f_{\max}},
+           \min\!\left(\frac1{f_{\min}},F_*\right)\right),\\
+ h_{\mathrm{new}}&=\frac hF.
+\end{aligned}
+\end{equation}
+For positive finite errors this is algebraically the same clipping as
+$h\min(f_{\max},\max(f_{\min},\rho_*))$. The division order can change the
+last floating-point bits. If the trial was preceded by a rejection, also
+cap $|h_{\mathrm{new}}|\leq|h|$.
+
+For a rejected finite trial, drop the memory term:
+\begin{equation}\label{Eq:AdaptPIRejected}
+ F_{\mathrm{rej}}=\min\!\left(\frac1{f_{\min}},
+                         \frac{\mathrm{err}^{\alpha}}{\eta}\right),
+ \qquad h_{\mathrm{new}}=\frac h{F_{\mathrm{rej}}}.
+\end{equation}
+For the DOPRI5 parameter choice in Eq.~\ref{Eq:AdaptDopriPIConstants},
+$\alpha=0.17$ is retained even on rejection; the
+$1/5$ example above described the memory-disabled choice $\beta=0$.
+Only acceptance updates the remembered error:
+\[
+ \mathrm{err}_{\mathrm{old}}\leftarrow\max(\mathrm{err},10^{-4}).
+\]
+The initial remembered value is $10^{-4}$. This floor keeps the memory factor
+away from zero. When $\mathrm{err}=0$, the reciprocal calculation for these
+positive-$\alpha$ choices selects $f_{\max}$ without division by zero in
+$h/F$.
+
+\subsubsection{Choosing a first step before an error estimate exists}
+Hairer I, printed p.~169, Eq.~(4.14), proposes an Euler probe to estimate the
+initial rate of change. The following
+formulas describe its positive step magnitudes; a backward integration gives
+both the probe and the final step the integration direction's sign.
+
+At $(x_0,\mathbf y_0)$, compute $\mathbf f_0=\mathbf f(x_0,\mathbf y_0)$ and
+freeze the initial scales
+\[
+ \mathrm{sc}_{0r}=\mathrm{Atol}_r+\mathrm{Rtol}_r|y_0^r|.
+\]
+For this starting-step calculation, define
+\begin{equation}\label{Eq:AdaptInitialNorms}
+ D_0=\left[\sum_r\left(\frac{y_0^r}{\mathrm{sc}_{0r}}\right)^2\right]^{1/2},
+ \qquad
+ D_1=\left[\sum_r\left(\frac{f_0^r}{\mathrm{sc}_{0r}}\right)^2\right]^{1/2}.
+\end{equation}
+These norms omit the RMS divisor $d$. For the same scales and probe,
+write the book's RMS quantities as $d_j^{\mathrm{RMS}}$. Then
+\[
+ D_j=\sqrt d\,d_j^{\mathrm{RMS}}\quad(j=0,1,2),\qquad
+ \frac{D_0}{D_1}=\frac{d_0^{\mathrm{RMS}}}{d_1^{\mathrm{RMS}}}.
+\]
+The divisor cancels in the first-guess ratio, but not in every later formula.
+For $D_0,D_1>10^{-5}$, the first guess satisfies
+\[
+ h_0=0.01\frac{D_0}{D_1}
+ \quad\Longrightarrow\quad
+ \left\|\left(\frac{h_0f_0^r}{\mathrm{sc}_{0r}}\right)_r\right\|_2
+ =h_0D_1=0.01D_0.
+\]
+Thus the scaled Euler increment is one percent of the scaled starting state.
+If either norm is at most $10^{-5}$, use $h_0=10^{-6}$ instead. Cap $h_0$
+by the prescribed maximum step before the probe.
+
+Make one Euler prediction and evaluate its derivative:
+\begin{equation}\label{Eq:AdaptEulerProbe}
+ \mathbf y_{\mathrm E}=\mathbf y_0+h_0\mathbf f_0,
+ \qquad
+ \mathbf f_{\mathrm E}=\mathbf f(x_0+h_0,\mathbf y_{\mathrm E}).
+\end{equation}
+A first-order expansion displays what this probe measures:
+\begin{align*}
+ \frac{f_{\mathrm E}^r-f_0^r}{h_0}
+ &=\frac{\partial f^r}{\partial x}(x_0,\mathbf y_0)
+   +\frac{\partial f^r}{\partial y^j}(x_0,\mathbf y_0)f_0^j+O(h_0)\\
+ &=\frac{d^2y^r}{dx^2}(x_0)+O(h_0).
+\end{align*}
+Set
+\[
+ D_2=\frac1{h_0}\left[\sum_r
+       \left(\frac{f_{\mathrm E}^r-f_0^r}{\mathrm{sc}_{0r}}\right)^2
+       \right]^{1/2},\qquad M=\max(D_1,D_2).
+\]
+This uses one extra right-hand-side evaluation beyond $\mathbf f_0$.
+For $M>10^{-15}$ the second guess solves
+\begin{equation}\label{Eq:AdaptSecondGuess}
+ h_1^kM=0.01
+ \quad\Longrightarrow\quad
+ h_1=\left(\frac{0.01}{M}\right)^{1/k}.
+\end{equation}
+For a fixed exponent $k$, outside the fallback and clipping branches,
+the norm change alone gives
+\[
+\begin{aligned}
+ h_{1,\mathrm{sum}}
+ &=\left(\frac{0.01}{\sqrt d\,M_{\mathrm{RMS}}}\right)^{1/k}\\
+ &=d^{-1/(2k)}h_{1,\mathrm{RMS}}.
+\end{aligned}
+\]
+The fallback thresholds may also select different branches. Separately,
+the book writes $k=p+1$ in this heuristic. Alternative choices are $k=5$
+for DOPRI5 and $k=8$ for DOP853, matching the error powers used for step-size
+control. If $M\leq10^{-15}$, use
+$h_1=\max(10^{-6},10^{-3}h_0)$ instead. The proposed initial magnitude is
+\begin{equation}\label{Eq:AdaptInitialStep}
+ h_{\mathrm{start}}=\min(100h_0,h_1,h_{\max}).
+\end{equation}
+These starting guesses are empirical numerical rules in the chosen independent
+variable's units; $D_1$ and $D_2$ involve derivatives of different orders.
+They are not an exact truncation-error identity or invariant under arbitrary
+rescaling of the independent variable. The resulting RK trial must still pass
+the ordinary error test.
+
+For a scalar check, let $y'=-y$, $y_0=1$, $\mathrm{Atol}=10^{-8}$,
+$\mathrm{Rtol}=0$, and let the maximum step be large enough not to clip.
+Then
+\[
+\begin{aligned}
+ D_0&=D_1=10^8, &h_0&=0.01,\\
+ y_{\mathrm E}&=1-0.01=0.99,
+ &f_{\mathrm E}-f_0&=-0.99-(-1)=0.01,\\
+ D_2&=\frac{0.01/10^{-8}}{0.01}=10^8,
+ &M&=10^8.
+\end{aligned}
+\]
+For DOPRI5, $k=5$, so
+\[
+ h_1=\left(\frac{10^{-2}}{10^8}\right)^{1/5}
+     =(10^{-10})^{1/5}=10^{-2},\qquad
+ h_{\mathrm{start}}=\min(1,0.01)=0.01.
+\]
+
+\subsubsection{Where DOP853 changes the error calculation}
+DOP853 retains an eighth-order state, but its controller does not simply use
+an eighth-minus-seventh-order difference. It combines fifth- and third-order
+embedded differences. Define
+\[
+ \boldsymbol\delta_5=\mathbf y^{(8)}-\mathbf y^{(5)},\qquad
+ \boldsymbol\delta_3=\mathbf y^{(8)}-\mathbf y^{(3)}.
+\]
+These use retained minus embedded, the opposite sign to HNW Eq.~(10.16).
+The sign does not affect the squared sums. Define
+\[
+ S_5=\sum_r\left(\frac{\delta_5^r}{h\,\mathrm{sc}_r}\right)^2,
+ \qquad
+ S_3=\sum_r\left(\frac{\delta_3^r}{h\,\mathrm{sc}_r}\right)^2.
+\]
+Combine these scaled differences as
+\begin{equation}\label{Eq:AdaptDop853Composite}
+ \mathrm{err}_{853}
+ =\frac{|h|S_5}{\sqrt{d(S_5+0.01S_3)}}.
+\end{equation}
+For finite differences, if $S_5=S_3=0$, take $\mathrm{err}_{853}=0$.
+Generically, at fixed scales with nonzero leading coefficients,
+\[
+ \boldsymbol\delta_5=O(h^6),\quad
+ \boldsymbol\delta_3=O(h^4)
+ \quad\Longrightarrow\quad
+ S_5\sim A h^{10},\quad S_3\sim B h^6,\qquad A,B>0.
+\]
+Substitution into Eq.~\ref{Eq:AdaptDop853Composite} gives
+\[
+ \mathrm{err}_{853}
+ \sim\frac{A h^{11}}{\sqrt{0.01dB h^6}}
+ =\frac{A}{\sqrt{0.01dB}}h^8.
+\]
+This explains the controller's exponent $1/8$; the accepted eighth-order
+solution itself has local error $O(h^9)$. If the third-order difference is
+unusually small, the dominant balance changes and the generic $h^8$ argument
+need not apply. One controller parameter choice for DOP853 is $\beta=0$, $\alpha=1/8$,
+$\eta=0.9$, $f_{\min}=0.333$, and $f_{\max}=6$.
+The eighth-order method is constructed in Hairer I, Section~II.5, printed
+pp.~181--185. Its fifth-/third-order error estimator is developed in
+Section~II.10, printed pp.~254--255, Eqs.~(10.16)--(10.17) \cite{HNW1993}.
+Equation~\ref{Eq:AdaptDop853Composite} gives the scaled vector form of this
+composite estimate.
+
+\subsubsection{What an adaptive step actually does}
+For DOPRI5 the calculation proceeds as
+\[
+ \{\mathbf k_i\}_{i=1}^7
+ \ \longrightarrow\
+ \left(\mathbf y_{n+1}^{\mathrm{high}},
+       \boldsymbol\delta=h\sum_i\varepsilon_i\mathbf k_i\right)
+ \ \longrightarrow\ \mathrm{err}.
+\]
+The error norm compares this attempt with the chosen tolerance scales.
+Acceptance advances to the higher-order endpoint; rejection leaves the
+starting state fixed and recalculates with a smaller trial step. The controller
+uses the measured error to propose the next step size, and every new proposal
+is tested again. This feedback calculation is what the adaptive solver adds
+to a fixed-step RK update.

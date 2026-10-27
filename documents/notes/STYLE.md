@@ -62,6 +62,11 @@ on 2026-09-12 and will be refined with him.
   to a specified expression. Distinguish collisions such as stage abscissa
   versus output weight, derivative versus increment, stage index versus state
   index, and exact solution versus numerical state.
+- The mega notes develop the theory comprehensively. Keep source filenames,
+  function/type names, and mappings from equations to code in separate
+  implementation documentation that assumes the theory has already been
+  developed here. Present algorithm parameters as mathematical choices,
+  rather than repository defaults (Ernest, 2026-10-27).
 - Organize shared physics topics around the physical question, definitions
   and derivation. Combine complementary textbook presentations; place their
   equation numbers and notation translations as parallel source references.
@@ -102,6 +107,11 @@ on 2026-09-12 and will be refined with him.
   entry. A second printing is not a new edition.
 - Complete a TODO with the missing argument. A checked coefficient table is
   useful evidence after a derivation; it does not replace the derivation.
+- Be terse in prose, not in the derivation: display each nontrivial substitution,
+  intermediate equality, and cancellation. If a source compresses a step into
+  words or big-O notation, show the underlying calculation and identify what
+  is held fixed. Define error signs and distinguish local from global order
+  before interpreting an error estimate (Ernest, 2026-10-26).
 - Keep the prose to the point. Explain why the displayed step is being taken
   and how it follows from the previous one. Avoid rhetorical transitions,
   vague assurances, or extra generalizations without hypotheses.

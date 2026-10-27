@@ -1,0 +1,323 @@
+\subsection{Practical error estimation and Richardson extrapolation}
+\label{sec:RKRichardson}
+
+Hairer I, Section~II.4, printed pp.~164--165, Eqs.~(4.1)--(4.5)
+\cite{HNW1993}. Compare two calculations at the \emph{same endpoint}:
+\[
+ (x_0,\mathbf y_0)\xrightarrow{\ h\ }(x_1,\mathbf y_1)
+                    \xrightarrow{\ h\ }(x_2,\mathbf y_2),
+ \qquad x_1=x_0+h,\quad x_2=x_0+2h,
+\]
+\[
+ (x_0,\mathbf y_0)\xrightarrow{\ 2h\ }(x_2,\mathbf w).
+\]
+The difference $\mathbf y_2-\mathbf w$ is computable. We want the unknown
+error $\mathbf y(x_2)-\mathbf y_2$ and its sign.
+
+\subsubsection{The step maps and the error convention}
+Let $\mathbf y'=\mathbf f(x,\mathbf y)$ on an open state domain
+$U\subseteq\mathbb R^d$. Write
+\begin{equation}\label{Eq:RichStepMaps}
+ \boldsymbol\Psi_h(x,\mathbf u)=\mathbf y(x+h;x,\mathbf u),
+ \qquad
+ \boldsymbol\Phi_h(x,\mathbf u)=\text{one numerical RK step from }(x,\mathbf u).
+\end{equation}
+Thus $\boldsymbol\Psi$ is the exact flow and $\boldsymbol\Phi$ is the numerical
+step. Assume $\mathbf f$ and the fixed order-$p$ method are sufficiently smooth
+for the following local expansion and its first state derivatives to hold
+uniformly on a neighborhood of the steps, with $p\geq1$:
+\begin{equation}\label{Eq:RichLocalDefect}
+ \boldsymbol\Psi_h(x,\mathbf u)-\boldsymbol\Phi_h(x,\mathbf u)
+ =\mathbf C(x,\mathbf u)h^{p+1}+O(h^{p+2}).
+\end{equation}
+Assume $\mathbf C$ is continuously differentiable there, with bounded first
+derivatives. We take $h>0$, let $h\to0$ with $(x_0,\mathbf y_0)$ fixed, and
+start with exact data $\mathbf y_0=\mathbf y(x_0)$. Big-$O$ for a vector bounds
+its norm. All nearby exact and numerical stages remain in this neighborhood.
+
+Define the common leading coefficient and the three signed errors by
+\begin{equation}\label{Eq:RichErrors}
+\begin{aligned}
+ \mathbf C_0&=\mathbf C(x_0,\mathbf y_0),\\
+ \mathbf e_1&=\mathbf y(x_1)-\mathbf y_1,\\
+ \mathbf e_2&=\mathbf y(x_2)-\mathbf y_2,\\
+ \mathbf e_{\mathrm{big}}&=\mathbf y(x_2)-\mathbf w.
+\end{aligned}
+\end{equation}
+Every error is \emph{exact minus numerical}. Substituting the initial data into
+Eq.~\ref{Eq:RichLocalDefect} gives
+\begin{equation}\label{Eq:RichFirstError}
+ \mathbf e_1=\mathbf C_0h^{p+1}+O(h^{p+2}).
+\end{equation}
+
+\subsubsection{Why the two small-step errors add at leading order}
+The second numerical step starts at $\mathbf y_1$, not at the exact state
+$\mathbf y(x_1)$. Add and subtract the exact flow from that numerical state:
+\begin{equation}\label{Eq:RichErrorSplit}
+\begin{aligned}
+ \mathbf e_2
+ &=\boldsymbol\Psi_h(x_1,\mathbf y(x_1))
+       -\boldsymbol\Phi_h(x_1,\mathbf y_1)\\
+ &=\underbrace{\boldsymbol\Psi_h(x_1,\mathbf y_1+\mathbf e_1)
+       -\boldsymbol\Psi_h(x_1,\mathbf y_1)}_{\text{transported first-step error}}\\
+ &\quad+\underbrace{\boldsymbol\Psi_h(x_1,\mathbf y_1)
+       -\boldsymbol\Phi_h(x_1,\mathbf y_1)}_{\text{new local error}}.
+\end{aligned}
+\end{equation}
+
+\paragraph{Transport of the first error.}
+For the state component $r$, the short-time exact flow and its derivative are
+\begin{equation}\label{Eq:RichFlowDerivative}
+\begin{aligned}
+ \Psi_h^r(x,\mathbf u)&=u^r+h f^r(x,\mathbf u)+O(h^2),\\
+ \frac{\partial\Psi_h^r}{\partial u^j}(x,\mathbf u)
+ &=\delta^r{}_j+h\frac{\partial f^r}{\partial u^j}(x,\mathbf u)+O(h^2).
+\end{aligned}
+\end{equation}
+The derivative holds $x$ and $h$ fixed. To justify it, first integrate the ODE,
+then differentiate with respect to the initial state:
+\begin{align*}
+ \Psi_h^r(x,\mathbf u)
+ &=u^r+\int_0^h f^r(x+s,\boldsymbol\Psi_s(x,\mathbf u))\,ds,\\
+ \frac{\partial\Psi_h^r}{\partial u^j}(x,\mathbf u)
+ &=\delta^r{}_j+\int_0^h
+ \frac{\partial f^r}{\partial u^k}(x+s,\boldsymbol\Psi_s(x,\mathbf u))
+ \frac{\partial\Psi_s^k}{\partial u^j}(x,\mathbf u)\,ds\\
+ &=\delta^r{}_j+\int_0^h\left[
+ \frac{\partial f^r}{\partial u^k}(x,\mathbf u)+O(s)\right]
+ [\delta^k{}_j+O(s)]\,ds\\
+ &=\delta^r{}_j+h\frac{\partial f^r}{\partial u^j}(x,\mathbf u)+O(h^2).
+\end{align*}
+Here smoothness gives $\boldsymbol\Psi_s=\mathbf u+O(s)$ and
+$\frac{\partial\Psi_s^k}{\partial u^j}=\delta^k{}_j+O(s)$; the integral of $O(s)$
+is $O(h^2)$. Set
+$\mathbf z_\theta=\mathbf y_1+\theta\mathbf e_1$. Integrating the state derivative
+along this segment gives the first brace in Eq.~\ref{Eq:RichErrorSplit}:
+\begin{align}
+ \Psi_h^r(x_1,\mathbf y_1+\mathbf e_1)-\Psi_h^r(x_1,\mathbf y_1)
+ &=\int_0^1\frac{\partial\Psi_h^r}{\partial u^j}
+       (x_1,\mathbf z_\theta)e_1^j\,d\theta\nonumber\\
+ &=e_1^r+h\int_0^1\frac{\partial f^r}{\partial u^j}
+       (x_1,\mathbf z_\theta)e_1^j\,d\theta
+       +O(h^2\|\mathbf e_1\|)\nonumber\\
+ &=e_1^r+O(h\|\mathbf e_1\|)\nonumber\\
+ &=C_0^r h^{p+1}+O(h^{p+2}).\label{Eq:RichTransport}
+\end{align}
+The last equality substitutes Eq.~\ref{Eq:RichFirstError}:
+$h\|\mathbf e_1\|=h\,O(h^{p+1})=O(h^{p+2})$.
+This displays HNW's transported-error factor component by component:
+the first error changes during transport, but that change is one power of $h$
+smaller than its leading term.
+
+\paragraph{The second local error has the same leading coefficient.}
+Consistency of the RK step gives
+\begin{equation}\label{Eq:RichNearbyStart}
+ \mathbf y_1-\mathbf y_0=h\mathbf f(x_0,\mathbf y_0)+O(h^2)=O(h).
+\end{equation}
+To check the change in $\mathbf C$, put
+$\mathbf v_\theta=\mathbf y_0+\theta(\mathbf y_1-\mathbf y_0)$.
+Along the segment from $(x_0,\mathbf y_0)$ to $(x_1,\mathbf y_1)$,
+\begin{align}
+ C^r(x_1,\mathbf y_1)-C_0^r
+ &=\int_0^1\left[
+ h\frac{\partial C^r}{\partial x}(x_0+\theta h,\mathbf v_\theta)
+ \right.\nonumber\\[-2pt]
+ &\hspace{3em}\left.
+ +\frac{\partial C^r}{\partial u^j}(x_0+\theta h,\mathbf v_\theta)
+       (y_1^j-y_0^j)\right]d\theta\nonumber\\
+ &=O(h)+O(\|\mathbf y_1-\mathbf y_0\|)=O(h).
+ \label{Eq:RichCoefficientChange}
+\end{align}
+Substitute Eq.~\ref{Eq:RichCoefficientChange} into the local defect at
+$(x_1,\mathbf y_1)$:
+\begin{align}
+ \boldsymbol\Psi_h(x_1,\mathbf y_1)-\boldsymbol\Phi_h(x_1,\mathbf y_1)
+ &=\mathbf C(x_1,\mathbf y_1)h^{p+1}+O(h^{p+2})\nonumber\\
+ &=[\mathbf C_0+O(h)]h^{p+1}+O(h^{p+2})\nonumber\\
+ &=\mathbf C_0h^{p+1}+O(h^{p+2}).\label{Eq:RichSecondLocal}
+\end{align}
+Now substitute Eqs.~\ref{Eq:RichTransport} and \ref{Eq:RichSecondLocal}
+into the two braces of Eq.~\ref{Eq:RichErrorSplit}:
+\begin{equation}\label{Eq:RichTwoStepError}
+\begin{aligned}
+ \mathbf e_2
+ &=[\mathbf C_0h^{p+1}+O(h^{p+2})]
+   +[\mathbf C_0h^{p+1}+O(h^{p+2})]\\
+ &=2\mathbf C_0h^{p+1}+O(h^{p+2}).
+\end{aligned}
+\end{equation}
+This factor $2$ counts the two local errors. It does not replace either
+small step size by $2h$.
+
+\subsubsection{Eliminating the unknown coefficient}
+For the single big step, substitute $2h$ into Eq.~\ref{Eq:RichLocalDefect}
+at the \emph{same initial data} $(x_0,\mathbf y_0)$:
+\begin{equation}\label{Eq:RichBigError}
+\begin{aligned}
+ \mathbf e_{\mathrm{big}}
+ &=\mathbf C_0(2h)^{p+1}+O((2h)^{p+2})\\
+ &=2^{p+1}\mathbf C_0h^{p+1}+O(h^{p+2}).
+\end{aligned}
+\end{equation}
+By Eq.~\ref{Eq:RichErrors}, subtraction cancels the unknown exact endpoint:
+\begin{align}
+ \mathbf y_2-\mathbf w
+ &=[\mathbf y(x_2)-\mathbf e_2]
+       -[\mathbf y(x_2)-\mathbf e_{\mathrm{big}}]\nonumber\\
+ &=\mathbf e_{\mathrm{big}}-\mathbf e_2\nonumber\\
+ &=(2^{p+1}-2)\mathbf C_0h^{p+1}+O(h^{p+2})\nonumber\\
+ &=2(2^p-1)\mathbf C_0h^{p+1}+O(h^{p+2}).
+ \label{Eq:RichDifference}
+\end{align}
+Since $p\geq1$, division by $2^p-1$ is valid:
+\begin{equation}\label{Eq:RichErrorEstimator}
+\begin{aligned}
+ \frac{\mathbf y_2-\mathbf w}{2^p-1}
+ &=2\mathbf C_0h^{p+1}+O(h^{p+2})\\
+ &=\mathbf e_2+O(h^{p+2}).
+\end{aligned}
+\end{equation}
+Thus the difference divided by $2^p-1$ estimates the error of
+\emph{the two-small-step result}, with the exact-minus-numerical convention.
+It does not directly estimate the error of $\mathbf w$.
+
+Define the corrected endpoint and substitute Eq.~\ref{Eq:RichErrorEstimator}:
+\begin{align}
+ \widehat{\mathbf e}_2&=\frac{\mathbf y_2-\mathbf w}{2^p-1},
+ &\widehat{\mathbf y}_2&=\mathbf y_2+\widehat{\mathbf e}_2,
+ \label{Eq:RichCorrection}\\
+ \mathbf y(x_2)-\widehat{\mathbf y}_2
+ &=\mathbf e_2-\widehat{\mathbf e}_2=O(h^{p+2}).
+ \label{Eq:RichCorrectedError}
+\end{align}
+The corrected formula has local error $O(h^{p+2})$, hence order at least $p+1$.
+Repeated use on a fixed interval gives global order at least $p+1$ under the
+usual smoothness and stability hypotheses. This is a statement about the
+corrected formula; reporting the estimate alone does not change $\mathbf y_2$.
+
+\subsubsection{A complete scalar check with Euler's method}
+Take $y'=y$, $y(0)=1$. Euler has $p=1$ and $\Phi_h(x,u)=(1+h)u$.
+The two calculations and the exact endpoint are
+\begin{equation}\label{Eq:RichEulerEndpoints}
+\begin{aligned}
+ y_1&=1+h,\\
+ y_2&=(1+h)y_1=(1+h)^2=1+2h+h^2,\\
+ w&=1+2h,\\
+ y(2h)&=e^{2h}=1+2h+2h^2+\tfrac43h^3+O(h^4).
+\end{aligned}
+\end{equation}
+Subtract the numerical results from the exact endpoint:
+\[
+\begin{aligned}
+ e_2&=e^{2h}-(1+2h+h^2)=h^2+\tfrac43h^3+O(h^4),\\
+ e_{\mathrm{big}}&=e^{2h}-(1+2h)=2h^2+\tfrac43h^3+O(h^4).
+\end{aligned}
+\]
+Here $C_0=1/2$, since $e^h-(1+h)=h^2/2+O(h^3)$.
+The estimator and correction are therefore
+\begin{equation}\label{Eq:RichEulerCorrection}
+\begin{aligned}
+ \widehat e_2&=\frac{(1+2h+h^2)-(1+2h)}{2^1-1}=h^2,\\
+ \widehat y_2&=(1+2h+h^2)+h^2=1+2h+2h^2,\\
+ e^{2h}-\widehat y_2&=\tfrac43h^3+O(h^4).
+\end{aligned}
+\end{equation}
+The $h^2$ error is canceled; the remaining local error starts at $h^3$.
+
+\subsubsection{RK4 and the connection to embedded estimates}
+For classical RK4, $p=4$. Equations~\ref{Eq:RichTwoStepError} and
+\ref{Eq:RichBigError} become
+\[
+ \mathbf e_2=2\mathbf C_0h^5+O(h^6),\qquad
+ \mathbf e_{\mathrm{big}}=32\mathbf C_0h^5+O(h^6).
+\]
+Consequently,
+\begin{equation}\label{Eq:RichRK4Factor}
+\begin{aligned}
+ \mathbf y_2-\mathbf w&=30\mathbf C_0h^5+O(h^6),\\
+ \widehat{\mathbf e}_2&=\frac{\mathbf y_2-\mathbf w}{15}
+                  =2\mathbf C_0h^5+O(h^6),\\
+ \widehat{\mathbf y}_2&=\mathbf y_2+\frac{\mathbf y_2-\mathbf w}{15},\\
+ \mathbf y(x_2)-\widehat{\mathbf y}_2&=O(h^6).
+\end{aligned}
+\end{equation}
+Using a macro-step $H=2h$ instead gives the identical estimator
+$(\mathbf y_{\mathrm{two}\ H/2}-\mathbf y_{\mathrm{one}\ H})/15$.
+At fixed starting data with $\mathbf C_0\neq0$, halving $H$ reduces the
+leading $H^5$ magnitude by $2^5=32$, not $2^4=16$. This is a local error
+estimate, not a fixed-interval global error. If $\mathbf C_0=0$, the remainder
+bounds still hold, but this leading-term ratio need not apply.
+
+Step doubling uses separate trajectories. An embedded pair instead uses
+one set of derivative stages $\mathbf k_i$ and two output weights. Define the
+exact local reference by $\mathbf Y=\boldsymbol\Psi_H(x_n,\mathbf y_n)$,
+starting at the current computed state; it need not lie on the original exact
+trajectory. Then
+\begin{equation}\label{Eq:RichEmbeddedBridge}
+\begin{aligned}
+ \mathbf y_{\mathrm{high}}&=\mathbf y_n+H\sum_i b_i\mathbf k_i,\\
+ \mathbf y_{\mathrm{low}}&=\mathbf y_n+H\sum_i\widetilde b_i\mathbf k_i,\\
+ \mathbf y_{\mathrm{high}}-\mathbf y_{\mathrm{low}}
+ &=H\sum_i(b_i-\widetilde b_i)\mathbf k_i\\
+ &=(\mathbf Y-\mathbf y_{\mathrm{low}})
+   -(\mathbf Y-\mathbf y_{\mathrm{high}}).
+\end{aligned}
+\end{equation}
+For DOPRI5, the two formulas have orders five and four. At fixed starting
+data, their local errors therefore have the forms
+\[
+\begin{aligned}
+ \mathbf Y-\mathbf y_{\mathrm{low}}&=\mathbf D H^5+O(H^6),\\
+ \mathbf Y-\mathbf y_{\mathrm{high}}&=O(H^6),\\
+ \mathbf y_{\mathrm{high}}-\mathbf y_{\mathrm{low}}
+ &=[\mathbf D H^5+O(H^6)]-O(H^6)\\
+ &=\mathbf D H^5+O(H^6).
+\end{aligned}
+\]
+Thus the difference estimates the lower-order local error to leading order;
+it is not the actual fifth-order solution error. The shared stages make this
+estimate cheaper than separate step-doubling calculations. For embedded pairs,
+see Hairer I, printed pp.~165--166, Eqs.~(4.6)--(4.7$'$); for DOPRI5 itself,
+see Section~II.5, printed pp.~178--179, Table~5.2 \cite{HNW1993}.
+
+All these estimates rely on the smooth local expansions at their point of use.
+A discontinuity, unresolved fast behavior, or roundoff can invalidate the leading
+power comparison. Agreement between two computed values is not, by itself,
+a rigorous bound on the true error.
+
+\subsubsection{What the difference between the two results tells us}
+Richardson extrapolation computes the same endpoint using two different step
+sizes: $\mathbf y_2$ comes from two steps of size $h$, and $\mathbf w$ comes
+from one step of size $2h$. Their difference, $\mathbf y_2-\mathbf w$,
+becomes an error estimate after accounting for the method's order $p$.
+Equation~\ref{Eq:RichErrorEstimator} gives
+\[
+ \widehat{\mathbf e}_2
+ =\frac{\mathbf y_2-\mathbf w}{2^p-1}
+ =\underbrace{\mathbf y(x_2)-\mathbf y_2}_{\mathbf e_2}
+   +O(h^{p+2}).
+\]
+Thus $\widehat{\mathbf e}_2$ estimates how much correction the two-small-step
+result needs. Since our error convention is exact minus numerical, we
+\emph{add} this correction:
+\[
+ \widehat{\mathbf y}_2
+ =\mathbf y_2+\widehat{\mathbf e}_2
+ =\mathbf y_2+\frac{\mathbf y_2-\mathbf w}{2^p-1}.
+\]
+The leading error cancels:
+\[
+ \mathbf y(x_2)-\widehat{\mathbf y}_2
+ =\mathbf e_2-\widehat{\mathbf e}_2
+ =O(h^{p+2}),
+\]
+improving the original local error $O(h^{p+1})$ by one power of $h$.
+For RK4, $p=4$, so the correction is simply
+\[
+ \widehat{\mathbf e}_2=\frac{\mathbf y_2-\mathbf w}{15}.
+\]
+
+The error estimate also gives us a quantity to compare with a requested
+tolerance. That comparison guides whether to accept a step and how large the
+next step should be. Applying the extrapolation correction and using the
+estimate to control step size are two distinct uses of the same calculation.
